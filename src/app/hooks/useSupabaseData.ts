@@ -7,11 +7,17 @@ const getHeaders = (token?: string) => ({
   ...(token ? { 'Authorization': `Bearer ${token}` } : {})
 });
 
-const fetchJson = async (url: string, token?: string) => {
+const fetchJson = async (label: string, url: string, token?: string) => {
   const response = await fetch(url, { headers: getHeaders(token) });
-  const data = await response.json();
+  const text = await response.text();
+  let data;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    throw new Error(`${label}: respuesta no JSON (${text.slice(0, 120) || 'vacía'})`);
+  }
   if (!response.ok) {
-    throw new Error(data?.error || data?.message || `Error ${response.status}`);
+    throw new Error(`${label}: ${data?.error || data?.message || `Error ${response.status}`}`);
   }
   return data;
 };
@@ -129,17 +135,15 @@ export function useSupabaseData(token?: string) {
     
     // Server is available, try to fetch
     try {
-      const [clientesData, productosData, cotizacionesData, pagosData, ajustesData, plantillasData] = await Promise.all([
-        fetchJson(`${BASE_URL}/clientes`, token),
-        fetchJson(`${BASE_URL}/productos`, token),
-        fetchJson(`${BASE_URL}/cotizaciones`, token),
-        fetchJson(`${BASE_URL}/pagos`, token),
-        fetchJson(`${BASE_URL}/ajustes`, token),
-        fetchJson(`${BASE_URL}/plantillas`, token).catch(error => {
-          console.warn('No se pudieron cargar plantillas:', error);
-          return [];
-        })
-      ]);
+      const clientesData = await fetchJson('clientes', `${BASE_URL}/clientes`, token);
+      const productosData = await fetchJson('productos', `${BASE_URL}/productos`, token);
+      const cotizacionesData = await fetchJson('cotizaciones', `${BASE_URL}/cotizaciones`, token);
+      const pagosData = await fetchJson('pagos', `${BASE_URL}/pagos`, token);
+      const ajustesData = await fetchJson('ajustes', `${BASE_URL}/ajustes`, token);
+      const plantillasData = await fetchJson('plantillas', `${BASE_URL}/plantillas`, token).catch(error => {
+        console.warn('No se pudieron cargar plantillas:', error);
+        return [];
+      });
 
       setClientes(Array.isArray(clientesData) ? clientesData : []);
       setProductos(Array.isArray(productosData) ? productosData : []);
