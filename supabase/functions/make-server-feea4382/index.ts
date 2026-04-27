@@ -972,4 +972,14 @@ app.get("/productos/:id/historial-precios", async (c) => {
   }
 });
 
-Deno.serve(app.fetch);
+Deno.serve((req) => {
+  const url = new URL(req.url);
+  const prefix = "/make-server-feea4382";
+
+  if (url.pathname.startsWith(`${prefix}/`)) {
+    url.pathname = url.pathname.slice(prefix.length);
+    return app.fetch(new Request(url.toString(), req));
+  }
+
+  return app.fetch(req);
+});
