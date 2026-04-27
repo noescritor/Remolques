@@ -62,6 +62,7 @@ Commits relevantes:
 - `Normalize Supabase function route prefix`
 - `Fallback plantillas for legacy schema`
 - `Fix cotizacion save error handling and item payload`
+- `Harden frontend API responses and undefined routes`
 
 ### Easypanel
 
@@ -160,6 +161,8 @@ Cambios:
 - Health check usa `/health`.
 - Se agrego `fetchJson(label, url, token)` para mostrar errores especificos por endpoint.
 - Si falla `plantillas`, se atrapa por separado para no tirar toda la carga inicial.
+- Se agrego `sendJson` para validar respuestas de mutaciones. Esto evita que errores del backend se agreguen como clientes/productos/cotizaciones validas.
+- `crearCotizacion` valida que la respuesta tenga `id` y `folio` antes de agregarla al estado.
 
 Archivo:
 
@@ -172,6 +175,8 @@ Cambios:
 - Se agrego `serverError` al toast de modo local.
 - Se agrego ruta publica `/cotizacion/:token` antes del login y tambien con sesion activa.
 - Se agrego handler `manejarGenerarTokenPortal`.
+- Se agrego validacion antes de navegar a una cotizacion creada.
+- Se agrego redireccion para URLs invalidas como `/cotizaciones/undefined`, `/cotizaciones/null`, y rutas equivalentes de editar/PDF.
 
 ### Portal de cliente
 

@@ -7,8 +7,7 @@ const getHeaders = (token?: string) => ({
   ...(token ? { 'Authorization': `Bearer ${token}` } : {})
 });
 
-const fetchJson = async (label: string, url: string, token?: string) => {
-  const response = await fetch(url, { headers: getHeaders(token) });
+const parseResponse = async (label: string, response: Response) => {
   const text = await response.text();
   let data;
   try {
@@ -20,6 +19,22 @@ const fetchJson = async (label: string, url: string, token?: string) => {
     throw new Error(`${label}: ${data?.error || data?.message || `Error ${response.status}`}`);
   }
   return data;
+};
+
+const fetchJson = async (label: string, url: string, token?: string) => {
+  const response = await fetch(url, { headers: getHeaders(token) });
+  return parseResponse(label, response);
+};
+
+const sendJson = async (label: string, url: string, token: string | undefined, init: RequestInit = {}) => {
+  const response = await fetch(url, {
+    ...init,
+    headers: {
+      ...getHeaders(token),
+      ...(init.headers || {}),
+    },
+  });
+  return parseResponse(label, response);
 };
 
 export function useSupabaseData(token?: string) {
@@ -212,12 +227,10 @@ export function useSupabaseData(token?: string) {
     }
     
     try {
-      const response = await fetch(`${BASE_URL}/clientes`, {
+      const resultado = await sendJson('crear cliente', `${BASE_URL}/clientes`, token, {
         method: 'POST',
-        headers: getHeaders(token),
         body: JSON.stringify(cliente)
       });
-      const resultado = await response.json();
       setClientes(prev => [...prev, resultado]);
       return resultado;
     } catch (error) {
@@ -235,12 +248,10 @@ export function useSupabaseData(token?: string) {
     }
     
     try {
-      const response = await fetch(`${BASE_URL}/clientes/${id}`, {
+      const resultado = await sendJson('actualizar cliente', `${BASE_URL}/clientes/${id}`, token, {
         method: 'PUT',
-        headers: getHeaders(token),
         body: JSON.stringify(cliente)
       });
-      const resultado = await response.json();
       setClientes(prev => prev.map(c => c.id === id ? resultado : c));
       return resultado;
     } catch (error) {
@@ -258,9 +269,8 @@ export function useSupabaseData(token?: string) {
     }
     
     try {
-      await fetch(`${BASE_URL}/clientes/${id}`, {
+      await sendJson('eliminar cliente', `${BASE_URL}/clientes/${id}`, token, {
         method: 'DELETE',
-        headers: getHeaders(token)
       });
       setClientes(prev => prev.filter(c => c.id !== id));
     } catch (error) {
@@ -284,12 +294,10 @@ export function useSupabaseData(token?: string) {
     }
     
     try {
-      const response = await fetch(`${BASE_URL}/productos`, {
+      const resultado = await sendJson('crear producto', `${BASE_URL}/productos`, token, {
         method: 'POST',
-        headers: getHeaders(token),
         body: JSON.stringify(producto)
       });
-      const resultado = await response.json();
       setProductos(prev => [...prev, resultado]);
       return resultado;
     } catch (error) {
@@ -322,12 +330,10 @@ export function useSupabaseData(token?: string) {
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/productos/${id}`, {
+      const resultado = await sendJson('actualizar producto', `${BASE_URL}/productos/${id}`, token, {
         method: 'PUT',
-        headers: getHeaders(token),
         body: JSON.stringify(producto)
       });
-      const resultado = await response.json();
       setProductos(prev => prev.map(p => p.id === id ? resultado : p));
       return resultado;
     } catch (error) {
@@ -345,9 +351,8 @@ export function useSupabaseData(token?: string) {
     }
     
     try {
-      await fetch(`${BASE_URL}/productos/${id}`, {
+      await sendJson('eliminar producto', `${BASE_URL}/productos/${id}`, token, {
         method: 'DELETE',
-        headers: getHeaders(token)
       });
       setProductos(prev => prev.filter(p => p.id !== id));
     } catch (error) {
@@ -380,14 +385,12 @@ export function useSupabaseData(token?: string) {
     }
     
     try {
-      const response = await fetch(`${BASE_URL}/cotizaciones`, {
+      const resultado = await sendJson('crear cotización', `${BASE_URL}/cotizaciones`, token, {
         method: 'POST',
-        headers: getHeaders(token),
         body: JSON.stringify(cotizacion)
       });
-      const resultado = await response.json();
-      if (!response.ok || resultado?.error) {
-        throw new Error(resultado.details || resultado.error || 'Error al crear cotización');
+      if (!resultado?.id || !resultado?.folio) {
+        throw new Error('El servidor no devolvió una cotización válida.');
       }
       setCotizaciones(prev => [...prev, resultado]);
       return resultado;
@@ -408,14 +411,12 @@ export function useSupabaseData(token?: string) {
     }
     
     try {
-      const response = await fetch(`${BASE_URL}/cotizaciones/${id}`, {
+      const resultado = await sendJson('actualizar cotización', `${BASE_URL}/cotizaciones/${id}`, token, {
         method: 'PUT',
-        headers: getHeaders(token),
         body: JSON.stringify(cotizacion)
       });
-      const resultado = await response.json();
-      if (!response.ok || resultado?.error) {
-        throw new Error(resultado.details || resultado.error || 'Error al actualizar cotización');
+      if (!resultado?.id) {
+        throw new Error('El servidor no devolvió una cotización válida.');
       }
       setCotizaciones(prev => prev.map(c => c.id === id ? resultado : c));
       return resultado;
@@ -437,9 +438,8 @@ export function useSupabaseData(token?: string) {
     }
     
     try {
-      await fetch(`${BASE_URL}/cotizaciones/${id}`, {
+      await sendJson('eliminar cotización', `${BASE_URL}/cotizaciones/${id}`, token, {
         method: 'DELETE',
-        headers: getHeaders(token)
       });
       setCotizaciones(prev => prev.filter(c => c.id !== id));
       setPagos(prev => prev.filter(p => p.cotizacion_id !== id));
@@ -483,11 +483,12 @@ export function useSupabaseData(token?: string) {
     }
     
     try {
-      const response = await fetch(`${BASE_URL}/cotizaciones/${id}/duplicate`, {
+      const resultado = await sendJson('duplicar cotización', `${BASE_URL}/cotizaciones/${id}/duplicate`, token, {
         method: 'POST',
-        headers: getHeaders(token)
       });
-      const resultado = await response.json();
+      if (!resultado?.id || !resultado?.folio) {
+        throw new Error('El servidor no devolvió una cotización válida.');
+      }
       setCotizaciones(prev => [...prev, resultado]);
       return resultado;
     } catch (error) {
@@ -518,15 +519,9 @@ export function useSupabaseData(token?: string) {
       return { token: tokenPortal, expira: expira.toISOString() };
     }
 
-    const response = await fetch(`${BASE_URL}/cotizaciones/${id}/generar-token-portal`, {
+    const resultado = await sendJson('generar portal', `${BASE_URL}/cotizaciones/${id}/generar-token-portal`, token, {
       method: 'POST',
-      headers: getHeaders(token)
     });
-
-    const resultado = await response.json();
-    if (!response.ok) {
-      throw new Error(resultado.error || 'Error al generar token del portal');
-    }
 
     setCotizaciones(prev => prev.map(c =>
       c.id === id
@@ -570,17 +565,14 @@ export function useSupabaseData(token?: string) {
     }
     
     try {
-      const response = await fetch(`${BASE_URL}/pagos`, {
+      const resultado = await sendJson('crear pago', `${BASE_URL}/pagos`, token, {
         method: 'POST',
-        headers: getHeaders(token),
         body: JSON.stringify(pago)
       });
-      const resultado = await response.json();
       setPagos(prev => [...prev, resultado]);
       
       // Reload cotizaciones to get updated state
-      const cotizacionesResponse = await fetch(`${BASE_URL}/cotizaciones`, { headers: getHeaders(token) });
-      const cotizacionesActualizadas = await cotizacionesResponse.json();
+      const cotizacionesActualizadas = await fetchJson('cotizaciones', `${BASE_URL}/cotizaciones`, token);
       setCotizaciones(cotizacionesActualizadas);
       
       return resultado;
@@ -614,12 +606,10 @@ export function useSupabaseData(token?: string) {
     }
     
     try {
-      const response = await fetch(`${BASE_URL}/ajustes`, {
+      const resultado = await sendJson('actualizar ajustes', `${BASE_URL}/ajustes`, token, {
         method: 'PUT',
-        headers: getHeaders(token),
         body: JSON.stringify(nuevosAjustes)
       });
-      const resultado = await response.json();
       setAjustes(resultado);
       return resultado;
     } catch (error) {
@@ -636,15 +626,10 @@ export function useSupabaseData(token?: string) {
       setPlantillas(prev => [nueva, ...prev]);
       return nueva;
     }
-    const response = await fetch(`${BASE_URL}/plantillas`, {
+    const resultado = await sendJson('crear plantilla', `${BASE_URL}/plantillas`, token, {
       method: 'POST',
-      headers: getHeaders(token),
       body: JSON.stringify(plantilla)
     });
-    const resultado = await response.json();
-    if (!response.ok) {
-      throw new Error(resultado.details || resultado.error || 'Error al crear plantilla');
-    }
     setPlantillas(prev => [resultado, ...prev]);
     return resultado;
   };
@@ -654,15 +639,10 @@ export function useSupabaseData(token?: string) {
       setPlantillas(prev => prev.map(p => p.id === id ? { ...p, ...plantilla } : p));
       return;
     }
-    const response = await fetch(`${BASE_URL}/plantillas/${id}`, {
+    const resultado = await sendJson('actualizar plantilla', `${BASE_URL}/plantillas/${id}`, token, {
       method: 'PUT',
-      headers: getHeaders(token),
       body: JSON.stringify(plantilla)
     });
-    const resultado = await response.json();
-    if (!response.ok) {
-      throw new Error(resultado.details || resultado.error || 'Error al actualizar plantilla');
-    }
     setPlantillas(prev => prev.map(p => p.id === id ? resultado : p));
     return resultado;
   };
@@ -672,14 +652,9 @@ export function useSupabaseData(token?: string) {
       setPlantillas(prev => prev.filter(p => p.id !== id));
       return;
     }
-    const response = await fetch(`${BASE_URL}/plantillas/${id}`, {
+    await sendJson('eliminar plantilla', `${BASE_URL}/plantillas/${id}`, token, {
       method: 'DELETE',
-      headers: getHeaders(token)
     });
-    const resultado = await response.json();
-    if (!response.ok) {
-      throw new Error(resultado.details || resultado.error || 'Error al eliminar plantilla');
-    }
     setPlantillas(prev => prev.filter(p => p.id !== id));
   };
 

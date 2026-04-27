@@ -145,6 +145,9 @@ export default function App() {
 
       if (isNew || esNuevaVersion) {
         const nuevaCotizacion = await crearCotizacion(data);
+        if (!nuevaCotizacion?.id || !nuevaCotizacion?.folio) {
+          throw new Error('El servidor no devolvió una cotización válida.');
+        }
         toast.success(
           esNuevaVersion 
             ? `Nueva versión (v${nuevaCotizacion.version}) creada exitosamente` 
@@ -511,6 +514,7 @@ export default function App() {
 
 function CotizacionEditorWrapper({ cotizaciones, onGuardar, ...props }: any) {
   const { id } = useParams();
+  if (!id || id === 'undefined' || id === 'null') return <Navigate to="/cotizaciones" replace />;
   const cotizacion = cotizaciones.find((c: any) => c.id === id);
   if (!cotizacion && id) return <div className="p-8 text-gray-500">Cotización no encontrada</div>;
   const handleGuardar = (data: any) => onGuardar(data, false, id);
@@ -520,6 +524,7 @@ function CotizacionEditorWrapper({ cotizaciones, onGuardar, ...props }: any) {
 function CotizacionDetalleWrapper({ cotizaciones, ...props }: any) {
   const { id } = useParams();
   const navigate = useNavigate();
+  if (!id || id === 'undefined' || id === 'null') return <Navigate to="/cotizaciones" replace />;
   const cotizacion = cotizaciones.find((c: any) => c.id === id);
   if (!cotizacion) return <div className="p-8 text-gray-500">Cotización no encontrada</div>;
   const currentCliente = props.clientes.find((cl: any) => cl.id === cotizacion.cliente_id);
@@ -540,6 +545,7 @@ function CotizacionDetalleWrapper({ cotizaciones, ...props }: any) {
 
 function PDFFullPageWrapper({ cotizaciones, ...props }: any) {
   const { id } = useParams();
+  if (!id || id === 'undefined' || id === 'null') return <Navigate to="/cotizaciones" replace />;
   const cotizacion = cotizaciones.find((c: any) => c.id === id);
   if (!cotizacion) return <div>Cotización no encontrada</div>;
   const cliente = props.clientes.find((c: any) => c.id === cotizacion.cliente_id);
