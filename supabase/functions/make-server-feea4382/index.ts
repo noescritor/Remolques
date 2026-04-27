@@ -50,6 +50,26 @@ const toItemCotizacionRow = (item: any, cotizacionId: string) => ({
   },
 });
 
+const toLegacyItemCotizacionRow = (item: any, cotizacionId: string) => {
+  const { metadata, ...row } = toItemCotizacionRow(item, cotizacionId);
+  return row;
+};
+
+const insertItemsCotizacion = async (supabase: SupabaseClient, items: any[], cotizacionId: string) => {
+  if (items.length === 0) return;
+
+  const itemsToInsert = items.map((item: any) => toItemCotizacionRow(item, cotizacionId));
+  let { error } = await supabase.from('items_cotizacion').insert(itemsToInsert);
+
+  if (error && String(error.message || "").includes("metadata")) {
+    const legacyItems = items.map((item: any) => toLegacyItemCotizacionRow(item, cotizacionId));
+    const retry = await supabase.from('items_cotizacion').insert(legacyItems);
+    error = retry.error;
+  }
+
+  if (error) throw error;
+};
+
 app.get("/portal/:token", async (c) => {
   try {
     const token = c.req.param("token");
@@ -376,9 +396,9 @@ app.post("/cotizaciones", async (c) => {
     if (insertError) throw insertError;
 
     if (items.length > 0) {
-      const itemsToInsert = items.map((item: any) => toItemCotizacionRow(item, nuevaCotizacion.id));
-      const { error: itemsError } = await supabase.from('items_cotizacion').insert(itemsToInsert);
-      if (itemsError) {
+      try {
+        await insertItemsCotizacion(supabase, items, nuevaCotizacion.id);
+      } catch (itemsError) {
         await supabase.from('cotizaciones').delete().eq('id', nuevaCotizacion.id);
         throw itemsError;
       }
@@ -419,9 +439,7 @@ app.put("/cotizaciones/:id", async (c) => {
       // Reemplazo completo de items: borrar existentes y crear nuevos
       await supabase.from('items_cotizacion').delete().eq('cotizacion_id', id);
       if (items.length > 0) {
-        const itemsToInsert = items.map((item: any) => toItemCotizacionRow(item, id));
-        const { error: itemsError } = await supabase.from('items_cotizacion').insert(itemsToInsert);
-        if (itemsError) throw itemsError;
+        await insertItemsCotizacion(supabase, items, id);
       }
     }
 
