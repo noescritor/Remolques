@@ -61,6 +61,7 @@ Commits relevantes:
 - `Improve data endpoint diagnostics`
 - `Normalize Supabase function route prefix`
 - `Fallback plantillas for legacy schema`
+- `Fix cotizacion save error handling and item payload`
 
 ### Easypanel
 
@@ -123,6 +124,8 @@ POST /cotizaciones/:id/generar-token-portal
 ```
 
 - Se agrego fallback para crear/editar plantillas si falta `con_factura` en DB.
+- Se corrigio guardado de cotizaciones para no insertar campos de item inexistentes como columnas. Los campos extendidos de item se guardan en `metadata`.
+- Si falla el insert de items al crear cotizacion, se elimina la cotizacion recien creada para evitar registros huerfanos sin conceptos.
 
 Comando usado para desplegar:
 
@@ -241,6 +244,24 @@ CREATE POLICY "plantillas_auth_all"
 ```
 
 El usuario ya indico que ejecuto el SQL para agregar columnas de plantillas.
+
+Archivo agregado:
+
+```text
+supabase/migrations/20260427_06_items_metadata_columns.sql
+```
+
+Agrega columnas extendidas opcionales a `items_cotizacion`:
+
+```sql
+ALTER TABLE items_cotizacion ADD COLUMN IF NOT EXISTS numero_proyecto TEXT;
+ALTER TABLE items_cotizacion ADD COLUMN IF NOT EXISTS incluir_setup BOOLEAN;
+ALTER TABLE items_cotizacion ADD COLUMN IF NOT EXISTS meses_cobrados INT;
+ALTER TABLE items_cotizacion ADD COLUMN IF NOT EXISTS asientos_extra INT;
+ALTER TABLE items_cotizacion ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
+```
+
+El backend ya no depende de estas columnas para guardar: usa `metadata` para compatibilidad.
 
 ## Cosas pendientes / revisar
 

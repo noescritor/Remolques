@@ -31,6 +31,25 @@ const getServiceClient = () => {
   return createClient(url, key);
 };
 
+const toItemCotizacionRow = (item: any, cotizacionId: string) => ({
+  cotizacion_id: cotizacionId,
+  producto_id: item.producto_id || null,
+  posicion: item.posicion,
+  cantidad: item.cantidad,
+  unidad: item.unidad,
+  descripcion: item.descripcion,
+  precio_unitario: item.precio_unitario ?? null,
+  costo_unitario: item.costo_unitario ?? null,
+  iva_item: item.iva_item ?? 0,
+  total_item: item.total_item ?? 0,
+  metadata: {
+    numero_proyecto: item.numero_proyecto || null,
+    incluir_setup: item.incluir_setup ?? null,
+    meses_cobrados: item.meses_cobrados ?? null,
+    asientos_extra: item.asientos_extra ?? null,
+  },
+});
+
 app.get("/portal/:token", async (c) => {
   try {
     const token = c.req.param("token");
@@ -357,12 +376,12 @@ app.post("/cotizaciones", async (c) => {
     if (insertError) throw insertError;
 
     if (items.length > 0) {
-      const itemsToInsert = items.map((item: any) => {
-        const { id, ...itemData } = item; // remove frontend temporary id
-        return { ...itemData, cotizacion_id: nuevaCotizacion.id };
-      });
+      const itemsToInsert = items.map((item: any) => toItemCotizacionRow(item, nuevaCotizacion.id));
       const { error: itemsError } = await supabase.from('items_cotizacion').insert(itemsToInsert);
-      if (itemsError) throw itemsError;
+      if (itemsError) {
+        await supabase.from('cotizaciones').delete().eq('id', nuevaCotizacion.id);
+        throw itemsError;
+      }
     }
 
     const { data: finalCotizacion } = await supabase
@@ -374,7 +393,8 @@ app.post("/cotizaciones", async (c) => {
     return c.json(finalCotizacion);
   } catch (error) {
     console.log('Error creating cotizacion:', error);
-    return c.json({ error: 'Error creating cotizacion' }, 500);
+    const details = error instanceof Error ? error.message : JSON.stringify(error);
+    return c.json({ error: 'Error creating cotizacion', details }, 500);
   }
 });
 
@@ -399,11 +419,9 @@ app.put("/cotizaciones/:id", async (c) => {
       // Reemplazo completo de items: borrar existentes y crear nuevos
       await supabase.from('items_cotizacion').delete().eq('cotizacion_id', id);
       if (items.length > 0) {
-        const itemsToInsert = items.map((item: any) => {
-          const { id: itemId, ...itemData } = item;
-          return { ...itemData, cotizacion_id: id };
-        });
-        await supabase.from('items_cotizacion').insert(itemsToInsert);
+        const itemsToInsert = items.map((item: any) => toItemCotizacionRow(item, id));
+        const { error: itemsError } = await supabase.from('items_cotizacion').insert(itemsToInsert);
+        if (itemsError) throw itemsError;
       }
     }
 
@@ -416,7 +434,8 @@ app.put("/cotizaciones/:id", async (c) => {
     return c.json(finalCotizacion);
   } catch (error) {
     console.log('Error updating cotizacion:', error);
-    return c.json({ error: 'Error updating cotizacion' }, 500);
+    const details = error instanceof Error ? error.message : JSON.stringify(error);
+    return c.json({ error: 'Error updating cotizacion', details }, 500);
   }
 });
 

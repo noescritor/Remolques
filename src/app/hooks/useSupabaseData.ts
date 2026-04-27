@@ -386,6 +386,9 @@ export function useSupabaseData(token?: string) {
         body: JSON.stringify(cotizacion)
       });
       const resultado = await response.json();
+      if (!response.ok || resultado?.error) {
+        throw new Error(resultado.details || resultado.error || 'Error al crear cotización');
+      }
       setCotizaciones(prev => [...prev, resultado]);
       return resultado;
     } catch (error) {
@@ -411,6 +414,9 @@ export function useSupabaseData(token?: string) {
         body: JSON.stringify(cotizacion)
       });
       const resultado = await response.json();
+      if (!response.ok || resultado?.error) {
+        throw new Error(resultado.details || resultado.error || 'Error al actualizar cotización');
+      }
       setCotizaciones(prev => prev.map(c => c.id === id ? resultado : c));
       return resultado;
     } catch (error) {
