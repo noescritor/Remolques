@@ -301,18 +301,24 @@ export function CotizacionEditor({
     return errores;
   };
 
+  // Strips internal-only fields (costo/utilidad/margen) that are not columns in the DB
+  const totalesBD = (() => {
+    const { costo: _c, utilidad: _u, margen: _m, ...rest } = totales;
+    return rest;
+  })();
+
   const manejarGuardar = () => {
     const erroresValidacion = validarFormulario();
     if (erroresValidacion.length > 0) {
       setErrores(erroresValidacion);
       return;
     }
-    
+
     setErrores([]);
-    
+
     const datosParaGuardar = {
       ...formData,
-      ...totales
+      ...totalesBD
     };
 
     // Lógica de versiones (Fase 2)
@@ -328,7 +334,7 @@ export function CotizacionEditor({
   const confirmarGuardarComoVersion = () => {
     const datosParaGuardar = {
       ...formData,
-      ...totales,
+      ...totalesBD,
       estado: 'Borrador' as EstadoCotizacion,
       cotizacion_padre_id: cotizacion?.id,
       version: (cotizacion?.version || 1) + 1
@@ -432,7 +438,7 @@ export function CotizacionEditor({
   const confirmarSobreesscribir = () => {
     const datosParaGuardar = {
       ...formData,
-      ...totales
+      ...totalesBD
     };
     onGuardar(datosParaGuardar);
     setShowVersionDialog(false);

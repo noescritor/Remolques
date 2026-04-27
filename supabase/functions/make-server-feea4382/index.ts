@@ -70,6 +70,9 @@ const insertItemsCotizacion = async (supabase: SupabaseClient, items: any[], cot
   if (error) throw error;
 };
 
+// Frontend analysis fields that must never reach the DB (not columns in cotizaciones)
+const CLIENT_ONLY_FIELDS = new Set(["costo", "utilidad", "margen", "cliente", "items"]);
+
 const optionalCotizacionColumns = [
   "costos_indirectos",
   "comisiones_pago",
@@ -456,6 +459,11 @@ app.post("/cotizaciones", async (c) => {
       cotizacionData.folio = prefijo ? `${prefijo}-${año}-${numeroFormateado}` : `${año}-${numeroFormateado}`;
     }
 
+    // Remove frontend-only fields that have no column in the cotizaciones table
+    for (const key of CLIENT_ONLY_FIELDS) {
+      delete (cotizacionData as any)[key];
+    }
+
     const { data: nuevaCotizacion, error: insertError } = await retryWithoutMissingCotizacionColumns(supabase, cotizacionData);
 
     if (insertError) throw insertError;
@@ -492,6 +500,7 @@ app.put("/cotizaciones/:id", async (c) => {
     const items = payload.items;
     const cotizacionData = { ...payload };
     delete cotizacionData.items;
+    for (const key of CLIENT_ONLY_FIELDS) delete (cotizacionData as any)[key];
 
     let { error: updateError } = await supabase
       .from('cotizaciones')
