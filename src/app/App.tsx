@@ -157,7 +157,10 @@ export default function App() {
         navigate(`/cotizaciones/${currentId}`);
       }
     } catch (error) {
-      toast.error('Error al guardar cotización');
+      toast.error('Error al guardar cotización', {
+        description: error instanceof Error ? error.message : undefined,
+        duration: 8000,
+      });
     }
   };
 

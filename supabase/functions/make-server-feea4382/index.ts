@@ -70,6 +70,53 @@ const insertItemsCotizacion = async (supabase: SupabaseClient, items: any[], cot
   if (error) throw error;
 };
 
+const optionalCotizacionColumns = [
+  "costos_indirectos",
+  "comisiones_pago",
+  "token_publico",
+  "token_expira_en",
+  "firma_imagen",
+  "firma_nombre",
+  "firma_fecha",
+  "firma_ip",
+  "comentario_cliente",
+  "cotizacion_padre_id",
+  "version",
+];
+
+const retryWithoutMissingCotizacionColumns = async (
+  supabase: SupabaseClient,
+  cotizacionData: Record<string, unknown>,
+) => {
+  let payload = { ...cotizacionData };
+
+  for (let attempt = 0; attempt <= optionalCotizacionColumns.length; attempt++) {
+    const result = await supabase
+      .from('cotizaciones')
+      .insert(payload)
+      .select()
+      .single();
+
+    if (!result.error) return result;
+
+    const message = String(result.error.message || "");
+    const missingColumn = optionalCotizacionColumns.find(column => message.includes(`'${column}'`) || message.includes(`"${column}"`) || message.includes(column));
+
+    if (!missingColumn || !(missingColumn in payload)) {
+      return result;
+    }
+
+    const { [missingColumn]: _removed, ...nextPayload } = payload;
+    payload = nextPayload;
+  }
+
+  return supabase
+    .from('cotizaciones')
+    .insert(payload)
+    .select()
+    .single();
+};
+
 app.get("/portal/:token", async (c) => {
   try {
     const token = c.req.param("token");
@@ -387,11 +434,7 @@ app.post("/cotizaciones", async (c) => {
       cotizacionData.folio = prefijo ? `${prefijo}-${año}-${numeroFormateado}` : `${año}-${numeroFormateado}`;
     }
 
-    const { data: nuevaCotizacion, error: insertError } = await supabase
-      .from('cotizaciones')
-      .insert(cotizacionData)
-      .select()
-      .single();
+    const { data: nuevaCotizacion, error: insertError } = await retryWithoutMissingCotizacionColumns(supabase, cotizacionData);
 
     if (insertError) throw insertError;
 
@@ -428,10 +471,24 @@ app.put("/cotizaciones/:id", async (c) => {
     const cotizacionData = { ...payload };
     delete cotizacionData.items;
 
-    const { error: updateError } = await supabase
+    let { error: updateError } = await supabase
       .from('cotizaciones')
       .update(cotizacionData)
       .eq('id', id);
+
+    if (updateError) {
+      const message = String(updateError.message || "");
+      const missingColumn = optionalCotizacionColumns.find(column => message.includes(`'${column}'`) || message.includes(`"${column}"`) || message.includes(column));
+
+      if (missingColumn && missingColumn in cotizacionData) {
+        const { [missingColumn]: _removed, ...legacyCotizacionData } = cotizacionData;
+        const retry = await supabase
+          .from('cotizaciones')
+          .update(legacyCotizacionData)
+          .eq('id', id);
+        updateError = retry.error;
+      }
+    }
 
     if (updateError) throw updateError;
 
