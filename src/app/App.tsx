@@ -60,6 +60,7 @@ export default function App() {
     ajustes,
     plantillas,
     loading,
+    serverError,
     useLocalData,
     crearCliente,
     actualizarCliente,
@@ -87,11 +88,13 @@ export default function App() {
   useEffect(() => {
     if (useLocalData) {
       toast.warning('Modo sin conexión', {
-        description: 'El servidor no está disponible. Los datos se guardarán localmente en tu navegador. Recarga la página cuando el servidor esté listo.',
+        description: serverError
+          ? `No se pudieron cargar datos: ${serverError}`
+          : 'El servidor no está disponible. Los datos se guardarán localmente en tu navegador. Recarga la página cuando el servidor esté listo.',
         duration: 8000,
       });
     }
-  }, [useLocalData]);
+  }, [useLocalData, serverError]);
 
   // Navegación
   const manejarNavegacion = (pagina: string) => {

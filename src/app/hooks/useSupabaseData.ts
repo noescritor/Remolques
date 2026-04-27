@@ -7,6 +7,15 @@ const getHeaders = (token?: string) => ({
   ...(token ? { 'Authorization': `Bearer ${token}` } : {})
 });
 
+const fetchJson = async (url: string, token?: string) => {
+  const response = await fetch(url, { headers: getHeaders(token) });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data?.error || data?.message || `Error ${response.status}`);
+  }
+  return data;
+};
+
 export function useSupabaseData(token?: string) {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -120,21 +129,23 @@ export function useSupabaseData(token?: string) {
     
     // Server is available, try to fetch
     try {
-      const headers = getHeaders(token);
       const [clientesData, productosData, cotizacionesData, pagosData, ajustesData, plantillasData] = await Promise.all([
-        fetch(`${BASE_URL}/clientes`, { headers }).then(r => r.json()),
-        fetch(`${BASE_URL}/productos`, { headers }).then(r => r.json()),
-        fetch(`${BASE_URL}/cotizaciones`, { headers }).then(r => r.json()),
-        fetch(`${BASE_URL}/pagos`, { headers }).then(r => r.json()),
-        fetch(`${BASE_URL}/ajustes`, { headers }).then(r => r.json()),
-        fetch(`${BASE_URL}/plantillas`, { headers }).then(r => r.json())
+        fetchJson(`${BASE_URL}/clientes`, token),
+        fetchJson(`${BASE_URL}/productos`, token),
+        fetchJson(`${BASE_URL}/cotizaciones`, token),
+        fetchJson(`${BASE_URL}/pagos`, token),
+        fetchJson(`${BASE_URL}/ajustes`, token),
+        fetchJson(`${BASE_URL}/plantillas`, token).catch(error => {
+          console.warn('No se pudieron cargar plantillas:', error);
+          return [];
+        })
       ]);
 
       setClientes(Array.isArray(clientesData) ? clientesData : []);
       setProductos(Array.isArray(productosData) ? productosData : []);
       setCotizaciones(Array.isArray(cotizacionesData) ? cotizacionesData : []);
       setPagos(Array.isArray(pagosData) ? pagosData : []);
-      setAjustes(ajustesData || ajustes);
+      setAjustes(ajustesData?.error ? ajustes : (ajustesData || ajustes));
       setPlantillas(Array.isArray(plantillasData) ? plantillasData : []);
       setUseLocalData(false);
       setServerError(null);
@@ -147,7 +158,8 @@ export function useSupabaseData(token?: string) {
       saveToLocalStorage('ajustes', ajustesData);
       
     } catch (error) {
-      setServerError('Failed to load from server');
+      const message = error instanceof Error ? error.message : 'Failed to load from server';
+      setServerError(message);
       setUseLocalData(true);
       
       // Fallback to localStorage
