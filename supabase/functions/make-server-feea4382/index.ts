@@ -23,6 +23,7 @@ app.use(
 // ─── Portal público (SIN autenticación) ───────────────────────────────────────
 
 app.get("/health", (c) => c.json({ ok: true }));
+app.get("/make-server-feea4382/health", (c) => c.json({ ok: true }));
 
 const getServiceClient = () => {
   const url = Deno.env.get("SUPABASE_URL") ?? "";
