@@ -861,7 +861,7 @@ app.post("/plantillas", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
     const body: Omit<Plantilla, "id" | "created_at"> = await c.req.json();
-    const payload = {
+    const payload: Record<string, unknown> = {
       nombre: body.nombre,
       descripcion: body.descripcion || null,
       items: body.items || [],
@@ -869,11 +869,24 @@ app.post("/plantillas", async (c) => {
       con_factura: body.con_factura ?? true,
       updated_at: new Date().toISOString(),
     };
-    const { data, error } = await supabase
+
+    let { data, error } = await supabase
       .from("plantillas_cotizacion")
       .insert(payload)
       .select()
       .single();
+
+    if (error && String(error.message || "").includes("con_factura")) {
+      const { con_factura, updated_at, ...legacyPayload } = payload;
+      const retry = await supabase
+        .from("plantillas_cotizacion")
+        .insert(legacyPayload)
+        .select()
+        .single();
+      data = retry.data;
+      error = retry.error;
+    }
+
     if (error) throw error;
     return c.json(data);
   } catch (error) {
@@ -900,12 +913,25 @@ app.put("/plantillas/:id", async (c) => {
     if (body.nota !== undefined) payload.nota = body.nota || null;
     if (body.con_factura !== undefined) payload.con_factura = body.con_factura;
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("plantillas_cotizacion")
       .update(payload)
       .eq("id", id)
       .select()
       .single();
+
+    if (error && String(error.message || "").includes("con_factura")) {
+      const { con_factura, updated_at, ...legacyPayload } = payload;
+      const retry = await supabase
+        .from("plantillas_cotizacion")
+        .update(legacyPayload)
+        .eq("id", id)
+        .select()
+        .single();
+      data = retry.data;
+      error = retry.error;
+    }
+
     if (error) throw error;
     return c.json(data);
   } catch (error) {
