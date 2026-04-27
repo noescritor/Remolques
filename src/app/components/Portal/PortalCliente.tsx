@@ -50,12 +50,15 @@ export function PortalCliente() {
       const resizeCanvas = () => {
         if (!canvasRef.current || !sigPadRef.current) return;
         const ratio = window.devicePixelRatio || 1;
-        canvasRef.current.width = canvasRef.current.offsetWidth * ratio;
-        canvasRef.current.height = canvasRef.current.offsetHeight * ratio;
+        const w = canvasRef.current.offsetWidth || 600;
+        const h = canvasRef.current.offsetHeight || 150;
+        canvasRef.current.width = w * ratio;
+        canvasRef.current.height = h * ratio;
         canvasRef.current.getContext('2d')?.scale(ratio, ratio);
         sigPadRef.current.clear();
       };
-      resizeCanvas();
+      // rAF ensures canvas is painted before reading dimensions
+      requestAnimationFrame(resizeCanvas);
     }
   }, [accion]);
 

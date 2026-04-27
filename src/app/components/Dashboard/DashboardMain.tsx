@@ -100,7 +100,7 @@ export function DashboardMain({
 
     // Cotizaciones recientes (últimas 5)
     const cotizacionesRecientes = [...cotizaciones]
-      .sort((a, b) => new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime())
+      .sort((a, b) => new Date((b as any).created_at || b.fecha || '').getTime() - new Date((a as any).created_at || a.fecha || '').getTime())
       .slice(0, 5);
 
     // Tendencia mensual (últimos 6 meses)
@@ -109,7 +109,7 @@ export function DashboardMain({
       const fecha = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const mes = fecha.toLocaleDateString('es-ES', { month: 'short' });
       const cotizacionesMes = cotizaciones.filter(c => {
-        const fechaCot = new Date(c.fechaCreacion || c.fecha || '');
+        const fechaCot = new Date((c as any).created_at || c.fecha || '');
         return fechaCot.getMonth() === fecha.getMonth() && 
                fechaCot.getFullYear() === fecha.getFullYear();
       });
@@ -120,7 +120,7 @@ export function DashboardMain({
         ingresos: cotizacionesMes.reduce((sum, cotizacion) => {
           const pagosCotizacion = pagos.filter(p => {
             if (p?.cotizacion_id !== cotizacion.id) return false;
-            const fechaPago = new Date(p.fecha_pago || p.fechaCreacion || '');
+            const fechaPago = new Date(p.fecha_pago || p.fecha || '');
             return fechaPago.getMonth() === fecha.getMonth() && 
                    fechaPago.getFullYear() === fecha.getFullYear();
           });
@@ -407,7 +407,7 @@ export function DashboardMain({
                         {formatearMoneda(cotizacion.total || 0)}
                       </p>
                       <p className="text-sm text-gray-500">
-                        {formatearFecha(cotizacion.fechaCreacion || cotizacion.fecha || '')}
+                        {formatearFecha((cotizacion as any).created_at || cotizacion.fecha || '')}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">

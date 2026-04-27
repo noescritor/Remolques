@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '../ui/alert';
 import { ArrowLeft, Plus, Trash2, FileDown, Copy, Save, UserPlus, Eye, BookTemplate, FileSpreadsheet, Sparkles, Loader2 } from 'lucide-react';
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, TRANSICIONES_ESTADO, CostosIndirectos, ComisionesPago, Plantilla } from '../../types';
 import { ExcelImportModal } from './ExcelImportModal';
+import { supabase } from '../../utils/supabase/client';
 import { calcularItemCotizacion, calcularTotalesCotizacion, formatearMoneda, calcularAnalisisCompleto, calcularUtilidadItem, calcularTotalesCotizacionServiciosAware, totalItemServicio } from '../../utils/calculations';
 import { ClienteModal } from '../Clientes/ClienteModal';
 import { AnalisisUtilidad } from './AnalisisUtilidad';
@@ -348,6 +349,12 @@ export function CotizacionEditor({
     setFormData(prev => ({ ...prev, items: [...prev.items, ...nuevos] }));
   };
 
+  const getIaHeaders = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY;
+    return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+  };
+
   const mejorarDescripcionConIA = async (itemId: string) => {
     const item = formData.items.find(i => i.id === itemId);
     if (!item?.descripcion.trim()) return;
@@ -356,7 +363,7 @@ export function CotizacionEditor({
       const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
       const response = await fetch(`${BASE_URL}/ia/mejorar-descripcion`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
+        headers: await getIaHeaders(),
         body: JSON.stringify({ descripcion: item.descripcion })
       });
       const data = await response.json();
@@ -377,7 +384,7 @@ export function CotizacionEditor({
       const cliente = clientes.find(c => c.id === formData.cliente_id);
       const response = await fetch(`${BASE_URL}/ia/generar-nota`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` },
+        headers: await getIaHeaders(),
         body: JSON.stringify({
           cliente: cliente?.nombre_razon_social,
           descripcion: formData.descripcion,

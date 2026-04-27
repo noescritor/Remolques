@@ -381,12 +381,42 @@ app.delete("/productos/:id", async (c) => {
   }
 });
 
+// Unwrap metadata fields stored in JSONB back to root-level item properties
+const unwrapItemMetadata = (item: any) => {
+  const meta = item.metadata || {};
+  return {
+    ...item,
+    numero_proyecto: item.numero_proyecto ?? meta.numero_proyecto ?? null,
+    incluir_setup: item.incluir_setup ?? meta.incluir_setup ?? null,
+    meses_cobrados: item.meses_cobrados ?? meta.meses_cobrados ?? null,
+    asientos_extra: item.asientos_extra ?? meta.asientos_extra ?? null,
+  };
+};
+
+// Get the highest sequential folio number across all non-version cotizaciones
+const getUltimaFolioNumber = async (supabase: SupabaseClient): Promise<number> => {
+  const { data } = await supabase
+    .from('cotizaciones')
+    .select('folio')
+    .not('folio', 'ilike', '%-V%');
+  if (!data || data.length === 0) return 0;
+  return data.reduce((max, c) => {
+    if (!c.folio) return max;
+    const n = parseInt(c.folio.split('-').pop() || '0');
+    return !isNaN(n) && n > max ? n : max;
+  }, 0);
+};
+
 app.get("/cotizaciones", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
     const { data, error } = await supabase.from('cotizaciones').select('*, items:items_cotizacion(*)');
     if (error) throw error;
-    return c.json(data);
+    const result = (data || []).map((cot: any) => ({
+      ...cot,
+      items: (cot.items || []).map(unwrapItemMetadata)
+    }));
+    return c.json(result);
   } catch (error) {
     console.log('Error fetching cotizaciones:', error);
     return c.json({ error: 'Error fetching cotizaciones' }, 500);
@@ -401,16 +431,8 @@ app.post("/cotizaciones", async (c) => {
     const cotizacionData = { ...payload };
     delete cotizacionData.items;
 
-    // Get latest folio and ajustes
-    const { data: latestCots } = await supabase
-      .from('cotizaciones')
-      .select('folio')
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    const ultimaFolio = latestCots && latestCots.length > 0
-      ? parseInt(latestCots[0].folio.split('-').pop() || '0')
-      : 0;
+    // Get highest sequential folio number (skips version folios like -V2)
+    const ultimaFolio = await getUltimaFolioNumber(supabase);
 
     const { data: ajustes } = await supabase.from('ajustes').select('data').single();
     const prefijo = ajustes?.data?.prefijo_folio || '';
@@ -546,16 +568,8 @@ app.post("/cotizaciones/:id/duplicate", async (c) => {
       return c.json({ error: 'Cotizacion not found' }, 404);
     }
 
-    // Get latest folio
-    const { data: latestCots } = await supabase
-      .from('cotizaciones')
-      .select('folio')
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    const ultimaFolio = latestCots && latestCots.length > 0
-      ? parseInt(latestCots[0].folio.split('-').pop() || '0')
-      : 0;
+    // Get highest sequential folio number
+    const ultimaFolio = await getUltimaFolioNumber(supabase);
 
     // Get ajustes
     const { data: ajustesWrapper } = await supabase.from('ajustes').select('data').single();

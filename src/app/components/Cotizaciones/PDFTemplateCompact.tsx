@@ -4,7 +4,7 @@ import { LogoIdeally } from './LogoIdeally';
 
 interface PDFTemplateCompactProps {
   cotizacion: Cotizacion;
-  cliente: Cliente;
+  cliente?: Cliente | null;
   productos: Producto[];
   ajustes: Ajustes;
 }
@@ -62,12 +62,12 @@ export function PDFTemplateCompact({ cotizacion, cliente, productos, ajustes }: 
         <div>
           <h2 className="text-lg font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1">FACTURAR A</h2>
           <div className="text-sm space-y-1">
-            <p className="font-semibold text-gray-900">{cliente.nombre_razon_social}</p>
-            {cliente.nombre_contacto && <p>Atención: {cliente.nombre_contacto}</p>}
-            {cliente.direccion && <p>{cliente.direccion}</p>}
-            {cliente.ciudad && <p>{cliente.ciudad}, {cliente.estado || ''}</p>}
-            {cliente.correo && <p className="text-blue-600">{cliente.correo}</p>}
-            {cliente.telefono && <p>{cliente.telefono}</p>}
+            <p className="font-semibold text-gray-900">{cliente?.nombre_razon_social || 'Cliente no disponible'}</p>
+            {cliente?.nombre_contacto && <p>Atención: {cliente.nombre_contacto}</p>}
+            {cliente?.direccion && <p>{cliente.direccion}</p>}
+            {cliente?.ciudad && <p>{cliente.ciudad}, {cliente.estado || ''}</p>}
+            {cliente?.correo && <p className="text-blue-600">{cliente.correo}</p>}
+            {cliente?.telefono && <p>{cliente.telefono}</p>}
           </div>
         </div>
 
