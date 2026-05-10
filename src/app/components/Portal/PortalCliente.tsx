@@ -7,7 +7,7 @@ import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { CheckCircle, XCircle, MessageSquare, Loader2, AlertCircle, PenTool, RotateCcw } from 'lucide-react';
+import { CheckCircle, XCircle, MessageSquare, Loader2, AlertCircle, PenTool, RotateCcw, Download } from 'lucide-react';
 import { LogoIdeally } from '../Cotizaciones/LogoIdeally';
 import { formatearMoneda } from '../../utils/calculations';
 
@@ -168,7 +168,7 @@ export function PortalCliente() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div id="portal-content" className="max-w-3xl mx-auto space-y-6">
 
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-700 to-purple-900 rounded-xl p-6 text-white flex items-center gap-4">
@@ -177,9 +177,18 @@ export function PortalCliente() {
             <h1 className="text-2xl font-bold">IDEALLY</h1>
             <p className="text-purple-200 text-sm">Arte · Diseño · Ingeniería</p>
           </div>
-          <div className="ml-auto text-right">
-            <div className="text-xs text-purple-300">Folio</div>
-            <div className="font-mono font-bold text-lg">{cot.folio}</div>
+          <div className="ml-auto text-right flex items-center gap-3">
+            <div>
+              <div className="text-xs text-purple-300">Folio</div>
+              <div className="font-mono font-bold text-lg">{cot.folio}</div>
+            </div>
+            <button
+              onClick={() => window.print()}
+              className="print:hidden bg-white/20 hover:bg-white/30 transition-colors rounded-lg p-2.5"
+              title="Descargar / Imprimir PDF"
+            >
+              <Download className="h-5 w-5" />
+            </button>
           </div>
         </div>
 

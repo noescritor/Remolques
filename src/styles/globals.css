@@ -283,6 +283,34 @@ html {
   #pdf-content tbody tr {
     page-break-inside: avoid !important;
   }
+
+  /* ─── Portal del Cliente: estilos de impresión ─── */
+  #portal-content,
+  #portal-content * {
+    visibility: visible !important;
+  }
+
+  #portal-content {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 1rem !important;
+    background: white !important;
+  }
+
+  /* Ocultar botones y secciones interactivas al imprimir */
+  .print\\:hidden,
+  #portal-content button,
+  #portal-content [data-print-hide] {
+    display: none !important;
+  }
+
+  #portal-content .bg-gradient-to-r {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }
 
 

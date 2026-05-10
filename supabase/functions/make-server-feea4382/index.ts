@@ -297,9 +297,9 @@ app.get("/clientes", async (c) => {
     const { data, error } = await supabase.from('clientes').select('*');
     if (error) throw error;
     return c.json(data);
-  } catch (error) {
+  } catch (error: any) {
     console.log('Error fetching clientes:', error);
-    return c.json({ error: 'Error fetching clientes' }, 500);
+    return c.json({ error: 'Error fetching clientes', details: error?.message || String(error), code: error?.code }, 500);
   }
 });
 
