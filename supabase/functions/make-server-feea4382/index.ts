@@ -269,7 +269,9 @@ const authMiddleware = async (c: any, next: any) => {
   }
 
   // Extraer organización (Saas Phase 2)
-  const { data: orgData } = await supabase
+  // Usamos el Service Client para bypasear RLS (evita dependencia circular)
+  const adminClient = getServiceClient();
+  const { data: orgData } = await adminClient
     .from('perfiles_organizacion')
     .select('organizacion_id')
     .eq('usuario_id', user.id)
