@@ -31,8 +31,9 @@ const getServiceClient = () => {
   return createClient(url, key);
 };
 
-const toItemCotizacionRow = (item: any, cotizacionId: string) => ({
+const toItemCotizacionRow = (item: any, cotizacionId: string, orgId?: string) => ({
   cotizacion_id: cotizacionId,
+  ...(orgId ? { organizacion_id: orgId } : {}),
   producto_id: item.producto_id || null,
   posicion: item.posicion,
   cantidad: item.cantidad,
@@ -50,15 +51,15 @@ const toItemCotizacionRow = (item: any, cotizacionId: string) => ({
   },
 });
 
-const toLegacyItemCotizacionRow = (item: any, cotizacionId: string) => {
-  const { metadata, ...row } = toItemCotizacionRow(item, cotizacionId);
+const toLegacyItemCotizacionRow = (item: any, cotizacionId: string, orgId?: string) => {
+  const { metadata, ...row } = toItemCotizacionRow(item, cotizacionId, orgId);
   return row;
 };
 
-const insertItemsCotizacion = async (supabase: SupabaseClient, items: any[], cotizacionId: string) => {
+const insertItemsCotizacion = async (supabase: SupabaseClient, items: any[], cotizacionId: string, orgId?: string) => {
   if (items.length === 0) return;
 
-  const itemsToInsert = items.map((item: any) => toItemCotizacionRow(item, cotizacionId));
+  const itemsToInsert = items.map((item: any) => toItemCotizacionRow(item, cotizacionId, orgId));
   let { error } = await supabase.from('items_cotizacion').insert(itemsToInsert);
 
   if (error && String(error.message || "").includes("metadata")) {
@@ -267,6 +268,20 @@ const authMiddleware = async (c: any, next: any) => {
     return c.json({ error: "No autorizado. Token inválido." }, 401);
   }
 
+  // Extraer organización (Saas Phase 2)
+  const { data: orgData } = await supabase
+    .from('perfiles_organizacion')
+    .select('organizacion_id')
+    .eq('usuario_id', user.id)
+    .limit(1)
+    .maybeSingle();
+
+  if (orgData?.organizacion_id) {
+    c.set("organizacionId", orgData.organizacion_id);
+  } else {
+    return c.json({ error: "El usuario no pertenece a ninguna organización." }, 403);
+  }
+
   c.set("user", user);
   c.set("supabase", supabase);
   await next();
@@ -289,7 +304,8 @@ app.get("/clientes", async (c) => {
 app.post("/clientes", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
-    const cliente: Omit<Cliente, 'id'> = await c.req.json();
+    const cliente: any = await c.req.json();
+    cliente.organizacion_id = c.get("organizacionId");
 
     const { data, error } = await supabase.from('clientes').insert(cliente).select().single();
     if (error) throw error;
@@ -344,7 +360,8 @@ app.get("/productos", async (c) => {
 app.post("/productos", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
-    const producto: Omit<Producto, 'id'> = await c.req.json();
+    const producto: any = await c.req.json();
+    producto.organizacion_id = c.get("organizacionId");
 
     const { data, error } = await supabase.from('productos').insert(producto).select().single();
     if (error) throw error;
@@ -431,7 +448,8 @@ app.post("/cotizaciones", async (c) => {
     const supabase = c.get("supabase") as SupabaseClient;
     const payload = await c.req.json();
     const items = payload.items || [];
-    const cotizacionData = { ...payload };
+    const cotizacionData: any = { ...payload };
+    cotizacionData.organizacion_id = c.get("organizacionId");
     delete cotizacionData.items;
 
     // Get highest sequential folio number (skips version folios like -V2)
@@ -470,7 +488,7 @@ app.post("/cotizaciones", async (c) => {
 
     if (items.length > 0) {
       try {
-        await insertItemsCotizacion(supabase, items, nuevaCotizacion.id);
+        await insertItemsCotizacion(supabase, items, nuevaCotizacion.id, c.get("organizacionId"));
       } catch (itemsError) {
         await supabase.from('cotizaciones').delete().eq('id', nuevaCotizacion.id);
         throw itemsError;
@@ -527,7 +545,7 @@ app.put("/cotizaciones/:id", async (c) => {
       // Reemplazo completo de items: borrar existentes y crear nuevos
       await supabase.from('items_cotizacion').delete().eq('cotizacion_id', id);
       if (items.length > 0) {
-        await insertItemsCotizacion(supabase, items, id);
+        await insertItemsCotizacion(supabase, items, id, c.get("organizacionId"));
       }
     }
 
@@ -587,11 +605,12 @@ app.post("/cotizaciones/:id/duplicate", async (c) => {
     const año = new Date().getFullYear();
     const numeroFormateado = (ultimaFolio + 1).toString().padStart(5, '0');
 
-    const cotizacionDuplicadaPayload = {
+    const cotizacionDuplicadaPayload: any = {
       ...cotizacionExistente,
       folio: prefijo ? `${prefijo}-${año}-${numeroFormateado}` : `${año}-${numeroFormateado}`,
       estado: 'Borrador',
-      fecha: new Date().toISOString().split('T')[0]
+      fecha: new Date().toISOString().split('T')[0],
+      organizacion_id: c.get("organizacionId")
     };
 
     delete cotizacionDuplicadaPayload.id;
@@ -611,7 +630,7 @@ app.post("/cotizaciones/:id/duplicate", async (c) => {
     if (items && items.length > 0) {
       const itemsToInsert = items.map((item: any) => {
         const { id: itemId, cotizacion_id, ...itemData } = item;
-        return { ...itemData, cotizacion_id: nuevaCotizacion.id };
+        return { ...itemData, cotizacion_id: nuevaCotizacion.id, organizacion_id: c.get("organizacionId") };
       });
       await supabase.from('items_cotizacion').insert(itemsToInsert);
     }
@@ -657,7 +676,8 @@ app.get("/pagos/cotizacion/:cotizacionId", async (c) => {
 app.post("/pagos", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
-    const pago: Omit<Pago, 'id'> = await c.req.json();
+    const pago: any = await c.req.json();
+    pago.organizacion_id = c.get("organizacionId");
 
     const { data: nuevoPago, error } = await supabase.from('pagos').insert(pago).select().single();
     if (error) throw error;
@@ -681,7 +701,8 @@ app.post("/pagos", async (c) => {
 app.get("/ajustes", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
-    const { data, error } = await supabase.from('ajustes').select('data').eq('id', '00000000-0000-0000-0000-000000000001').single();
+    const orgId = c.get("organizacionId");
+    const { data, error } = await supabase.from('ajustes').select('data').eq('id', orgId).single();
     if (error) {
       // Return defaults if none
       return c.json({
@@ -704,11 +725,12 @@ app.put("/ajustes", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
     const updates: Partial<Ajustes> = await c.req.json();
+    const orgId = c.get("organizacionId");
 
-    const { data: currentAjustes } = await supabase.from('ajustes').select('data').eq('id', '00000000-0000-0000-0000-000000000001').single();
+    const { data: currentAjustes } = await supabase.from('ajustes').select('data').eq('id', orgId).single();
     const ajustesActualizados = { ...(currentAjustes?.data || {}), ...updates };
 
-    const { error } = await supabase.from('ajustes').upsert({ id: '00000000-0000-0000-0000-000000000001', data: ajustesActualizados });
+    const { error } = await supabase.from('ajustes').upsert({ id: orgId, data: ajustesActualizados });
     if (error) throw error;
 
     return c.json(ajustesActualizados);
@@ -742,7 +764,8 @@ app.post("/enviar-email", async (c) => {
     }
 
     const { data: cliente } = await supabase.from('clientes').select('*').eq('id', cotizacion.cliente_id).single();
-    const { data: ajustesData } = await supabase.from('ajustes').select('data').eq('id', '00000000-0000-0000-0000-000000000001').single();
+    const orgId = c.get("organizacionId");
+    const { data: ajustesData } = await supabase.from('ajustes').select('data').eq('id', orgId).single();
     const ajustes = ajustesData?.data || {};
 
     const emailHtml = `
@@ -985,6 +1008,7 @@ app.post("/plantillas", async (c) => {
       nota: body.nota || null,
       con_factura: body.con_factura ?? true,
       updated_at: new Date().toISOString(),
+      organizacion_id: c.get("organizacionId"),
     };
 
     let { data, error } = await supabase
@@ -1087,7 +1111,8 @@ app.post("/productos/:id/historial-precio", async (c) => {
     const { error } = await supabase.from("historial_precios").insert({
       producto_id: productoId,
       precio_anterior,
-      precio_nuevo
+      precio_nuevo,
+      organizacion_id: c.get("organizacionId")
     });
     if (error) throw error;
     return c.json({ success: true });
@@ -1112,6 +1137,108 @@ app.get("/productos/:id/historial-precios", async (c) => {
   } catch (error) {
     console.log("Error fetching historial precios:", error);
     return c.json({ error: "Error fetching historial" }, 500);
+  }
+});
+
+// ─── Gestión de Equipo e Invitaciones (SaaS) ────────────────────────────────
+
+app.get("/equipo", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+
+    // Obtenemos los perfiles
+    const { data: perfiles, error } = await supabase
+      .from('perfiles_organizacion')
+      .select('*')
+      .eq('organizacion_id', orgId);
+    
+    if (error) throw error;
+
+    // Necesitamos los emails, que están en auth.users (solo accesible con service role)
+    const adminSupabase = getServiceClient();
+    
+    // Obtenemos todos los usuarios para mapear el email
+    const { data: authUsers, error: authError } = await adminSupabase.auth.admin.listUsers();
+    
+    if (authError) throw authError;
+
+    const equipoConEmails = perfiles.map(p => {
+      const user = authUsers.users.find(u => u.id === p.usuario_id);
+      return {
+        ...p,
+        email: user?.email || 'Usuario Desconocido'
+      };
+    });
+
+    return c.json(equipoConEmails);
+  } catch (error) {
+    console.log("Error fetching equipo:", error);
+    return c.json({ error: "Error fetching equipo" }, 500);
+  }
+});
+
+app.get("/invitaciones", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+
+    const { data, error } = await supabase
+      .from('invitaciones_equipo')
+      .select('*')
+      .eq('organizacion_id', orgId);
+
+    if (error) throw error;
+    return c.json(data);
+  } catch (error) {
+    console.log("Error fetching invitaciones:", error);
+    return c.json({ error: "Error fetching invitaciones" }, 500);
+  }
+});
+
+app.post("/invitaciones", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const { email, rol } = await c.req.json();
+
+    if (!email || !rol) return c.json({ error: "Email y rol son requeridos" }, 400);
+
+    const { data, error } = await supabase
+      .from('invitaciones_equipo')
+      .insert({
+        organizacion_id: orgId,
+        email: email.toLowerCase(),
+        rol,
+        invitado_por: user.id
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return c.json(data);
+  } catch (error) {
+    console.log("Error creating invitacion:", error);
+    return c.json({ error: "Error creating invitacion" }, 500);
+  }
+});
+
+app.delete("/invitaciones/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const id = c.req.param("id");
+
+    const { error } = await supabase
+      .from('invitaciones_equipo')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return c.json({ success: true });
+  } catch (error) {
+    console.log("Error deleting invitacion:", error);
+    return c.json({ error: "Error deleting invitacion" }, 500);
   }
 });
 

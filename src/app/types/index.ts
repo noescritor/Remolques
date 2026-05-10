@@ -173,3 +173,23 @@ export const TRANSICIONES_ESTADO: Record<EstadoCotizacion, EstadoCotizacion[]> =
   'Cancelada': [],
   'Pagada': []
 };
+
+// ─── Gestión de Equipo SaaS ───────────────────────────────────────────
+
+export interface PerfilOrganizacion {
+  id: string;
+  organizacion_id: string;
+  usuario_id: string;
+  rol: 'propietario' | 'admin' | 'usuario';
+  created_at: string;
+  email?: string; // Provisto por la Edge Function
+}
+
+export interface InvitacionEquipo {
+  id: string;
+  organizacion_id: string;
+  email: string;
+  rol: 'propietario' | 'admin' | 'usuario';
+  invitado_por?: string;
+  created_at: string;
+}

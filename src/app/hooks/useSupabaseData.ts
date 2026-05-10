@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla } from '../types';
+import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo } from '../types';
 const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
 
 const getHeaders = (token?: string) => ({
@@ -43,6 +43,8 @@ export function useSupabaseData(token?: string) {
   const [cotizaciones, setCotizaciones] = useState<Cotizacion[]>([]);
   const [pagos, setPagos] = useState<Pago[]>([]);
   const [plantillas, setPlantillas] = useState<Plantilla[]>([]);
+  const [equipo, setEquipo] = useState<PerfilOrganizacion[]>([]);
+  const [invitaciones, setInvitaciones] = useState<InvitacionEquipo[]>([]);
   const [ajustes, setAjustes] = useState<Ajustes>({
     iva_por_defecto: 0.16,
     validez_por_defecto: 30,
@@ -159,6 +161,14 @@ export function useSupabaseData(token?: string) {
         console.warn('No se pudieron cargar plantillas:', error);
         return [];
       });
+      const equipoData = await fetchJson('equipo', `${BASE_URL}/equipo`, token).catch(error => {
+        console.warn('No se pudo cargar equipo:', error);
+        return [];
+      });
+      const invitacionesData = await fetchJson('invitaciones', `${BASE_URL}/invitaciones`, token).catch(error => {
+        console.warn('No se pudieron cargar invitaciones:', error);
+        return [];
+      });
 
       setClientes(Array.isArray(clientesData) ? clientesData : []);
       setProductos(Array.isArray(productosData) ? productosData : []);
@@ -166,6 +176,8 @@ export function useSupabaseData(token?: string) {
       setPagos(Array.isArray(pagosData) ? pagosData : []);
       setAjustes(ajustesData?.error ? ajustes : (ajustesData || ajustes));
       setPlantillas(Array.isArray(plantillasData) ? plantillasData : []);
+      setEquipo(Array.isArray(equipoData) ? equipoData : []);
+      setInvitaciones(Array.isArray(invitacionesData) ? invitacionesData : []);
       setUseLocalData(false);
       setServerError(null);
 
@@ -668,6 +680,24 @@ export function useSupabaseData(token?: string) {
     });
   };
 
+  // ─── Equipo e Invitaciones ────────────────────────────────────────────────
+
+  const crearInvitacion = async (email: string, rol: 'admin' | 'usuario') => {
+    const resultado = await sendJson('crear invitación', `${BASE_URL}/invitaciones`, token, {
+      method: 'POST',
+      body: JSON.stringify({ email, rol })
+    });
+    setInvitaciones(prev => [...prev, resultado]);
+    return resultado;
+  };
+
+  const eliminarInvitacion = async (id: string) => {
+    await sendJson('eliminar invitación', `${BASE_URL}/invitaciones/${id}`, token, {
+      method: 'DELETE',
+    });
+    setInvitaciones(prev => prev.filter(i => i.id !== id));
+  };
+
   // ─────────────────────────────────────────────────────────────────────────────
 
   // Función para exportar PDF
@@ -697,6 +727,8 @@ export function useSupabaseData(token?: string) {
     pagos,
     ajustes,
     plantillas,
+    equipo,
+    invitaciones,
     loading,
     serverError,
     useLocalData,
@@ -726,6 +758,9 @@ export function useSupabaseData(token?: string) {
     actualizarPlantilla,
     eliminarPlantilla,
     guardarComoPlantilla,
+    // Equipo e Invitaciones
+    crearInvitacion,
+    eliminarInvitacion,
 
     // Eventos
     onExportPDF,

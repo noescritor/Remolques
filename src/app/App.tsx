@@ -11,6 +11,7 @@ import { ClientesList } from './components/Clientes/ClientesList';
 import { ProductosList } from './components/Productos/ProductosList';
 import { AjustesForm } from './components/Ajustes/AjustesForm';
 import { PlantillasList } from './components/Plantillas/PlantillasList';
+import { EquipoManager } from './components/Equipo/EquipoManager';
 import { Toaster } from './components/ui/sonner';
 import { useSupabaseData } from './hooks/useSupabaseData';
 import { toast } from "sonner";
@@ -339,6 +340,7 @@ export default function App() {
     if (path.startsWith('/productos')) return 'productos';
     if (path.startsWith('/ajustes')) return 'ajustes';
     if (path.startsWith('/plantillas')) return 'plantillas';
+    if (path.startsWith('/equipo')) return 'equipo';
     return 'dashboard';
   };
 
@@ -466,6 +468,10 @@ export default function App() {
             ajustes={ajustes}
             onActualizarAjustes={manejarActualizarAjustes}
           />
+        } />
+
+        <Route path="/equipo" element={
+          <EquipoManager token={session?.access_token || ''} />
         } />
         
         <Route path="*" element={<Navigate to="/" replace />} />
