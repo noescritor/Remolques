@@ -53,6 +53,7 @@ export function CotizacionEditor({
 }: CotizacionEditorProps) {
   const [formData, setFormData] = useState({
     cliente_id: '',
+    contacto_id: '' as string | undefined,
     fecha: new Date().toISOString().split('T')[0],
     validez_dias: ajustes.validez_por_defecto,
     estado: 'Borrador' as EstadoCotizacion,
@@ -94,6 +95,7 @@ export function CotizacionEditor({
     if (cotizacion) {
       setFormData({
         cliente_id: cotizacion.cliente_id,
+        contacto_id: cotizacion.contacto_id || '',
         fecha: cotizacion.fecha,
         validez_dias: cotizacion.validez_dias,
         estado: cotizacion.estado,
@@ -681,12 +683,47 @@ export function CotizacionEditor({
                     size="sm" 
                     className="mt-1 h-6 px-2 text-xs"
                     onClick={() => {
-                      setFormData(prev => ({ ...prev, cliente_id: '' }));
+                      setFormData(prev => ({ ...prev, cliente_id: '', contacto_id: '' }));
                       setBusquedaCliente('');
                     }}
                   >
                     Cambiar cliente
                   </Button>
+
+                  {/* Selector de Contacto */}
+                  {clienteSeleccionado.contactos && clienteSeleccionado.contactos.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-blue-200">
+                      <Label className="text-xs text-blue-700 font-medium">¿Quién solicita esta cotización?</Label>
+                      <Select
+                        value={formData.contacto_id || '_none'}
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, contacto_id: value === '_none' ? '' : value }))}
+                      >
+                        <SelectTrigger className="mt-1 bg-white text-sm h-9">
+                          <SelectValue placeholder="Seleccionar contacto..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="_none">— Sin contacto específico —</SelectItem>
+                          {clienteSeleccionado.contactos.map((contacto) => (
+                            <SelectItem key={contacto.id} value={contacto.id}>
+                              <span className="font-medium">{contacto.nombre}</span>
+                              {contacto.departamento && <span className="text-gray-500"> · {contacto.departamento}</span>}
+                              {contacto.puesto && <span className="text-gray-400"> ({contacto.puesto})</span>}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {formData.contacto_id && (() => {
+                        const c = clienteSeleccionado.contactos?.find(x => x.id === formData.contacto_id);
+                        if (!c) return null;
+                        return (
+                          <div className="mt-1.5 text-xs text-gray-500 flex gap-3">
+                            {c.correo && <span>📧 {c.correo}</span>}
+                            {c.telefono && <span>📱 {c.telefono}</span>}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

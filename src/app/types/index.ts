@@ -86,6 +86,7 @@ export interface Cotizacion {
   id: string;
   folio: string;
   cliente_id: string;
+  contacto_id?: string;
   cliente?: Cliente;
   fecha: string;
   validez_dias: number;
