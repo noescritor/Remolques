@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import SignaturePad from 'signature_pad';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -17,6 +17,7 @@ type Accion = 'idle' | 'aprobar' | 'rechazar' | 'cambios' | 'done';
 
 export function PortalCliente() {
   const { token } = useParams<{ token: string }>();
+  const navigate = useNavigate();
   const [cotizacion, setCotizacion] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -183,9 +184,9 @@ export function PortalCliente() {
               <div className="font-mono font-bold text-lg">{cot.folio}</div>
             </div>
             <button
-              onClick={() => window.print()}
+              onClick={() => navigate(`/cotizacion/${token}/pdf`)}
               className="print:hidden bg-white/20 hover:bg-white/30 transition-colors rounded-lg p-2.5"
-              title="Descargar / Imprimir PDF"
+              title="Descargar cotización en PDF"
             >
               <Download className="h-5 w-5" />
             </button>

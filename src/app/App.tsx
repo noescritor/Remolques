@@ -6,6 +6,7 @@ import { CotizacionEditor } from './components/Cotizaciones/CotizacionEditor';
 import { CotizacionDetalle } from './components/Cotizaciones/CotizacionDetalle';
 import { PDFFullPageCompact } from './components/Cotizaciones/PDFFullPageCompact';
 import { PortalCliente } from './components/Portal/PortalCliente';
+import { PortalPDF } from './components/Portal/PortalPDF';
 
 import { ClientesList } from './components/Clientes/ClientesList';
 import { ProductosList } from './components/Productos/ProductosList';
@@ -494,6 +495,7 @@ export default function App() {
       <>
         <Routes>
           <Route path="/cotizacion/:token" element={<PortalCliente />} />
+          <Route path="/cotizacion/:token/pdf" element={<PortalPDF />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Toaster />

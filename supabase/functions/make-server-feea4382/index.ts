@@ -134,7 +134,13 @@ app.get("/portal/:token", async (c) => {
     if (data.token_expira_en && new Date(data.token_expira_en) < new Date()) {
       return c.json({ error: "Este link ha expirado." }, 410);
     }
-    return c.json(data);
+    // Incluir ajustes de empresa para el PDF público
+    const { data: ajustesRow } = await supabase
+      .from("ajustes")
+      .select("data")
+      .eq("id", data.organizacion_id)
+      .single();
+    return c.json({ ...data, ajustes: ajustesRow?.data || {} });
   } catch (e) {
     return c.json({ error: "Error interno" }, 500);
   }
