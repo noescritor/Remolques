@@ -456,58 +456,58 @@ export function CotizacionEditor({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={onVolver}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Button variant="outline" size="sm" onClick={onVolver}>
+            <ArrowLeft className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">{esNueva ? 'Volver' : 'Volver'}</span>
           </Button>
-          <h1>{esNueva ? 'Nueva Cotización' : `Cotización ${cotizacion?.folio}`}</h1>
+          <h1 className="text-sm sm:text-base font-semibold truncate">{esNueva ? 'Nueva Cotización' : `${cotizacion?.folio}`}</h1>
         </div>
         
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-1.5 sm:gap-2 flex-wrap">
           {plantillas.length > 0 && esNueva && (
-            <Button variant="outline" onClick={() => setShowPlantillasModal(true)}>
-              <BookTemplate className="mr-2 h-4 w-4" />
-              Usar Plantilla
+            <Button variant="outline" size="sm" onClick={() => setShowPlantillasModal(true)} title="Usar Plantilla">
+              <BookTemplate className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Plantilla</span>
             </Button>
           )}
 
           {formData.items.length > 0 && onGuardarComoPlantilla && (
-            <Button variant="outline" onClick={() => setShowGuardarPlantillaModal(true)}>
-              <BookTemplate className="mr-2 h-4 w-4" />
-              Guardar como Plantilla
+            <Button variant="outline" size="sm" onClick={() => setShowGuardarPlantillaModal(true)} title="Guardar como Plantilla">
+              <BookTemplate className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Guardar Plantilla</span>
             </Button>
           )}
 
-          <Button variant="outline" onClick={() => setShowExcelModal(true)}>
-            <FileSpreadsheet className="mr-2 h-4 w-4" />
-            Importar Excel
+          <Button variant="outline" size="sm" onClick={() => setShowExcelModal(true)} title="Importar Excel">
+            <FileSpreadsheet className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Excel</span>
           </Button>
 
-          <Button onClick={manejarGuardar}>
-            <Save className="mr-2 h-4 w-4" />
-            Guardar
+          <Button size="sm" onClick={manejarGuardar} title="Guardar">
+            <Save className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Guardar</span>
           </Button>
 
           {cotizacion && (
             <>
               {onVerPDF && (
-                <Button variant="outline" onClick={() => onVerPDF(cotizacion)}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  Vista Previa PDF
+                <Button variant="outline" size="sm" onClick={() => onVerPDF(cotizacion)} title="Vista Previa PDF">
+                  <Eye className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">PDF</span>
                 </Button>
               )}
               
-              <Button variant="outline" onClick={() => onExportPDF(cotizacion)}>
-                <FileDown className="mr-2 h-4 w-4" />
-                Exportar PDF
+              <Button variant="outline" size="sm" onClick={() => onExportPDF(cotizacion)} title="Exportar PDF">
+                <FileDown className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Exportar</span>
               </Button>
               
               {onDuplicar && (
-                <Button variant="outline" onClick={() => onDuplicar(cotizacion.id)}>
-                  <Copy className="mr-2 h-4 w-4" />
-                  Duplicar
+                <Button variant="outline" size="sm" onClick={() => onDuplicar(cotizacion.id)} title="Duplicar">
+                  <Copy className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Duplicar</span>
                 </Button>
               )}
             </>
@@ -782,7 +782,57 @@ export function CotizacionEditor({
               No hay conceptos agregados. Busca un producto arriba o haz clic en "Concepto Manual" para comenzar.
             </div>
           ) : (
-            <Table>
+            <>
+              {/* ─── MOBILE: Card-based layout ─── */}
+              <div className="md:hidden space-y-3">
+                {formData.items.map((item) => {
+                  if (!item) return null;
+                  const producto = item.producto_id ? productosIdx[item.producto_id] : null;
+                  const esServicio = producto?.tipo === 'servicio';
+                  let totalCalculado = { subtotal: 0, iva: 0, total: 0, costoTotal: 0 };
+                  if (esServicio && producto?.servicio) {
+                    totalCalculado = totalItemServicio(item, producto, formData.con_factura ? ajustes.iva_por_defecto : 0);
+                  } else {
+                    const base = (item.cantidad || 0) * (item.precio_unitario || 0);
+                    const iva = formData.con_factura ? base * ajustes.iva_por_defecto : 0;
+                    totalCalculado = { subtotal: base, iva, total: base + iva, costoTotal: (item.cantidad || 0) * (item.costo_unitario || 0) };
+                  }
+                  return (
+                    <div key={item.id} className="border rounded-lg p-3 bg-white space-y-2">
+                      <div className="flex justify-between items-start">
+                        <span className="text-xs text-gray-400 font-mono">#{item.posicion}</span>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => duplicarItem(item.id)}><Copy className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-500" onClick={() => eliminarItem(item.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                        </div>
+                      </div>
+                      <Input value={item.descripcion} onChange={(e) => actualizarItem(item.id, { descripcion: e.target.value })} placeholder="Descripción" className="text-sm" />
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <Label className="text-xs text-gray-500">Cant.</Label>
+                          <Input type="number" value={item.cantidad} onChange={(e) => actualizarItem(item.id, { cantidad: parseFloat(e.target.value) || 0 })} className="text-sm" min="0" step="0.01" />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-gray-500">Precio</Label>
+                          {esServicio ? (
+                            <div className="text-sm text-gray-500 py-1.5">{formatearMoneda(totalCalculado.subtotal)}</div>
+                          ) : (
+                            <Input type="number" value={item.precio_unitario || 0} onChange={(e) => actualizarItem(item.id, { precio_unitario: parseFloat(e.target.value) || 0 })} className="text-sm" min="0" step="0.01" />
+                          )}
+                        </div>
+                        <div>
+                          <Label className="text-xs text-gray-500">Total</Label>
+                          <div className="text-sm font-semibold py-1.5">{formatearMoneda(totalCalculado.total)}</div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* ─── DESKTOP: Table layout ─── */}
+              <div className="hidden md:block">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-16">Pos</TableHead>
@@ -805,7 +855,6 @@ export function CotizacionEditor({
                   const producto = item.producto_id ? productosIdx[item.producto_id] : null;
                   const esServicio = producto?.tipo === 'servicio';
                   
-                  // Calcular totales específicos para servicios
                   let totalCalculado = { subtotal: 0, iva: 0, total: 0, costoTotal: 0 };
                   if (esServicio && producto?.servicio) {
                     totalCalculado = totalItemServicio(item, producto, formData.con_factura ? ajustes.iva_por_defecto : 0);
@@ -1006,6 +1055,8 @@ export function CotizacionEditor({
                 })}
               </TableBody>
             </Table>
+            </div>
+            </>
           )}
         </CardContent>
       </Card>

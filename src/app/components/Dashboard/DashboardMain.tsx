@@ -267,7 +267,7 @@ export function DashboardMain({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-64">
+                <div className="h-48 sm:h-64">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -314,7 +314,7 @@ export function DashboardMain({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-64">
+                <div className="h-48 sm:h-64">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={estadisticas.tendenciaMensual}>
                       <CartesianGrid strokeDasharray="3 3" />
