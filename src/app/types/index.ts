@@ -1,3 +1,12 @@
+export interface ContactoCliente {
+  id: string;
+  nombre: string;
+  departamento?: string;
+  puesto?: string;
+  telefono?: string;
+  correo?: string;
+}
+
 export interface Cliente {
   id: string;
   nombre_razon_social: string;
@@ -10,6 +19,7 @@ export interface Cliente {
   codigo_postal?: string;
   pais: string;
   tipo_pago_preferido: 'Transferencia' | 'Tarjeta' | 'Efectivo' | 'PayPal' | 'Crédito 30 días';
+  contactos?: ContactoCliente[];
 }
 
 export type ProductoTipo = 'bien' | 'servicio';
