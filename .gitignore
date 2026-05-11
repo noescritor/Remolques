@@ -35,3 +35,7 @@ easypanel-upload
 
 # Supabase local metadata
 supabase/.temp
+
+# Claude config
+.claude/
+
