@@ -140,7 +140,12 @@ app.get("/portal/:token", async (c) => {
       .select("data")
       .eq("id", data.organizacion_id)
       .single();
-    return c.json({ ...data, ajustes: ajustesRow?.data || {} });
+    // Incluir productos de la organización para el template Moodboard
+    const { data: productosData } = await supabase
+      .from("productos")
+      .select("*")
+      .eq("organizacion_id", data.organizacion_id);
+    return c.json({ ...data, ajustes: ajustesRow?.data || {}, productos: productosData || [] });
   } catch (e) {
     return c.json({ error: "Error interno" }, 500);
   }
