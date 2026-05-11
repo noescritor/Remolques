@@ -507,6 +507,29 @@ export default function App() {
     return <Login />;
   }
 
+  // ── Ruta PDF standalone (fuera del layout) ──
+  if (location.pathname.match(/^\/cotizaciones\/[^/]+\/pdf$/)) {
+    const pdfId = location.pathname.split('/')[2];
+    const cotizacion = cotizaciones.find((c: any) => c.id === pdfId);
+    if (!cotizacion) {
+      return <div className="p-8 text-gray-500">Cotización no encontrada</div>;
+    }
+    const cliente = clientes.find((c: any) => c.id === cotizacion.cliente_id);
+    return (
+      <>
+        <PDFFullPageMoodboard
+          cotizacion={cotizacion}
+          cliente={cliente}
+          productos={productos}
+          ajustes={ajustes}
+          onVolver={manejarVolverACotizaciones}
+          onExportPDF={manejarExportarPDF}
+        />
+        <Toaster />
+      </>
+    );
+  }
+
   return (
     <>
       <ModernLayout
