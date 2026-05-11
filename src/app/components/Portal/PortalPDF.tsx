@@ -6,6 +6,18 @@ import { ArrowLeft, Download, Loader2, AlertCircle } from 'lucide-react';
 
 const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
 
+// CSS inyectado una sola vez para print media
+const PRINT_STYLES = `
+  @media print {
+    @page { size: A4 portrait; margin: 0 !important; }
+    html, body, #root { margin: 0 !important; padding: 0 !important; background: #fff !important; width: 100% !important; height: auto !important; }
+    #pdf-toolbar { display: none !important; }
+    #pdf-preview-wrapper { padding: 0 !important; margin: 0 !important; background: #fff !important; }
+    #pdf-preview-wrapper > div { padding: 0 !important; margin: 0 !important; max-width: none !important; }
+    #pdf-preview-wrapper > div > div { box-shadow: none !important; border-radius: 0 !important; width: 100% !important; }
+  }
+`;
+
 export function PortalPDF() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
@@ -57,8 +69,11 @@ export function PortalPDF() {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Estilos de impresión inyectados en <head> */}
+      <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
+
       {/* Toolbar */}
-      <div id="pdf-toolbar" className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm print:hidden">
+      <div id="pdf-toolbar" className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm" style={{ display: 'flex' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
@@ -80,7 +95,7 @@ export function PortalPDF() {
       </div>
 
       {/* Contenido del PDF */}
-      <div className="py-8">
+      <div id="pdf-preview-wrapper" className="py-8 bg-gray-100">
         <div className="max-w-5xl mx-auto px-4">
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <PDFTemplateCompact

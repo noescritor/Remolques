@@ -15,10 +15,12 @@ interface PDFFullPageMoodboardProps {
 // CSS inyectado una sola vez para print media
 const PRINT_STYLES = `
   @media print {
-    @page { size: A4 portrait; margin: 0; }
-    body { margin: 0; background: #fff; }
+    @page { size: A4 portrait; margin: 0 !important; }
+    html, body, #root { margin: 0 !important; padding: 0 !important; background: #fff !important; width: 100% !important; height: auto !important; }
     #pdf-toolbar { display: none !important; }
-    #pdf-preview-wrapper { padding: 0 !important; background: #fff !important; }
+    #pdf-preview-wrapper { padding: 0 !important; margin: 0 !important; background: #fff !important; }
+    #pdf-preview-wrapper > div { padding: 0 !important; margin: 0 !important; gap: 0 !important; }
+    #pdf-preview-wrapper > div > div { box-shadow: none !important; border-radius: 0 !important; width: 100% !important; max-width: none !important; }
     #pdf-content { box-shadow: none !important; border-radius: 0 !important; }
   }
 `;

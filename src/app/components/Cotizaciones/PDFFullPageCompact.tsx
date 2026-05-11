@@ -12,6 +12,33 @@ interface PDFFullPageCompactProps {
   onExportPDF: (cotizacion: any) => void;
 }
 
+// CSS inyectado una sola vez para print media
+const PRINT_STYLES = `
+  @media print {
+    @page { size: A4 portrait; margin: 0 !important; }
+    html, body, #root { margin: 0 !important; padding: 0 !important; background: #fff !important; width: 100% !important; height: auto !important; }
+    #pdf-toolbar { display: none !important; }
+    #pdf-preview-wrapper { padding: 0 !important; margin: 0 !important; background: #fff !important; }
+    #pdf-preview-wrapper > div { padding: 0 !important; margin: 0 !important; max-width: none !important; }
+    #pdf-preview-wrapper > div > div { box-shadow: none !important; border-radius: 0 !important; width: 100% !important; }
+  }
+`;
+
+function triggerPrint(onDone?: () => void) {
+  const toolbar = document.getElementById('pdf-toolbar');
+  if (toolbar) toolbar.style.display = 'none';
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => {
+        if (toolbar) toolbar.style.display = 'flex';
+        onDone?.();
+      }, 600);
+    }, 120);
+  });
+}
+
 export function PDFFullPageCompact({ 
   cotizacion, 
   cliente, 
@@ -22,66 +49,18 @@ export function PDFFullPageCompact({
 }: PDFFullPageCompactProps) {
   const [isExporting, setIsExporting] = useState(false);
 
-  const handleExportPDF = () => {
-    setIsExporting(true);
-    
-    try {
-      // Ocultar toolbar antes de imprimir
-      const toolbar = document.getElementById('pdf-toolbar');
-      if (toolbar) {
-        toolbar.style.display = 'none';
-      }
-      
-      setTimeout(() => {
-        window.print();
-        
-        // Restaurar toolbar después de imprimir
-        setTimeout(() => {
-          if (toolbar) {
-            toolbar.style.display = 'flex';
-          }
-          setIsExporting(false);
-        }, 500);
-      }, 100);
-      
-    } catch (error) {
-      console.error('Error al imprimir:', error);
-      alert('Error al imprimir. Usa Ctrl+P desde tu navegador.');
-      setIsExporting(false);
-    }
-  };
-
-  const handlePrint = () => {
-    try {
-      const toolbar = document.getElementById('pdf-toolbar');
-      if (toolbar) {
-        toolbar.style.display = 'none';
-      }
-      
-      setTimeout(() => {
-        window.print();
-        
-        setTimeout(() => {
-          if (toolbar) {
-            toolbar.style.display = 'flex';
-          }
-        }, 500);
-      }, 100);
-      
-    } catch (error) {
-      console.error('Error al imprimir:', error);
-      alert('Error al imprimir. Usa Ctrl+P manualmente desde tu navegador.');
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Estilos de impresión inyectados en <head> */}
+      <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
+
       {/* Barra de herramientas fija */}
       <div 
         id="pdf-toolbar"
-        className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm print:hidden"
+        className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm"
+        style={{ display: 'flex' }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <Button variant="outline" onClick={onVolver}>
@@ -99,14 +78,17 @@ export function PDFFullPageCompact({
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
-                onClick={handlePrint}
+                onClick={() => triggerPrint()}
                 className="flex items-center gap-2"
               >
                 <Printer className="h-4 w-4" />
                 Imprimir
               </Button>
               <Button
-                onClick={handleExportPDF}
+                onClick={() => {
+                  setIsExporting(true);
+                  triggerPrint(() => setIsExporting(false));
+                }}
                 disabled={isExporting}
                 className="flex items-center gap-2"
               >
@@ -119,7 +101,7 @@ export function PDFFullPageCompact({
       </div>
 
       {/* Contenido del PDF */}
-      <div className="py-8">
+      <div id="pdf-preview-wrapper" className="py-8 bg-gray-100">
         <div className="max-w-5xl mx-auto px-4">
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <PDFTemplateCompact
