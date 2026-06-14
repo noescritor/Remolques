@@ -49,6 +49,22 @@ export interface Producto {
   costo?: number;
   tasa_iva: number;
   servicio?: ServicioPlan;
+  stock_actual?: number;
+  stock_minimo?: number;
+  stock_reservado?: number;
+}
+
+export interface MovimientoInventario {
+  id: string;
+  producto_id: string;
+  organizacion_id: string;
+  tipo_movimiento: 'Entrada' | 'Salida' | 'Reserva' | 'Liberacion' | 'Ajuste';
+  cantidad: number;
+  referencia?: string;
+  cotizacion_id?: string;
+  usuario_id?: string;
+  created_at: string;
+  producto?: { nombre: string }; // Join relation
 }
 
 export interface ItemCotizacion {

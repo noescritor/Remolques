@@ -27,6 +27,7 @@ function ModernSideNav({ currentPage, onNavigate }: { currentPage: string; onNav
     { id: 'plantillas',   label: 'Plantillas',     icon: BookTemplate,    isActive: currentPage === 'plantillas' },
     { id: 'clientes',     label: 'Clientes',       icon: Users,           isActive: currentPage === 'clientes' },
     { id: 'productos',    label: 'Productos',      icon: Package,         isActive: currentPage === 'productos' },
+    { id: 'inventario',   label: 'Inventario',     icon: Package,         isActive: currentPage === 'inventario' },
     { id: 'equipo',       label: 'Equipo',         icon: Users,           isActive: currentPage === 'equipo' },
     { id: 'ajustes',      label: 'Configuración',  icon: Settings,        isActive: currentPage === 'ajustes' },
   ];

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo } from '../types';
+import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario } from '../types';
 const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
 
 const getHeaders = (token?: string) => ({
@@ -528,7 +528,35 @@ export function useSupabaseData(token?: string) {
       );
       setCotizaciones(cotizacionesActualizadas);
       saveToLocalStorage('cotizaciones', cotizacionesActualizadas);
-      return { token: tokenPortal, expira: expira.toISOString() };
+    
+  // Inventario
+  const obtenerMovimientosInventario = async (): Promise<MovimientoInventario[]> => {
+    try {
+      const data = await fetchJson('obtener movimientos inventario', `${BASE_URL}/inventario/movimientos`, token);
+      return data;
+    } catch (error) {
+      console.error('Error fetching movimientos:', error);
+      throw error;
+    }
+  };
+
+  const registrarMovimientoInventario = async (movimiento: Partial<MovimientoInventario>) => {
+    try {
+      const resultado = await sendJson('crear movimiento inventario', `${BASE_URL}/inventario/movimientos`, token, {
+        method: 'POST',
+        body: JSON.stringify(movimiento)
+      });
+      // Recargar productos para actualizar stock
+      loadData();
+      return resultado;
+    } catch (error) {
+      console.error('Error creating movimiento inventario:', error);
+      throw error;
+    }
+  };
+
+  return {
+ token: tokenPortal, expira: expira.toISOString() };
     }
 
     const resultado = await sendJson('generar portal', `${BASE_URL}/cotizaciones/${id}/generar-token-portal`, token, {
@@ -719,7 +747,35 @@ export function useSupabaseData(token?: string) {
     }
   };
 
+
+  // Inventario
+  const obtenerMovimientosInventario = async (): Promise<MovimientoInventario[]> => {
+    try {
+      const data = await fetchJson('obtener movimientos inventario', `${BASE_URL}/inventario/movimientos`, token);
+      return data;
+    } catch (error) {
+      console.error('Error fetching movimientos:', error);
+      throw error;
+    }
+  };
+
+  const registrarMovimientoInventario = async (movimiento: Partial<MovimientoInventario>) => {
+    try {
+      const resultado = await sendJson('crear movimiento inventario', `${BASE_URL}/inventario/movimientos`, token, {
+        method: 'POST',
+        body: JSON.stringify(movimiento)
+      });
+      // Recargar productos para actualizar stock
+      loadData();
+      return resultado;
+    } catch (error) {
+      console.error('Error creating movimiento inventario:', error);
+      throw error;
+    }
+  };
+
   return {
+
     // Datos
     clientes,
     productos,
@@ -737,6 +793,9 @@ export function useSupabaseData(token?: string) {
     crearCliente,
     actualizarCliente,
     eliminarCliente,
+    // Inventario
+    obtenerMovimientosInventario,
+    registrarMovimientoInventario,
     // CRUD productos
     crearProducto,
     actualizarProducto,

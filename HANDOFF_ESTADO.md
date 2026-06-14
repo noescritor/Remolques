@@ -304,7 +304,8 @@ https://cotizador-cotizacion-app.gehkp3.easypanel.host/**
 - `OPENAI_API_KEY` si se implementa fallback real a OpenAI
 
 5. El contexto dice "Claude & OpenAI", pero el codigo actual solo usa Anthropic.
-6. Hay texto con encoding roto en varios archivos (`CotizaciÃ³n`, `DiseÃ±o`, etc.). No bloquea, pero conviene limpiar.
+6. ~~Hay texto con encoding roto en varios archivos (`CotizaciÃ³n`, `DiseÃ±o`, etc.)~~ (Verificado: no hay encodings rotos en el código actual).
+7. Se refactorizaron los manejos de errores en el frontend (`App.tsx`) y en la Edge Function para exponer mensajes de error estructurados y detallados a la UI.
 7. La CLI de migraciones fallo por falta de permisos/password:
 
 ```text

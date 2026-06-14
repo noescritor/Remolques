@@ -10,6 +10,7 @@ import { PortalPDF } from './components/Portal/PortalPDF';
 
 import { ClientesList } from './components/Clientes/ClientesList';
 import { ProductosList } from './components/Productos/ProductosList';
+import { InventarioList } from './components/Inventario/InventarioList';
 import { AjustesForm } from './components/Ajustes/AjustesForm';
 import { PlantillasList } from './components/Plantillas/PlantillasList';
 import { EquipoManager } from './components/Equipo/EquipoManager';
@@ -67,6 +68,8 @@ export default function App() {
     crearCliente,
     actualizarCliente,
     eliminarCliente,
+    obtenerMovimientosInventario,
+    registrarMovimientoInventario,
     crearProducto,
     actualizarProducto,
     eliminarProducto,
@@ -125,7 +128,9 @@ export default function App() {
         navigate(`/cotizaciones/${cotizacionDuplicada.id}/editar`);
       }
     } catch (error) {
-      toast.error('Error al duplicar cotización');
+      toast.error('Error al duplicar cotización', {
+        description: error instanceof Error ? error.message : String(error)
+      });
     }
   };
 
@@ -137,7 +142,9 @@ export default function App() {
         navigate('/cotizaciones');
       }
     } catch (error) {
-      toast.error('Error al eliminar cotización');
+      toast.error('Error al eliminar cotización', {
+        description: error instanceof Error ? error.message : String(error)
+      });
     }
   };
 
@@ -174,7 +181,9 @@ export default function App() {
       await actualizarCotizacion(id, { estado });
       toast.success(`Estado cambiado a ${estado}`);
     } catch (error) {
-      toast.error('Error al cambiar estado');
+      toast.error('Error al cambiar estado', {
+        description: error instanceof Error ? error.message : String(error)
+      });
     }
   };
 
@@ -189,7 +198,9 @@ export default function App() {
       toast.success('Link del portal generado');
       return { ...result, portalUrl };
     } catch (error) {
-      toast.error('Error al generar link del portal');
+      toast.error('Error al generar link del portal', {
+        description: error instanceof Error ? error.message : String(error)
+      });
       throw error;
     }
   };
@@ -199,7 +210,9 @@ export default function App() {
       onExportPDF(cotizacion);
       toast.success(`Abriendo vista PDF de cotización ${cotizacion.folio}`);
     } catch (error) {
-      toast.error('Error al abrir vista PDF');
+      toast.error('Error al abrir vista PDF', {
+        description: error instanceof Error ? error.message : String(error)
+      });
     }
   };
 
@@ -214,7 +227,9 @@ export default function App() {
       toast.success('Cliente creado exitosamente');
       return clienteCreado;
     } catch (error) {
-      toast.error('Error al crear cliente');
+      toast.error('Error al crear cliente', {
+        description: error instanceof Error ? error.message : String(error)
+      });
       throw error;
     }
   };
@@ -224,7 +239,9 @@ export default function App() {
       await actualizarCliente(id, clienteData);
       toast.success('Cliente actualizado exitosamente');
     } catch (error) {
-      toast.error('Error al actualizar cliente');
+      toast.error('Error al actualizar cliente', {
+        description: error instanceof Error ? error.message : String(error)
+      });
     }
   };
 
@@ -233,7 +250,9 @@ export default function App() {
       await eliminarCliente(id);
       toast.success('Cliente eliminado');
     } catch (error) {
-      toast.error('Error al eliminar cliente');
+      toast.error('Error al eliminar cliente', {
+        description: error instanceof Error ? error.message : String(error)
+      });
     }
   };
 
@@ -243,7 +262,9 @@ export default function App() {
       await crearProducto(productoData);
       toast.success('Producto creado exitosamente');
     } catch (error) {
-      toast.error('Error al crear producto');
+      toast.error('Error al crear producto', {
+        description: error instanceof Error ? error.message : String(error)
+      });
     }
   };
 
@@ -252,7 +273,9 @@ export default function App() {
       await actualizarProducto(id, productoData);
       toast.success('Producto actualizado exitosamente');
     } catch (error) {
-      toast.error('Error al actualizar producto');
+      toast.error('Error al actualizar producto', {
+        description: error instanceof Error ? error.message : String(error)
+      });
     }
   };
 
@@ -261,7 +284,9 @@ export default function App() {
       await eliminarProducto(id);
       toast.success('Producto eliminado');
     } catch (error) {
-      toast.error('Error al eliminar producto');
+      toast.error('Error al eliminar producto', {
+        description: error instanceof Error ? error.message : String(error)
+      });
     }
   };
 
@@ -271,7 +296,9 @@ export default function App() {
       await actualizarAjustes(nuevosAjustes);
       toast.success('Ajustes guardados exitosamente');
     } catch (error) {
-      toast.error('Error al guardar ajustes');
+      toast.error('Error al guardar ajustes', {
+        description: error instanceof Error ? error.message : String(error)
+      });
     }
   };
 
@@ -281,7 +308,9 @@ export default function App() {
       await crearPago(pagoData);
       toast.success('Pago registrado exitosamente');
     } catch (error) {
-      toast.error('Error al registrar pago');
+      toast.error('Error al registrar pago', {
+        description: error instanceof Error ? error.message : String(error)
+      });
     }
   };
 
@@ -316,7 +345,9 @@ export default function App() {
     try {
       await eliminarPlantilla(id);
       toast.success('Plantilla eliminada');
-    } catch { toast.error('Error al eliminar plantilla'); }
+    } catch (error) { toast.error('Error al eliminar plantilla', {
+        description: error instanceof Error ? error.message : String(error)
+      }); }
   };
 
   const manejarGuardarComoPlantilla = async (nombre: string, descripcion: string, data: any) => {
@@ -451,6 +482,16 @@ export default function App() {
             onCrearCliente={manejarCrearCliente}
             onActualizarCliente={manejarActualizarCliente}
             onEliminarCliente={manejarEliminarCliente}
+          />
+        } />
+
+
+        <Route path="/inventario" element={
+          <InventarioList
+            productos={productos}
+            loading={loading}
+            obtenerMovimientosInventario={obtenerMovimientosInventario}
+            registrarMovimientoInventario={registrarMovimientoInventario}
           />
         } />
 

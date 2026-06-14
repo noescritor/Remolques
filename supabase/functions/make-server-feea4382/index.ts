@@ -309,7 +309,7 @@ app.get("/clientes", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error: any) {
-    console.log('Error fetching clientes:', error);
+    console.error('[make-server] Error fetching clientes:', error);
     return c.json({ error: 'Error fetching clientes', details: error?.message || String(error), code: error?.code }, 500);
   }
 });
@@ -324,7 +324,7 @@ app.post("/clientes", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log('Error creating cliente:', error);
+    console.error('[make-server] Error creating cliente:', error);
     return c.json({ error: 'Error creating cliente' }, 500);
   }
 });
@@ -339,7 +339,7 @@ app.put("/clientes/:id", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log('Error updating cliente:', error);
+    console.error('[make-server] Error updating cliente:', error);
     return c.json({ error: 'Error updating cliente' }, 500);
   }
 });
@@ -353,7 +353,7 @@ app.delete("/clientes/:id", async (c) => {
     if (error) throw error;
     return c.json({ success: true });
   } catch (error) {
-    console.log('Error deleting cliente:', error);
+    console.error('[make-server] Error deleting cliente:', error);
     return c.json({ error: 'Error deleting cliente' }, 500);
   }
 });
@@ -365,7 +365,7 @@ app.get("/productos", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log('Error fetching productos:', error);
+    console.error('[make-server] Error fetching productos:', error);
     return c.json({ error: 'Error fetching productos' }, 500);
   }
 });
@@ -380,7 +380,7 @@ app.post("/productos", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log('Error creating producto:', error);
+    console.error('[make-server] Error creating producto:', error);
     return c.json({ error: 'Error creating producto' }, 500);
   }
 });
@@ -395,7 +395,7 @@ app.put("/productos/:id", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log('Error updating producto:', error);
+    console.error('[make-server] Error updating producto:', error);
     return c.json({ error: 'Error updating producto' }, 500);
   }
 });
@@ -409,7 +409,7 @@ app.delete("/productos/:id", async (c) => {
     if (error) throw error;
     return c.json({ success: true });
   } catch (error) {
-    console.log('Error deleting producto:', error);
+    console.error('[make-server] Error deleting producto:', error);
     return c.json({ error: 'Error deleting producto' }, 500);
   }
 });
@@ -451,7 +451,7 @@ app.get("/cotizaciones", async (c) => {
     }));
     return c.json(result);
   } catch (error) {
-    console.log('Error fetching cotizaciones:', error);
+    console.error('[make-server] Error fetching cotizaciones:', error);
     return c.json({ error: 'Error fetching cotizaciones' }, 500);
   }
 });
@@ -516,7 +516,7 @@ app.post("/cotizaciones", async (c) => {
 
     return c.json(finalCotizacion);
   } catch (error) {
-    console.log('Error creating cotizacion:', error);
+    console.error('[make-server] Error creating cotizacion:', error);
     const details = error instanceof Error ? error.message : JSON.stringify(error);
     return c.json({ error: 'Error creating cotizacion', details }, 500);
   }
@@ -570,7 +570,7 @@ app.put("/cotizaciones/:id", async (c) => {
 
     return c.json(finalCotizacion);
   } catch (error) {
-    console.log('Error updating cotizacion:', error);
+    console.error('[make-server] Error updating cotizacion:', error);
     const details = error instanceof Error ? error.message : JSON.stringify(error);
     return c.json({ error: 'Error updating cotizacion', details }, 500);
   }
@@ -588,7 +588,7 @@ app.delete("/cotizaciones/:id", async (c) => {
 
     return c.json({ success: true });
   } catch (error) {
-    console.log('Error deleting cotizacion:', error);
+    console.error('[make-server] Error deleting cotizacion:', error);
     return c.json({ error: 'Error deleting cotizacion' }, 500);
   }
 });
@@ -656,7 +656,7 @@ app.post("/cotizaciones/:id/duplicate", async (c) => {
 
     return c.json(finalCotizacion);
   } catch (error) {
-    console.log('Error duplicating cotizacion:', error);
+    console.error('[make-server] Error duplicating cotizacion:', error);
     return c.json({ error: 'Error duplicating cotizacion' }, 500);
   }
 });
@@ -668,7 +668,7 @@ app.get("/pagos", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log('Error fetching pagos:', error);
+    console.error('[make-server] Error fetching pagos:', error);
     return c.json({ error: 'Error fetching pagos' }, 500);
   }
 });
@@ -681,7 +681,7 @@ app.get("/pagos/cotizacion/:cotizacionId", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log('Error fetching pagos for cotizacion:', error);
+    console.error('[make-server] Error fetching pagos for cotizacion:', error);
     return c.json({ error: 'Error fetching pagos for cotizacion' }, 500);
   }
 });
@@ -706,7 +706,7 @@ app.post("/pagos", async (c) => {
 
     return c.json(nuevoPago);
   } catch (error) {
-    console.log('Error creating pago:', error);
+    console.error('[make-server] Error creating pago:', error);
     return c.json({ error: 'Error creating pago' }, 500);
   }
 });
@@ -729,7 +729,7 @@ app.get("/ajustes", async (c) => {
     }
     return c.json(data.data);
   } catch (error) {
-    console.log('Error fetching ajustes:', error);
+    console.error('[make-server] Error fetching ajustes:', error);
     return c.json({ error: 'Error fetching ajustes' }, 500);
   }
 });
@@ -748,7 +748,7 @@ app.put("/ajustes", async (c) => {
 
     return c.json(ajustesActualizados);
   } catch (error) {
-    console.log('Error updating ajustes:', error);
+    console.error('[make-server] Error updating ajustes:', error);
     return c.json({ error: 'Error updating ajustes' }, 500);
   }
 });
@@ -764,7 +764,7 @@ app.post("/enviar-email", async (c) => {
 
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     if (!resendApiKey || resendApiKey === '' || resendApiKey === 'your-resend-api-key-here') {
-      console.log('Error enviando email: RESEND_API_KEY no configurada correctamente');
+      console.error('[make-server] Error enviando email: RESEND_API_KEY no configurada correctamente');
       return c.json({
         error: 'API key de Resend no configurada',
         hint: 'Obtén una API key gratis en https://resend.com/api-keys y configúrala en los secretos de Supabase'
@@ -867,7 +867,7 @@ app.post("/enviar-email", async (c) => {
     const result = await response.json();
 
     if (!response.ok) {
-      console.log('Error from Resend API:', result);
+      console.error('[make-server] Error from Resend API:', result);
 
       let errorMessage = 'Error al enviar el email';
       let hint = '';
@@ -896,7 +896,7 @@ app.post("/enviar-email", async (c) => {
     });
 
   } catch (error) {
-    console.log('Error sending email:', error);
+    console.error('[make-server] Error sending email:', error);
     return c.json({
       error: 'Error al enviar el email: ' + error.message,
       hint: 'Verifica tu conexión a internet y la configuración de Resend'
@@ -940,7 +940,7 @@ Responde ÚNICAMENTE con la descripción reformulada. Sin explicaciones, sin com
 
     if (!response.ok) {
       const err = await response.json();
-      console.log("Anthropic API error:", err);
+      console.error("[make-server] Anthropic API error:", err);
       return c.json({ error: "Error al llamar a Claude API" }, 500);
     }
 
@@ -948,7 +948,7 @@ Responde ÚNICAMENTE con la descripción reformulada. Sin explicaciones, sin com
     const mejora = result.content?.[0]?.text?.trim() || descripcion;
     return c.json({ descripcion_mejorada: mejora });
   } catch (error) {
-    console.log("Error en /ia/mejorar-descripcion:", error);
+    console.error("[make-server] Error en /ia/mejorar-descripcion:", error);
     return c.json({ error: "Error interno" }, 500);
   }
 });
@@ -988,7 +988,7 @@ Escribe una nota de cierre de 2-3 oraciones que exprese disposición para respon
     const nota = result.content?.[0]?.text?.trim() || "";
     return c.json({ nota });
   } catch (error) {
-    console.log("Error en /ia/generar-nota:", error);
+    console.error("[make-server] Error en /ia/generar-nota:", error);
     return c.json({ error: "Error interno" }, 500);
   }
 });
@@ -1005,7 +1005,7 @@ app.get("/plantillas", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log("Error fetching plantillas:", error);
+    console.error("[make-server] Error fetching plantillas:", error);
     return c.json({ error: "Error fetching plantillas" }, 500);
   }
 });
@@ -1044,7 +1044,7 @@ app.post("/plantillas", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log("Error creating plantilla:", error);
+    console.error("[make-server] Error creating plantilla:", error);
     const details = error instanceof Error ? error.message : JSON.stringify(error);
     return c.json({
       error: "Error creating plantilla",
@@ -1089,7 +1089,7 @@ app.put("/plantillas/:id", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log("Error updating plantilla:", error);
+    console.error("[make-server] Error updating plantilla:", error);
     const details = error instanceof Error ? error.message : JSON.stringify(error);
     return c.json({
       error: "Error updating plantilla",
@@ -1109,7 +1109,7 @@ app.delete("/plantillas/:id", async (c) => {
     if (error) throw error;
     return c.json({ success: true });
   } catch (error) {
-    console.log("Error deleting plantilla:", error);
+    console.error("[make-server] Error deleting plantilla:", error);
     return c.json({ error: "Error deleting plantilla" }, 500);
   }
 });
@@ -1130,7 +1130,7 @@ app.post("/productos/:id/historial-precio", async (c) => {
     if (error) throw error;
     return c.json({ success: true });
   } catch (error) {
-    console.log("Error saving historial precio:", error);
+    console.error("[make-server] Error saving historial precio:", error);
     return c.json({ error: "Error saving historial" }, 500);
   }
 });
@@ -1148,7 +1148,7 @@ app.get("/productos/:id/historial-precios", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log("Error fetching historial precios:", error);
+    console.error("[make-server] Error fetching historial precios:", error);
     return c.json({ error: "Error fetching historial" }, 500);
   }
 });
@@ -1186,7 +1186,7 @@ app.get("/equipo", async (c) => {
 
     return c.json(equipoConEmails);
   } catch (error) {
-    console.log("Error fetching equipo:", error);
+    console.error("[make-server] Error fetching equipo:", error);
     return c.json({ error: "Error fetching equipo" }, 500);
   }
 });
@@ -1204,7 +1204,7 @@ app.get("/invitaciones", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log("Error fetching invitaciones:", error);
+    console.error("[make-server] Error fetching invitaciones:", error);
     return c.json({ error: "Error fetching invitaciones" }, 500);
   }
 });
@@ -1232,7 +1232,7 @@ app.post("/invitaciones", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error) {
-    console.log("Error creating invitacion:", error);
+    console.error("[make-server] Error creating invitacion:", error);
     return c.json({ error: "Error creating invitacion" }, 500);
   }
 });
@@ -1249,9 +1249,63 @@ app.delete("/invitaciones/:id", async (c) => {
 
     if (error) throw error;
     return c.json({ success: true });
-  } catch (error) {
-    console.log("Error deleting invitacion:", error);
+} catch (error) {
+    console.error("[make-server] Error deleting invitacion:", error);
     return c.json({ error: "Error deleting invitacion" }, 500);
+  }
+});
+
+// --- INVENTARIO ---
+
+app.get("/inventario/movimientos", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+    const { data, error } = await supabase
+      .from('movimientos_inventario')
+      .select('*, producto:productos(nombre)')
+      .eq('organizacion_id', orgId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error fetching inventario movimientos:", error);
+    return c.json({ error: "Error fetching movimientos", details: error?.message }, 500);
+  }
+});
+
+app.post("/inventario/movimientos", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const payload = await c.req.json();
+    payload.organizacion_id = c.get("organizacionId");
+    
+    // Solo permitimos Entradas, Salidas y Ajustes manuales por este endpoint
+    if (!['Entrada', 'Salida', 'Ajuste'].includes(payload.tipo_movimiento)) {
+      return c.json({ error: "Tipo de movimiento no permitido por API manual" }, 400);
+    }
+    
+    // Insertamos movimiento
+    const { data: mov, error: movError } = await supabase
+      .from('movimientos_inventario')
+      .insert(payload)
+      .select()
+      .single();
+    if (movError) throw movError;
+    
+    // Actualizamos el stock
+    const diff = payload.tipo_movimiento === 'Salida' ? -payload.cantidad : payload.cantidad;
+    
+    // Usamos RPC (si existiera) o seleccionamos y actualizamos
+    const { data: prod } = await supabase.from('productos').select('stock_actual').eq('id', payload.producto_id).single();
+    if (prod) {
+      await supabase.from('productos').update({ stock_actual: prod.stock_actual + diff }).eq('id', payload.producto_id);
+    }
+    
+    return c.json(mov);
+  } catch (error: any) {
+    console.error("[make-server] Error creating inventario movimiento:", error);
+    return c.json({ error: "Error creating movimiento", details: error?.message }, 500);
   }
 });
 

@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Alert, AlertDescription } from '../ui/alert';
-import { ArrowLeft, Plus, Trash2, FileDown, Copy, Save, UserPlus, Eye, BookTemplate, FileSpreadsheet, Sparkles, Loader2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, FileDown, Copy, Save, UserPlus, Eye, BookTemplate, FileSpreadsheet, Sparkles, Loader2 , AlertTriangle} from 'lucide-react';
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, TRANSICIONES_ESTADO, CostosIndirectos, ComisionesPago, Plantilla } from '../../types';
 import { ExcelImportModal } from './ExcelImportModal';
 import { supabase } from '../../utils/supabase/client';
@@ -826,6 +826,9 @@ export function CotizacionEditor({
                   if (!item) return null;
                   const producto = item.producto_id ? productosIdx[item.producto_id] : null;
                   const esServicio = producto?.tipo === 'servicio';
+                  const disponible = (producto?.stock_actual || 0) - (producto?.stock_reservado || 0);
+                  const advertenciaStock = producto?.tipo === 'bien' && (item.cantidad || 0) > disponible;
+
                   let totalCalculado = { subtotal: 0, iva: 0, total: 0, costoTotal: 0 };
                   if (esServicio && producto?.servicio) {
                     totalCalculado = totalItemServicio(item, producto, formData.con_factura ? ajustes.iva_por_defecto : 0);
@@ -847,7 +850,13 @@ export function CotizacionEditor({
                       <div className="grid grid-cols-3 gap-2">
                         <div>
                           <Label className="text-xs text-gray-500">Cant.</Label>
-                          <Input type="number" value={item.cantidad} onChange={(e) => actualizarItem(item.id, { cantidad: parseFloat(e.target.value) || 0 })} className="text-sm" min="0" step="0.01" />
+                          <Input type="number" value={item.cantidad} onChange={(e) => actualizarItem(item.id, { cantidad: parseFloat(e.target.value) || 0 })} className={`text-sm ${advertenciaStock ? 'border-orange-500 bg-orange-50' : ''}`} min="0" step="0.01" />
+                          {advertenciaStock && (
+                            <div className="flex items-center text-orange-600 text-[10px] mt-1 font-semibold leading-tight">
+                              <AlertTriangle className="w-3 h-3 mr-1" />
+                              Stock dispo: {disponible}
+                            </div>
+                          )}
                         </div>
                         <div>
                           <Label className="text-xs text-gray-500">Precio</Label>
@@ -891,6 +900,9 @@ export function CotizacionEditor({
                   
                   const producto = item.producto_id ? productosIdx[item.producto_id] : null;
                   const esServicio = producto?.tipo === 'servicio';
+                  const disponible = (producto?.stock_actual || 0) - (producto?.stock_reservado || 0);
+                  const advertenciaStock = producto?.tipo === 'bien' && (item.cantidad || 0) > disponible;
+
                   
                   let totalCalculado = { subtotal: 0, iva: 0, total: 0, costoTotal: 0 };
                   if (esServicio && producto?.servicio) {
@@ -914,10 +926,16 @@ export function CotizacionEditor({
                         type="number"
                         value={item.cantidad}
                         onChange={(e) => actualizarItem(item.id, { cantidad: parseFloat(e.target.value) || 0 })}
-                        className="w-full"
+                        className={`w-full ${advertenciaStock ? 'border-orange-500 bg-orange-50' : ''}`}
                         min="0"
                         step="0.01"
                       />
+                      {advertenciaStock && (
+                        <div className="flex items-center text-orange-600 text-[10px] mt-1 font-semibold leading-tight">
+                          <AlertTriangle className="w-3 h-3 mr-1" />
+                          Stock dispo: {disponible}
+                        </div>
+                      )}
                       {esServicio && producto?.servicio?.por_asiento && (
                         <div className="text-xs text-gray-500 mt-1">Base</div>
                       )}
