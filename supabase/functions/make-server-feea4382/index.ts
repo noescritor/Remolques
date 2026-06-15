@@ -1284,6 +1284,14 @@ app.post("/inventario/movimientos", async (c) => {
     if (!['Entrada', 'Salida', 'Ajuste'].includes(payload.tipo_movimiento)) {
       return c.json({ error: "Tipo de movimiento no permitido por API manual" }, 400);
     }
+
+    // Validaciones básicas
+    if (!payload.producto_id) {
+      return c.json({ error: "producto_id es requerido" }, 400);
+    }
+    if (!payload.cantidad || payload.cantidad <= 0) {
+      return c.json({ error: "cantidad debe ser mayor a 0" }, 400);
+    }
     
     // Insertamos movimiento
     const { data: mov, error: movError } = await supabase
@@ -1291,15 +1299,34 @@ app.post("/inventario/movimientos", async (c) => {
       .insert(payload)
       .select()
       .single();
-    if (movError) throw movError;
+    if (movError) {
+      console.error("[make-server] movError:", JSON.stringify(movError));
+      throw movError;
+    }
     
-    // Actualizamos el stock
+    // Actualizamos el stock del producto
     const diff = payload.tipo_movimiento === 'Salida' ? -payload.cantidad : payload.cantidad;
-    
-    // Usamos RPC (si existiera) o seleccionamos y actualizamos
-    const { data: prod } = await supabase.from('productos').select('stock_actual').eq('id', payload.producto_id).single();
-    if (prod) {
-      await supabase.from('productos').update({ stock_actual: prod.stock_actual + diff }).eq('id', payload.producto_id);
+
+    // Obtenemos stock actual con COALESCE para evitar null
+    const { data: prod, error: prodError } = await supabase
+      .from('productos')
+      .select('stock_actual')
+      .eq('id', payload.producto_id)
+      .single();
+
+    if (prodError) {
+      console.error("[make-server] prodError:", JSON.stringify(prodError));
+      // No tiramos error fatal, el movimiento ya quedó registrado
+    } else if (prod) {
+      const stockActual = prod.stock_actual ?? 0;
+      const nuevoStock = stockActual + diff;
+      const { error: updateError } = await supabase
+        .from('productos')
+        .update({ stock_actual: nuevoStock })
+        .eq('id', payload.producto_id);
+      if (updateError) {
+        console.error("[make-server] updateError:", JSON.stringify(updateError));
+      }
     }
     
     return c.json(mov);
