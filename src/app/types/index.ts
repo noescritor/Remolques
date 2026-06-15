@@ -18,8 +18,30 @@ export interface Cliente {
   estado?: string;
   codigo_postal?: string;
   pais: string;
-  tipo_pago_preferido: 'Transferencia' | 'Tarjeta' | 'Efectivo' | 'PayPal' | 'Crédito 30 días';
+tipo_pago_preferido: 'Transferencia' | 'Tarjeta' | 'Efectivo' | 'PayPal' | 'Crédito 30 días';
   contactos?: ContactoCliente[];
+  categoria_id?: string;
+  origen_lead?: string;
+  giro_empresa?: string;
+}
+}
+
+export interface CategoriaProducto {
+  id: string;
+  organizacion_id: string;
+  nombre: string;
+  color?: string;
+  icono?: string;
+  orden?: number;
+}
+
+export interface CategoriaCliente {
+  id: string;
+  organizacion_id: string;
+  nombre: string;
+  color?: string;
+  icono?: string;
+  orden?: number;
 }
 
 export type ProductoTipo = 'bien' | 'servicio';
@@ -49,9 +71,12 @@ export interface Producto {
   costo?: number;
   tasa_iva: number;
   servicio?: ServicioPlan;
-  stock_actual?: number;
+stock_actual?: number;
   stock_minimo?: number;
   stock_reservado?: number;
+  categoria_id?: string;
+  imagen_url?: string;
+}
 }
 
 export interface MovimientoInventario {
@@ -114,9 +139,15 @@ export interface Cotizacion {
   total: number;
   nota?: string;
   items: ItemCotizacion[];
-  // Nuevos campos para análisis de costos
+// Nuevos campos para análisis de costos
   costos_indirectos?: CostosIndirectos;
   comisiones_pago?: ComisionesPago;
+  
+  // Producción y Entrega
+  estado_produccion?: 'Pendiente' | 'En Producción' | 'Entregado' | string;
+  fecha_entrega?: string;
+
+  // Fase 2: Gestión de Versiones
   // Fase 2: Gestión de Versiones
   version?: number;
   cotizacion_padre_id?: string;

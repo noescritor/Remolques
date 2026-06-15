@@ -58,6 +58,10 @@ export default function App() {
   const {
     clientes,
     productos,
+    categoriasProducto,
+    crearCategoriaProducto,
+    actualizarCategoriaProducto,
+    eliminarCategoriaProducto,
     cotizaciones,
     pagos,
     ajustes,
@@ -498,10 +502,14 @@ export default function App() {
         <Route path="/productos" element={
           <ProductosList
             productos={productos}
+            categorias={categoriasProducto}
             loading={loading}
             onCrearProducto={manejarCrearProducto}
             onActualizarProducto={manejarActualizarProducto}
             onEliminarProducto={manejarEliminarProducto}
+            onCrearCategoria={crearCategoriaProducto}
+            onActualizarCategoria={actualizarCategoriaProducto}
+            onEliminarCategoria={eliminarCategoriaProducto}
           />
         } />
 

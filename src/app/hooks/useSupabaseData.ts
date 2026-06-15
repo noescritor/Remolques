@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario } from '../types';
+import { supabase } from '../utils/supabase/client';
+import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto } from '../types';
 const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
 
 const getHeaders = (token?: string) => ({
@@ -45,6 +46,7 @@ export function useSupabaseData(token?: string) {
   const [plantillas, setPlantillas] = useState<Plantilla[]>([]);
   const [equipo, setEquipo] = useState<PerfilOrganizacion[]>([]);
   const [invitaciones, setInvitaciones] = useState<InvitacionEquipo[]>([]);
+  const [categoriasProducto, setCategoriasProducto] = useState<CategoriaProducto[]>([]);
   const [ajustes, setAjustes] = useState<Ajustes>({
     iva_por_defecto: 0.16,
     validez_por_defecto: 30,
@@ -76,7 +78,47 @@ export function useSupabaseData(token?: string) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [useLocalData, setUseLocalData] = useState(false);
   
+
+  // CRUD Categorías Producto
+  const crearCategoriaProducto = async (categoria: Omit<CategoriaProducto, 'id' | 'organizacion_id'>) => {
+    try {
+      const { data, error } = await supabase.from('categorias_producto').insert(categoria).select().single();
+      if (error) throw error;
+      setCategoriasProducto([...categoriasProducto, data]);
+      toast.success('Categoría creada', { description: 'La categoría se creó correctamente.' });
+      return data;
+    } catch (error: any) {
+      toast.error('Error al crear categoría', { description: error.message });
+      throw error;
+    }
+  };
+
+  const actualizarCategoriaProducto = async (id: string, categoria: Partial<CategoriaProducto>) => {
+    try {
+      const { data, error } = await supabase.from('categorias_producto').update(categoria).eq('id', id).select().single();
+      if (error) throw error;
+      setCategoriasProducto(categoriasProducto.map(c => c.id === id ? data : c));
+      toast.success('Categoría actualizada');
+    } catch (error: any) {
+      toast.error('Error al actualizar', { description: error.message });
+      throw error;
+    }
+  };
+
+  const eliminarCategoriaProducto = async (id: string) => {
+    try {
+      const { error } = await supabase.from('categorias_producto').delete().eq('id', id);
+      if (error) throw error;
+      setCategoriasProducto(categoriasProducto.filter(c => c.id !== id));
+      toast.success('Categoría eliminada');
+    } catch (error: any) {
+      toast.error('Error al eliminar', { description: error.message });
+      throw error;
+    }
+  };
+
   // Helper to generate ID
+
   const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   
   // Helper to generate folio
@@ -156,6 +198,10 @@ export function useSupabaseData(token?: string) {
       const productosData = await fetchJson('productos', `${BASE_URL}/productos`, token);
       const cotizacionesData = await fetchJson('cotizaciones', `${BASE_URL}/cotizaciones`, token);
       const pagosData = await fetchJson('pagos', `${BASE_URL}/pagos`, token);
+
+      const categoriasReq = await supabase.from('categorias_producto').select('*').order('orden');
+      if (categoriasReq.data) setCategoriasProducto(categoriasReq.data);
+
       const ajustesData = await fetchJson('ajustes', `${BASE_URL}/ajustes`, token);
       const plantillasData = await fetchJson('plantillas', `${BASE_URL}/plantillas`, token).catch(error => {
         console.warn('No se pudieron cargar plantillas:', error);
@@ -556,6 +602,10 @@ export function useSupabaseData(token?: string) {
   };
 
   return {
+    categoriasProducto,
+    crearCategoriaProducto,
+    actualizarCategoriaProducto,
+    eliminarCategoriaProducto,
  token: tokenPortal, expira: expira.toISOString() };
     }
 
@@ -775,6 +825,10 @@ export function useSupabaseData(token?: string) {
   };
 
   return {
+    categoriasProducto,
+    crearCategoriaProducto,
+    actualizarCategoriaProducto,
+    eliminarCategoriaProducto,
 
     // Datos
     clientes,
