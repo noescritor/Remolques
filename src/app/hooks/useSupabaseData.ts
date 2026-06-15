@@ -47,6 +47,7 @@ export function useSupabaseData(token?: string) {
   const [equipo, setEquipo] = useState<PerfilOrganizacion[]>([]);
   const [invitaciones, setInvitaciones] = useState<InvitacionEquipo[]>([]);
   const [categoriasProducto, setCategoriasProducto] = useState<CategoriaProducto[]>([]);
+  const [categoriasCliente, setCategoriasCliente] = useState<CategoriaCliente[]>([]);
   const [ajustes, setAjustes] = useState<Ajustes>({
     iva_por_defecto: 0.16,
     validez_por_defecto: 30,

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
 import { LayoutDashboard, Package, FileText, Users, Calculator, ArrowRight, Check } from 'lucide-react';
-import { supabase } from '../../utils/supabase/client';
+import { supabase } from '../utils/supabase/client';
 
 interface WelcomeTourProps {
   session: any;
