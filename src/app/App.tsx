@@ -383,6 +383,8 @@ export default function App() {
     if (path.startsWith('/ajustes')) return 'ajustes';
     if (path.startsWith('/plantillas')) return 'plantillas';
     if (path.startsWith('/equipo')) return 'equipo';
+    if (path.startsWith('/inventario')) return 'inventario';
+    if (path.startsWith('/calculadora')) return 'calculadora';
     return 'dashboard';
   };
 

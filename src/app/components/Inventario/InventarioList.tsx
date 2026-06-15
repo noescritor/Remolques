@@ -82,8 +82,10 @@ export function InventarioList({
       setModalOpen(false);
       setFormData({ tipo_movimiento: 'Entrada', cantidad: 1, referencia: '' });
       setProductoSeleccionado('');
-    } catch (error) {
-      toast.error("Error al registrar movimiento");
+    } catch (error: any) {
+      console.error("Error al registrar movimiento:", error);
+      const msg = error?.message || JSON.stringify(error) || "Error desconocido";
+      toast.error(`Error al registrar movimiento: ${msg}`);
     }
   };
 
