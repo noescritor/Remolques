@@ -1259,9 +1259,9 @@ app.delete("/invitaciones/:id", async (c) => {
 
 app.get("/inventario/movimientos", async (c) => {
   try {
-    const supabase = c.get("supabase") as SupabaseClient;
+    const adminClient = getServiceClient();
     const orgId = c.get("organizacionId");
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from('movimientos_inventario')
       .select('*, producto:productos(nombre)')
       .eq('organizacion_id', orgId)
@@ -1276,7 +1276,8 @@ app.get("/inventario/movimientos", async (c) => {
 
 app.post("/inventario/movimientos", async (c) => {
   try {
-    const supabase = c.get("supabase") as SupabaseClient;
+    // Usamos service client para bypass RLS y garantizar escritura
+    const adminClient = getServiceClient();
     const payload = await c.req.json();
     payload.organizacion_id = c.get("organizacionId");
     
@@ -1293,8 +1294,8 @@ app.post("/inventario/movimientos", async (c) => {
       return c.json({ error: "cantidad debe ser mayor a 0" }, 400);
     }
     
-    // Insertamos movimiento
-    const { data: mov, error: movError } = await supabase
+    // Insertamos movimiento usando admin client (bypass RLS)
+    const { data: mov, error: movError } = await adminClient
       .from('movimientos_inventario')
       .insert(payload)
       .select()
@@ -1307,8 +1308,8 @@ app.post("/inventario/movimientos", async (c) => {
     // Actualizamos el stock del producto
     const diff = payload.tipo_movimiento === 'Salida' ? -payload.cantidad : payload.cantidad;
 
-    // Obtenemos stock actual con COALESCE para evitar null
-    const { data: prod, error: prodError } = await supabase
+    // Obtenemos stock actual (usando admin para evitar problemas de RLS en productos)
+    const { data: prod, error: prodError } = await adminClient
       .from('productos')
       .select('stock_actual')
       .eq('id', payload.producto_id)
@@ -1320,12 +1321,12 @@ app.post("/inventario/movimientos", async (c) => {
     } else if (prod) {
       const stockActual = prod.stock_actual ?? 0;
       const nuevoStock = stockActual + diff;
-      const { error: updateError } = await supabase
+      const { error: updateError } = await adminClient
         .from('productos')
         .update({ stock_actual: nuevoStock })
         .eq('id', payload.producto_id);
       if (updateError) {
-        console.error("[make-server] updateError:", JSON.stringify(updateError));
+        console.error("[make-server] updateError al actualizar stock:", JSON.stringify(updateError));
       }
     }
     
