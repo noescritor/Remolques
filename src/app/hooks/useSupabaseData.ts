@@ -178,21 +178,28 @@ export function useSupabaseData(token?: string) {
     }
   };
 
-  // Check if server is available
+  // Check if server is available (with retry for cold starts)
   const checkServerAvailability = async (): Promise<boolean> => {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s — handles cold starts
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s per attempt
 
-      const response = await fetch(`${BASE_URL}/health`, {
-        signal: controller.signal
-      });
+        const response = await fetch(`${BASE_URL}/health`, {
+          signal: controller.signal
+        });
 
-      clearTimeout(timeoutId);
-      return response.ok;
-    } catch (error) {
-      return false;
+        clearTimeout(timeoutId);
+        // Accept 200 (ok) or 401 (auth required = server is up) as healthy
+        if (response.ok || response.status === 401) return true;
+      } catch (error) {
+        console.warn(`Health check attempt ${attempt}/3 failed, retrying...`);
+        if (attempt < 3) {
+          await new Promise(resolve => setTimeout(resolve, 2000)); // wait 2s before retry
+        }
+      }
     }
+    return false;
   };
 
   // Load initial data
