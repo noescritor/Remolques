@@ -434,6 +434,7 @@ export default function App() {
         <Route path="/cotizaciones/:id/editar" element={
           <CotizacionEditorWrapper
             cotizaciones={cotizaciones}
+            loading={loading}
             clientes={clientes}
             productos={productos}
             plantillas={plantillas}
@@ -461,6 +462,7 @@ export default function App() {
         <Route path="/cotizaciones/:id" element={
           <CotizacionDetalleWrapper 
             cotizaciones={cotizaciones}
+            loading={loading}
             clientes={clientes}
             productos={productos}
             ajustes={ajustes}
@@ -479,6 +481,7 @@ export default function App() {
         <Route path="/cotizaciones/:id/pdf" element={
           <PDFFullPageWrapper 
             cotizaciones={cotizaciones}
+            loading={loading}
             clientes={clientes}
             productos={productos}
             ajustes={ajustes}
@@ -576,7 +579,17 @@ export default function App() {
     const pdfId = location.pathname.split('/')[2];
     const cotizacion = cotizaciones.find((c: any) => c.id === pdfId);
     if (!cotizacion) {
-      return <div className="p-8 text-gray-500">Cotización no encontrada</div>;
+      if (loading) {
+        return (
+          <div className="min-h-screen flex items-center justify-center bg-gray-100">
+            <div className="flex flex-col items-center gap-4">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+              <p className="text-gray-600 text-sm">Cargando cotización…</p>
+            </div>
+          </div>
+        );
+      }
+      return <div className="p-8 text-muted-foreground">Cotización no encontrada</div>;
     }
     const cliente = clientes.find((c: any) => c.id === cotizacion.cliente_id);
     return (
@@ -610,21 +623,45 @@ export default function App() {
   );
 }
 
-function CotizacionEditorWrapper({ cotizaciones, onGuardar, ...props }: any) {
+function CotizacionEditorWrapper({ cotizaciones, loading, onGuardar, ...props }: any) {
   const { id } = useParams();
   if (!id || id === 'undefined' || id === 'null') return <Navigate to="/cotizaciones" replace />;
   const cotizacion = cotizaciones.find((c: any) => c.id === id);
-  if (!cotizacion && id) return <div className="p-8 text-gray-500">Cotización no encontrada</div>;
+  if (!cotizacion && id) {
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center py-20">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-accent-blue" />
+            <p className="text-muted-foreground text-sm">Cargando cotización…</p>
+          </div>
+        </div>
+      );
+    }
+    return <div className="p-8 text-muted-foreground">Cotización no encontrada</div>;
+  }
   const handleGuardar = (data: any) => onGuardar(data, false, id);
   return <CotizacionEditor cotizacion={cotizacion} onGuardar={handleGuardar} {...props} />;
 }
 
-function CotizacionDetalleWrapper({ cotizaciones, ...props }: any) {
+function CotizacionDetalleWrapper({ cotizaciones, loading, ...props }: any) {
   const { id } = useParams();
   const navigate = useNavigate();
   if (!id || id === 'undefined' || id === 'null') return <Navigate to="/cotizaciones" replace />;
   const cotizacion = cotizaciones.find((c: any) => c.id === id);
-  if (!cotizacion) return <div className="p-8 text-gray-500">Cotización no encontrada</div>;
+  if (!cotizacion) {
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center py-20">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-accent-blue" />
+            <p className="text-muted-foreground text-sm">Cargando cotización…</p>
+          </div>
+        </div>
+      );
+    }
+    return <div className="p-8 text-muted-foreground">Cotización no encontrada</div>;
+  }
   const currentCliente = props.clientes.find((cl: any) => cl.id === cotizacion.cliente_id);
   const pagos = props.obtenerPagosPorCotizacion(id);
   const saldoPendiente = props.calcularSaldoPendiente(id);
@@ -641,11 +678,23 @@ function CotizacionDetalleWrapper({ cotizaciones, ...props }: any) {
   );
 }
 
-function PDFFullPageWrapper({ cotizaciones, ...props }: any) {
+function PDFFullPageWrapper({ cotizaciones, loading, ...props }: any) {
   const { id } = useParams();
   if (!id || id === 'undefined' || id === 'null') return <Navigate to="/cotizaciones" replace />;
   const cotizacion = cotizaciones.find((c: any) => c.id === id);
-  if (!cotizacion) return <div>Cotización no encontrada</div>;
+  if (!cotizacion) {
+    if (loading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+            <p className="text-gray-600 text-sm">Cargando cotización…</p>
+          </div>
+        </div>
+      );
+    }
+    return <div>Cotización no encontrada</div>;
+  }
   const cliente = props.clientes.find((c: any) => c.id === cotizacion.cliente_id);
   return <PDFFullPageMoodboard cotizacion={cotizacion} cliente={cliente} {...props} />;
 }

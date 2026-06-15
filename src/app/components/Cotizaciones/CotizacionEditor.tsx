@@ -645,26 +645,26 @@ export function CotizacionEditor({
                 />
                 
                 {showClienteDropdown && (
-                  <div className="absolute z-10 w-full mt-1 border rounded-md bg-white shadow-lg max-h-40 overflow-y-auto">
+                  <div className="absolute z-10 w-full mt-1 border border-white/10 rounded-md bg-[var(--surface-secondary)] shadow-lg max-h-40 overflow-y-auto">
                     {clientesFiltrados.length > 0 ? (
                       clientesFiltrados.map(cliente => cliente ? (
                         <div
                           key={cliente.id}
-                          className="p-2 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
+                          className="p-2 hover:bg-white/[0.06] cursor-pointer border-b border-white/[0.06] last:border-b-0"
                           onClick={() => {
                             setFormData(prev => ({ ...prev, cliente_id: cliente.id }));
                             setBusquedaCliente('');
                             setShowClienteDropdown(false);
                           }}
                         >
-                          <div className="font-medium">{cliente.nombre_razon_social}</div>
-                          <div className="text-sm text-gray-500">
+                          <div className="font-medium text-white">{cliente.nombre_razon_social}</div>
+                          <div className="text-sm text-muted-foreground">
                             {cliente.correo} • {cliente.telefono}
                           </div>
                         </div>
                       ) : null)
                     ) : (
-                      <div className="p-2 text-gray-500 text-center">
+                      <div className="p-2 text-muted-foreground text-center">
                         {clientes.length === 0 ? 'No hay clientes registrados' : 'No se encontraron clientes'}
                       </div>
                     )}
@@ -673,9 +673,9 @@ export function CotizacionEditor({
               </div>
               
               {clienteSeleccionado && !showClienteDropdown && (
-                <div className="mt-2 p-3 bg-blue-50 rounded-md">
-                  <div className="font-medium">{clienteSeleccionado.nombre_razon_social}</div>
-                  <div className="text-sm text-gray-600">
+                <div className="mt-2 p-3 bg-accent-blue/10 border border-accent-blue/20 rounded-md">
+                  <div className="font-medium text-white">{clienteSeleccionado.nombre_razon_social}</div>
+                  <div className="text-sm text-muted-foreground">
                     {clienteSeleccionado.correo} • {clienteSeleccionado.telefono}
                   </div>
                   <Button 
@@ -692,13 +692,13 @@ export function CotizacionEditor({
 
                   {/* Selector de Contacto */}
                   {clienteSeleccionado.contactos && clienteSeleccionado.contactos.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-blue-200">
-                      <Label className="text-xs text-blue-700 font-medium">¿Quién solicita esta cotización?</Label>
+                    <div className="mt-3 pt-3 border-t border-accent-blue/20">
+                      <Label className="text-xs text-accent-blue font-medium">¿Quién solicita esta cotización?</Label>
                       <Select
                         value={formData.contacto_id || '_none'}
                         onValueChange={(value) => setFormData(prev => ({ ...prev, contacto_id: value === '_none' ? '' : value }))}
                       >
-                        <SelectTrigger className="mt-1 bg-white text-sm h-9">
+                        <SelectTrigger className="mt-1 bg-transparent text-sm h-9">
                           <SelectValue placeholder="Seleccionar contacto..." />
                         </SelectTrigger>
                         <SelectContent>
@@ -706,8 +706,8 @@ export function CotizacionEditor({
                           {clienteSeleccionado.contactos.map((contacto) => (
                             <SelectItem key={contacto.id} value={contacto.id}>
                               <span className="font-medium">{contacto.nombre}</span>
-                              {contacto.departamento && <span className="text-gray-500"> · {contacto.departamento}</span>}
-                              {contacto.puesto && <span className="text-gray-400"> ({contacto.puesto})</span>}
+                              {contacto.departamento && <span className="text-muted-foreground"> · {contacto.departamento}</span>}
+                              {contacto.puesto && <span className="text-muted-foreground"> ({contacto.puesto})</span>}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -716,7 +716,7 @@ export function CotizacionEditor({
                         const c = clienteSeleccionado.contactos?.find(x => x.id === formData.contacto_id);
                         if (!c) return null;
                         return (
-                          <div className="mt-1.5 text-xs text-gray-500 flex gap-3">
+                          <div className="mt-1.5 text-xs text-muted-foreground flex gap-3">
                             {c.correo && <span>📧 {c.correo}</span>}
                             {c.telefono && <span>📱 {c.telefono}</span>}
                           </div>
