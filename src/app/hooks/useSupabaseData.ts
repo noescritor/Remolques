@@ -834,23 +834,11 @@ export function useSupabaseData(token?: string) {
 
   // ─────────────────────────────────────────────────────────────────────────────
 
-  // Función para exportar PDF
+  // Función para exportar PDF — navega a la vista previa PDF en lugar de abrir popup
   const onExportPDF = (cotizacion: Cotizacion) => {
-    const currentUrl = window.location.href;
-    const baseUrl = currentUrl.split('?')[0];
-    const pdfUrl = `${baseUrl}?pdf=${cotizacion.id}`;
-    
-    const printWindow = window.open(pdfUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
-    
-    if (printWindow) {
-      printWindow.addEventListener('load', () => {
-        setTimeout(() => {
-          printWindow.print();
-        }, 1000);
-      });
-    } else {
-      window.location.href = pdfUrl;
-    }
+    // Navegar directamente a la ruta de PDF dentro de la SPA
+    // La vista PDF ya tiene un botón de impresión interno
+    window.open(`${window.location.origin}/cotizaciones/${cotizacion.id}/pdf`, '_blank');
   };
 
 

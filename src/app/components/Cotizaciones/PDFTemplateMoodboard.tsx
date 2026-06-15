@@ -65,7 +65,9 @@ function PageHeader({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 22, height: 22, background: 'rgba(255,255,255,0.12)', borderRadius: 3 }} />
+          {ajustes?.logo_url ? (
+            <img src={ajustes.logo_url} alt="Logo" style={{ width: 22, height: 22, borderRadius: 3, objectFit: 'contain' }} />
+          ) : null}
           <span style={{ ...s(15, 700), color: '#fff' }}>{empresa}</span>
         </div>
         <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.4)' }}>
@@ -89,7 +91,9 @@ function PageHeader({
       {/* Brand */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 26, height: 26, background: 'rgba(255,255,255,0.12)', borderRadius: 3 }} />
+          {ajustes?.logo_url ? (
+            <img src={ajustes.logo_url} alt="Logo" style={{ width: 26, height: 26, borderRadius: 3, objectFit: 'contain' }} />
+          ) : null}
           <span style={{ ...s(17, 700), color: '#fff' }}>{empresa}</span>
         </div>
         <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.45)', textTransform: 'none' }}>

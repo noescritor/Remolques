@@ -34,11 +34,11 @@ interface CotizacionDetalleProps {
 }
 
 const estadoColors: Record<EstadoCotizacion, string> = {
-  'Borrador': 'bg-gray-100 text-gray-800',
-  'Enviada': 'bg-blue-100 text-blue-800',
-  'Aprobada': 'bg-green-100 text-green-800',
-  'Cancelada': 'bg-red-100 text-red-800',
-  'Pagada': 'bg-emerald-100 text-emerald-800'
+  'Borrador': 'bg-white/10 text-white/70 border border-white/20',
+  'Enviada': 'bg-accent-blue/20 text-accent-blue border border-accent-blue/30',
+  'Aprobada': 'bg-accent-green/20 text-accent-green border border-accent-green/30',
+  'Cancelada': 'bg-accent-red/20 text-accent-red border border-accent-red/30',
+  'Pagada': 'bg-emerald-400/20 text-emerald-400 border border-emerald-400/30'
 };
 
 export function CotizacionDetalle({
@@ -181,7 +181,7 @@ export function CotizacionDetalle({
           <Button 
             variant="outline" 
             onClick={() => setEmailDialogOpen(true)}
-            className="text-purple-600 border-purple-300 hover:bg-purple-50"
+            className="text-accent-purple border-accent-purple/30 hover:bg-accent-purple/10"
           >
             <Mail className="mr-2 h-4 w-4" />
             Enviar Email
@@ -191,7 +191,7 @@ export function CotizacionDetalle({
             variant="outline"
             onClick={manejarPortal}
             disabled={generandoPortal}
-            className="text-blue-600 border-blue-300 hover:bg-blue-50"
+            className="text-accent-blue border-accent-blue/30 hover:bg-accent-blue/10"
           >
             {generandoPortal ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -225,35 +225,35 @@ export function CotizacionDetalle({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
-              <Label className="text-sm text-gray-500">Folio</Label>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider">Folio</label>
               <div className="font-medium">{cotizacion.folio}</div>
             </div>
             
             <div>
-              <Label className="text-sm text-gray-500">Cliente</Label>
-              <div className="font-medium">{cotizacion.cliente?.nombre_razon_social}</div>
-              <div className="text-sm text-gray-500">{cotizacion.cliente?.correo}</div>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider">Cliente</label>
+              <div className="font-medium text-white">{cotizacion.cliente?.nombre_razon_social}</div>
+              <div className="text-sm text-muted-foreground">{cotizacion.cliente?.correo}</div>
             </div>
             
             <div>
-              <Label className="text-sm text-gray-500">Fecha</Label>
-              <div className="font-medium">{formatearFecha(cotizacion.fecha)}</div>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider">Fecha</label>
+              <div className="font-medium text-white">{formatearFecha(cotizacion.fecha)}</div>
             </div>
             
             <div>
-              <Label className="text-sm text-gray-500">Validez</Label>
-              <div className="font-medium">{cotizacion.validez_dias} días</div>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider">Validez</label>
+              <div className="font-medium text-white">{cotizacion.validez_dias} días</div>
             </div>
 
             {cotizacion.descripcion && (
               <div className="lg:col-span-3">
-                <Label className="text-sm text-gray-500">Descripción</Label>
-                <div className="font-medium">{cotizacion.descripcion}</div>
+                <label className="text-xs text-muted-foreground uppercase tracking-wider">Descripción</label>
+                <div className="font-medium text-white">{cotizacion.descripcion}</div>
               </div>
             )}
             
             <div>
-              <Label className="text-sm text-gray-500">Estado</Label>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider">Estado</label>
               <div className="flex gap-2 items-center">
                 <Badge className={estadoColors[cotizacion.estado]}>
                   {cotizacion.estado}
@@ -278,25 +278,25 @@ export function CotizacionDetalle({
             </div>
             
             <div>
-              <Label className="text-sm text-gray-500">Subtotal</Label>
-              <div className="font-medium">{formatearMoneda(cotizacion.subtotal)}</div>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider">Subtotal</label>
+              <div className="font-medium text-white">{formatearMoneda(cotizacion.subtotal)}</div>
             </div>
             
             <div>
-              <Label className="text-sm text-gray-500">IVA</Label>
-              <div className="font-medium">{formatearMoneda(cotizacion.iva)}</div>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider">IVA</label>
+              <div className="font-medium text-white">{formatearMoneda(cotizacion.iva)}</div>
             </div>
             
             <div>
-              <Label className="text-sm text-gray-500">Total</Label>
-              <div className="font-bold text-lg text-green-600">{formatearMoneda(cotizacion.total)}</div>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider">Total</label>
+              <div className="font-bold text-lg text-accent-green">{formatearMoneda(cotizacion.total)}</div>
             </div>
           </div>
           
           {cotizacion.nota && (
-            <div className="mt-6 p-4 bg-gray-50 rounded-md">
-              <Label className="text-sm text-gray-500">Nota</Label>
-              <div className="mt-1">{cotizacion.nota}</div>
+            <div className="mt-6 p-4 bg-white/[0.03] rounded-md border border-white/[0.06]">
+              <label className="text-xs text-muted-foreground uppercase tracking-wider">Nota</label>
+              <div className="mt-1 text-white/80">{cotizacion.nota}</div>
             </div>
           )}
         </CardContent>
@@ -361,7 +361,7 @@ export function CotizacionDetalle({
               </CardHeader>
               <CardContent>
                 {pagos.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-muted-foreground">
                     No se han registrado pagos para esta cotización.
                   </div>
                 ) : (
@@ -387,18 +387,18 @@ export function CotizacionDetalle({
                   </Table>
                 )}
                 
-                <div className="mt-6 p-4 bg-blue-50 rounded-md">
+                <div className="mt-6 p-4 bg-accent-blue/5 rounded-md border border-accent-blue/20">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Total de la Cotización:</span>
-                    <span className="font-bold">{formatearMoneda(cotizacion.total)}</span>
+                    <span className="font-medium text-white/70">Total de la Cotización:</span>
+                    <span className="font-bold text-white">{formatearMoneda(cotizacion.total)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Total Pagado:</span>
-                    <span className="font-bold">{formatearMoneda(cotizacion.total - saldoPendiente)}</span>
+                    <span className="font-medium text-white/70">Total Pagado:</span>
+                    <span className="font-bold text-white">{formatearMoneda(cotizacion.total - saldoPendiente)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-medium text-lg">Saldo Pendiente:</span>
-                    <span className={`font-bold text-lg ${saldoPendiente > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                    <span className="font-medium text-lg text-white">Saldo Pendiente:</span>
+                    <span className={`font-bold text-lg ${saldoPendiente > 0 ? 'text-accent-red' : 'text-accent-green'}`}>
                       {formatearMoneda(saldoPendiente)}
                     </span>
                   </div>
@@ -500,7 +500,7 @@ export function CotizacionDetalle({
               <CardContent>
                 <div className="relative">
                   {/* Línea vertical del timeline */}
-                  <div className="absolute left-5 top-3 bottom-3 w-0.5 bg-gray-200" />
+                  <div className="absolute left-5 top-3 bottom-3 w-0.5 bg-white/10" />
 
                   <div className="space-y-4">
                     {famVersiones.map((version, idx) => {
@@ -513,8 +513,8 @@ export function CotizacionDetalle({
                           <div className={`
                             absolute left-3 top-3 w-4 h-4 rounded-full border-2 flex items-center justify-center
                             ${esCurrent
-                              ? 'bg-blue-600 border-blue-600'
-                              : 'bg-white border-gray-300'}
+                              ? 'bg-accent-blue border-accent-blue'
+                              : 'bg-white/5 border-white/20'}
                           `}>
                             {esCurrent && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                           </div>
@@ -522,14 +522,14 @@ export function CotizacionDetalle({
                           <div className={`
                             flex-1 rounded-lg border p-4 transition-colors
                             ${esCurrent
-                              ? 'border-blue-300 bg-blue-50'
-                              : 'border-gray-200 bg-white hover:border-gray-300'}
+                              ? 'border-accent-blue/40 bg-accent-blue/5'
+                              : 'border-white/[0.06] bg-white/[0.02] hover:border-white/20'}
                           `}>
                             <div className="flex items-start justify-between gap-3">
                               <div>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="font-semibold text-gray-900">{version.folio}</span>
-                                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                                  <span className="font-semibold text-white">{version.folio}</span>
+                                  <span className="text-xs bg-white/10 text-white/60 px-2 py-0.5 rounded-full">
                                     v{version.version || 1}
                                   </span>
                                   {esCurrent && (
@@ -543,7 +543,7 @@ export function CotizacionDetalle({
                                     </span>
                                   )}
                                 </div>
-                                <div className="mt-1 flex items-center gap-3 text-sm text-gray-500">
+                                <div className="mt-1 flex items-center gap-3 text-sm text-muted-foreground">
                                   <span>{formatearFecha(version.fecha)}</span>
                                   <span>·</span>
                                   <Badge className={estadoColors[version.estado]} style={{ fontSize: '11px' }}>
@@ -551,12 +551,12 @@ export function CotizacionDetalle({
                                   </Badge>
                                 </div>
                                 {version.descripcion && (
-                                  <p className="mt-1 text-sm text-gray-600">{version.descripcion}</p>
+                                  <p className="mt-1 text-sm text-muted-foreground">{version.descripcion}</p>
                                 )}
                               </div>
 
                               <div className="text-right shrink-0">
-                                <div className="font-bold text-gray-900">{formatearMoneda(version.total)}</div>
+                                <div className="font-bold text-white">{formatearMoneda(version.total)}</div>
                                 {idx > 0 && famVersiones[idx - 1].total !== version.total && (
                                   <div className={`text-xs mt-0.5 ${version.total > famVersiones[idx - 1].total ? 'text-red-600' : 'text-green-600'}`}>
                                     {version.total > famVersiones[idx - 1].total ? '▲' : '▼'}{' '}
@@ -567,10 +567,10 @@ export function CotizacionDetalle({
                             </div>
 
                             {!esCurrent && onVerCotizacion && (
-                              <div className="mt-3 pt-3 border-t border-gray-100">
+                              <div className="mt-3 pt-3 border-t border-white/[0.06]">
                                 <button
                                   onClick={() => onVerCotizacion(version.id)}
-                                  className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                                  className="text-sm text-accent-blue hover:text-accent-blue/80 flex items-center gap-1"
                                 >
                                   <ExternalLink className="h-3.5 w-3.5" />
                                   Ver esta versión
