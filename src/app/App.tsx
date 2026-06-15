@@ -9,6 +9,7 @@ import { PortalCliente } from './components/Portal/PortalCliente';
 import { PortalPDF } from './components/Portal/PortalPDF';
 
 import { ClientesList } from './components/Clientes/ClientesList';
+import { CalculadoraPage } from './components/Calculadora/CalculadoraPage';
 import { ProductosList } from './components/Productos/ProductosList';
 import { InventarioList } from './components/Inventario/InventarioList';
 import { AjustesForm } from './components/Ajustes/AjustesForm';
@@ -512,6 +513,8 @@ export default function App() {
             onEliminarCategoria={eliminarCategoriaProducto}
           />
         } />
+
+                <Route path="/calculadora" element={<CalculadoraPage />} />
 
         <Route path="/ajustes" element={
           <AjustesForm

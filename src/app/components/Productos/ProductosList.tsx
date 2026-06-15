@@ -12,7 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Switch } from '../ui/switch';
 import { formatearMoneda } from '../../utils/calculations';
-import { CalculadoraMaterial } from './CalculadoraMaterial';
 
 interface ProductosListProps {
   productos: Producto[];
