@@ -50,14 +50,14 @@ export function PDFFullPageMoodboard({
   const [exporting, setExporting] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-[#1a1a2e]">
       {/* Estilos de impresión inyectados en <head> */}
       <style dangerouslySetInnerHTML={{ __html: PRINT_STYLES }} />
 
       {/* ── Toolbar ── */}
       <div
         id="pdf-toolbar"
-        className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm"
+        className="sticky top-0 z-10 bg-[var(--surface-secondary)] border-b border-white/[0.06] shadow-sm"
         style={{ display: 'flex' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -71,7 +71,7 @@ export function PDFFullPageMoodboard({
                 <h1 className="text-base font-semibold">
                   Cotización — {cotizacion?.folio}
                 </h1>
-                <p className="text-xs text-gray-500">Diseño Moodboard · 2 páginas A4</p>
+                <p className="text-xs text-muted-foreground">Diseño Moodboard · 2 páginas A4</p>
               </div>
             </div>
 
@@ -101,7 +101,7 @@ export function PDFFullPageMoodboard({
       </div>
 
       {/* ── Preview ── */}
-      <div id="pdf-preview-wrapper" className="py-8 bg-gray-100">
+      <div id="pdf-preview-wrapper" className="py-8 bg-[#1a1a2e]">
         <div className="flex flex-col items-center gap-6 px-4">
           {/* Sombra de página para la vista en browser */}
           <div
