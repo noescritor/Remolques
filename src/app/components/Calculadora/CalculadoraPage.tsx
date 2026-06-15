@@ -4,7 +4,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Calculator, Copy, ArrowRight, Ruler, RefreshCw } from 'lucide-react';
+import { Calculator, Copy, ArrowRight, Ruler, RefreshCw, Package } from 'lucide-react';
 import { toast } from "sonner";
 
 type UnidadMedida = 'cm' | 'm';

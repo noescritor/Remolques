@@ -60,14 +60,14 @@ function ModernSideNav({ currentPage, onNavigate, session }: { currentPage: stri
   ];
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200">
+    <div className="flex flex-col h-full bg-background border-r border-white/[0.06]">
       {/* Logo */}
-      <div className="flex items-center px-6 py-6 border-b border-gray-200">
+      <div className="flex items-center px-6 py-6 border-b border-white/[0.06]">
         <div className="flex items-center gap-3">
           <LogoIdeally size={32} />
           <div>
-            <h1 className="font-bold text-xl text-gray-900">Cotizador</h1>
-            <p className="text-xs text-gray-500">Sistema de Gestión</p>
+            <h1 className="font-bold text-xl text-white">Cotizador</h1>
+            <p className="text-xs text-muted-foreground">Sistema de Gestión</p>
           </div>
         </div>
       </div>
@@ -84,12 +84,12 @@ function ModernSideNav({ currentPage, onNavigate, session }: { currentPage: stri
                 className={`
                   w-full flex items-center gap-3 px-3 py-2.5 text-left rounded-lg font-medium transition-colors
                   ${item.isActive 
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200' 
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'bg-accent-blue/10 text-accent-blue border border-accent-blue/20' 
+                    : 'text-white/70 hover:bg-white/[0.04] hover:text-white'
                   }
                 `}
               >
-                <Icon className={`w-5 h-5 ${item.isActive ? 'text-blue-600' : 'text-gray-400'}`} />
+                <Icon className={`w-5 h-5 ${item.isActive ? 'text-accent-blue' : 'text-muted-foreground'}`} />
                 {item.label}
               </button>
             );
@@ -98,18 +98,18 @@ function ModernSideNav({ currentPage, onNavigate, session }: { currentPage: stri
       </nav>
 
       {/* User Section */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors" onClick={() => setProfileOpen(true)}>
-          <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-sm font-medium text-purple-700">{userInitial}</span>
+      <div className="p-4 border-t border-white/[0.06]">
+        <div className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-white/[0.04] rounded-lg transition-colors" onClick={() => setProfileOpen(true)}>
+          <div className="w-8 h-8 bg-accent-blue/20 rounded-full flex items-center justify-center flex-shrink-0 border border-accent-blue/30">
+            <span className="text-sm font-medium text-accent-blue">{userInitial}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">{userName}</p>
-            <p className="text-xs text-gray-500 truncate">{userEmail}</p>
+            <p className="text-sm font-medium text-white truncate">{userName}</p>
+            <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
           </div>
           <button 
             onClick={(e) => { e.stopPropagation(); supabase.auth.signOut(); }}
-            className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+            className="p-1 text-muted-foreground hover:text-accent-red transition-colors"
             title="Cerrar sesión"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -150,7 +150,7 @@ export function ModernLayout({ children, currentPage, onNavigate, session }: Mod
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block w-64 flex-shrink-0">
         <ModernSideNav currentPage={currentPage} onNavigate={onNavigate} session={session} />
@@ -159,11 +159,11 @@ export function ModernLayout({ children, currentPage, onNavigate, session }: Mod
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden w-full">
         {/* Mobile Header */}
-        <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+        <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-background border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
             <LogoIdeally size={28} />
             <div>
-              <h1 className="font-bold text-lg text-gray-900">Cotizador</h1>
+              <h1 className="font-bold text-lg text-white">Cotizador</h1>
             </div>
           </div>
           
