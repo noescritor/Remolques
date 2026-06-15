@@ -1255,6 +1255,75 @@ app.delete("/invitaciones/:id", async (c) => {
   }
 });
 
+app.post("/organizaciones/crear-con-invitacion", async (c) => {
+  try {
+    const user = c.get("user");
+    const { nombre, email } = await c.req.json();
+
+    if (!nombre || !email) {
+      return c.json({ error: "Nombre de organización y correo son requeridos" }, 400);
+    }
+
+    const adminClient = getServiceClient();
+
+    // 1. Crear la nueva organización
+    const { data: org, error: orgError } = await adminClient
+      .from('organizaciones')
+      .insert({ nombre })
+      .select()
+      .single();
+
+    if (orgError) {
+      console.error("[make-server] Error al crear la organización:", orgError);
+      throw orgError;
+    }
+
+    // 2. Crear la invitación para esa organización
+    const { data: inv, error: invError } = await adminClient
+      .from('invitaciones_equipo')
+      .insert({
+        organizacion_id: org.id,
+        email: email.toLowerCase(),
+        rol: 'propietario', // El nuevo usuario es el propietario de esta nueva organización
+        invitado_por: user.id
+      })
+      .select()
+      .single();
+
+    if (invError) {
+      console.error("[make-server] Error al crear la invitación para la nueva organización:", invError);
+      // Intentar limpiar la organización creada para evitar registros huérfanos
+      await adminClient.from('organizaciones').delete().eq('id', org.id);
+      throw invError;
+    }
+
+    // 3. Inicializar unos ajustes básicos para la nueva organización
+    const { error: ajustesError } = await adminClient
+      .from('ajustes')
+      .insert({
+        id: org.id,
+        data: {
+          iva_por_defecto: 0.16,
+          validez_por_defecto: 30,
+          nota_por_defecto: 'Gracias por su preferencia.',
+          prefijo_folio: '',
+          offset_folio: 1,
+          nombre_empresa: nombre
+        }
+      });
+
+    if (ajustesError) {
+      console.error("[make-server] Advertencia: no se pudieron inicializar los ajustes de la nueva organización:", ajustesError);
+    }
+
+    return c.json({ success: true, organizacion: org, invitacion: inv });
+  } catch (error: any) {
+    console.error("[make-server] Error in /organizaciones/crear-con-invitacion:", error);
+    return c.json({ error: error.message || "Error al crear la organización y la invitación" }, 500);
+  }
+});
+
+
 // --- INVENTARIO ---
 
 app.get("/inventario/movimientos", async (c) => {

@@ -825,6 +825,14 @@ export function useSupabaseData(token?: string) {
     return resultado;
   };
 
+  const crearOrganizacionConInvitacion = async (nombre: string, email: string) => {
+    const resultado = await sendJson('crear organización con invitación', `${BASE_URL}/organizaciones/crear-con-invitacion`, token, {
+      method: 'POST',
+      body: JSON.stringify({ nombre, email })
+    });
+    return resultado;
+  };
+
   const eliminarInvitacion = async (id: string) => {
     await sendJson('eliminar invitación', `${BASE_URL}/invitaciones/${id}`, token, {
       method: 'DELETE',
@@ -921,6 +929,7 @@ export function useSupabaseData(token?: string) {
     guardarComoPlantilla,
     // Equipo e Invitaciones
     crearInvitacion,
+    crearOrganizacionConInvitacion,
     eliminarInvitacion,
 
     // Eventos
