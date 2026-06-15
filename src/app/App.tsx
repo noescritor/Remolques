@@ -58,6 +58,10 @@ export default function App() {
 
   const {
     clientes,
+    categoriasCliente,
+    crearCategoriaCliente,
+    actualizarCategoriaCliente,
+    eliminarCategoriaCliente,
     productos,
     categoriasProducto,
     crearCategoriaProducto,
@@ -483,10 +487,14 @@ export default function App() {
         <Route path="/clientes" element={
           <ClientesList
             clientes={clientes}
+            categorias={categoriasCliente}
             loading={loading}
             onCrearCliente={manejarCrearCliente}
             onActualizarCliente={manejarActualizarCliente}
             onEliminarCliente={manejarEliminarCliente}
+            onCrearCategoria={crearCategoriaCliente}
+            onActualizarCategoria={actualizarCategoriaCliente}
+            onEliminarCategoria={eliminarCategoriaCliente}
           />
         } />
 

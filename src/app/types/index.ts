@@ -24,7 +24,6 @@ tipo_pago_preferido: 'Transferencia' | 'Tarjeta' | 'Efectivo' | 'PayPal' | 'Cré
   origen_lead?: string;
   giro_empresa?: string;
 }
-}
 
 export interface CategoriaProducto {
   id: string;
@@ -76,7 +75,6 @@ stock_actual?: number;
   stock_reservado?: number;
   categoria_id?: string;
   imagen_url?: string;
-}
 }
 
 export interface MovimientoInventario {

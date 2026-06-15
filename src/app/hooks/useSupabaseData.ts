@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase/client';
-import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto } from '../types';
+import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente } from '../types';
 const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
 
 const getHeaders = (token?: string) => ({
@@ -117,7 +117,47 @@ export function useSupabaseData(token?: string) {
     }
   };
 
+
+  // CRUD Categorías Cliente
+  const crearCategoriaCliente = async (categoria: Omit<CategoriaCliente, 'id' | 'organizacion_id'>) => {
+    try {
+      const { data, error } = await supabase.from('categorias_cliente').insert(categoria).select().single();
+      if (error) throw error;
+      setCategoriasCliente([...categoriasCliente, data]);
+      toast.success('Categoría creada', { description: 'La categoría se creó correctamente.' });
+      return data;
+    } catch (error: any) {
+      toast.error('Error al crear categoría', { description: error.message });
+      throw error;
+    }
+  };
+
+  const actualizarCategoriaCliente = async (id: string, categoria: Partial<CategoriaCliente>) => {
+    try {
+      const { data, error } = await supabase.from('categorias_cliente').update(categoria).eq('id', id).select().single();
+      if (error) throw error;
+      setCategoriasCliente(categoriasCliente.map(c => c.id === id ? data : c));
+      toast.success('Categoría actualizada');
+    } catch (error: any) {
+      toast.error('Error al actualizar', { description: error.message });
+      throw error;
+    }
+  };
+
+  const eliminarCategoriaCliente = async (id: string) => {
+    try {
+      const { error } = await supabase.from('categorias_cliente').delete().eq('id', id);
+      if (error) throw error;
+      setCategoriasCliente(categoriasCliente.filter(c => c.id !== id));
+      toast.success('Categoría eliminada');
+    } catch (error: any) {
+      toast.error('Error al eliminar', { description: error.message });
+      throw error;
+    }
+  };
+
   // Helper to generate ID
+
 
   const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   
@@ -201,6 +241,10 @@ export function useSupabaseData(token?: string) {
 
       const categoriasReq = await supabase.from('categorias_producto').select('*').order('orden');
       if (categoriasReq.data) setCategoriasProducto(categoriasReq.data);
+
+
+      const categoriasReqC = await supabase.from('categorias_cliente').select('*').order('orden');
+      if (categoriasReqC.data) setCategoriasCliente(categoriasReqC.data);
 
       const ajustesData = await fetchJson('ajustes', `${BASE_URL}/ajustes`, token);
       const plantillasData = await fetchJson('plantillas', `${BASE_URL}/plantillas`, token).catch(error => {
@@ -603,6 +647,10 @@ export function useSupabaseData(token?: string) {
 
   return {
     categoriasProducto,
+    categoriasCliente,
+    crearCategoriaCliente,
+    actualizarCategoriaCliente,
+    eliminarCategoriaCliente,
     crearCategoriaProducto,
     actualizarCategoriaProducto,
     eliminarCategoriaProducto,
@@ -826,6 +874,10 @@ export function useSupabaseData(token?: string) {
 
   return {
     categoriasProducto,
+    categoriasCliente,
+    crearCategoriaCliente,
+    actualizarCategoriaCliente,
+    eliminarCategoriaCliente,
     crearCategoriaProducto,
     actualizarCategoriaProducto,
     eliminarCategoriaProducto,
