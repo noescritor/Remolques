@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { supabase } from './utils/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { Login } from './components/Auth/Login';
+import { WelcomeTour } from './components/WelcomeTour';
 import { Routes, Route, useNavigate, useLocation, Navigate, useParams } from 'react-router-dom';
 
 export default function App() {
@@ -559,6 +560,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Toaster />
+      {session && <WelcomeTour session={session} />}
       </>
     );
   }
@@ -586,6 +588,7 @@ export default function App() {
           onExportPDF={manejarExportarPDF}
         />
         <Toaster />
+      {session && <WelcomeTour session={session} />}
       </>
     );
   }
@@ -595,10 +598,12 @@ export default function App() {
       <ModernLayout
         currentPage={getCurrentPage()}
         onNavigate={manejarNavegacion}
+        session={session}
       >
         {renderizarContenido()}
       </ModernLayout>
       <Toaster />
+      {session && <WelcomeTour session={session} />}
     </>
   );
 }

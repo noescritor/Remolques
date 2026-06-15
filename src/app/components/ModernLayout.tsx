@@ -12,26 +12,51 @@ import {
 } from 'lucide-react';
 import { LogoIdeally } from './Cotizaciones/LogoIdeally';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from './ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { supabase } from '../utils/supabase/client';
 
 interface ModernLayoutProps {
+  session?: any;
   children: ReactNode;
   currentPage: string;
   onNavigate: (page: string) => void;
 }
 
-function ModernSideNav({ currentPage, onNavigate }: { currentPage: string; onNavigate: (page: string) => void }) {
+function ModernSideNav({ currentPage, onNavigate, session }: { currentPage: string; onNavigate: (page: string) => void; session?: any }) {
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [nombre, setNombre] = useState(session?.user?.user_metadata?.nombre || '');
+  
+  const handleUpdateProfile = async () => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { nombre }
+      });
+      if (error) throw error;
+      toast.success('Perfil actualizado correctamente');
+      setProfileOpen(false);
+    } catch (err: any) {
+      toast.error('Error al actualizar perfil', { description: err.message });
+    }
+  };
+
+  const userName = session?.user?.user_metadata?.nombre || 'Usuario';
+  const userInitial = userName.charAt(0).toUpperCase();
+  const userEmail = session?.user?.email || '';
+
   const navItems = [
     { id: 'dashboard',    label: 'Dashboard',     icon: LayoutDashboard, isActive: currentPage === 'dashboard' },
-    { id: 'cotizaciones', label: 'Cotizaciones',   icon: FileText,        isActive: currentPage === 'cotizaciones' },
-    { id: 'plantillas',   label: 'Plantillas',     icon: BookTemplate,    isActive: currentPage === 'plantillas' },
-    { id: 'clientes',     label: 'Clientes',       icon: Users,           isActive: currentPage === 'clientes' },
-    { id: 'productos',    label: 'Productos',      icon: Package,         isActive: currentPage === 'productos' },
-    { id: 'calculadora',  label: 'Calculadora',    icon: Calculator,      isActive: currentPage === 'calculadora' },
-    { id: 'inventario',   label: 'Inventario',     icon: Package,         isActive: currentPage === 'inventario' },
-    { id: 'equipo',       label: 'Equipo',         icon: Users,           isActive: currentPage === 'equipo' },
-    { id: 'ajustes',      label: 'Configuración',  icon: Settings,        isActive: currentPage === 'ajustes' },
+    { id: 'cotizaciones', label: 'Cotizaciones',  icon: FileText,        isActive: currentPage === 'cotizaciones' },
+    { id: 'plantillas',   label: 'Plantillas',    icon: BookTemplate,    isActive: currentPage === 'plantillas' },
+    { id: 'clientes',     label: 'Clientes',      icon: Users,           isActive: currentPage === 'clientes' },
+    { id: 'productos',    label: 'Productos',     icon: Package,         isActive: currentPage === 'productos' },
+    { id: 'calculadora',  label: 'Calculadora',   icon: Calculator,      isActive: currentPage === 'calculadora' },
+    { id: 'inventario',   label: 'Inventario',    icon: Package,         isActive: currentPage === 'inventario' },
+    { id: 'equipo',       label: 'Equipo',        icon: Users,           isActive: currentPage === 'equipo' },
+    { id: 'ajustes',      label: 'Configuración', icon: Settings,        isActive: currentPage === 'ajustes' },
   ];
 
   return (
@@ -48,8 +73,8 @@ function ModernSideNav({ currentPage, onNavigate }: { currentPage: string; onNav
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 px-4 py-6">
-        <div className="space-y-2">
+      <nav className="flex-1 px-4 py-6 overflow-y-auto">
+        <div className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -74,15 +99,16 @@ function ModernSideNav({ currentPage, onNavigate }: { currentPage: string; onNav
 
       {/* User Section */}
       <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center gap-3 px-3 py-2">
-          <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-            <span className="text-sm font-medium text-purple-700">U</span>
+        <div className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors" onClick={() => setProfileOpen(true)}>
+          <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <span className="text-sm font-medium text-purple-700">{userInitial}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">Usuario</p>
+            <p className="text-sm font-medium text-gray-900 truncate">{userName}</p>
+            <p className="text-xs text-gray-500 truncate">{userEmail}</p>
           </div>
           <button 
-            onClick={() => supabase.auth.signOut()}
+            onClick={(e) => { e.stopPropagation(); supabase.auth.signOut(); }}
             className="p-1 text-gray-400 hover:text-red-600 transition-colors"
             title="Cerrar sesión"
           >
@@ -90,11 +116,32 @@ function ModernSideNav({ currentPage, onNavigate }: { currentPage: string; onNav
           </button>
         </div>
       </div>
+
+      <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Mi Perfil</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <Label>Nombre de Usuario</Label>
+              <Input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Ej. Juan Pérez" />
+            </div>
+            <div className="space-y-2">
+              <Label>Correo Electrónico (No editable)</Label>
+              <Input value={userEmail} disabled className="bg-gray-50" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setProfileOpen(false)}>Cancelar</Button>
+            <Button onClick={handleUpdateProfile}>Guardar Cambios</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-
-export function ModernLayout({ children, currentPage, onNavigate }: ModernLayoutProps) {
+export function ModernLayout({ children, currentPage, onNavigate, session }: ModernLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleNavigate = (page: string) => {
@@ -106,7 +153,7 @@ export function ModernLayout({ children, currentPage, onNavigate }: ModernLayout
     <div className="flex h-screen bg-gray-50">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block w-64 flex-shrink-0">
-        <ModernSideNav currentPage={currentPage} onNavigate={onNavigate} />
+        <ModernSideNav currentPage={currentPage} onNavigate={onNavigate} session={session} />
       </div>
 
       {/* Main Content */}
@@ -131,7 +178,7 @@ export function ModernLayout({ children, currentPage, onNavigate }: ModernLayout
               <SheetDescription className="sr-only">
                 Navega entre las diferentes secciones de la aplicación
               </SheetDescription>
-              <ModernSideNav currentPage={currentPage} onNavigate={handleNavigate} />
+              <ModernSideNav currentPage={currentPage} onNavigate={handleNavigate} session={session} />
             </SheetContent>
           </Sheet>
         </div>
