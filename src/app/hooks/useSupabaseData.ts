@@ -39,6 +39,8 @@ const sendJson = async (label: string, url: string, token: string | undefined, i
 };
 
 export function useSupabaseData(token?: string) {
+  const [organizacion, setOrganizacion] = useState<any>(null);
+  const [organizacionesList, setOrganizacionesList] = useState<any[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [cotizaciones, setCotizaciones] = useState<Cotizacion[]>([]);
@@ -242,6 +244,19 @@ export function useSupabaseData(token?: string) {
     
     // Server is available, try to fetch
     try {
+      const organizacionData = await fetchJson('organizacion', `${BASE_URL}/organizacion`, token).catch(error => {
+        console.warn('No se pudo cargar la organización:', error);
+        return null;
+      });
+
+      if (organizacionData?.id === '00000000-0000-0000-0000-000000000001') {
+        const listData = await fetchJson('organizaciones list', `${BASE_URL}/organizaciones`, token).catch(error => {
+          console.warn('No se pudieron cargar las organizaciones:', error);
+          return [];
+        });
+        setOrganizacionesList(listData);
+      }
+
       const clientesData = await fetchJson('clientes', `${BASE_URL}/clientes`, token);
       const productosData = await fetchJson('productos', `${BASE_URL}/productos`, token);
       const cotizacionesData = await fetchJson('cotizaciones', `${BASE_URL}/cotizaciones`, token);
@@ -268,6 +283,7 @@ export function useSupabaseData(token?: string) {
         return [];
       });
 
+      setOrganizacion(organizacionData);
       setClientes(Array.isArray(clientesData) ? clientesData : []);
       setProductos(Array.isArray(productosData) ? productosData : []);
       setCotizaciones(Array.isArray(cotizacionesData) ? cotizacionesData : []);
@@ -830,6 +846,17 @@ export function useSupabaseData(token?: string) {
       method: 'POST',
       body: JSON.stringify({ nombre, email })
     });
+    // Si somos super admin, agregamos la nueva organización a la lista local para que aparezca al instante
+    setOrganizacionesList(prev => [resultado.organizacion, ...prev]);
+    return resultado;
+  };
+
+  const actualizarModulosOrganizacion = async (id: string, modulosObj: Record<string, boolean>) => {
+    const resultado = await sendJson('actualizar módulos org', `${BASE_URL}/organizaciones/${id}/modulos`, token, {
+      method: 'PUT',
+      body: JSON.stringify({ modulos: modulosObj })
+    });
+    setOrganizacionesList(prev => prev.map(o => o.id === id ? resultado : o));
     return resultado;
   };
 
@@ -931,6 +958,12 @@ export function useSupabaseData(token?: string) {
     crearInvitacion,
     crearOrganizacionConInvitacion,
     eliminarInvitacion,
+
+    // Super Admin y Módulos
+    organizacion,
+    organizacionesList,
+    isSuperAdmin: organizacion?.id === '00000000-0000-0000-0000-000000000001',
+    actualizarModulosOrganizacion,
 
     // Eventos
     onExportPDF,

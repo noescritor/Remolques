@@ -35,6 +35,7 @@ interface DashboardMainProps {
   onNuevaCotizacion: () => void;
   onVerCotizacion: (id: string) => void;
   onNavigate: (page: string) => void;
+  organizacion?: any;
 }
 
 const COLORS = {
@@ -54,7 +55,8 @@ export function DashboardMain({
   loading,
   onNuevaCotizacion,
   onVerCotizacion,
-  onNavigate
+  onNavigate,
+  organizacion
 }: DashboardMainProps) {
   
   const {
@@ -196,6 +198,14 @@ export function DashboardMain({
     );
   }
 
+  const modulos = organizacion?.modulos || {
+    cotizaciones: true,
+    clientes: true,
+    productos: true,
+    calculadora: true,
+    inventario: true
+  };
+
   return (
     <div className="space-y-6 text-foreground bg-background min-h-screen">
       {/* Header del Dashboard */}
@@ -204,243 +214,257 @@ export function DashboardMain({
           <h1 className="text-3xl font-bold font-sans">Dashboard</h1>
           <p className="text-muted-foreground mt-1 font-sans">Panel operativo y resumen ejecutivo</p>
         </div>
-        <Button onClick={onNuevaCotizacion} className="bg-primary text-primary-foreground hover:bg-primary/90">
-          <Plus className="mr-2 h-4 w-4" />
-          Nueva Cotización
-        </Button>
+        {modulos.cotizaciones !== false && (
+          <Button onClick={onNuevaCotizacion} className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Plus className="mr-2 h-4 w-4" />
+            Nueva Cotización
+          </Button>
+        )}
       </div>
 
       {/* Stat Cards (Fila Superior) */}
-      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
-        <Card className="bg-white/[0.02] border-white/[0.06]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-label text-white/40 font-mono tracking-wide">TOTAL COTIZACIONES</CardTitle>
-            <FileText className="h-4 w-4 text-accent-blue" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold font-mono">{estadisticas.totalCotizaciones}</div>
-            <p className="text-xs text-muted-foreground mt-1">Aprobación: {estadisticas.tasaAprobacion.toFixed(1)}%</p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {modulos.cotizaciones !== false && (
+          <>
+            <Card className="bg-white/[0.02] border-white/[0.06]">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-label text-white/40 font-mono tracking-wide">TOTAL COTIZACIONES</CardTitle>
+                <FileText className="h-4 w-4 text-accent-blue" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold font-mono">{estadisticas.totalCotizaciones}</div>
+                <p className="text-xs text-muted-foreground mt-1">Aprobación: {estadisticas.tasaAprobacion.toFixed(1)}%</p>
+              </CardContent>
+            </Card>
 
-        <Card className="bg-white/[0.02] border-white/[0.06]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-label text-white/40 font-mono tracking-wide">INGRESOS REALES</CardTitle>
-            <DollarSign className="h-4 w-4 text-accent-green" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold font-mono">{formatearMoneda(estadisticas.ingresosTotales)}</div>
-            <p className="text-xs text-muted-foreground mt-1">Pagos recibidos</p>
-          </CardContent>
-        </Card>
+            <Card className="bg-white/[0.02] border-white/[0.06]">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-label text-white/40 font-mono tracking-wide">INGRESOS REALES</CardTitle>
+                <DollarSign className="h-4 w-4 text-accent-green" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold font-mono">{formatearMoneda(estadisticas.ingresosTotales)}</div>
+                <p className="text-xs text-muted-foreground mt-1">Pagos recibidos</p>
+              </CardContent>
+            </Card>
 
-        <Card className="bg-white/[0.02] border-white/[0.06]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-label text-white/40 font-mono tracking-wide">VENTAS (APROBADAS)</CardTitle>
-            <TrendingUp className="h-4 w-4 text-accent-violet" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold font-mono">{formatearMoneda(estadisticas.ventasTotales)}</div>
-            <p className="text-xs text-muted-foreground mt-1">Ticket Prom: {formatearMoneda(estadisticas.promedioValor)}</p>
-          </CardContent>
-        </Card>
+            <Card className="bg-white/[0.02] border-white/[0.06]">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-label text-white/40 font-mono tracking-wide">VENTAS (APROBADAS)</CardTitle>
+                <TrendingUp className="h-4 w-4 text-accent-violet" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold font-mono">{formatearMoneda(estadisticas.ventasTotales)}</div>
+                <p className="text-xs text-muted-foreground mt-1">Ticket Prom: {formatearMoneda(estadisticas.promedioValor)}</p>
+              </CardContent>
+            </Card>
+          </>
+        )}
 
-        <Card className="bg-white/[0.02] border-white/[0.06]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-label text-white/40 font-mono tracking-wide">CLIENTES</CardTitle>
-            <Users className="h-4 w-4 text-accent-yellow" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold font-mono">{estadisticas.totalClientes}</div>
-            <p className="text-xs text-muted-foreground mt-1">Activos en directorio</p>
-          </CardContent>
-        </Card>
+        {modulos.clientes !== false && (
+          <Card className="bg-white/[0.02] border-white/[0.06]">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-label text-white/40 font-mono tracking-wide">CLIENTES</CardTitle>
+              <Users className="h-4 w-4 text-accent-yellow" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold font-mono">{estadisticas.totalClientes}</div>
+              <p className="text-xs text-muted-foreground mt-1">Activos en directorio</p>
+            </CardContent>
+          </Card>
+        )}
 
-        <Card className="bg-white/[0.02] border-white/[0.06]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-label text-white/40 font-mono tracking-wide">PRODUCTOS</CardTitle>
-            <Package className="h-4 w-4 text-accent-pink" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold font-mono">{estadisticas.totalProductos}</div>
-            <p className="text-xs text-muted-foreground mt-1">En catálogo</p>
-          </CardContent>
-        </Card>
+        {modulos.productos !== false && (
+          <Card className="bg-white/[0.02] border-white/[0.06]">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-label text-white/40 font-mono tracking-wide">PRODUCTOS</CardTitle>
+              <Package className="h-4 w-4 text-accent-pink" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold font-mono">{estadisticas.totalProductos}</div>
+              <p className="text-xs text-muted-foreground mt-1">En catálogo</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* SECCIÓN NUEVA: Panel Operativo (3 Columnas) */}
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
-        {/* 1. Pendientes de Producción */}
-        <Card className="bg-white/[0.02] border-white/[0.06] flex flex-col">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-lg text-white">
-              <Factory className="h-5 w-5 text-[#FFD391]" />
-              Por Fabricar / Entregar
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1">
-            <div className="space-y-3">
-              {pendientesProduccion.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No hay pedidos pendientes.</p>
-              ) : (
-                pendientesProduccion.slice(0, 5).map(c => (
-                  <div key={c.id} className="flex justify-between items-start border-b border-border-soft pb-2 cursor-pointer hover:opacity-80" onClick={() => onVerCotizacion(c.id)}>
-                    <div>
-                      <div className="font-mono text-sm font-bold text-white">{c.folio}</div>
-                      <div className="text-xs text-muted-foreground truncate w-40">{getClientName(c.cliente_id)}</div>
-                    </div>
-                    <Badge style={{ backgroundColor: '#FFD391', color: '#000' }} className="text-[10px]">
-                      {c.estado_produccion || 'Pendiente'}
-                    </Badge>
-                  </div>
-                ))
-              )}
-            </div>
-            {pendientesProduccion.length > 5 && (
-              <Button variant="link" className="w-full mt-2 text-xs text-accent-blue" onClick={() => onNavigate('cotizaciones')}>Ver todos ({pendientesProduccion.length})</Button>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* 2. Perdidas de Vista */}
-        <Card className="bg-white/[0.02] border-white/[0.06] flex flex-col">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-lg text-white">
-              <AlertTriangle className="h-5 w-5 text-[#FF919F]" />
-              Perdidas de Vista
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1">
-            <div className="space-y-3">
-              {perdidasDeVista.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Todo al día.</p>
-              ) : (
-                perdidasDeVista.slice(0, 5).map(c => (
-                  <div key={c.id} className="flex justify-between items-start border-b border-border-soft pb-2 cursor-pointer hover:opacity-80" onClick={() => onVerCotizacion(c.id)}>
-                    <div>
-                      <div className="font-mono text-sm font-bold text-white">{c.folio}</div>
-                      <div className="text-xs text-muted-foreground">Hace {formatDistanceToNow(new Date((c as any).created_at || c.fecha || ''), {locale: es})}</div>
-                    </div>
-                    <Badge style={{ backgroundColor: c.estado === 'Borrador' ? '#FFD391' : '#FF919F', color: '#000' }} className="text-[10px]">
-                      {c.estado === 'Borrador' ? 'Sin Enviar' : 'Sin Respuesta'}
-                    </Badge>
-                  </div>
-                ))
-              )}
-            </div>
-            {perdidasDeVista.length > 5 && (
-              <Button variant="link" className="w-full mt-2 text-xs text-accent-blue" onClick={() => onNavigate('cotizaciones')}>Ver todas ({perdidasDeVista.length})</Button>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* 3. Fechas Críticas */}
-        <Card className="bg-white/[0.02] border-white/[0.06] flex flex-col">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-lg text-white">
-              <Calendar className="h-5 w-5 text-[#91CAFF]" />
-              Próximas Entregas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1">
-            <div className="space-y-3">
-              {proximasEntregas.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No hay entregas programadas.</p>
-              ) : (
-                proximasEntregas.map(c => {
-                  const past = isPast(new Date(c.fecha_entrega!));
-                  const isTodayOrTomorrow = new Date(c.fecha_entrega!).getTime() - new Date().getTime() <= (2 * 24 * 60 * 60 * 1000);
-                  
-                  let badgeColor = '#91FFB0'; // Verde
-                  if (past) badgeColor = '#FF919F'; // Rojo (Vencido)
-                  else if (isTodayOrTomorrow) badgeColor = '#FFD391'; // Amarillo
-                  
-                  return (
-                  <div key={c.id} className="flex justify-between items-start border-b border-border-soft pb-2 cursor-pointer hover:opacity-80" onClick={() => onVerCotizacion(c.id)}>
-                    <div>
-                      <div className="font-mono text-sm font-bold text-white">{c.folio}</div>
-                      <div className="text-xs text-muted-foreground truncate w-40">{getClientName(c.cliente_id)}</div>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <span className="text-[11px] text-white/60 font-mono mb-1">{new Date(c.fecha_entrega!).toLocaleDateString('es-ES')}</span>
-                      <Badge style={{ backgroundColor: badgeColor, color: '#000' }} className="text-[10px]">
-                         {past ? 'Vencida' : (isTodayOrTomorrow ? 'Urgente' : 'A tiempo')}
+      {modulos.cotizaciones !== false && (
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
+          {/* 1. Pendientes de Producción */}
+          <Card className="bg-white/[0.02] border-white/[0.06] flex flex-col">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg text-white">
+                <Factory className="h-5 w-5 text-[#FFD391]" />
+                Por Fabricar / Entregar
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <div className="space-y-3">
+                {pendientesProduccion.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No hay pedidos pendientes.</p>
+                ) : (
+                  pendientesProduccion.slice(0, 5).map(c => (
+                    <div key={c.id} className="flex justify-between items-start border-b border-border-soft pb-2 cursor-pointer hover:opacity-80" onClick={() => onVerCotizacion(c.id)}>
+                      <div>
+                        <div className="font-mono text-sm font-bold text-white">{c.folio}</div>
+                        <div className="text-xs text-muted-foreground truncate w-40">{getClientName(c.cliente_id)}</div>
+                      </div>
+                      <Badge style={{ backgroundColor: '#FFD391', color: '#000' }} className="text-[10px]">
+                        {c.estado_produccion || 'Pendiente'}
                       </Badge>
                     </div>
-                  </div>
-                )})
+                  ))
+                )}
+              </div>
+              {pendientesProduccion.length > 5 && (
+                <Button variant="link" className="w-full mt-2 text-xs text-accent-blue" onClick={() => onNavigate('cotizaciones')}>Ver todos ({pendientesProduccion.length})</Button>
               )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+
+          {/* 2. Perdidas de Vista */}
+          <Card className="bg-white/[0.02] border-white/[0.06] flex flex-col">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg text-white">
+                <AlertTriangle className="h-5 w-5 text-[#FF919F]" />
+                Perdidas de Vista
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <div className="space-y-3">
+                {perdidasDeVista.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Todo al día.</p>
+                ) : (
+                  perdidasDeVista.slice(0, 5).map(c => (
+                    <div key={c.id} className="flex justify-between items-start border-b border-border-soft pb-2 cursor-pointer hover:opacity-80" onClick={() => onVerCotizacion(c.id)}>
+                      <div>
+                        <div className="font-mono text-sm font-bold text-white">{c.folio}</div>
+                        <div className="text-xs text-muted-foreground">Hace {formatDistanceToNow(new Date((c as any).created_at || c.fecha || ''), {locale: es})}</div>
+                      </div>
+                      <Badge style={{ backgroundColor: c.estado === 'Borrador' ? '#FFD391' : '#FF919F', color: '#000' }} className="text-[10px]">
+                        {c.estado === 'Borrador' ? 'Sin Enviar' : 'Sin Respuesta'}
+                      </Badge>
+                    </div>
+                  ))
+                )}
+              </div>
+              {perdidasDeVista.length > 5 && (
+                <Button variant="link" className="w-full mt-2 text-xs text-accent-blue" onClick={() => onNavigate('cotizaciones')}>Ver todas ({perdidasDeVista.length})</Button>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* 3. Fechas Críticas */}
+          <Card className="bg-white/[0.02] border-white/[0.06] flex flex-col">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg text-white">
+                <Calendar className="h-5 w-5 text-[#91CAFF]" />
+                Próximas Entregas
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <div className="space-y-3">
+                {proximasEntregas.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No hay entregas programadas.</p>
+                ) : (
+                  proximasEntregas.map(c => {
+                    const past = isPast(new Date(c.fecha_entrega!));
+                    const isTodayOrTomorrow = new Date(c.fecha_entrega!).getTime() - new Date().getTime() <= (2 * 24 * 60 * 60 * 1000);
+                    
+                    let badgeColor = '#91FFB0'; // Verde
+                    if (past) badgeColor = '#FF919F'; // Rojo (Vencido)
+                    else if (isTodayOrTomorrow) badgeColor = '#FFD391'; // Amarillo
+                    
+                    return (
+                    <div key={c.id} className="flex justify-between items-start border-b border-border-soft pb-2 cursor-pointer hover:opacity-80" onClick={() => onVerCotizacion(c.id)}>
+                      <div>
+                        <div className="font-mono text-sm font-bold text-white">{c.folio}</div>
+                        <div className="text-xs text-muted-foreground truncate w-40">{getClientName(c.cliente_id)}</div>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <span className="text-[11px] text-white/60 font-mono mb-1">{new Date(c.fecha_entrega!).toLocaleDateString('es-ES')}</span>
+                        <Badge style={{ backgroundColor: badgeColor, color: '#000' }} className="text-[10px]">
+                           {past ? 'Vencida' : (isTodayOrTomorrow ? 'Urgente' : 'A tiempo')}
+                        </Badge>
+                      </div>
+                    </div>
+                  )})
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Gráficos Recharts */}
-      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-        <Card className="bg-white/[0.02] border-white/[0.06]">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 font-sans text-white">
-              <TrendingUp className="h-5 w-5 text-accent-violet" />
-              Tendencia Mensual
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={estadisticas.tendenciaMensual}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis dataKey="mes" stroke="rgba(255,255,255,0.4)" fontSize={12} />
-                  <YAxis yAxisId="left" stroke="rgba(255,255,255,0.4)" fontSize={12} />
-                  <YAxis yAxisId="right" orientation="right" stroke="rgba(255,255,255,0.4)" fontSize={12} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }}
-                    formatter={(value, name) => [
-                      name === 'ingresos' ? formatearMoneda(value as number) : value,
-                      name === 'ingresos' ? 'Ingresos' : 'Cotizaciones'
-                    ]}
-                  />
-                  <Line type="monotone" dataKey="cotizaciones" stroke="#91CAFF" strokeWidth={3} dot={{ fill: '#91CAFF' }} yAxisId="left" />
-                  <Line type="monotone" dataKey="ingresos" stroke="#91FFB0" strokeWidth={3} dot={{ fill: '#91FFB0' }} yAxisId="right" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+      {modulos.cotizaciones !== false && (
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+          <Card className="bg-white/[0.02] border-white/[0.06]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 font-sans text-white">
+                <TrendingUp className="h-5 w-5 text-accent-violet" />
+                Tendencia Mensual
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={estadisticas.tendenciaMensual}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="mes" stroke="rgba(255,255,255,0.4)" fontSize={12} />
+                    <YAxis yAxisId="left" stroke="rgba(255,255,255,0.4)" fontSize={12} />
+                    <YAxis yAxisId="right" orientation="right" stroke="rgba(255,255,255,0.4)" fontSize={12} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }}
+                      formatter={(value, name) => [
+                        name === 'ingresos' ? formatearMoneda(value as number) : value,
+                        name === 'ingresos' ? 'Ingresos' : 'Cotizaciones'
+                      ]}
+                    />
+                    <Line type="monotone" dataKey="cotizaciones" stroke="#91CAFF" strokeWidth={3} dot={{ fill: '#91CAFF' }} yAxisId="left" />
+                    <Line type="monotone" dataKey="ingresos" stroke="#91FFB0" strokeWidth={3} dot={{ fill: '#91FFB0' }} yAxisId="right" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card className="bg-white/[0.02] border-white/[0.06]">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 font-sans text-white">
-              <PieChart className="h-5 w-5 text-accent-blue" />
-              Distribución por Estado
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={estadisticas.estadosCotizaciones}
-                    cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value"
-                  >
-                    {estadisticas.estadosCotizaciones.map((entry) => (
-                      <Cell key={`cell-${entry.name}`} fill={entry.color} stroke="transparent" />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex flex-wrap justify-center gap-3 mt-4">
-              {estadisticas.estadosCotizaciones.map((estado) => (
-                <div key={`legend-${estado.name}`} className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: estado.color }}></div>
-                  <span className="text-xs text-white/60">{estado.name} ({estado.value})</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <Card className="bg-white/[0.02] border-white/[0.06]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 font-sans text-white">
+                <PieChart className="h-5 w-5 text-accent-blue" />
+                Distribución por Estado
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={estadisticas.estadosCotizaciones}
+                      cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value"
+                    >
+                      {estadisticas.estadosCotizaciones.map((entry) => (
+                        <Cell key={`cell-${entry.name}`} fill={entry.color} stroke="transparent" />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex flex-wrap justify-center gap-3 mt-4">
+                {estadisticas.estadosCotizaciones.map((estado) => (
+                  <div key={`legend-${estado.name}`} className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: estado.color }}></div>
+                    <span className="text-xs text-white/60">{estado.name} ({estado.value})</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

@@ -97,6 +97,7 @@ export default function App() {
     eliminarPlantilla,
     guardarComoPlantilla,
     onExportPDF,
+    organizacion,
   } = useSupabaseData(session?.access_token);
 
   // Mostrar error del servidor o notificación de modo local
@@ -401,6 +402,7 @@ export default function App() {
             onNuevaCotizacion={manejarNuevaCotizacion}
             onVerCotizacion={manejarVerCotizacion}
             onNavigate={manejarNavegacion}
+            organizacion={organizacion}
           />
         } />
         
@@ -614,6 +616,7 @@ export default function App() {
         currentPage={getCurrentPage()}
         onNavigate={manejarNavegacion}
         session={session}
+        organizacion={organizacion}
       >
         {renderizarContenido()}
       </ModernLayout>

@@ -24,9 +24,10 @@ interface ModernLayoutProps {
   children: ReactNode;
   currentPage: string;
   onNavigate: (page: string) => void;
+  organizacion?: any;
 }
 
-function ModernSideNav({ currentPage, onNavigate, session }: { currentPage: string; onNavigate: (page: string) => void; session?: any }) {
+function ModernSideNav({ currentPage, onNavigate, session, organizacion }: { currentPage: string; onNavigate: (page: string) => void; session?: any; organizacion?: any }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [nombre, setNombre] = useState(session?.user?.user_metadata?.nombre || '');
   
@@ -47,17 +48,25 @@ function ModernSideNav({ currentPage, onNavigate, session }: { currentPage: stri
   const userInitial = userName.charAt(0).toUpperCase();
   const userEmail = session?.user?.email || '';
 
+  const modulos = organizacion?.modulos || {
+    cotizaciones: true,
+    clientes: true,
+    productos: true,
+    calculadora: true,
+    inventario: true
+  };
+
   const navItems = [
     { id: 'dashboard',    label: 'Dashboard',     icon: LayoutDashboard, isActive: currentPage === 'dashboard' },
-    { id: 'cotizaciones', label: 'Cotizaciones',  icon: FileText,        isActive: currentPage === 'cotizaciones' },
-    { id: 'plantillas',   label: 'Plantillas',    icon: BookTemplate,    isActive: currentPage === 'plantillas' },
-    { id: 'clientes',     label: 'Clientes',      icon: Users,           isActive: currentPage === 'clientes' },
-    { id: 'productos',    label: 'Productos',     icon: Package,         isActive: currentPage === 'productos' },
-    { id: 'calculadora',  label: 'Calculadora',   icon: Calculator,      isActive: currentPage === 'calculadora' },
-    { id: 'inventario',   label: 'Inventario',    icon: Package,         isActive: currentPage === 'inventario' },
+    { id: 'cotizaciones', label: 'Cotizaciones',  icon: FileText,        isActive: currentPage === 'cotizaciones', visible: modulos.cotizaciones !== false },
+    { id: 'plantillas',   label: 'Plantillas',    icon: BookTemplate,    isActive: currentPage === 'plantillas', visible: modulos.cotizaciones !== false },
+    { id: 'clientes',     label: 'Clientes',      icon: Users,           isActive: currentPage === 'clientes', visible: modulos.clientes !== false },
+    { id: 'productos',    label: 'Productos',     icon: Package,         isActive: currentPage === 'productos', visible: modulos.productos !== false },
+    { id: 'calculadora',  label: 'Calculadora',   icon: Calculator,      isActive: currentPage === 'calculadora', visible: modulos.calculadora !== false },
+    { id: 'inventario',   label: 'Inventario',    icon: Package,         isActive: currentPage === 'inventario', visible: modulos.inventario !== false },
     { id: 'equipo',       label: 'Equipo',        icon: Users,           isActive: currentPage === 'equipo' },
     { id: 'ajustes',      label: 'Configuración', icon: Settings,        isActive: currentPage === 'ajustes' },
-  ];
+  ].filter(item => item.visible !== false);
 
   return (
     <div className="flex flex-col h-full bg-background border-r border-white/[0.06]">
@@ -141,7 +150,7 @@ function ModernSideNav({ currentPage, onNavigate, session }: { currentPage: stri
     </div>
   );
 }
-export function ModernLayout({ children, currentPage, onNavigate, session }: ModernLayoutProps) {
+export function ModernLayout({ children, currentPage, onNavigate, session, organizacion }: ModernLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleNavigate = (page: string) => {
@@ -153,7 +162,7 @@ export function ModernLayout({ children, currentPage, onNavigate, session }: Mod
     <div className="flex h-screen bg-background">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block w-64 flex-shrink-0">
-        <ModernSideNav currentPage={currentPage} onNavigate={onNavigate} session={session} />
+        <ModernSideNav currentPage={currentPage} onNavigate={onNavigate} session={session} organizacion={organizacion} />
       </div>
 
       {/* Main Content */}
@@ -178,7 +187,7 @@ export function ModernLayout({ children, currentPage, onNavigate, session }: Mod
               <SheetDescription className="sr-only">
                 Navega entre las diferentes secciones de la aplicación
               </SheetDescription>
-              <ModernSideNav currentPage={currentPage} onNavigate={handleNavigate} session={session} />
+              <ModernSideNav currentPage={currentPage} onNavigate={handleNavigate} session={session} organizacion={organizacion} />
             </SheetContent>
           </Sheet>
         </div>

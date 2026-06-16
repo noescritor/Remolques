@@ -1255,9 +1255,18 @@ app.delete("/invitaciones/:id", async (c) => {
   }
 });
 
+const ORG_PRINCIPAL_ID = "00000000-0000-0000-0000-000000000001";
+
 app.post("/organizaciones/crear-con-invitacion", async (c) => {
   try {
     const user = c.get("user");
+    const currentOrgId = c.get("organizacionId");
+
+    // Restringir a la Organización Principal (Super-Admin)
+    if (currentOrgId !== ORG_PRINCIPAL_ID) {
+      return c.json({ error: "No autorizado. Solo la Organización Principal puede crear nuevas organizaciones." }, 403);
+    }
+
     const { nombre, email } = await c.req.json();
 
     if (!nombre || !email) {
@@ -1320,6 +1329,79 @@ app.post("/organizaciones/crear-con-invitacion", async (c) => {
   } catch (error: any) {
     console.error("[make-server] Error in /organizaciones/crear-con-invitacion:", error);
     return c.json({ error: error.message || "Error al crear la organización y la invitación" }, 500);
+  }
+});
+
+// Obtener datos de la organización actual
+app.get("/organizacion", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+
+    const { data, error } = await supabase
+      .from("organizaciones")
+      .select("id, nombre, modulos")
+      .eq("id", orgId)
+      .single();
+
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error fetching /organizacion:", error);
+    return c.json({ error: error.message || "Error al obtener la organización" }, 500);
+  }
+});
+
+// Listar todas las organizaciones (Solo Super-Admin)
+app.get("/organizaciones", async (c) => {
+  try {
+    const currentOrgId = c.get("organizacionId");
+    if (currentOrgId !== ORG_PRINCIPAL_ID) {
+      return c.json({ error: "No autorizado." }, 403);
+    }
+
+    const adminClient = getServiceClient();
+    const { data, error } = await adminClient
+      .from("organizaciones")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error fetching /organizaciones:", error);
+    return c.json({ error: error.message || "Error al obtener las organizaciones" }, 500);
+  }
+});
+
+// Actualizar módulos de una organización (Solo Super-Admin)
+app.put("/organizaciones/:id/modulos", async (c) => {
+  try {
+    const currentOrgId = c.get("organizacionId");
+    if (currentOrgId !== ORG_PRINCIPAL_ID) {
+      return c.json({ error: "No autorizado." }, 403);
+    }
+
+    const id = c.req.param("id");
+    const { modulos } = await c.req.json();
+
+    if (!modulos) {
+      return c.json({ error: "Módulos son requeridos" }, 400);
+    }
+
+    const adminClient = getServiceClient();
+    const { data, error } = await adminClient
+      .from("organizaciones")
+      .update({ modulos })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error updating /organizaciones/:id/modulos:", error);
+    return c.json({ error: error.message || "Error al actualizar los módulos" }, 500);
   }
 });
 
