@@ -8,7 +8,8 @@ import {
   BookTemplate,
   Calculator,
   Menu,
-  X
+  X,
+  ClipboardList
 } from 'lucide-react';
 import { LogoIdeally } from './Cotizaciones/LogoIdeally';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from './ui/sheet';
@@ -54,13 +55,15 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading
     clientes: false,
     productos: false,
     calculadora: false,
-    inventario: false
+    inventario: false,
+    notas: false
   } : {
     cotizaciones: true,
     clientes: true,
     productos: true,
     calculadora: true,
-    inventario: true
+    inventario: true,
+    notas: true
   });
 
   const navItems = [
@@ -71,6 +74,7 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading
     { id: 'productos',    label: 'Productos',     icon: Package,         isActive: currentPage === 'productos', visible: modulos.productos !== false },
     { id: 'calculadora',  label: 'Calculadora',   icon: Calculator,      isActive: currentPage === 'calculadora', visible: modulos.calculadora !== false },
     { id: 'inventario',   label: 'Inventario',    icon: Package,         isActive: currentPage === 'inventario', visible: modulos.inventario !== false },
+    { id: 'notas',        label: 'Notas Rápidas', icon: ClipboardList,   isActive: currentPage === 'notas', visible: modulos.notas !== false },
     { id: 'equipo',       label: 'Equipo',        icon: Users,           isActive: currentPage === 'equipo' },
     { id: 'ajustes',      label: 'Configuración', icon: Settings,        isActive: currentPage === 'ajustes' },
   ].filter(item => item.visible !== false);

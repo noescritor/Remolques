@@ -15,6 +15,7 @@ import { InventarioList } from './components/Inventario/InventarioList';
 import { AjustesForm } from './components/Ajustes/AjustesForm';
 import { PlantillasList } from './components/Plantillas/PlantillasList';
 import { EquipoManager } from './components/Equipo/EquipoManager';
+import { NotasManager } from './components/Notas/NotasManager';
 import { Toaster } from './components/ui/sonner';
 import { useSupabaseData } from './hooks/useSupabaseData';
 import { toast } from "sonner";
@@ -98,6 +99,10 @@ export default function App() {
     guardarComoPlantilla,
     onExportPDF,
     organizacion,
+    notasList,
+    crearNota,
+    actualizarNota,
+    eliminarNota,
   } = useSupabaseData(session?.access_token);
 
   // Mostrar error del servidor o notificación de modo local
@@ -386,6 +391,7 @@ export default function App() {
     if (path.startsWith('/equipo')) return 'equipo';
     if (path.startsWith('/inventario')) return 'inventario';
     if (path.startsWith('/calculadora')) return 'calculadora';
+    if (path.startsWith('/notas')) return 'notas';
     return 'dashboard';
   };
 
@@ -530,7 +536,20 @@ export default function App() {
           />
         } />
 
-                <Route path="/calculadora" element={<CalculadoraPage />} />
+        <Route path="/calculadora" element={<CalculadoraPage />} />
+
+        <Route path="/notas" element={
+          <NotasManager
+            notasList={notasList}
+            productos={productos}
+            loading={loading}
+            onCrearNota={crearNota}
+            onActualizarNota={actualizarNota}
+            onEliminarNota={eliminarNota}
+            session={session}
+            ajustes={ajustes}
+          />
+        } />
 
         <Route path="/ajustes" element={
           <AjustesForm

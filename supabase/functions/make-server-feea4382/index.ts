@@ -1406,6 +1406,92 @@ app.put("/organizaciones/:id/modulos", async (c) => {
 });
 
 
+// --- NOTAS SIMPLES ---
+
+app.get("/notas", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const { data, error } = await supabase
+      .from('notas_simples')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    console.error('[make-server] Error fetching notas:', error);
+    return c.json({ error: error.message || 'Error al obtener las notas' }, 500);
+  }
+});
+
+app.post("/notas", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const nota = await c.req.json();
+    
+    // Quitar campos de control de fecha/hora para forzar el uso de now() de la base de datos
+    delete nota.created_at;
+    delete nota.updated_at;
+    
+    nota.organizacion_id = c.get("organizacionId");
+
+    const { data, error } = await supabase
+      .from('notas_simples')
+      .insert(nota)
+      .select()
+      .single();
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    console.error('[make-server] Error creating nota:', error);
+    return c.json({ error: error.message || 'Error al crear la nota' }, 500);
+  }
+});
+
+app.put("/notas/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const id = c.req.param('id');
+    const updates = await c.req.json();
+
+    // No permitir alterar fecha de creación ni organización asociada
+    delete updates.created_at;
+    delete updates.organizacion_id;
+    updates.updated_at = new Date().toISOString();
+
+    const { data, error } = await supabase
+      .from('notas_simples')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    console.error('[make-server] Error updating nota:', error);
+    return c.json({ error: error.message || 'Error al actualizar la nota' }, 500);
+  }
+});
+
+app.delete("/notas/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const id = c.req.param('id');
+
+    const { data, error } = await supabase
+      .from('notas_simples')
+      .delete()
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    console.error('[make-server] Error deleting nota:', error);
+    return c.json({ error: error.message || 'Error al eliminar la nota' }, 500);
+  }
+});
+
+
 // --- INVENTARIO ---
 
 app.get("/inventario/movimientos", async (c) => {

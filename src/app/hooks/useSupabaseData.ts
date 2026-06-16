@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase/client';
-import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente } from '../types';
+import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente, NotaSimple } from '../types';
+import { toast } from 'sonner';
 const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
 
 const getHeaders = (token?: string) => ({
@@ -50,6 +51,7 @@ export function useSupabaseData(token?: string) {
   const [invitaciones, setInvitaciones] = useState<InvitacionEquipo[]>([]);
   const [categoriasProducto, setCategoriasProducto] = useState<CategoriaProducto[]>([]);
   const [categoriasCliente, setCategoriasCliente] = useState<CategoriaCliente[]>([]);
+  const [notasList, setNotasList] = useState<NotaSimple[]>([]);
   const [ajustes, setAjustes] = useState<Ajustes>({
     iva_por_defecto: 0.16,
     validez_por_defecto: 30,
@@ -228,12 +230,14 @@ export function useSupabaseData(token?: string) {
         const localCotizaciones = localStorage.getItem('cotizaciones');
         const localPagos = localStorage.getItem('pagos');
         const localAjustes = localStorage.getItem('ajustes');
+        const localNotas = localStorage.getItem('notas_simples');
         
         setClientes(localClientes ? JSON.parse(localClientes) : []);
         setProductos(localProductos ? JSON.parse(localProductos) : []);
         setCotizaciones(localCotizaciones ? JSON.parse(localCotizaciones) : []);
         setPagos(localPagos ? JSON.parse(localPagos) : []);
         setAjustes(localAjustes ? JSON.parse(localAjustes) : ajustes);
+        setNotasList(localNotas ? JSON.parse(localNotas) : []);
       } catch (error) {
         // Silent fail - just use empty arrays
       }
@@ -283,6 +287,14 @@ export function useSupabaseData(token?: string) {
         return [];
       });
 
+      let notasData = [];
+      if (organizacionData?.modulos?.notas !== false) {
+        notasData = await fetchJson('notas', `${BASE_URL}/notas`, token).catch(error => {
+          console.warn('No se pudieron cargar notas simples:', error);
+          return [];
+        });
+      }
+
       setOrganizacion(organizacionData);
       setClientes(Array.isArray(clientesData) ? clientesData : []);
       setProductos(Array.isArray(productosData) ? productosData : []);
@@ -292,6 +304,7 @@ export function useSupabaseData(token?: string) {
       setPlantillas(Array.isArray(plantillasData) ? plantillasData : []);
       setEquipo(Array.isArray(equipoData) ? equipoData : []);
       setInvitaciones(Array.isArray(invitacionesData) ? invitacionesData : []);
+      setNotasList(Array.isArray(notasData) ? notasData : []);
       setUseLocalData(false);
       setServerError(null);
 
@@ -301,6 +314,7 @@ export function useSupabaseData(token?: string) {
       saveToLocalStorage('cotizaciones', cotizacionesData);
       saveToLocalStorage('pagos', pagosData);
       saveToLocalStorage('ajustes', ajustesData);
+      saveToLocalStorage('notas_simples', notasData);
       
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load from server';
@@ -314,12 +328,14 @@ export function useSupabaseData(token?: string) {
         const localCotizaciones = localStorage.getItem('cotizaciones');
         const localPagos = localStorage.getItem('pagos');
         const localAjustes = localStorage.getItem('ajustes');
+        const localNotas = localStorage.getItem('notas_simples');
         
         setClientes(localClientes ? JSON.parse(localClientes) : []);
         setProductos(localProductos ? JSON.parse(localProductos) : []);
         setCotizaciones(localCotizaciones ? JSON.parse(localCotizaciones) : []);
         setPagos(localPagos ? JSON.parse(localPagos) : []);
         setAjustes(localAjustes ? JSON.parse(localAjustes) : ajustes);
+        setNotasList(localNotas ? JSON.parse(localNotas) : []);
       } catch (localError) {
         // Silent fail
       }
@@ -401,6 +417,84 @@ export function useSupabaseData(token?: string) {
       setClientes(prev => prev.filter(c => c.id !== id));
     } catch (error) {
       console.error('Error deleting cliente:', error);
+      throw error;
+    }
+  };
+
+  // CRUD Notas Simples
+  const crearNota = async (nota: Omit<NotaSimple, 'id' | 'folio'>) => {
+    const nuevaNota: NotaSimple = {
+      ...nota,
+      id: generateId(),
+      folio: notasList.length + 1,
+      created_at: new Date().toISOString()
+    };
+
+    if (useLocalData) {
+      const nuevasNotas = [...notasList, nuevaNota];
+      setNotasList(nuevasNotas);
+      saveToLocalStorage('notas_simples', nuevasNotas);
+      toast.success('Nota creada en modo local');
+      return nuevaNota;
+    }
+
+    try {
+      const resultado = await sendJson('crear nota', `${BASE_URL}/notas`, token, {
+        method: 'POST',
+        body: JSON.stringify(nota)
+      });
+      setNotasList(prev => [resultado, ...prev]);
+      toast.success('Nota creada correctamente');
+      return resultado;
+    } catch (error: any) {
+      console.error('Error creating nota:', error);
+      toast.error('Error al crear la nota', { description: error.message });
+      throw error;
+    }
+  };
+
+  const actualizarNota = async (id: string, updates: Partial<NotaSimple>) => {
+    if (useLocalData) {
+      const notasActualizadas = notasList.map(n => n.id === id ? { ...n, ...updates } : n);
+      setNotasList(notasActualizadas);
+      saveToLocalStorage('notas_simples', notasActualizadas);
+      toast.success('Nota actualizada en modo local');
+      return;
+    }
+
+    try {
+      const resultado = await sendJson('actualizar nota', `${BASE_URL}/notas/${id}`, token, {
+        method: 'PUT',
+        body: JSON.stringify(updates)
+      });
+      setNotasList(prev => prev.map(n => n.id === id ? resultado : n));
+      toast.success('Nota actualizada');
+      return resultado;
+    } catch (error: any) {
+      console.error('Error updating nota:', error);
+      toast.error('Error al actualizar la nota', { description: error.message });
+      throw error;
+    }
+  };
+
+  const eliminarNota = async (id: string) => {
+    if (useLocalData) {
+      const notasFiltradas = notasList.filter(n => n.id !== id);
+      setNotasList(notasFiltradas);
+      saveToLocalStorage('notas_simples', notasFiltradas);
+      toast.success('Nota eliminada en modo local');
+      return;
+    }
+
+    try {
+      await sendJson('eliminar nota', `${BASE_URL}/notas/${id}`, token, {
+        method: 'DELETE'
+      });
+      setNotasList(prev => prev.filter(n => n.id !== id));
+      toast.success('Nota eliminada');
+    } catch (error: any) {
+      console.error('Error deleting nota:', error);
+      toast.error('Error al eliminar la nota', { description: error.message });
       throw error;
     }
   };
@@ -922,9 +1016,15 @@ export function useSupabaseData(token?: string) {
     plantillas,
     equipo,
     invitaciones,
+    notasList,
     loading,
     serverError,
     useLocalData,
+
+    // CRUD notas simples
+    crearNota,
+    actualizarNota,
+    eliminarNota,
 
     // CRUD clientes
     crearCliente,

@@ -376,12 +376,15 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
                   <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Inventario
                   </th>
+                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Notas
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.06]">
                 {organizacionesList.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-sm text-muted-foreground">
+                    <td colSpan={7} className="px-6 py-8 text-center text-sm text-muted-foreground">
                       No hay organizaciones cliente registradas.
                     </td>
                   </tr>
@@ -393,6 +396,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
                       productos: true,
                       calculadora: true,
                       inventario: true,
+                      notas: true,
                       ...(org.modulos || {})
                     };
                     
@@ -444,6 +448,12 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
                           <ToggleSwitch 
                             checked={modulos.inventario} 
                             onChange={() => handleToggleModulo('inventario')} 
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <ToggleSwitch 
+                            checked={modulos.notas} 
+                            onChange={() => handleToggleModulo('notas')} 
                           />
                         </td>
                       </tr>

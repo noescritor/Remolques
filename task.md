@@ -1,0 +1,12 @@
+- `[ ]` Crear migración SQL `20260616030000_modulo_notas.sql` y aplicarla en Supabase
+- `[ ]` Modificar backend (`index.ts`):
+  - `[ ]` Implementar endpoints `GET /notas`, `POST /notas`, `PUT /notas/:id` y `DELETE /notas/:id`
+  - `[ ]` Desplegar cambios en Supabase Edge Function
+- `[ ]` Modificar frontend (Hook y Rutas):
+  - `[ ]` Actualizar `useSupabaseData.ts` para cargar la lista de notas simples y soportar su CRUD (crear, actualizar, eliminar)
+  - `[ ]` Integrar el módulo `notas` en el menú de navegación de `ModernLayout.tsx`
+  - `[ ]` Mapear la ruta `/notas` en `App.tsx`
+  - `[ ]` Agregar la columna de "Notas" en el panel de control de organizaciones de `EquipoManager.tsx`
+- `[ ]` Crear componentes visuales:
+  - `[ ]` Crear `NotasManager.tsx` con la pestaña de Tablero de Taller (Pendiente, Proceso, Listo), pestaña de Historial, formulario de creación y generador de ticket Canvas descargable
+- `[ ]` Probar y verificar cambios en el build local

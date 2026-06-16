@@ -249,3 +249,25 @@ export interface InvitacionEquipo {
   invitado_por?: string;
   created_at: string;
 }
+
+export interface ItemNotaSimple {
+  concepto: string;
+  cantidad: number;
+  precio: number;
+  total: number;
+}
+
+export interface NotaSimple {
+  id?: string;
+  organizacion_id?: string;
+  folio?: number;
+  cliente_nombre: string;
+  items: ItemNotaSimple[];
+  total: number;
+  estado_taller: 'Pendiente' | 'En Proceso' | 'Listo' | 'Entregado';
+  urgencia: 'Baja' | 'Media' | 'Alta' | 'Urgente';
+  fecha_entrega?: string;
+  creado_por_nombre: string;
+  created_at?: string;
+  updated_at?: string;
+}
