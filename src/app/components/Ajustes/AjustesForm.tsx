@@ -55,6 +55,14 @@ export function AjustesForm({ ajustes, onActualizarAjustes }: AjustesFormProps) 
     setTimeout(() => setGuardado(false), 3000);
   };
 
+  if (!formData) {
+    return (
+      <div className="flex justify-center items-center py-20 min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-blue" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">

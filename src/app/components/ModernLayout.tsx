@@ -25,9 +25,10 @@ interface ModernLayoutProps {
   currentPage: string;
   onNavigate: (page: string) => void;
   organizacion?: any;
+  loading?: boolean;
 }
 
-function ModernSideNav({ currentPage, onNavigate, session, organizacion }: { currentPage: string; onNavigate: (page: string) => void; session?: any; organizacion?: any }) {
+function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading }: { currentPage: string; onNavigate: (page: string) => void; session?: any; organizacion?: any; loading?: boolean }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [nombre, setNombre] = useState(session?.user?.user_metadata?.nombre || '');
   
@@ -48,13 +49,19 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion }: { cur
   const userInitial = userName.charAt(0).toUpperCase();
   const userEmail = session?.user?.email || '';
 
-  const modulos = organizacion?.modulos || {
+  const modulos = organizacion?.modulos || (loading ? {
+    cotizaciones: false,
+    clientes: false,
+    productos: false,
+    calculadora: false,
+    inventario: false
+  } : {
     cotizaciones: true,
     clientes: true,
     productos: true,
     calculadora: true,
     inventario: true
-  };
+  });
 
   const navItems = [
     { id: 'dashboard',    label: 'Dashboard',     icon: LayoutDashboard, isActive: currentPage === 'dashboard' },
@@ -150,7 +157,7 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion }: { cur
     </div>
   );
 }
-export function ModernLayout({ children, currentPage, onNavigate, session, organizacion }: ModernLayoutProps) {
+export function ModernLayout({ children, currentPage, onNavigate, session, organizacion, loading }: ModernLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleNavigate = (page: string) => {
@@ -162,7 +169,7 @@ export function ModernLayout({ children, currentPage, onNavigate, session, organ
     <div className="flex h-screen bg-background">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block w-64 flex-shrink-0">
-        <ModernSideNav currentPage={currentPage} onNavigate={onNavigate} session={session} organizacion={organizacion} />
+        <ModernSideNav currentPage={currentPage} onNavigate={onNavigate} session={session} organizacion={organizacion} loading={loading} />
       </div>
 
       {/* Main Content */}
@@ -187,7 +194,7 @@ export function ModernLayout({ children, currentPage, onNavigate, session, organ
               <SheetDescription className="sr-only">
                 Navega entre las diferentes secciones de la aplicación
               </SheetDescription>
-              <ModernSideNav currentPage={currentPage} onNavigate={handleNavigate} session={session} organizacion={organizacion} />
+              <ModernSideNav currentPage={currentPage} onNavigate={handleNavigate} session={session} organizacion={organizacion} loading={loading} />
             </SheetContent>
           </Sheet>
         </div>

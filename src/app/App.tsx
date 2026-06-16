@@ -617,6 +617,7 @@ export default function App() {
         onNavigate={manejarNavegacion}
         session={session}
         organizacion={organizacion}
+        loading={loading}
       >
         {renderizarContenido()}
       </ModernLayout>
