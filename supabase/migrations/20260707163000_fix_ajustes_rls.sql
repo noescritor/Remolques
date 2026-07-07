@@ -4,5 +4,5 @@ DROP POLICY IF EXISTS "rls_ajustes" ON ajustes;
 
 CREATE POLICY "rls_ajustes" ON ajustes
   FOR ALL TO authenticated
-  USING (id = get_current_org_id())
-  WITH CHECK (id = get_current_org_id());
+  USING (id = get_current_org_id()::text)
+  WITH CHECK (id = get_current_org_id()::text);
