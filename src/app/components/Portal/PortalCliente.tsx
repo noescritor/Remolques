@@ -33,12 +33,20 @@ export function PortalCliente() {
   useEffect(() => {
     if (!token) return;
     fetch(`${BASE_URL}/portal/${token}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.error) setError(data.error);
-        else setCotizacion(data);
+      .then(r => {
+        if (!r.ok) {
+          return r.json().then(data => {
+            throw new Error(data.error || data.message || `Error del servidor (${r.status})`);
+          }).catch(() => {
+            throw new Error(`Error del servidor (${r.status})`);
+          });
+        }
+        return r.json();
       })
-      .catch(() => setError('No se pudo cargar la cotización.'))
+      .then(data => {
+        setCotizacion(data);
+      })
+      .catch(err => setError(err.message || 'No se pudo cargar la cotización.'))
       .finally(() => setLoading(false));
   }, [token]);
 

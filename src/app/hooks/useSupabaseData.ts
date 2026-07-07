@@ -736,43 +736,7 @@ export function useSupabaseData(token?: string) {
       );
       setCotizaciones(cotizacionesActualizadas);
       saveToLocalStorage('cotizaciones', cotizacionesActualizadas);
-    
-  // Inventario
-  const obtenerMovimientosInventario = async (): Promise<MovimientoInventario[]> => {
-    try {
-      const data = await fetchJson('obtener movimientos inventario', `${BASE_URL}/inventario/movimientos`, token);
-      return data;
-    } catch (error) {
-      console.error('Error fetching movimientos:', error);
-      throw error;
-    }
-  };
-
-  const registrarMovimientoInventario = async (movimiento: Partial<MovimientoInventario>) => {
-    try {
-      const resultado = await sendJson('crear movimiento inventario', `${BASE_URL}/inventario/movimientos`, token, {
-        method: 'POST',
-        body: JSON.stringify(movimiento)
-      });
-      // Recargar productos para actualizar stock
-      loadData();
-      return resultado;
-    } catch (error) {
-      console.error('Error creating movimiento inventario:', error);
-      throw error;
-    }
-  };
-
-  return {
-    categoriasProducto,
-    categoriasCliente,
-    crearCategoriaCliente,
-    actualizarCategoriaCliente,
-    eliminarCategoriaCliente,
-    crearCategoriaProducto,
-    actualizarCategoriaProducto,
-    eliminarCategoriaProducto,
- token: tokenPortal, expira: expira.toISOString() };
+      return { token: tokenPortal, expira: expira.toISOString() };
     }
 
     const resultado = await sendJson('generar portal', `${BASE_URL}/cotizaciones/${id}/generar-token-portal`, token, {
@@ -791,6 +755,7 @@ export function useSupabaseData(token?: string) {
     ));
     return resultado;
   };
+
 
   // CRUD Pagos
   const crearPago = async (pago: Omit<Pago, 'id'>) => {

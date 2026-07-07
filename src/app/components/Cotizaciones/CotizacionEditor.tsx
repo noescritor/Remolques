@@ -783,22 +783,22 @@ export function CotizacionEditor({
               />
               
               {showProductoDropdown && productosFiltrados.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 border rounded-md bg-white shadow-lg max-h-40 overflow-y-auto">
+                <div className="absolute z-10 w-full mt-1 border border-white/10 rounded-md bg-[var(--surface-secondary)] shadow-lg max-h-40 overflow-y-auto">
                   {productosFiltrados.map(producto => producto ? (
                     <div
                       key={producto.id}
-                      className="p-2 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
+                      className="p-2 hover:bg-white/[0.06] cursor-pointer border-b border-white/[0.06] last:border-b-0"
                       onClick={() => agregarItemDesdeProducto(producto)}
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
-                          <div className="font-medium">{producto.nombre}</div>
-                          <div className="text-sm text-gray-500">{producto.descripcion}</div>
-                          <div className="text-xs text-gray-400">ID: {producto.id}</div>
+                          <div className="font-medium text-white">{producto.nombre}</div>
+                          {producto.descripcion && <div className="text-sm text-muted-foreground">{producto.descripcion}</div>}
+                          <div className="text-xs text-muted-foreground/60">ID: {producto.id}</div>
                         </div>
-                        <div className="text-right">
-                          <div className="font-medium">{formatearMoneda(producto.precio_unitario)}</div>
-                          <div className="text-xs text-gray-500">{producto.unidad}</div>
+                        <div className="text-right ml-2">
+                          <div className="font-medium text-white">{formatearMoneda(producto.precio_unitario)}</div>
+                          <div className="text-xs text-muted-foreground">{producto.unidad}</div>
                         </div>
                       </div>
                     </div>
@@ -807,7 +807,7 @@ export function CotizacionEditor({
               )}
               
               {showProductoDropdown && productosFiltrados.length === 0 && (
-                <div className="absolute z-10 w-full mt-1 border rounded-md bg-white shadow-lg p-2 text-gray-500 text-center">
+                <div className="absolute z-10 w-full mt-1 border border-white/10 rounded-md bg-[var(--surface-secondary)] shadow-lg p-2 text-muted-foreground text-center">
                   {productos.length === 0 ? 'No hay productos registrados. Crea productos en la sección "Productos".' : 'No se encontraron productos'}
                 </div>
               )}

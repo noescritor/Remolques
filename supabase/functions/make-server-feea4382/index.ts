@@ -468,7 +468,7 @@ app.post("/cotizaciones", async (c) => {
     // Get highest sequential folio number (skips version folios like -V2)
     const ultimaFolio = await getUltimaFolioNumber(supabase);
 
-    const { data: ajustes } = await supabase.from('ajustes').select('data').single();
+    const { data: ajustes } = await supabase.from('ajustes').select('data').eq('id', c.get("organizacionId")).single();
     const prefijo = ajustes?.data?.prefijo_folio || '';
 
     if (cotizacionData.cotizacion_padre_id) {
@@ -612,7 +612,7 @@ app.post("/cotizaciones/:id/duplicate", async (c) => {
     const ultimaFolio = await getUltimaFolioNumber(supabase);
 
     // Get ajustes
-    const { data: ajustesWrapper } = await supabase.from('ajustes').select('data').single();
+    const { data: ajustesWrapper } = await supabase.from('ajustes').select('data').eq('id', c.get("organizacionId")).single();
     const prefijo = ajustesWrapper?.data?.prefijo_folio || '';
 
     const año = new Date().getFullYear();
