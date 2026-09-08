@@ -2,11 +2,11 @@ FROM denoland/deno:alpine-1.40.0
 
 WORKDIR /app
 
-# Copiar archivos
-COPY src/app/types /app/src/app/types
-COPY supabase/functions/make-server-feea4382 /app/backend
+# Copiar archivos manteniendo la estructura exacta
+COPY src/app/types ./src/app/types
+COPY supabase/functions/make-server-feea4382 ./supabase/functions/make-server-feea4382
 
-WORKDIR /app/backend
+WORKDIR /app/supabase/functions/make-server-feea4382
 
 # Cache dependencies
 RUN deno cache index.ts
