@@ -25,6 +25,35 @@ app.use(
 app.get("/health", (c) => c.json({ ok: true }));
 app.get("/make-server-feea4382/health", (c) => c.json({ ok: true }));
 
+// ─── Proxy transparente hacia Supabase (resuelve mixed-content HTTP→HTTPS) ────
+const SUPA_URL = Deno.env.get("SUPABASE_URL") ?? "";
+
+app.all("/supa-proxy/*", async (c) => {
+  const path = c.req.path.replace("/supa-proxy", "");
+  const targetUrl = `${SUPA_URL}${path}${c.req.url.includes("?") ? "?" + c.req.url.split("?")[1] : ""}`;
+
+  const headers = new Headers();
+  for (const [key, val] of Object.entries(c.req.header())) {
+    if (key.toLowerCase() !== "host") headers.set(key, val as string);
+  }
+
+  const body = ["GET", "HEAD"].includes(c.req.method) ? undefined : await c.req.raw.blob();
+
+  const res = await fetch(targetUrl, {
+    method: c.req.method,
+    headers,
+    body,
+  });
+
+  const resHeaders = new Headers(res.headers);
+  resHeaders.set("Access-Control-Allow-Origin", "*");
+
+  return new Response(res.body, {
+    status: res.status,
+    headers: resHeaders,
+  });
+});
+
 const getServiceClient = () => {
   const url = Deno.env.get("SUPABASE_URL") ?? "";
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY") ?? "";
