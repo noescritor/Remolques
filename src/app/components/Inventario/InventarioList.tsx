@@ -32,7 +32,7 @@ export function InventarioList({
   
   const [productoSeleccionado, setProductoSeleccionado] = useState<string>('');
   const [formData, setFormData] = useState({
-    tipo_movimiento: 'Entrada' as 'Entrada' | 'Salida' | 'Ajuste',
+    tipo_movimiento: 'Entrada' as 'Entrada' | 'Salida' | 'Ajuste' | 'Devolucion_Interna' | 'Devolucion_Cliente' | 'Devolucion_Proveedor',
     cantidad: 1,
     referencia: ''
   });
@@ -217,6 +217,9 @@ export function InventarioList({
                   <option value="Entrada">Entrada (+)</option>
                   <option value="Salida">Salida (-)</option>
                   <option value="Ajuste">Ajuste / Mermas</option>
+                  <option value="Devolucion_Interna">Devolución Interna</option>
+                  <option value="Devolucion_Cliente">Devolución de Cliente</option>
+                  <option value="Devolucion_Proveedor">Devolución a Proveedor</option>
                 </select>
               </div>
               <div className="space-y-2">

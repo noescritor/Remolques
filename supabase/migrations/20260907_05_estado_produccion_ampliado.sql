@@ -1,0 +1,5 @@
+-- Migración 5: Estado de producción ampliado
+-- Nota: La columna `estado_produccion` en `cotizaciones` es de tipo `text` sin constraint CHECK,
+-- por lo que soporta nativamente los nuevos valores:
+-- 'Pendiente de aprobar', 'Aprobada', 'Requisición: falta material', 'Compra en curso', 'Listo para producción', 'Surtido'
+-- No es necesario alterar el esquema.

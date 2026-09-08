@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase/client';
-import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente, NotaSimple } from '../types';
+import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente, NotaSimple, Proveedor, CompraProveedor, CotizacionEvento } from '../types';
 import { toast } from 'sonner';
 const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
 
@@ -52,6 +52,12 @@ export function useSupabaseData(token?: string) {
   const [categoriasProducto, setCategoriasProducto] = useState<CategoriaProducto[]>([]);
   const [categoriasCliente, setCategoriasCliente] = useState<CategoriaCliente[]>([]);
   const [notasList, setNotasList] = useState<NotaSimple[]>([]);
+  const [proveedores, setProveedores] = useState<Proveedor[]>([]);
+  const [comprasProveedor, setComprasProveedor] = useState<CompraProveedor[]>([]);
+  const [pagosProveedor, setPagosProveedor] = useState<any[]>([]);
+
+  const [cotizacionEventos, setCotizacionEventos] = useState<CotizacionEvento[]>([]);
+
   const [ajustes, setAjustes] = useState<Ajustes>({
     iva_por_defecto: 0.16,
     validez_por_defecto: 30,
@@ -236,6 +242,14 @@ export function useSupabaseData(token?: string) {
         setProductos(localProductos ? JSON.parse(localProductos) : []);
         setCotizaciones(localCotizaciones ? JSON.parse(localCotizaciones) : []);
         setPagos(localPagos ? JSON.parse(localPagos) : []);
+        const localProveedores = localStorage.getItem('proveedores');
+        const localCompras = localStorage.getItem('compras_proveedor');
+        const localEventos = localStorage.getItem('cotizacion_eventos');
+        
+        setProveedores(localProveedores ? JSON.parse(localProveedores) : []);
+        setComprasProveedor(localCompras ? JSON.parse(localCompras) : []);
+        setCotizacionEventos(localEventos ? JSON.parse(localEventos) : []);
+
         setAjustes(localAjustes ? JSON.parse(localAjustes) : ajustes);
         setNotasList(localNotas ? JSON.parse(localNotas) : []);
       } catch (error) {
@@ -265,6 +279,10 @@ export function useSupabaseData(token?: string) {
       const productosData = await fetchJson('productos', `${BASE_URL}/productos`, token);
       const cotizacionesData = await fetchJson('cotizaciones', `${BASE_URL}/cotizaciones`, token);
       const pagosData = await fetchJson('pagos', `${BASE_URL}/pagos`, token);
+      const proveedoresData = await fetchJson('proveedores', `${BASE_URL}/proveedores`, token).catch(() => []);
+      const comprasProveedorData = await fetchJson('compras-proveedor', `${BASE_URL}/compras-proveedor`, token).catch(() => []);
+      const eventosData = await fetchJson('cotizacion-eventos', `${BASE_URL}/cotizacion-eventos`, token).catch(() => []);
+
 
       const categoriasReq = await supabase.from('categorias_producto').select('*').order('orden');
       if (categoriasReq.data) setCategoriasProducto(categoriasReq.data);
@@ -300,6 +318,10 @@ export function useSupabaseData(token?: string) {
       setProductos(Array.isArray(productosData) ? productosData : []);
       setCotizaciones(Array.isArray(cotizacionesData) ? cotizacionesData : []);
       setPagos(Array.isArray(pagosData) ? pagosData : []);
+      setProveedores(Array.isArray(proveedoresData) ? proveedoresData : []);
+      setComprasProveedor(Array.isArray(comprasProveedorData) ? comprasProveedorData : []);
+      setCotizacionEventos(Array.isArray(eventosData) ? eventosData : []);
+
       setAjustes(ajustesData?.error ? ajustes : (ajustesData || ajustes));
       setPlantillas(Array.isArray(plantillasData) ? plantillasData : []);
       setEquipo(Array.isArray(equipoData) ? equipoData : []);
@@ -313,6 +335,10 @@ export function useSupabaseData(token?: string) {
       saveToLocalStorage('productos', productosData);
       saveToLocalStorage('cotizaciones', cotizacionesData);
       saveToLocalStorage('pagos', pagosData);
+      saveToLocalStorage('proveedores', proveedoresData);
+      saveToLocalStorage('compras_proveedor', comprasProveedorData);
+      saveToLocalStorage('cotizacion_eventos', eventosData);
+
       saveToLocalStorage('ajustes', ajustesData);
       saveToLocalStorage('notas_simples', notasData);
       
@@ -334,6 +360,14 @@ export function useSupabaseData(token?: string) {
         setProductos(localProductos ? JSON.parse(localProductos) : []);
         setCotizaciones(localCotizaciones ? JSON.parse(localCotizaciones) : []);
         setPagos(localPagos ? JSON.parse(localPagos) : []);
+        const localProveedores = localStorage.getItem('proveedores');
+        const localCompras = localStorage.getItem('compras_proveedor');
+        const localEventos = localStorage.getItem('cotizacion_eventos');
+        
+        setProveedores(localProveedores ? JSON.parse(localProveedores) : []);
+        setComprasProveedor(localCompras ? JSON.parse(localCompras) : []);
+        setCotizacionEventos(localEventos ? JSON.parse(localEventos) : []);
+
         setAjustes(localAjustes ? JSON.parse(localAjustes) : ajustes);
         setNotasList(localNotas ? JSON.parse(localNotas) : []);
       } catch (localError) {
@@ -347,6 +381,90 @@ export function useSupabaseData(token?: string) {
   useEffect(() => {
     loadData();
   }, [token]);
+
+  
+  // CRUD Proveedores
+  const crearProveedor = async (proveedor: Omit<Proveedor, 'id'>) => {
+    try {
+      const resultado = await sendJson('crear proveedor', `${BASE_URL}/proveedores`, token, {
+        method: 'POST',
+        body: JSON.stringify(proveedor)
+      });
+      setProveedores(prev => [...prev, resultado]);
+      return resultado;
+    } catch (error) {
+      console.error('Error creating proveedor:', error);
+      throw error;
+    }
+  };
+
+  const actualizarProveedor = async (id: string, proveedor: Partial<Proveedor>) => {
+    try {
+      const resultado = await sendJson('actualizar proveedor', `${BASE_URL}/proveedores/${id}`, token, {
+        method: 'PUT',
+        body: JSON.stringify(proveedor)
+      });
+      setProveedores(prev => prev.map(p => p.id === id ? resultado : p));
+      return resultado;
+    } catch (error) {
+      console.error('Error updating proveedor:', error);
+      throw error;
+    }
+  };
+
+  const eliminarProveedor = async (id: string) => {
+    try {
+      await sendJson('eliminar proveedor', `${BASE_URL}/proveedores/${id}`, token, { method: 'DELETE' });
+      setProveedores(prev => prev.filter(p => p.id !== id));
+    } catch (error) {
+      console.error('Error deleting proveedor:', error);
+      throw error;
+    }
+  };
+
+  // CRUD Compras Proveedor
+  const crearCompraProveedor = async (compra: Omit<CompraProveedor, 'id'>) => {
+    try {
+      const resultado = await sendJson('crear compra_proveedor', `${BASE_URL}/compras-proveedor`, token, {
+        method: 'POST',
+        body: JSON.stringify(compra)
+      });
+      setComprasProveedor(prev => [...prev, resultado]);
+      return resultado;
+    } catch (error) {
+      console.error('Error creating compra_proveedor:', error);
+      throw error;
+    }
+  };
+
+  const actualizarCompraProveedor = async (id: string, compra: Partial<CompraProveedor>) => {
+    try {
+      const resultado = await sendJson('actualizar compra_proveedor', `${BASE_URL}/compras-proveedor/${id}`, token, {
+        method: 'PUT',
+        body: JSON.stringify(compra)
+      });
+      setComprasProveedor(prev => prev.map(c => c.id === id ? resultado : c));
+      return resultado;
+    } catch (error) {
+      console.error('Error updating compra_proveedor:', error);
+      throw error;
+    }
+  };
+
+  // CRUD Eventos
+  const crearCotizacionEvento = async (evento: Omit<CotizacionEvento, 'id' | 'created_at' | 'usuario_id'>) => {
+    try {
+      const resultado = await sendJson('crear evento', `${BASE_URL}/cotizacion-eventos`, token, {
+        method: 'POST',
+        body: JSON.stringify(evento)
+      });
+      setCotizacionEventos(prev => [...prev, resultado]);
+      return resultado;
+    } catch (error) {
+      console.error('Error creating evento:', error);
+      throw error;
+    }
+  };
 
   // Relaciones
   const cotizacionesConClientes = cotizaciones.map(cotizacion => ({
@@ -417,6 +535,21 @@ export function useSupabaseData(token?: string) {
       setClientes(prev => prev.filter(c => c.id !== id));
     } catch (error) {
       console.error('Error deleting cliente:', error);
+      throw error;
+    }
+  };
+
+
+  const crearPagoProveedor = async (pago: any) => {
+    try {
+      const resultado = await sendJson('crear pago proveedor', `${BASE_URL}/pagos-proveedor`, token, {
+        method: 'POST',
+        body: JSON.stringify(pago)
+      });
+      setPagosProveedor(prev => [resultado, ...prev]);
+      return resultado;
+    } catch (error) {
+      console.error('Error creating pago proveedor:', error);
       throw error;
     }
   };
@@ -973,6 +1106,19 @@ export function useSupabaseData(token?: string) {
     eliminarCategoriaProducto,
 
     // Datos
+    
+    proveedores,
+
+    pagosProveedor,
+    crearPagoProveedor,
+    comprasProveedor,
+    cotizacionEventos,
+    crearProveedor,
+    actualizarProveedor,
+    eliminarProveedor,
+    crearCompraProveedor,
+    actualizarCompraProveedor,
+    crearCotizacionEvento,
     clientes,
     productos,
     cotizaciones: cotizacionesConClientes,

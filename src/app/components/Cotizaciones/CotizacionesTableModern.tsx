@@ -316,7 +316,7 @@ export function CotizacionesTableModern({
         {/* Tabla */}
         <div className="w-full overflow-x-auto">
           {/* Header */}
-          <div className="bg-white/[0.03] border-b border-white/[0.06] h-14 grid grid-cols-[40px_120px_200px_1fr_200px_120px_120px_60px] gap-0">
+          <div className="bg-white/[0.03] border-b border-white/[0.06] h-14 grid grid-cols-[40px_120px_200px_1fr_160px_140px_120px_120px_60px] gap-0">
           <ModernCell type="header">
             <ModernCheckbox
               checked={isAllSelected}
@@ -347,6 +347,12 @@ export function CotizacionesTableModern({
               Fecha
             </SortableHeader>
           </ModernCell>
+
+          <ModernCell type="header">
+            <div className="font-semibold text-white/60 text-base cursor-pointer hover:text-white flex items-center gap-1 transition-colors group">
+              Fecha Entrega
+            </div>
+          </ModernCell>
           
           <ModernCell type="header">
             <SortableHeader field="total" currentSort={sortConfig} onSort={handleSort}>
@@ -372,7 +378,7 @@ export function CotizacionesTableModern({
           {sortedCotizaciones.map((cotizacion) => (
             <div 
               key={cotizacion.id} 
-              className="h-16 grid grid-cols-[40px_120px_200px_1fr_200px_120px_120px_60px] gap-0 hover:bg-white/[0.04] transition-colors"
+              className="h-16 grid grid-cols-[40px_120px_200px_1fr_160px_140px_120px_120px_60px] gap-0 hover:bg-white/[0.04] transition-colors"
             >
               <ModernCell>
                 <ModernCheckbox
@@ -384,8 +390,11 @@ export function CotizacionesTableModern({
               <ModernCell onClick={() => onVerCotizacion(cotizacion.id)}>
                 <div className="flex flex-col justify-center w-full">
                   <div className="font-semibold text-white text-sm">
-                    {cotizacion.folio}
+                    {cotizacion.folio} {cotizacion.version > 1 ? `v${cotizacion.version}` : ''}
                   </div>
+                  {cotizacion.cotizacion_padre_id && (
+                    <div className="text-xs text-muted-foreground">Derivada</div>
+                  )}
                 </div>
               </ModernCell>
               
@@ -412,6 +421,14 @@ export function CotizacionesTableModern({
                 <div className="flex flex-col justify-center w-full">
                   <div className="text-sm text-white/70">
                     {formatearFecha(cotizacion.fecha)}
+                  </div>
+                </div>
+              </ModernCell>
+
+              <ModernCell onClick={() => onVerCotizacion(cotizacion.id)}>
+                <div className="flex flex-col justify-center w-full">
+                  <div className="text-sm text-white/70">
+                    {cotizacion.fecha_entrega ? new Date(cotizacion.fecha_entrega).toLocaleDateString() : '—'}
                   </div>
                 </div>
               </ModernCell>

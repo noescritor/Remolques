@@ -9,7 +9,8 @@ import {
   Calculator,
   Menu,
   X,
-  ClipboardList
+  ClipboardList,
+  DollarSign
 } from 'lucide-react';
 import { LogoIdeally } from './Cotizaciones/LogoIdeally';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from './ui/sheet';
@@ -69,9 +70,14 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading
   const navItems = [
     { id: 'dashboard',    label: 'Dashboard',     icon: LayoutDashboard, isActive: currentPage === 'dashboard' },
     { id: 'cotizaciones', label: 'Cotizaciones',  icon: FileText,        isActive: currentPage === 'cotizaciones', visible: modulos.cotizaciones !== false },
+    { id: 'trazabilidad', label: 'Trazabilidad',  icon: ClipboardList,   isActive: currentPage === 'trazabilidad' },
     { id: 'plantillas',   label: 'Plantillas',    icon: BookTemplate,    isActive: currentPage === 'plantillas', visible: modulos.cotizaciones !== false },
     { id: 'clientes',     label: 'Clientes',      icon: Users,           isActive: currentPage === 'clientes', visible: modulos.clientes !== false },
     { id: 'productos',    label: 'Productos',     icon: Package,         isActive: currentPage === 'productos', visible: modulos.productos !== false },
+    { id: 'proveedores',  label: 'Proveedores',   icon: Users,           isActive: currentPage === 'proveedores' },
+    { id: 'compras',      label: 'Compras Prov.', icon: Package,         isActive: currentPage === 'compras' },
+    { id: 'cxc',          label: 'Cuentas x Cobrar', icon: DollarSign,   isActive: currentPage === 'cxc' },
+    { id: 'cxp',          label: 'Cuentas x Pagar',  icon: DollarSign,   isActive: currentPage === 'cxp' },
     { id: 'calculadora',  label: 'Calculadora',   icon: Calculator,      isActive: currentPage === 'calculadora', visible: modulos.calculadora !== false },
     { id: 'inventario',   label: 'Inventario',    icon: Package,         isActive: currentPage === 'inventario', visible: modulos.inventario !== false },
     { id: 'notas',        label: 'Notas Rápidas', icon: ClipboardList,   isActive: currentPage === 'notas', visible: modulos.notas !== false },

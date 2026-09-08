@@ -23,6 +23,8 @@ tipo_pago_preferido: 'Transferencia' | 'Tarjeta' | 'Efectivo' | 'PayPal' | 'Cré
   categoria_id?: string;
   origen_lead?: string;
   giro_empresa?: string;
+  limite_credito?: number;
+  saldo_usado?: number; // From view
 }
 
 export interface CategoriaProducto {
@@ -63,6 +65,7 @@ export interface ServicioPlan {
 export interface Producto {
   id: string;
   tipo: ProductoTipo;
+  tipo_item?: 'producto_terminado' | 'materia_prima';
   nombre: string;
   descripcion?: string;
   unidad: string;
@@ -70,18 +73,26 @@ export interface Producto {
   costo?: number;
   tasa_iva: number;
   servicio?: ServicioPlan;
-stock_actual?: number;
+  stock_actual?: number;
   stock_minimo?: number;
   stock_reservado?: number;
   categoria_id?: string;
   imagen_url?: string;
 }
 
+export interface ProductoMaterial {
+  id: string;
+  producto_id: string;
+  material_id: string;
+  cantidad_por_unidad: number;
+  material?: Producto;
+}
+
 export interface MovimientoInventario {
   id: string;
   producto_id: string;
   organizacion_id: string;
-  tipo_movimiento: 'Entrada' | 'Salida' | 'Reserva' | 'Liberacion' | 'Ajuste';
+  tipo_movimiento: 'Entrada' | 'Salida' | 'Reserva' | 'Liberacion' | 'Ajuste' | 'Devolucion_Interna' | 'Devolucion_Cliente' | 'Devolucion_Proveedor';
   cantidad: number;
   referencia?: string;
   cotizacion_id?: string;
@@ -119,6 +130,60 @@ export interface CostosIndirectos {
 export interface ComisionesPago {
   porcentaje?: number;
   fijo?: number;
+}
+
+export interface Proveedor {
+  id: string;
+  organizacion_id: string;
+  nombre: string;
+  contacto?: string;
+  telefono?: string;
+  tiempo_entrega_dias?: number;
+  condiciones_pago?: string;
+  materiales?: ProveedorMaterial[];
+}
+
+export interface ProveedorMaterial {
+  id: string;
+  proveedor_id: string;
+  material_id: string;
+  material?: Producto;
+}
+
+export interface PagoProveedor {
+  id: string;
+  compra_id: string;
+  monto: number;
+  fecha_pago: string;
+  metodo_pago: string;
+  referencia?: string;
+  comprobante_url?: string;
+  notas?: string;
+  usuario_id?: string;
+  organizacion_id: string;
+  created_at: string;
+}
+
+export interface CompraProveedor {
+  id: string;
+  organizacion_id: string;
+  folio: string;
+  cotizacion_id?: string;
+  proveedor_id?: string;
+  estado: 'Pendiente' | 'Recibida' | 'Cancelada';
+  fecha: string;
+  fecha_vencimiento_pago?: string;
+  proveedor?: Proveedor;
+  items?: CompraItem[];
+}
+
+export interface CompraItem {
+  id: string;
+  compra_id: string;
+  material_id: string;
+  cantidad: number;
+  costo_unitario: number;
+  material?: Producto;
 }
 
 export interface Cotizacion {
@@ -230,6 +295,16 @@ export const TRANSICIONES_ESTADO: Record<EstadoCotizacion, EstadoCotizacion[]> =
   'Pagada': []
 };
 
+export interface CotizacionEvento {
+  id: string;
+  organizacion_id: string;
+  cotizacion_id: string;
+  evento: string;
+  usuario_id?: string;
+  created_at: string;
+  usuario?: { email: string };
+}
+
 // ─── Gestión de Equipo SaaS ───────────────────────────────────────────
 
 export interface PerfilOrganizacion {
@@ -237,6 +312,7 @@ export interface PerfilOrganizacion {
   organizacion_id: string;
   usuario_id: string;
   rol: 'propietario' | 'admin' | 'usuario';
+  area_operativa?: 'Ventas' | 'Compras' | 'Almacén' | 'Gerencia' | 'General';
   created_at: string;
   email?: string; // Provisto por la Edge Function
 }

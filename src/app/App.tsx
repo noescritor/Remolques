@@ -8,6 +8,13 @@ import { PDFFullPageMoodboard } from './components/Cotizaciones/PDFFullPageMoodb
 import { PortalCliente } from './components/Portal/PortalCliente';
 import { PortalPDF } from './components/Portal/PortalPDF';
 
+
+import { ProveedoresList } from './components/Proveedores/ProveedoresList';
+import { ComprasProveedorList } from './components/ComprasProveedor/ComprasProveedorList';
+
+import { CuentasPorCobrar } from './components/Finanzas/CuentasPorCobrar';
+import { CuentasPorPagar } from './components/Finanzas/CuentasPorPagar';
+import { TrazabilidadList } from './components/Trazabilidad/TrazabilidadList';
 import { ClientesList } from './components/Clientes/ClientesList';
 import { CalculadoraPage } from './components/Calculadora/CalculadoraPage';
 import { ProductosList } from './components/Productos/ProductosList';
@@ -64,6 +71,15 @@ export default function App() {
     crearCategoriaCliente,
     actualizarCategoriaCliente,
     eliminarCategoriaCliente,
+
+    proveedores,
+    comprasProveedor,
+    cotizacionEventos,
+    crearProveedor,
+    actualizarProveedor,
+    eliminarProveedor,
+    crearCompraProveedor,
+    actualizarCompraProveedor,
     productos,
     categoriasProducto,
     crearCategoriaProducto,
@@ -385,6 +401,13 @@ export default function App() {
     if (path === '/') return 'dashboard';
     if (path.startsWith('/cotizaciones')) return 'cotizaciones';
     if (path.startsWith('/clientes')) return 'clientes';
+
+    if (path.startsWith('/proveedores')) return 'proveedores';
+    if (path.startsWith('/compras')) return 'compras';
+
+    if (path.startsWith('/cxc')) return 'cxc';
+    if (path.startsWith('/cxp')) return 'cxp';
+    if (path.startsWith('/trazabilidad')) return 'trazabilidad';
     if (path.startsWith('/productos')) return 'productos';
     if (path.startsWith('/ajustes')) return 'ajustes';
     if (path.startsWith('/plantillas')) return 'plantillas';
@@ -522,6 +545,57 @@ export default function App() {
           />
         } />
 
+
+        <Route path="/proveedores" element={
+          <ProveedoresList
+            proveedores={proveedores}
+            productos={productos}
+            loading={loading}
+            onCrearProveedor={crearProveedor}
+            onActualizarProveedor={actualizarProveedor}
+            onEliminarProveedor={eliminarProveedor}
+          />
+        } />
+
+        <Route path="/compras" element={
+          <ComprasProveedorList
+            compras={comprasProveedor}
+            proveedores={proveedores}
+            productos={productos}
+            loading={loading}
+            onRecibirCompra={(id) => actualizarCompraProveedor(id, { estado: 'Recibida' })}
+            rolActual={session?.user?.user_metadata?.rol || 'usuario'}
+          />
+        } />
+
+
+        <Route path="/cxc" element={
+          <CuentasPorCobrar
+            cotizaciones={cotizaciones}
+            pagos={pagos}
+            clientes={clientes}
+            loading={loading}
+            onCrearPago={crearPago}
+          />
+        } />
+
+        <Route path="/cxp" element={
+          <CuentasPorPagar
+            compras={comprasProveedor}
+            pagos={pagosProveedor}
+            proveedores={proveedores}
+            productos={productos}
+            loading={loading}
+            onCrearPago={crearPagoProveedor}
+          />
+        } />
+        <Route path="/trazabilidad" element={
+          <TrazabilidadList
+            eventos={cotizacionEventos}
+            cotizaciones={cotizaciones}
+            loading={loading}
+          />
+        } />
         <Route path="/productos" element={
           <ProductosList
             productos={productos}

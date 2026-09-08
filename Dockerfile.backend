@@ -1,0 +1,17 @@
+FROM denoland/deno:alpine-1.40.0
+
+WORKDIR /app
+
+# Copiar archivos
+COPY src/app/types /app/src/app/types
+COPY supabase/functions/make-server-feea4382 /app/backend
+
+WORKDIR /app/backend
+
+# Cache dependencies
+RUN deno cache index.ts
+
+EXPOSE 8000
+
+# El código tiene Deno.serve(...) incorporado en el puerto 8000 por defecto
+CMD ["run", "--allow-net", "--allow-env", "--allow-read", "index.ts"]

@@ -31,6 +31,7 @@ export function ClienteModal({ open, onOpenChange, cliente, categorias = [], onG
     categoria_id: 'ninguna',
     origen_lead: '',
     giro_empresa: '',
+    limite_credito: 0,
     contactos: [] as ContactoCliente[]
   });
 
@@ -50,6 +51,7 @@ export function ClienteModal({ open, onOpenChange, cliente, categorias = [], onG
         categoria_id: cliente?.categoria_id || 'ninguna',
         origen_lead: cliente?.origen_lead || '',
         giro_empresa: cliente?.giro_empresa || '',
+        limite_credito: cliente?.limite_credito || 0,
         contactos: cliente?.contactos || []
       });
       setErrores([]);
@@ -171,6 +173,18 @@ export function ClienteModal({ open, onOpenChange, cliente, categorias = [], onG
               <Label>Origen del Lead</Label>
               <Input value={formData.origen_lead} onChange={e => setFormData({...formData, origen_lead: e.target.value})} placeholder="Ej. Recomendación, Facebook, Web..." />
             </div>
+            <div className="space-y-2">
+              <Label>Límite de Crédito</Label>
+              <Input type="number" value={formData.limite_credito || ''} onChange={e => setFormData({...formData, limite_credito: Number(e.target.value)})} placeholder="0.00" />
+            </div>
+            {cliente && (
+              <div className="space-y-2">
+                <Label>Saldo Usado</Label>
+                <div className="h-10 px-3 py-2 border rounded-md bg-white/[0.02] text-sm flex items-center text-muted-foreground border-white/10">
+                  ${(cliente.saldo_usado || 0).toLocaleString()}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="border-t pt-4 mt-4 border-white/10">
