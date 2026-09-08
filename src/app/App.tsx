@@ -106,6 +106,8 @@ export default function App() {
     duplicarCotizacion,
     generarTokenPortal,
     crearPago,
+    pagosProveedor,
+    crearPagoProveedor,
     obtenerPagosPorCotizacion,
     calcularSaldoPendiente,
     actualizarAjustes,
