@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase/client';
 import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente, NotaSimple, Proveedor, CompraProveedor, CotizacionEvento } from '../types';
 import { toast } from 'sonner';
-const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
+// Remueve la barra final para evitar URLs duplicadas como //clientes
+const BASE_URL = `https://remolques-remolques-api.gehkp3.easypanel.host`;
 
 const getHeaders = (token?: string) => ({
   'Content-Type': 'application/json',
