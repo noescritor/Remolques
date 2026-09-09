@@ -115,7 +115,7 @@ export function ComprasProveedorList({
 
       {/* Modal para ver e imprimir PDF */}
       <Dialog open={!!compraParaPDF} onOpenChange={(open) => !open && setCompraParaPDF(null)}>
-        <DialogContent className="max-w-[1000px] max-h-[90vh] overflow-y-auto bg-slate-900 border-white/10 p-6">
+        <DialogContent className="w-full sm:max-w-[1000px] max-h-[90vh] overflow-y-auto bg-slate-900 border-white/10 p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold text-white">Vista Previa de Orden de Compra</h2>
             <Button onClick={handlePrint} className="bg-white text-black hover:bg-slate-200">
