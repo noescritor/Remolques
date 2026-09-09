@@ -84,7 +84,6 @@ export function CotizacionDetalle({
         producto_id: item.material_id,
         tipo_movimiento: 'Salida',
         cantidad: item.cantidad,
-        costo_unitario: item.costo_unitario,
         referencia: `Producción de Cotización ${cotizacion.folio}`
       });
     }
