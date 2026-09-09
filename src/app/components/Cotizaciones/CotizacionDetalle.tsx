@@ -78,9 +78,7 @@ export function CotizacionDetalle({
       cotizacion_id: cotizacion.id,
       proveedor_id: proveedorId,
       estado: 'Pendiente',
-      total: items.reduce((acc, item) => acc + (item.cantidad * item.costo_unitario), 0),
-      items: items,
-      notas: `Requisición generada desde cotización ${cotizacion.folio}`
+      items: items
     } as any);
   };
 
