@@ -245,10 +245,12 @@ export function useSupabaseData(token?: string) {
         setPagos(localPagos ? JSON.parse(localPagos) : []);
         const localProveedores = localStorage.getItem('proveedores');
         const localCompras = localStorage.getItem('compras_proveedor');
+        const localPagosProveedor = localStorage.getItem('pagos_proveedor');
         const localEventos = localStorage.getItem('cotizacion_eventos');
         
         setProveedores(localProveedores ? JSON.parse(localProveedores) : []);
         setComprasProveedor(localCompras ? JSON.parse(localCompras) : []);
+        setPagosProveedor(localPagosProveedor ? JSON.parse(localPagosProveedor) : []);
         setCotizacionEventos(localEventos ? JSON.parse(localEventos) : []);
 
         setAjustes(localAjustes ? JSON.parse(localAjustes) : ajustes);
@@ -363,10 +365,12 @@ export function useSupabaseData(token?: string) {
         setPagos(localPagos ? JSON.parse(localPagos) : []);
         const localProveedores = localStorage.getItem('proveedores');
         const localCompras = localStorage.getItem('compras_proveedor');
+        const localPagosProveedor = localStorage.getItem('pagos_proveedor');
         const localEventos = localStorage.getItem('cotizacion_eventos');
         
         setProveedores(localProveedores ? JSON.parse(localProveedores) : []);
         setComprasProveedor(localCompras ? JSON.parse(localCompras) : []);
+        setPagosProveedor(localPagosProveedor ? JSON.parse(localPagosProveedor) : []);
         setCotizacionEventos(localEventos ? JSON.parse(localEventos) : []);
 
         setAjustes(localAjustes ? JSON.parse(localAjustes) : ajustes);

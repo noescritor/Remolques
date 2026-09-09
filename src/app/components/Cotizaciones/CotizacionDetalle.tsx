@@ -8,12 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
 import { Alert, AlertDescription } from '../ui/alert';
-import { ArrowLeft, FileDown, Edit, Save, Eye, Mail, GitBranch, ExternalLink, Link2, Copy, Loader2, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, FileDown, Edit, Save, Eye, Mail, GitBranch, ExternalLink, Link2, Copy, Loader2, ShoppingCart, Factory } from 'lucide-react';
 import { Cotizacion, Pago, EstadoCotizacion, TRANSICIONES_ESTADO, Cliente } from '../../types';
 import { formatearMoneda, formatearFecha } from '../../utils/calculations';
 import { EnviarEmailDialog } from './EnviarEmailDialog';
 import { toast } from 'sonner';
 import { GenerarRequisicionModal } from './GenerarRequisicionModal';
+import { GenerarOrdenProduccionModal } from './GenerarOrdenProduccionModal';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 
@@ -61,8 +62,9 @@ export function CotizacionDetalle({
   onGenerarTokenPortal
 }: CotizacionDetalleProps) {
 
-  const { proveedores, crearCompraProveedor } = useSupabaseData();
+  const { proveedores, crearCompraProveedor, registrarMovimientoInventario } = useSupabaseData();
   const [showRequisicion, setShowRequisicion] = useState(false);
+  const [showProduccion, setShowProduccion] = useState(false);
 
   const handleGenerarRequisicion = async (proveedorId: string, items: any[]) => {
     await crearCompraProveedor({
@@ -74,6 +76,18 @@ export function CotizacionDetalle({
       items: items,
       notas: `Requisición generada desde cotización ${cotizacion.folio}`
     } as any);
+  };
+
+  const handleGenerarProduccion = async (items: any[]) => {
+    for (const item of items) {
+      await registrarMovimientoInventario({
+        producto_id: item.material_id,
+        tipo_movimiento: 'Salida',
+        cantidad: item.cantidad,
+        costo_unitario: item.costo_unitario,
+        referencia: `Producción de Cotización ${cotizacion.folio}`
+      });
+    }
   };
 
   // ── Calcular familia de versiones ──────────────────────────────────────────
@@ -293,10 +307,16 @@ export function CotizacionDetalle({
                 )}
                 
                 {cotizacion.estado === 'Aprobada' && (
-                  <Button size="sm" onClick={() => setShowRequisicion(true)} className="bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 border border-orange-500/30 ml-2">
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Generar Requisición
-                  </Button>
+                  <>
+                    <Button size="sm" onClick={() => setShowProduccion(true)} className="bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 ml-2">
+                      <Factory className="w-4 h-4 mr-2" />
+                      Enviar a Producción
+                    </Button>
+                    <Button size="sm" onClick={() => setShowRequisicion(true)} className="bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 border border-orange-500/30 ml-2">
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Generar Requisición
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
@@ -628,6 +648,13 @@ export function CotizacionDetalle({
         proveedores={proveedores}
         productos={productos}
         onGenerar={handleGenerarRequisicion}
+      />
+      <GenerarOrdenProduccionModal
+        isOpen={showProduccion}
+        onClose={() => setShowProduccion(false)}
+        cotizacion={cotizacion}
+        productos={productos}
+        onGenerar={handleGenerarProduccion}
       />
     </div>
   );

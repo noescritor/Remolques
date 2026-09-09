@@ -1700,6 +1700,69 @@ app.put("/compras-proveedor/:id", async (c) => {
     return c.json({ error: error.message }, 500);
   }
 });
+// --- PAGOS PROVEEDOR ---
+
+app.get("/pagos-proveedor", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+    
+    // Validar RLS
+    const adminClient = getServiceClient();
+    const { data: orgData } = await adminClient
+      .from('perfiles_organizacion')
+      .select('organizacion_id')
+      .eq('organizacion_id', orgId)
+      .limit(1)
+      .maybeSingle();
+
+    if (!orgData) return c.json({ error: "No autorizado" }, 403);
+
+    const { data, error } = await adminClient
+      .from("pagos_proveedor")
+      .select("*, compra:compras_proveedor(*), proveedor:proveedores(*)")
+      .eq("compras_proveedor.organizacion_id", orgId)
+      .order("created_at", { ascending: false });
+      
+    // Nota: La relacion en supabase puede requerir joins, pero lo haremos simple con adminClient.
+    // Una mejor forma:
+    const { data: pagos, error: pagosError } = await adminClient.from("pagos_proveedor").select("*, compra:compras_proveedor(*)");
+    
+    // Filtramos solo los de la organizacion actual
+    const pagosFiltrados = pagos?.filter(p => p.compra?.organizacion_id === orgId) || [];
+    
+    if (pagosError) throw pagosError;
+    return c.json(pagosFiltrados);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.post("/pagos-proveedor", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+    const payload = await c.req.json();
+    
+    // Verificamos que la compra pertenece a la organizacion
+    const adminClient = getServiceClient();
+    const { data: compra } = await adminClient.from('compras_proveedor').select('organizacion_id, id').eq('id', payload.compra_id).single();
+    if (!compra || compra.organizacion_id !== orgId) {
+       return c.json({ error: "No autorizado" }, 403);
+    }
+    
+    const { data, error } = await supabase
+      .from("pagos_proveedor")
+      .insert(payload)
+      .select("*, compra:compras_proveedor(*)")
+      .single();
+      
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
 
 // --- INVENTARIO ---
 

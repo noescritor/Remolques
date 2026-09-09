@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { ShoppingCart, Check } from 'lucide-react';
+import { ShoppingCart, Check, FileText } from 'lucide-react';
 import { CompraProveedor, Proveedor, Producto } from '../../types';
 import { formatearMoneda } from '../../utils/calculations';
+import { Dialog, DialogContent } from '../ui/dialog';
+import { CompraPDFTemplate } from './CompraPDFTemplate';
 
 interface ComprasProveedorListProps {
   compras: CompraProveedor[];
@@ -22,6 +24,22 @@ export function ComprasProveedorList({
   onRecibirCompra,
   rolActual
 }: ComprasProveedorListProps) {
+  
+  const [compraParaPDF, setCompraParaPDF] = useState<CompraProveedor | null>(null);
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // Add print styles dynamically when modal is open
+  useEffect(() => {
+    if (compraParaPDF) {
+      document.body.classList.add('printing-modal');
+    } else {
+      document.body.classList.remove('printing-modal');
+    }
+    return () => document.body.classList.remove('printing-modal');
+  }, [compraParaPDF]);
 
   const proveedoresLookup = proveedores.reduce((acc, p) => {
     acc[p.id] = p;
@@ -50,7 +68,7 @@ export function ComprasProveedorList({
     <div className="space-y-6 text-foreground bg-background min-h-screen pb-20">
       <div>
         <h1 className="text-3xl font-bold font-sans">Compra a proveedor</h1>
-        <p className="text-muted-foreground mt-1">Se genera cuando la requisición detecta material faltante.</p>
+        <p className="text-muted-foreground mt-1">Órdenes de compra y requisiciones de material.</p>
       </div>
 
       {compras.length === 0 ? (
@@ -74,16 +92,18 @@ export function ComprasProveedorList({
                   <span className="text-xs text-muted-foreground">
                     {c.items?.map((m) => {
                       const matName = productosLookup[m.material_id]?.nombre || 'Desconocido';
-                      return `${matName} × ${m.cantidad} — ${formatearMoneda(m.costo_unitario)} c/u`;
-                    }).join(" · ")}
-                    {prov && prov.tiempo_entrega_dias ? ` · entrega en ${prov.tiempo_entrega_dias} días` : ""}
+                      return `${matName} x ${m.cantidad}`;
+                    }).join(" • ")}
                   </span>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                   {getStatusBadge(c.estado)}
+                  <Button size="sm" variant="outline" onClick={() => setCompraParaPDF(c)} className="h-8">
+                    <FileText className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Ver PDF</span>
+                  </Button>
                   {c.estado === "Pendiente" && (rolActual === 'Almacén' || rolActual === 'Gerencia' || rolActual === 'propietario' || rolActual === 'admin') && (
                     <Button size="sm" onClick={() => onRecibirCompra(c.id)} className="bg-accent-blue text-white hover:bg-accent-blue/90 h-8">
-                      <Check className="h-4 w-4 mr-1" /> Recibir
+                      <Check className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Recibir</span>
                     </Button>
                   )}
                 </div>
@@ -92,6 +112,30 @@ export function ComprasProveedorList({
           })}
         </div>
       )}
+
+      {/* Modal para ver e imprimir PDF */}
+      <Dialog open={!!compraParaPDF} onOpenChange={(open) => !open && setCompraParaPDF(null)}>
+        <DialogContent className="max-w-[1000px] max-h-[90vh] overflow-y-auto bg-slate-900 border-white/10 p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-bold text-white">Vista Previa de Orden de Compra</h2>
+            <Button onClick={handlePrint} className="bg-white text-black hover:bg-slate-200">
+              <FileText className="h-4 w-4 mr-2" /> Imprimir / Descargar PDF
+            </Button>
+          </div>
+          
+          <div className="flex justify-center bg-slate-800 p-8 rounded-lg overflow-x-auto">
+            {compraParaPDF && (
+              <div ref={pdfRef} className="bg-white shadow-xl">
+                <CompraPDFTemplate 
+                  compra={compraParaPDF} 
+                  proveedor={compraParaPDF.proveedor_id ? proveedoresLookup[compraParaPDF.proveedor_id] : undefined}
+                  productosLookup={productosLookup}
+                />
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
