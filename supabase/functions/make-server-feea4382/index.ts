@@ -1845,6 +1845,56 @@ app.post("/inventario/movimientos", async (c) => {
   }
 });
 
+
+
+// --- TRAZABILIDAD (EVENTOS COTIZACION) ---
+app.get("/cotizacion-eventos", async (c) => {
+  try {
+    const adminClient = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const { data, error } = await adminClient
+      .from("cotizacion_eventos")
+      .select("*")
+      .eq("organizacion_id", orgId)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return c.json(data || []);
+  } catch (error: any) {
+    console.error("[make-server] Error fetching cotizacion_eventos:", error);
+    return c.json({ error: error.message || "Error al obtener eventos" }, 500);
+  }
+});
+
+app.post("/cotizacion-eventos", async (c) => {
+  try {
+    const adminClient = getServiceClient();
+    const payload = await c.req.json();
+    payload.organizacion_id = c.get("organizacionId");
+    
+    // El usuario auth id
+    const authHeader = c.req.header("Authorization");
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data: { user } } = await adminClient.auth.getUser(token);
+      if (user) {
+        payload.usuario_id = user.id;
+      }
+    }
+
+    const { data, error } = await adminClient
+      .from("cotizacion_eventos")
+      .insert(payload)
+      .select()
+      .single();
+      
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error creating cotizacion_evento:", error);
+    return c.json({ error: error.message || "Error al registrar evento" }, 500);
+  }
+});
+
 Deno.serve({ port: 8000, hostname: "0.0.0.0" }, (req) => {
   const url = new URL(req.url);
   const prefix = "/make-server-feea4382";
