@@ -1612,7 +1612,7 @@ app.post("/inventario/movimientos", async (c) => {
   }
 });
 
-Deno.serve((req) => {
+Deno.serve({ port: 8000, hostname: "0.0.0.0" }, (req) => {
   const url = new URL(req.url);
   const prefix = "/make-server-feea4382";
 
