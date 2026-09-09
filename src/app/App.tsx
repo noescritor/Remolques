@@ -508,6 +508,9 @@ export default function App() {
             onCambiarEstado={manejarCambiarEstado}
             onCrearPago={manejarCrearPago}
             onGenerarTokenPortal={manejarGenerarTokenPortal}
+            proveedores={proveedores}
+            onCrearCompraProveedor={crearCompraProveedor}
+            onRegistrarMovimientoInventario={registrarMovimientoInventario}
           />
         } />
 

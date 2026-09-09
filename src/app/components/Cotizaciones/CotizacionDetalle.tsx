@@ -34,6 +34,9 @@ interface CotizacionDetalleProps {
   onCambiarEstado: (id: string, estado: EstadoCotizacion) => void;
   onCrearPago: (pago: Omit<Pago, 'id'>) => void;
   onGenerarTokenPortal?: (id: string) => Promise<{ token: string; expira: string; portalUrl: string }>;
+  proveedores?: any[];
+  onCrearCompraProveedor?: (compra: any) => Promise<any>;
+  onRegistrarMovimientoInventario?: (movimiento: any) => Promise<any>;
 }
 
 const estadoColors: Record<EstadoCotizacion, string> = {
@@ -59,15 +62,18 @@ export function CotizacionDetalle({
   onVerPDF,
   onCambiarEstado,
   onCrearPago,
-  onGenerarTokenPortal
+  onGenerarTokenPortal,
+  proveedores = [],
+  onCrearCompraProveedor,
+  onRegistrarMovimientoInventario
 }: CotizacionDetalleProps) {
 
-  const { proveedores, crearCompraProveedor, registrarMovimientoInventario } = useSupabaseData();
   const [showRequisicion, setShowRequisicion] = useState(false);
   const [showProduccion, setShowProduccion] = useState(false);
 
   const handleGenerarRequisicion = async (proveedorId: string, items: any[]) => {
-    await crearCompraProveedor({
+    if (!onCrearCompraProveedor) return;
+    await onCrearCompraProveedor({
       folio: `OC-${Date.now().toString().slice(-6)}`,
       cotizacion_id: cotizacion.id,
       proveedor_id: proveedorId,
@@ -79,8 +85,9 @@ export function CotizacionDetalle({
   };
 
   const handleGenerarProduccion = async (items: any[]) => {
+    if (!onRegistrarMovimientoInventario) return;
     for (const item of items) {
-      await registrarMovimientoInventario({
+      await onRegistrarMovimientoInventario({
         producto_id: item.material_id,
         tipo_movimiento: 'Salida',
         cantidad: item.cantidad,
