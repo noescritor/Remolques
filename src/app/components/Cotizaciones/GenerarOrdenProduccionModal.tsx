@@ -60,8 +60,9 @@ export function GenerarOrdenProduccionModal({
       await onGenerar(items);
       toast.success('Orden de producción iniciada y materiales descontados del inventario.');
       onClose();
-    } catch (error) {
-      toast.error('Error al generar orden de producción');
+    } catch (error: any) {
+      console.error(error);
+      toast.error('Error al generar orden de producción: ' + (error?.message || 'Error desconocido'));
     } finally {
       setLoading(false);
     }

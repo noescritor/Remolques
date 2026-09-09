@@ -1682,8 +1682,7 @@ app.put("/compras-proveedor/:id", async (c) => {
              organizacion_id: compra.organizacion_id,
              tipo_movimiento: 'Entrada',
              cantidad: item.cantidad,
-             referencia: \`Compra \${compra.folio}\`,
-             costo_unitario: item.costo_unitario
+             referencia: `Compra ${compra.folio}`
            });
            
            // Update stock in products
