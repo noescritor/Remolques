@@ -125,7 +125,7 @@ export function ComprasProveedorList({
           
           <div className="flex justify-center bg-slate-800 p-8 rounded-lg overflow-x-auto">
             {compraParaPDF && (
-              <div ref={pdfRef} className="bg-white shadow-xl">
+              <div className="bg-white shadow-xl">
                 <CompraPDFTemplate 
                   compra={compraParaPDF} 
                   proveedor={compraParaPDF.proveedor_id ? proveedoresLookup[compraParaPDF.proveedor_id] : undefined}
