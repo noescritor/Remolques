@@ -8,11 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
 import { Alert, AlertDescription } from '../ui/alert';
-import { ArrowLeft, FileDown, Edit, Save, Eye, Mail, GitBranch, ExternalLink, Link2, Copy, Loader2 } from 'lucide-react';
+import { ArrowLeft, FileDown, Edit, Save, Eye, Mail, GitBranch, ExternalLink, Link2, Copy, Loader2, ShoppingCart } from 'lucide-react';
 import { Cotizacion, Pago, EstadoCotizacion, TRANSICIONES_ESTADO, Cliente } from '../../types';
 import { formatearMoneda, formatearFecha } from '../../utils/calculations';
 import { EnviarEmailDialog } from './EnviarEmailDialog';
 import { toast } from 'sonner';
+import { GenerarRequisicionModal } from './GenerarRequisicionModal';
+import { useSupabaseData } from '../../hooks/useSupabaseData';
 
 
 interface CotizacionDetalleProps {
@@ -58,6 +60,21 @@ export function CotizacionDetalle({
   onCrearPago,
   onGenerarTokenPortal
 }: CotizacionDetalleProps) {
+
+  const { proveedores, crearCompraProveedor } = useSupabaseData();
+  const [showRequisicion, setShowRequisicion] = useState(false);
+
+  const handleGenerarRequisicion = async (proveedorId: string, items: any[]) => {
+    await crearCompraProveedor({
+      folio: `OC-${Date.now().toString().slice(-6)}`,
+      cotizacion_id: cotizacion.id,
+      proveedor_id: proveedorId,
+      estado: 'Pendiente',
+      total: items.reduce((acc, item) => acc + (item.cantidad * item.costo_unitario), 0),
+      items: items,
+      notas: `Requisición generada desde cotización ${cotizacion.folio}`
+    } as any);
+  };
 
   // ── Calcular familia de versiones ──────────────────────────────────────────
   const famVersiones = (() => {
@@ -273,6 +290,13 @@ export function CotizacionDetalle({
                       )}
                     </SelectContent>
                   </Select>
+                )}
+                
+                {cotizacion.estado === 'Aprobada' && (
+                  <Button size="sm" onClick={() => setShowRequisicion(true)} className="bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 border border-orange-500/30 ml-2">
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Generar Requisición
+                  </Button>
                 )}
               </div>
             </div>
@@ -596,6 +620,14 @@ export function CotizacionDetalle({
         cotizacionFolio={cotizacion.folio}
         clienteEmail={cliente?.correo}
         clienteNombre={cliente?.nombre_contacto || cliente?.nombre_razon_social}
+      />
+      <GenerarRequisicionModal
+        isOpen={showRequisicion}
+        onClose={() => setShowRequisicion(false)}
+        cotizacion={cotizacion}
+        proveedores={proveedores}
+        productos={productos}
+        onGenerar={handleGenerarRequisicion}
       />
     </div>
   );

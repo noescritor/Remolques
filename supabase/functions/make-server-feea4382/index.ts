@@ -1528,7 +1528,178 @@ app.delete("/notas/:id", async (c) => {
     return c.json({ error: error.message || 'Error al eliminar la nota' }, 500);
   }
 });
+// --- PROVEEDORES ---
 
+app.get("/proveedores", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+    const { data, error } = await supabase
+      .from("proveedores")
+      .select("*")
+      .eq("organizacion_id", orgId)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.post("/proveedores", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+    const payload = await c.req.json();
+    const { data, error } = await supabase
+      .from("proveedores")
+      .insert({ ...payload, organizacion_id: orgId })
+      .select()
+      .single();
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.put("/proveedores/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const id = c.req.param("id");
+    const payload = await c.req.json();
+    const { data, error } = await supabase
+      .from("proveedores")
+      .update(payload)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.delete("/proveedores/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const id = c.req.param("id");
+    const { error } = await supabase.from("proveedores").delete().eq("id", id);
+    if (error) throw error;
+    return c.json({ success: true });
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// --- COMPRAS PROVEEDOR ---
+
+app.get("/compras-proveedor", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+    const { data, error } = await supabase
+      .from("compras_proveedor")
+      .select("*, items:compra_items(*), proveedor:proveedores(*)")
+      .eq("organizacion_id", orgId)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.post("/compras-proveedor", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+    const payload = await c.req.json();
+    
+    const { items, ...compraData } = payload;
+    compraData.organizacion_id = orgId;
+    
+    // 1. Insertar compra principal
+    const { data: compra, error: compraError } = await supabase
+      .from("compras_proveedor")
+      .insert(compraData)
+      .select()
+      .single();
+      
+    if (compraError) throw compraError;
+    
+    // 2. Insertar items si existen
+    if (items && items.length > 0) {
+      const itemsToInsert = items.map((item: any) => ({
+        ...item,
+        compra_id: compra.id
+      }));
+      const { error: itemsError } = await supabase.from("compra_items").insert(itemsToInsert);
+      if (itemsError) console.error("Error inserting items:", itemsError); // Non-fatal for now
+    }
+    
+    // 3. Obtener la compra completa con items
+    const { data: compraCompleta } = await supabase
+      .from("compras_proveedor")
+      .select("*, items:compra_items(*), proveedor:proveedores(*)")
+      .eq("id", compra.id)
+      .single();
+      
+    return c.json(compraCompleta);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.put("/compras-proveedor/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const id = c.req.param("id");
+    const payload = await c.req.json();
+    
+    const { items, ...compraData } = payload;
+    
+    // 1. Update main record
+    const { data: compra, error: compraError } = await supabase
+      .from("compras_proveedor")
+      .update(compraData)
+      .eq("id", id)
+      .select()
+      .single();
+      
+    if (compraError) throw compraError;
+    
+    // If state changed to Recibida, we should generate inventory movements!
+    if (compraData.estado === 'Recibida') {
+       // Fetch items
+       const { data: existingItems } = await supabase.from("compra_items").select("*").eq("compra_id", id);
+       if (existingItems && existingItems.length > 0) {
+         const adminClient = getServiceClient();
+         for (const item of existingItems) {
+           await adminClient.from('movimientos_inventario').insert({
+             producto_id: item.material_id,
+             organizacion_id: compra.organizacion_id,
+             tipo_movimiento: 'Entrada',
+             cantidad: item.cantidad,
+             referencia: \`Compra \${compra.folio}\`,
+             costo_unitario: item.costo_unitario
+           });
+           
+           // Update stock in products
+           const { data: prod } = await adminClient.from('productos').select('stock_actual').eq('id', item.material_id).single();
+           if (prod) {
+             await adminClient.from('productos').update({ stock_actual: (prod.stock_actual || 0) + item.cantidad }).eq('id', item.material_id);
+           }
+         }
+       }
+    }
+    
+    return c.json(compra);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
 
 // --- INVENTARIO ---
 
