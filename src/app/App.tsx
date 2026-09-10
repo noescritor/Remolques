@@ -191,6 +191,10 @@ export default function App() {
         if (!nuevaCotizacion?.id || !nuevaCotizacion?.folio) {
           throw new Error('El servidor no devolvió una cotización válida.');
         }
+        await crearCotizacionEvento({
+          cotizacion_id: nuevaCotizacion.id,
+          evento: esNuevaVersion ? `Nueva versión (v${nuevaCotizacion.version}) creada` : `Cotización ${nuevaCotizacion.folio} creada`
+        });
         toast.success(
           esNuevaVersion 
             ? `Nueva versión (v${nuevaCotizacion.version}) creada exitosamente` 
@@ -199,6 +203,10 @@ export default function App() {
         navigate(`/cotizaciones/${nuevaCotizacion.id}`);
       } else if (currentId) {
         await actualizarCotizacion(currentId, data);
+        await crearCotizacionEvento({
+          cotizacion_id: currentId,
+          evento: 'Cotización actualizada'
+        });
         toast.success('Cotización actualizada');
         navigate(`/cotizaciones/${currentId}`);
       }
@@ -213,6 +221,10 @@ export default function App() {
   const manejarCambiarEstado = async (id: string, estado: any) => {
     try {
       await actualizarCotizacion(id, { estado });
+      await crearCotizacionEvento({
+        cotizacion_id: id,
+        evento: `Estado cambiado a: ${estado}`
+      });
       toast.success(`Estado cambiado a ${estado}`);
     } catch (error) {
       toast.error('Error al cambiar estado', {
@@ -332,15 +344,17 @@ export default function App() {
     } catch (error) {
       toast.error('Error al guardar ajustes', {
         description: error instanceof Error ? error.message : String(error)
-      });
-    }
-  };
-
   // Handler para pagos
-  const manejarCrearPago = async (pagoData: any) => {
+  const manejarCrearPago = async (pagoData: Omit<Pago, 'id'>) => {
     try {
       await crearPago(pagoData);
-      toast.success('Pago registrado exitosamente');
+      if (pagoData.cotizacion_id) {
+        await crearCotizacionEvento({
+          cotizacion_id: pagoData.cotizacion_id,
+          evento: `Pago registrado por $${pagoData.monto} (${pagoData.metodo_pago})`
+        });
+      }
+      toast.success('Pago registrado');
     } catch (error) {
       toast.error('Error al registrar pago', {
         description: error instanceof Error ? error.message : String(error)
