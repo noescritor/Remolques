@@ -1167,3 +1167,43 @@ ADD COLUMN IF NOT EXISTS fecha_vencimiento_pago TIMESTAMPTZ;
 UPDATE compras_proveedor 
 SET fecha_vencimiento_pago = fecha + INTERVAL '30 days'
 WHERE fecha_vencimiento_pago IS NULL;
+- -   M i g r a c i Ã ³ n :   Ã  r d e n e s   d e   T r a b a j o   y   L i b e r a c i Ã ³ n  
+  
+ C R E A T E   T A B L E   I F   N O T   E X I S T S   o r d e n e s _ t r a b a j o   (  
+         i d   u u i d   P R I M A R Y   K E Y   D E F A U L T   g e n _ r a n d o m _ u u i d ( ) ,  
+         o r g a n i z a c i o n _ i d   u u i d   N O T   N U L L   R E F E R E N C E S   o r g a n i z a c i o n e s ( i d )   O N   D E L E T E   C A S C A D E ,  
+         c o t i z a c i o n _ i d   u u i d   N O T   N U L L   R E F E R E N C E S   c o t i z a c i o n e s ( i d )   O N   D E L E T E   C A S C A D E ,  
+         c l i e n t e _ i d   u u i d   N O T   N U L L   R E F E R E N C E S   c l i e n t e s ( i d )   O N   D E L E T E   C A S C A D E ,  
+         n o m e n c l a t u r a _ i d   t e x t   N O T   N U L L ,  
+         n i v   t e x t ,  
+         m o d e l o   t e x t ,  
+         t i p o _ e q u i p o   t e x t ,  
+         c a r a c t e r i s t i c a s   j s o n b   D E F A U L T   ' { } ' : : j s o n b ,  
+         e s t a d o   t e x t   D E F A U L T   ' P e n d i e n t e '   C H E C K   ( e s t a d o   I N   ( ' P e n d i e n t e ' ,   ' E n   P r o d u c c i Ã ³ n ' ,   ' T e r m i n a d o ' ,   ' L i b e r a d o ' ) ) ,  
+         f e c h a _ i n i c i o   t i m e s t a m p t z ,  
+         f e c h a _ f i n   t i m e s t a m p t z ,  
+         c r e a t e d _ a t   t i m e s t a m p t z   D E F A U L T   n o w ( )  
+ ) ;  
+  
+ A L T E R   T A B L E   o r d e n e s _ t r a b a j o   E N A B L E   R O W   L E V E L   S E C U R I T Y ;  
+  
+ C R E A T E   P O L I C Y   " r l s _ o r d e n e s _ t r a b a j o "   O N   o r d e n e s _ t r a b a j o  
+         F O R   A L L   T O   a u t h e n t i c a t e d  
+         U S I N G   ( o r g a n i z a c i o n _ i d   =   g e t _ c u r r e n t _ o r g _ i d ( ) )  
+         W I T H   C H E C K   ( o r g a n i z a c i o n _ i d   =   g e t _ c u r r e n t _ o r g _ i d ( ) ) ;  
+  
+ - -   S e c u e n c i a   p a r a   e l   n Ã º m e r o   g l o b a l   e n   p r o d u c c i Ã ³ n   ( E l   p r i m e r   n Ã º m e r o   d e   l a   n o m e n c l a t u r a )  
+ C R E A T E   S E Q U E N C E   I F   N O T   E X I S T S   s e q _ p r o d u c c i o n _ g l o b a l   S T A R T   1 ;  
+ C R E A T E   O R   R E P L A C E   F U N C T I O N   o b t e n e r _ s i g u i e n t e _ p r o d u c c i o n ( )  
+ R E T U R N S   i n t  
+ L A N G U A G E   p l p g s q l  
+ S E C U R I T Y   D E F I N E R  
+ A S   $ $  
+ D E C L A R E  
+     p r o x i m o   i n t ;  
+ B E G I N  
+     S E L E C T   n e x t v a l ( ' s e q _ p r o d u c c i o n _ g l o b a l ' )   I N T O   p r o x i m o ;  
+     R E T U R N   p r o x i m o ;  
+ E N D ;  
+ $ $ ;  
+ 
