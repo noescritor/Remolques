@@ -1,6 +1,7 @@
 import { ReactNode, useState } from 'react';
 import {
   LayoutDashboard,
+  Factory,
   FileText,
   Users,
   Package,
@@ -83,6 +84,7 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading
     { id: 'notas',        label: 'Notas Rápidas', icon: ClipboardList,   isActive: currentPage === 'notas', visible: modulos.notas !== false },
     { id: 'equipo',       label: 'Equipo',        icon: Users,           isActive: currentPage === 'equipo' },
     { id: 'ajustes',      label: 'Configuración', icon: Settings,        isActive: currentPage === 'ajustes' },
+    { id: 'produccion',   label: 'Producción', icon: Factory,        isActive: currentPage === 'produccion' },
   ].filter(item => item.visible !== false);
 
   return (

@@ -15,6 +15,7 @@ import { ComprasProveedorList } from './components/ComprasProveedor/ComprasProve
 import { CuentasPorCobrar } from './components/Finanzas/CuentasPorCobrar';
 import { CuentasPorPagar } from './components/Finanzas/CuentasPorPagar';
 import { TrazabilidadList } from './components/Trazabilidad/TrazabilidadList';
+import { OrdenesTrabajoList } from './components/OrdenesTrabajo/OrdenesTrabajoList';
 import { ClientesList } from './components/Clientes/ClientesList';
 import { CalculadoraPage } from './components/Calculadora/CalculadoraPage';
 import { ProductosList } from './components/Productos/ProductosList';
@@ -75,6 +76,9 @@ export default function App() {
     proveedores,
     comprasProveedor,
     cotizacionEventos,
+    ordenesTrabajo,
+    actualizarOrdenTrabajo,
+    generarOrdenesDesdeCotizacion,
     crearProveedor,
     actualizarProveedor,
     eliminarProveedor,
@@ -525,6 +529,7 @@ export default function App() {
             proveedores={proveedores}
             onCrearCompraProveedor={crearCompraProveedor}
             onRegistrarMovimientoInventario={registrarMovimientoInventario}
+            onGenerarOrdenesTrabajo={generarOrdenesDesdeCotizacion}
           />
         } />
 
@@ -606,6 +611,15 @@ export default function App() {
             productos={productos}
             loading={loading}
             onCrearPago={crearPagoProveedor}
+          />
+        } />
+        
+        <Route path="/produccion" element={
+          <OrdenesTrabajoList
+            ordenes={ordenesTrabajo}
+            clientes={clientes}
+            loading={loading}
+            onActualizarOrden={actualizarOrdenTrabajo}
           />
         } />
         <Route path="/trazabilidad" element={

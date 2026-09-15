@@ -37,6 +37,7 @@ interface CotizacionDetalleProps {
   proveedores?: any[];
   onCrearCompraProveedor?: (compra: any) => Promise<any>;
   onRegistrarMovimientoInventario?: (movimiento: any) => Promise<any>;
+  onGenerarOrdenesTrabajo?: (cotizacionId: string) => Promise<any>;
 }
 
 const estadoColors: Record<EstadoCotizacion, string> = {
@@ -65,7 +66,8 @@ export function CotizacionDetalle({
   onGenerarTokenPortal,
   proveedores = [],
   onCrearCompraProveedor,
-  onRegistrarMovimientoInventario
+  onRegistrarMovimientoInventario,
+  onGenerarOrdenesTrabajo
 }: CotizacionDetalleProps) {
 
   const [showRequisicion, setShowRequisicion] = useState(false);
@@ -80,6 +82,17 @@ export function CotizacionDetalle({
       estado: 'Pendiente',
       items: items
     } as any);
+  };
+
+  
+  const handleGenerarOrdenes = async () => {
+    if (!onGenerarOrdenesTrabajo) return;
+    try {
+      await onGenerarOrdenesTrabajo(cotizacion.id);
+      alert('Órdenes de trabajo generadas exitosamente. Revisa el módulo de Producción.');
+    } catch (e: any) {
+      alert('Error: ' + e.message);
+    }
   };
 
   const handleGenerarProduccion = async (items: any[]) => {
