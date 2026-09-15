@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase/client';
-import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente, NotaSimple, Proveedor, CompraProveedor, CotizacionEvento } from '../types';
+import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente, NotaSimple, Proveedor, CompraProveedor, CotizacionEvento, OrdenTrabajo } from '../types';
 import { toast } from 'sonner';
 // Remueve la barra final para evitar URLs duplicadas como //clientes
 const BASE_URL = `https://remolques-remolques-api.gehkp3.easypanel.host`;
@@ -55,7 +55,10 @@ export function useSupabaseData(token?: string) {
   const [notasList, setNotasList] = useState<NotaSimple[]>([]);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [comprasProveedor, setComprasProveedor] = useState<CompraProveedor[]>([]);
+  
   const [pagosProveedor, setPagosProveedor] = useState<any[]>([]);
+  const [ordenesTrabajo, setOrdenesTrabajo] = useState<OrdenTrabajo[]>([]);
+
 
   const [cotizacionEventos, setCotizacionEventos] = useState<CotizacionEvento[]>([]);
 
@@ -874,7 +877,12 @@ export function useSupabaseData(token?: string) {
       );
       setCotizaciones(cotizacionesActualizadas);
       saveToLocalStorage('cotizaciones', cotizacionesActualizadas);
-      return { token: tokenPortal, expira: expira.toISOString() };
+      return {
+
+    ordenesTrabajo,
+    actualizarOrdenTrabajo,
+    generarOrdenesDesdeCotizacion,
+ token: tokenPortal, expira: expira.toISOString() };
     }
 
     const resultado = await sendJson('generar portal', `${BASE_URL}/cotizaciones/${id}/generar-token-portal`, token, {
@@ -1100,7 +1108,36 @@ export function useSupabaseData(token?: string) {
     }
   };
 
-  return {
+  
+  const actualizarOrdenTrabajo = async (id: string, updates: Partial<OrdenTrabajo>) => {
+    try {
+      const result = await sendJson('actualizar orden', `${BASE_URL}/ordenes-trabajo/${id}`, token, {
+        method: 'PUT',
+        body: JSON.stringify(updates)
+      });
+      setOrdenesTrabajo(prev => prev.map(o => o.id === id ? { ...o, ...result } : o));
+      return result;
+    } catch (error) {
+      console.error('Error updating orden_trabajo:', error);
+      throw error;
+    }
+  };
+
+  const generarOrdenesDesdeCotizacion = async (cotizacionId: string) => {
+    try {
+      const results = await sendJson('generar ordenes', `${BASE_URL}/cotizaciones/${cotizacionId}/generar-ordenes`, token, {
+        method: 'POST'
+      });
+      // Volver a cargar para traer las relaciones (cliente, cotizacion)
+      const ordenesReq = await fetchJson('ordenes', `${BASE_URL}/ordenes-trabajo`, token).catch(() => []);
+      setOrdenesTrabajo(Array.isArray(ordenesReq) ? ordenesReq : []);
+      return results;
+    } catch (error) {
+      console.error('Error generating ordenes:', error);
+      throw error;
+    }
+  };
+return {
     categoriasProducto,
     categoriasCliente,
     crearCategoriaCliente,

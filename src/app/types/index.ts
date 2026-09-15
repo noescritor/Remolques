@@ -347,3 +347,21 @@ export interface NotaSimple {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface OrdenTrabajo {
+  id: string;
+  organizacion_id: string;
+  cotizacion_id: string;
+  cliente_id: string;
+  nomenclatura_id: string;
+  niv: string | null;
+  modelo: string | null;
+  tipo_equipo: string;
+  caracteristicas: any;
+  estado: string;
+  fecha_inicio: string | null;
+  fecha_fin: string | null;
+  created_at: string;
+  cliente?: Cliente;
+  cotizacion?: Cotizacion;
+}
