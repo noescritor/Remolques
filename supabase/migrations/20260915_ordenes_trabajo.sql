@@ -3,8 +3,8 @@
 CREATE TABLE IF NOT EXISTS ordenes_trabajo (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     organizacion_id uuid NOT NULL REFERENCES organizaciones(id) ON DELETE CASCADE,
-    cotizacion_id uuid NOT NULL REFERENCES cotizaciones(id) ON DELETE CASCADE,
-    cliente_id uuid NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
+    cotizacion_id text NOT NULL REFERENCES cotizaciones(id) ON DELETE CASCADE,
+    cliente_id text NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
     nomenclatura_id text NOT NULL,
     niv text,
     modelo text,

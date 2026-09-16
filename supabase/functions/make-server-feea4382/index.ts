@@ -1904,7 +1904,7 @@ app.get("/ordenes-trabajo", async (c) => {
     const orgId = c.get("organizacionId");
     const { data, error } = await supabase
       .from("ordenes_trabajo")
-      .select("*, cliente:clientes(*), cotizacion:cotizaciones(*)")
+      .select("*, cliente:clientes(*), cotizacion:cotizaciones(*), linea:lineas_producto(*), fase:fases_produccion(*)")
       .eq("organizacion_id", orgId)
       .order("created_at", { ascending: false });
     if (error) throw error;

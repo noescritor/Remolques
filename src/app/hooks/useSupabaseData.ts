@@ -59,6 +59,8 @@ export function useSupabaseData(token?: string) {
   const [pagosProveedor, setPagosProveedor] = useState<any[]>([]);
   
   const [ordenesTrabajo, setOrdenesTrabajo] = useState<OrdenTrabajo[]>([]);
+  const [lineasProducto, setLineasProducto] = useState<any[]>([]);
+  const [fasesProduccion, setFasesProduccion] = useState<any[]>([]);
   const [presupuestos, setPresupuestos] = useState<Presupuesto[]>([]);
 
 
@@ -293,6 +295,8 @@ export function useSupabaseData(token?: string) {
       const cotizacionesData = await fetchJson('cotizaciones', `${BASE_URL}/cotizaciones`, token);
       const pagosData = await fetchJson('pagos', `${BASE_URL}/pagos`, token);
         const ordenesData = await fetchJson('ordenes', `${BASE_URL}/ordenes-trabajo`, token).catch(() => []);
+        const lineasData = await fetchJson('lineas', `${BASE_URL}/produccion/lineas`, token).catch(() => []);
+        const fasesData = await fetchJson('fases', `${BASE_URL}/produccion/fases`, token).catch(() => []);
         const presupuestosData = await fetchJson('presupuestos', `${BASE_URL}/presupuestos`, token).catch(() => []);
       const proveedoresData = await fetchJson('proveedores', `${BASE_URL}/proveedores`, token).catch(() => []);
       const comprasProveedorData = await fetchJson('compras-proveedor', `${BASE_URL}/compras-proveedor`, token).catch(() => []);
@@ -334,6 +338,8 @@ export function useSupabaseData(token?: string) {
       setCotizaciones(Array.isArray(cotizacionesData) ? cotizacionesData : []);
       setPagos(Array.isArray(pagosData) ? pagosData : []);
         setOrdenesTrabajo(Array.isArray(ordenesData) ? ordenesData : []);
+        setLineasProducto(Array.isArray(lineasData) ? lineasData : []);
+        setFasesProduccion(Array.isArray(fasesData) ? fasesData : []);
         setPresupuestos(Array.isArray(presupuestosData) ? presupuestosData : []);
       setProveedores(Array.isArray(proveedoresData) ? proveedoresData : []);
       setComprasProveedor(Array.isArray(comprasProveedorData) ? comprasProveedorData : []);
@@ -1271,7 +1277,12 @@ return {
     onExportPDF,
     // Producción
     ordenesTrabajo,
+    lineasProducto,
+    fasesProduccion,
     actualizarOrdenTrabajo,
+    moverOrdenKanban,
+    actualizarMaterialFaltante,
+    importarExcelKanban,
     generarOrdenesDesdeCotizacion,
     presupuestos,
     crearPresupuesto,

@@ -14,6 +14,7 @@ import { ComprasProveedorList } from './components/ComprasProveedor/ComprasProve
 
 import { CuentasPorCobrar } from './components/Finanzas/CuentasPorCobrar';
 import { CuentasPorPagar } from './components/Finanzas/CuentasPorPagar';
+import { TableroProduccionPage } from './components/TableroProduccion/TableroProduccionPage';
 import { TrazabilidadList } from './components/Trazabilidad/TrazabilidadList';
 import { OrdenesTrabajoList } from './components/OrdenesTrabajo/OrdenesTrabajoList';
 import { PresupuestosList } from './components/Presupuestos/PresupuestosList';
@@ -78,6 +79,9 @@ export default function App() {
     comprasProveedor,
     cotizacionEventos,
     ordenesTrabajo,
+    lineasProducto,
+    fasesProduccion,
+    moverOrdenKanban,
     actualizarOrdenTrabajo,
     generarOrdenesDesdeCotizacion,
     presupuestos,
@@ -643,7 +647,16 @@ export default function App() {
             onActualizarOrden={actualizarOrdenTrabajo}
           />
         } />
-        <Route path="/trazabilidad" element={
+                  <Route path="/tablero-produccion" element={
+            <TableroProduccionPage
+              lineasProducto={lineasProducto}
+              fasesProduccion={fasesProduccion}
+              ordenesTrabajo={ordenesTrabajo}
+              loading={loading}
+              onMoverOrden={moverOrdenKanban}
+            />
+          } />
+          <Route path="/trazabilidad" element={
           <TrazabilidadList
             eventos={cotizacionEventos}
             cotizaciones={cotizaciones}
