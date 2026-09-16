@@ -67,14 +67,14 @@ export function QuickActions({ onNuevaCotizacion, onNavigate }: QuickActionsProp
               <Button
                 key={action.id}
                 onClick={action.onClick}
-                className={`${action.color} text-white p-4 h-auto flex-col items-center justify-center text-center space-y-2 min-h-[80px]`}
+                className={`${action.color} text-foreground p-4 h-auto flex-col items-center justify-center text-center space-y-2 min-h-[80px]`}
                 variant="ghost"
               >
                 <div className="flex items-center gap-2">
                   <Icon className="w-5 h-5" />
                   <span className="font-semibold">{action.title}</span>
                 </div>
-                <p className="text-xs text-white/95 text-center leading-tight">
+                <p className="text-xs text-foreground/95 text-center leading-tight">
                   {action.description}
                 </p>
               </Button>

@@ -57,7 +57,7 @@ export function PDFFullPageMoodboard({
       {/* ── Toolbar ── */}
       <div
         id="pdf-toolbar"
-        className="sticky top-0 z-10 bg-[var(--surface-secondary)] border-b border-white/[0.06] shadow-sm"
+        className="sticky top-0 z-10 bg-[var(--surface-secondary)] border-b border-border/50 shadow-sm"
         style={{ display: 'flex' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">

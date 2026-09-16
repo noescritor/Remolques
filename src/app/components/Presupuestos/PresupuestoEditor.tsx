@@ -100,9 +100,9 @@ export function PresupuestoEditor({ presupuesto, clientes, onSave, onUpdate, onC
 
   const renderSeccion = (titulo: string, key: keyof PresupuestoDatos, bgCls: string) => (
     <div className="border rounded-md overflow-hidden mb-6">
-      <div className={`px-4 py-2 font-bold text-sm text-white ${bgCls} flex justify-between items-center`}>
+      <div className={`px-4 py-2 font-bold text-sm text-foreground ${bgCls} flex justify-between items-center`}>
         {titulo}
-        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-white/20 text-white" onClick={() => addItem(key)}>
+        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-white/20 text-foreground" onClick={() => addItem(key)}>
           <Plus className="h-4 w-4" />
         </Button>
       </div>

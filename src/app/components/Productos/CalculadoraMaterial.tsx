@@ -146,7 +146,7 @@ export function CalculadoraMaterial({ onAplicarCosto }: CalculadoraMaterialProps
       <div className="space-y-3 mb-4">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
-            <Calculator className="w-5 h-5 text-white" />
+            <Calculator className="w-5 h-5 text-foreground" />
           </div>
           <div className="flex-1">
             <h3 className="text-blue-900">Calculadora de Material</h3>
@@ -347,7 +347,7 @@ export function CalculadoraMaterial({ onAplicarCosto }: CalculadoraMaterialProps
                     <Button
                       onClick={handleAplicarCosto}
                       disabled={costoPieza === 0}
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-foreground"
                       size="sm"
                     >
                       <ArrowRight className="w-4 h-4 mr-1" />

@@ -70,7 +70,7 @@ export function GenerarOrdenProduccionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] bg-black border-white/10 text-white">
+      <DialogContent className="sm:max-w-[600px] bg-black border-border text-foreground">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Factory className="w-5 h-5 text-purple-400" />
@@ -91,7 +91,7 @@ export function GenerarOrdenProduccionModal({
             </div>
 
             {items.map((item, idx) => (
-              <div key={idx} className="flex gap-4 items-end bg-white/[0.02] p-3 rounded-lg border border-white/5">
+              <div key={idx} className="flex gap-4 items-end bg-card/50 p-3 rounded-lg border border-white/5">
                 <div className="flex-1 space-y-2">
                   <Label className="text-xs">Materia Prima / Refacción</Label>
                   <Select value={item.material_id} onValueChange={(v) => handleItemChange(idx, 'material_id', v)}>
@@ -123,16 +123,16 @@ export function GenerarOrdenProduccionModal({
             ))}
 
             {items.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground border border-dashed border-white/10 rounded-lg">
+              <div className="text-center py-8 text-muted-foreground border border-dashed border-border rounded-lg">
                 No has agregado materiales. Haz clic en "Agregar Material" para descontarlos del inventario.
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-white/10">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border">
           <Button variant="ghost" onClick={onClose} disabled={loading}>Cancelar</Button>
-          <Button onClick={handleSubmit} disabled={loading || items.length === 0} className="bg-purple-600 text-white hover:bg-purple-700">
+          <Button onClick={handleSubmit} disabled={loading || items.length === 0} className="bg-purple-600 text-foreground hover:bg-purple-700">
             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Confirmar Producción
           </Button>

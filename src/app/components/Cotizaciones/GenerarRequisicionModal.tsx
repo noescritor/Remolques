@@ -77,7 +77,7 @@ export function GenerarRequisicionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] bg-black border-white/10 text-white">
+      <DialogContent className="sm:max-w-[600px] bg-black border-border text-foreground">
         <DialogHeader>
           <DialogTitle>Generar Orden de Compra (Requisición)</DialogTitle>
           <DialogDescription>
@@ -109,7 +109,7 @@ export function GenerarRequisicionModal({
             </div>
 
             {items.map((item, idx) => (
-              <div key={idx} className="flex gap-4 items-end bg-white/[0.02] p-3 rounded-lg border border-white/5">
+              <div key={idx} className="flex gap-4 items-end bg-card/50 p-3 rounded-lg border border-white/5">
                 <div className="flex-1 space-y-2">
                   <Label className="text-xs">Materia Prima / Refacción</Label>
                   <Select value={item.material_id} onValueChange={(v) => handleItemChange(idx, 'material_id', v)}>
@@ -149,14 +149,14 @@ export function GenerarRequisicionModal({
             ))}
 
             {items.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground border border-dashed border-white/10 rounded-lg">
+              <div className="text-center py-8 text-muted-foreground border border-dashed border-border rounded-lg">
                 Haz clic en "Agregar Material" para comenzar a armar la requisición.
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-white/10">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border">
           <Button variant="ghost" onClick={onClose} disabled={loading}>Cancelar</Button>
           <Button onClick={handleSubmit} disabled={loading || items.length === 0 || !proveedorId} className="bg-accent-blue text-white hover:bg-accent-blue/90">
             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

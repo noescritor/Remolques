@@ -128,8 +128,8 @@ export function CalculadoraPage() {
         
         {/* Lado Izquierdo: Formulario */}
         <div className="space-y-6">
-          <Card className="bg-white/[0.02] border-white/[0.06]">
-            <CardHeader className="pb-3 border-b border-white/[0.06]">
+          <Card className="bg-card/50 border-border/50">
+            <CardHeader className="pb-3 border-b border-border/50">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-accent-blue/10 flex items-center justify-center">
                   <Truck className="w-4 h-4 text-accent-blue" />
@@ -212,8 +212,8 @@ export function CalculadoraPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/[0.02] border-white/[0.06]">
-            <CardHeader className="pb-3 border-b border-white/[0.06]">
+          <Card className="bg-card/50 border-border/50">
+            <CardHeader className="pb-3 border-b border-border/50">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-accent-green/10 flex items-center justify-center">
                   <Wrench className="w-4 h-4 text-accent-green" />
@@ -252,8 +252,8 @@ export function CalculadoraPage() {
 
         {/* Lado Derecho: Resultados */}
         <div className="space-y-6">
-          <Card className="bg-white/[0.02] border-white/[0.06] h-full flex flex-col">
-            <CardHeader className="pb-4 border-b border-white/[0.06] flex flex-row items-center justify-between">
+          <Card className="bg-card/50 border-border/50 h-full flex flex-col">
+            <CardHeader className="pb-4 border-b border-border/50 flex flex-row items-center justify-between">
               <CardTitle className="text-xl">Análisis de Costos</CardTitle>
               <div className="flex items-center gap-2">
                 <Label>Margen:</Label>
@@ -281,7 +281,7 @@ export function CalculadoraPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-4 rounded-lg bg-white/[0.02] border border-white/[0.06]">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-card/50 border border-border/50">
                 <span className="font-medium">Costo de Producción Total</span>
                 <span className="text-xl font-mono">${costoTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
               </div>
@@ -289,7 +289,7 @@ export function CalculadoraPage() {
               <div className="p-6 rounded-xl bg-accent-blue/5 border border-accent-blue/20 flex flex-col items-center justify-center text-center mt-auto">
                 <p className="text-sm text-accent-blue/80 uppercase tracking-widest font-mono mb-2">Precio Sugerido Venta</p>
                 <div className="flex items-center gap-2">
-                  <span className="text-5xl font-bold font-mono text-white">${precioSugerido.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+                  <span className="text-5xl font-bold font-mono text-foreground">${precioSugerido.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
                 </div>
                 <p className="text-sm text-accent-green mt-3">Utilidad Proyectada: ${utilidad.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</p>
                 

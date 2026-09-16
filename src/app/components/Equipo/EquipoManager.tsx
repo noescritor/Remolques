@@ -108,7 +108,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
   return (
     <div className="space-y-6 max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
       <div>
-        <h1 className="text-2xl font-bold text-white">Equipo y Accesos</h1>
+        <h1 className="text-2xl font-bold text-foreground">Equipo y Accesos</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Invita miembros a tu organización actual o crea nuevas organizaciones desde cero para nuevos clientes/usuarios.
         </p>
@@ -116,9 +116,9 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
 
       <div className={`grid grid-cols-1 ${isSuperAdmin ? 'md:grid-cols-2' : ''} gap-6`}>
         {/* Formulario 1: Invitar a mi organización */}
-        <div className="bg-white/[0.03] shadow rounded-lg overflow-hidden border border-white/[0.06] p-5 flex flex-col justify-between">
+        <div className="bg-white/[0.03] shadow rounded-lg overflow-hidden border border-border/50 p-5 flex flex-col justify-between">
           <div>
-            <h3 className="text-lg leading-6 font-medium text-white flex items-center gap-2">
+            <h3 className="text-lg leading-6 font-medium text-foreground flex items-center gap-2">
               <UserPlus className="h-5 w-5 text-accent-blue" />
               Invitar Miembro a Mi Organización
             </h3>
@@ -152,7 +152,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full pl-9 sm:text-sm rounded-md py-2 px-3 border border-white/10 bg-white/[0.04] text-white placeholder:text-muted-foreground focus:ring-accent-blue focus:border-accent-blue focus:outline-none"
+                    className="block w-full pl-9 sm:text-sm rounded-md py-2 px-3 border border-border bg-white/[0.04] text-foreground placeholder:text-muted-foreground focus:ring-accent-blue focus:border-accent-blue focus:outline-none"
                     placeholder="correo@ejemplo.com"
                   />
                 </div>
@@ -165,7 +165,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
                 <select
                   value={rol}
                   onChange={(e) => setRol(e.target.value as 'admin' | 'usuario')}
-                  className="block w-full pl-3 pr-10 py-2 text-base sm:text-sm rounded-md border border-white/10 bg-white/[0.04] text-white focus:outline-none focus:ring-accent-blue focus:border-accent-blue"
+                  className="block w-full pl-3 pr-10 py-2 text-base sm:text-sm rounded-md border border-border bg-white/[0.04] text-foreground focus:outline-none focus:ring-accent-blue focus:border-accent-blue"
                 >
                   <option value="usuario">Usuario Regular</option>
                   <option value="admin">Administrador</option>
@@ -175,7 +175,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-accent-blue hover:bg-accent-blue/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue text-sm disabled:opacity-50 transition-colors mt-2"
+                className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-foreground bg-accent-blue hover:bg-accent-blue/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue text-sm disabled:opacity-50 transition-colors mt-2"
               >
                 <UserPlus className="-ml-1 mr-2 h-4 w-4" />
                 {loading ? 'Enviando...' : 'Invitar a mi Organización'}
@@ -186,9 +186,9 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
 
         {/* Formulario 2: Crear nueva organización e invitar (Solo Super Admin) */}
         {isSuperAdmin && (
-          <div className="bg-white/[0.03] shadow rounded-lg overflow-hidden border border-white/[0.06] p-5 flex flex-col justify-between">
+          <div className="bg-white/[0.03] shadow rounded-lg overflow-hidden border border-border/50 p-5 flex flex-col justify-between">
             <div>
-              <h3 className="text-lg leading-6 font-medium text-white flex items-center gap-2">
+              <h3 className="text-lg leading-6 font-medium text-foreground flex items-center gap-2">
                 <Building className="h-5 w-5 text-accent-blue" />
                 Crear Nueva Organización e Invitar
               </h3>
@@ -222,7 +222,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
                       required
                       value={newOrgName}
                       onChange={(e) => setNewOrgName(e.target.value)}
-                      className="block w-full pl-9 sm:text-sm rounded-md py-2 px-3 border border-white/10 bg-white/[0.04] text-white placeholder:text-muted-foreground focus:ring-accent-blue focus:border-accent-blue focus:outline-none"
+                      className="block w-full pl-9 sm:text-sm rounded-md py-2 px-3 border border-border bg-white/[0.04] text-foreground placeholder:text-muted-foreground focus:ring-accent-blue focus:border-accent-blue focus:outline-none"
                       placeholder="Ej. Empresa Cliente S.A."
                     />
                   </div>
@@ -241,7 +241,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
                       required
                       value={newOrgEmail}
                       onChange={(e) => setNewOrgEmail(e.target.value)}
-                      className="block w-full pl-9 sm:text-sm rounded-md py-2 px-3 border border-white/10 bg-white/[0.04] text-white placeholder:text-muted-foreground focus:ring-accent-blue focus:border-accent-blue focus:outline-none"
+                      className="block w-full pl-9 sm:text-sm rounded-md py-2 px-3 border border-border bg-white/[0.04] text-foreground placeholder:text-muted-foreground focus:ring-accent-blue focus:border-accent-blue focus:outline-none"
                       placeholder="propietario@cliente.com"
                     />
                   </div>
@@ -250,7 +250,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
                 <button
                   type="submit"
                   disabled={loadingOrg}
-                  className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-accent-blue hover:bg-accent-blue/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue text-sm disabled:opacity-50 transition-colors mt-2"
+                  className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-foreground bg-accent-blue hover:bg-accent-blue/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue text-sm disabled:opacity-50 transition-colors mt-2"
                 >
                   <PlusCircle className="-ml-1 mr-2 h-4 w-4" />
                   {loadingOrg ? 'Creando...' : 'Crear Organización e Invitar'}
@@ -263,9 +263,9 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Miembros Activos (de mi organización) */}
-        <div className="bg-white/[0.03] shadow rounded-lg border border-white/[0.06] overflow-hidden">
-          <div className="px-4 py-5 border-b border-white/[0.06] sm:px-6 flex justify-between items-center bg-white/[0.02]">
-            <h3 className="text-lg leading-6 font-medium text-white">Miembros Activos (Mi Org)</h3>
+        <div className="bg-white/[0.03] shadow rounded-lg border border-border/50 overflow-hidden">
+          <div className="px-4 py-5 border-b border-border/50 sm:px-6 flex justify-between items-center bg-card/50">
+            <h3 className="text-lg leading-6 font-medium text-foreground">Miembros Activos (Mi Org)</h3>
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-green/20 text-accent-green">
               {equipo.length}
             </span>
@@ -275,7 +275,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
               <li className="p-4 text-sm text-muted-foreground text-center">No hay miembros registrados</li>
             ) : (
               equipo.map((miembro) => (
-                <li key={miembro.id} className="p-4 hover:bg-white/[0.04] transition-colors">
+                <li key={miembro.id} className="p-4 hover:bg-muted/50 transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="flex-shrink-0">
@@ -284,7 +284,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
                         </div>
                       </div>
                       <div className="ml-4">
-                        <p className="text-sm font-medium text-white">{miembro.email}</p>
+                        <p className="text-sm font-medium text-foreground">{miembro.email}</p>
                         <div className="flex items-center mt-1">
                           {miembro.rol === 'propietario' || miembro.rol === 'admin' ? (
                             <Shield className="flex-shrink-0 mr-1.5 h-4 w-4 text-accent-blue" />
@@ -303,9 +303,9 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
         </div>
 
         {/* Invitaciones Pendientes (de mi organización) */}
-        <div className="bg-white/[0.03] shadow rounded-lg border border-white/[0.06] overflow-hidden">
-          <div className="px-4 py-5 border-b border-white/[0.06] sm:px-6 flex justify-between items-center bg-white/[0.02]">
-            <h3 className="text-lg leading-6 font-medium text-white">Invitaciones Pendientes (Mi Org)</h3>
+        <div className="bg-white/[0.03] shadow rounded-lg border border-border/50 overflow-hidden">
+          <div className="px-4 py-5 border-b border-border/50 sm:px-6 flex justify-between items-center bg-card/50">
+            <h3 className="text-lg leading-6 font-medium text-foreground">Invitaciones Pendientes (Mi Org)</h3>
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-400/20 text-orange-400">
               {invitaciones.length}
             </span>
@@ -315,10 +315,10 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
               <li className="p-4 text-sm text-muted-foreground text-center">No hay invitaciones pendientes en esta organización</li>
             ) : (
               invitaciones.map((inv) => (
-                <li key={inv.id} className="p-4 hover:bg-white/[0.04] transition-colors">
+                <li key={inv.id} className="p-4 hover:bg-muted/50 transition-colors">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-white">{inv.email}</p>
+                      <p className="text-sm font-medium text-foreground">{inv.email}</p>
                       <p className="text-xs text-muted-foreground mt-1 capitalize flex items-center">
                         {inv.rol === 'admin' ? <Shield className="h-3 w-3 mr-1 text-accent-blue"/> : <User className="h-3 w-3 mr-1"/>}
                         {inv.rol}
@@ -341,10 +341,10 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
 
       {/* Administración de Organizaciones y Módulos (Solo Super-Admin) */}
       {isSuperAdmin && (
-        <div className="bg-white/[0.03] shadow rounded-lg border border-white/[0.06] overflow-hidden mt-6">
-          <div className="px-4 py-5 border-b border-white/[0.06] sm:px-6 flex justify-between items-center bg-white/[0.02]">
+        <div className="bg-white/[0.03] shadow rounded-lg border border-border/50 overflow-hidden mt-6">
+          <div className="px-4 py-5 border-b border-border/50 sm:px-6 flex justify-between items-center bg-card/50">
             <div>
-              <h3 className="text-lg leading-6 font-medium text-white flex items-center gap-2">
+              <h3 className="text-lg leading-6 font-medium text-foreground flex items-center gap-2">
                 <Building className="h-5 w-5 text-accent-blue" />
                 Módulos de Organizaciones (Super-Admin)
               </h3>
@@ -416,7 +416,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
                       <tr key={org.id} className="hover:bg-white/[0.01] transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex flex-col">
-                            <span className="text-sm font-medium text-white">{org.nombre}</span>
+                            <span className="text-sm font-medium text-foreground">{org.nombre}</span>
                             <span className="text-xs text-muted-foreground font-mono">{org.id}</span>
                           </div>
                         </td>

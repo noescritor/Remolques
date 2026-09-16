@@ -65,7 +65,7 @@ export function ProveedoresList({
   };
 
   if (loading) {
-    return <div className="animate-pulse h-64 bg-white/[0.02] rounded-xl"></div>;
+    return <div className="animate-pulse h-64 bg-card/50 rounded-xl"></div>;
   }
 
   return (
@@ -81,17 +81,17 @@ export function ProveedoresList({
       </div>
 
       {proveedores.length === 0 ? (
-        <div className="text-center py-20 bg-white/[0.02] rounded-xl border border-white/[0.06]">
+        <div className="text-center py-20 bg-card/50 rounded-xl border border-border/50">
           <Building2 className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">No hay proveedores</h3>
+          <h3 className="text-lg font-medium text-foreground mb-2">No hay proveedores</h3>
           <p className="text-muted-foreground">Añade tu primer proveedor para comenzar.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+        <div className="rounded-xl border border-border/50 bg-card/50 overflow-hidden">
           {proveedores.map((p, i) => (
             <div key={p.id} className="p-4 flex flex-col group relative" style={{ borderTop: i ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-white">{p.nombre}</span>
+                <span className="text-sm font-medium text-foreground">{p.nombre}</span>
                 <div className="flex items-center gap-4">
                   <span className="text-xs font-mono text-muted-foreground">
                     entrega en {p.tiempo_entrega_dias} días · {p.condiciones_pago}

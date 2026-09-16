@@ -661,11 +661,11 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
 
   const getUrgencyBorder = (urgency: string) => {
     switch (urgency) {
-      case 'Urgente': return 'border-l-4 border-l-red-500 border-white/[0.06]';
-      case 'Alta': return 'border-l-4 border-l-orange-500 border-white/[0.06]';
-      case 'Media': return 'border-l-4 border-l-blue-500 border-white/[0.06]';
-      case 'Baja': return 'border-l-4 border-l-gray-500 border-white/[0.06]';
-      default: return 'border-white/[0.06]';
+      case 'Urgente': return 'border-l-4 border-l-red-500 border-border/50';
+      case 'Alta': return 'border-l-4 border-l-orange-500 border-border/50';
+      case 'Media': return 'border-l-4 border-l-blue-500 border-border/50';
+      case 'Baja': return 'border-l-4 border-l-gray-500 border-border/50';
+      default: return 'border-border/50';
     }
   };
 
@@ -702,7 +702,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <ClipboardList className="h-6 w-6 text-accent-blue" />
             Notas Rápidas y Taller
           </h1>
@@ -721,11 +721,11 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
 
       {/* Tabs Layout */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-white/[0.03] border border-white/[0.06] p-1 gap-1">
-          <TabsTrigger value="taller" className="data-[state=active]:bg-white/[0.06] text-white">
+        <TabsList className="bg-white/[0.03] border border-border/50 p-1 gap-1">
+          <TabsTrigger value="taller" className="data-[state=active]:bg-white/[0.06] text-foreground">
             Cola de Taller
           </TabsTrigger>
-          <TabsTrigger value="historial" className="data-[state=active]:bg-white/[0.06] text-white">
+          <TabsTrigger value="historial" className="data-[state=active]:bg-white/[0.06] text-foreground">
             Historial de Notas
           </TabsTrigger>
         </TabsList>
@@ -739,9 +739,9 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Column: Pendiente */}
-              <div className="bg-white/[0.02] border border-white/[0.04] rounded-xl p-4 flex flex-col min-h-[500px]">
-                <div className="flex justify-between items-center mb-4 pb-2 border-b border-white/[0.06]">
-                  <h3 className="font-semibold text-white flex items-center gap-2">
+              <div className="bg-card/50 border border-white/[0.04] rounded-xl p-4 flex flex-col min-h-[500px]">
+                <div className="flex justify-between items-center mb-4 pb-2 border-b border-border/50">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
                     Pendientes
                   </h3>
@@ -771,7 +771,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                         </div>
 
                         <div onClick={() => { setSelectedNota(nota); setIsTicketModalOpen(true); }} className="cursor-pointer">
-                          <h4 className="font-semibold text-white truncate">{nota.cliente_nombre}</h4>
+                          <h4 className="font-semibold text-foreground truncate">{nota.cliente_nombre}</h4>
                           <ul className="text-xs text-muted-foreground mt-2 space-y-1">
                             {Array.isArray(nota.items) && nota.items.map((it, idx) => (
                               <li key={idx} className="truncate">
@@ -781,7 +781,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                           </ul>
                         </div>
 
-                        <div className="flex flex-col gap-2 pt-2 border-t border-white/[0.06] text-[11px] text-muted-foreground">
+                        <div className="flex flex-col gap-2 pt-2 border-t border-border/50 text-[11px] text-muted-foreground">
                           {nota.fecha_entrega && (
                             <span className="flex items-center gap-1">
                               <Clock className="h-3 w-3 text-accent-blue" />
@@ -795,7 +795,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                         </div>
 
                         <div className="flex justify-between items-center pt-2">
-                          <span className="text-sm font-semibold text-white">
+                          <span className="text-sm font-semibold text-foreground">
                             ${nota.total.toFixed(2)}
                           </span>
                           <Button 
@@ -814,9 +814,9 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
               </div>
 
               {/* Column: En Proceso */}
-              <div className="bg-white/[0.02] border border-white/[0.04] rounded-xl p-4 flex flex-col min-h-[500px]">
-                <div className="flex justify-between items-center mb-4 pb-2 border-b border-white/[0.06]">
-                  <h3 className="font-semibold text-white flex items-center gap-2">
+              <div className="bg-card/50 border border-white/[0.04] rounded-xl p-4 flex flex-col min-h-[500px]">
+                <div className="flex justify-between items-center mb-4 pb-2 border-b border-border/50">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
                     En Proceso
                   </h3>
@@ -846,7 +846,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                         </div>
 
                         <div onClick={() => { setSelectedNota(nota); setIsTicketModalOpen(true); }} className="cursor-pointer">
-                          <h4 className="font-semibold text-white truncate">{nota.cliente_nombre}</h4>
+                          <h4 className="font-semibold text-foreground truncate">{nota.cliente_nombre}</h4>
                           <ul className="text-xs text-muted-foreground mt-2 space-y-1">
                             {Array.isArray(nota.items) && nota.items.map((it, idx) => (
                               <li key={idx} className="truncate">
@@ -856,7 +856,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                           </ul>
                         </div>
 
-                        <div className="flex flex-col gap-2 pt-2 border-t border-white/[0.06] text-[11px] text-muted-foreground">
+                        <div className="flex flex-col gap-2 pt-2 border-t border-border/50 text-[11px] text-muted-foreground">
                           {nota.fecha_entrega && (
                             <span className="flex items-center gap-1">
                               <Clock className="h-3 w-3 text-accent-blue" />
@@ -870,7 +870,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                         </div>
 
                         <div className="flex justify-between items-center pt-2">
-                          <span className="text-sm font-semibold text-white">
+                          <span className="text-sm font-semibold text-foreground">
                             ${nota.total.toFixed(2)}
                           </span>
                           <Button 
@@ -889,9 +889,9 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
               </div>
 
               {/* Column: Listo */}
-              <div className="bg-white/[0.02] border border-white/[0.04] rounded-xl p-4 flex flex-col min-h-[500px]">
-                <div className="flex justify-between items-center mb-4 pb-2 border-b border-white/[0.06]">
-                  <h3 className="font-semibold text-white flex items-center gap-2">
+              <div className="bg-card/50 border border-white/[0.04] rounded-xl p-4 flex flex-col min-h-[500px]">
+                <div className="flex justify-between items-center mb-4 pb-2 border-b border-border/50">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-green-500"></span>
                     Listo para Entrega
                   </h3>
@@ -921,7 +921,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                         </div>
 
                         <div onClick={() => { setSelectedNota(nota); setIsTicketModalOpen(true); }} className="cursor-pointer">
-                          <h4 className="font-semibold text-white truncate">{nota.cliente_nombre}</h4>
+                          <h4 className="font-semibold text-foreground truncate">{nota.cliente_nombre}</h4>
                           <ul className="text-xs text-muted-foreground mt-2 space-y-1">
                             {Array.isArray(nota.items) && nota.items.map((it, idx) => (
                               <li key={idx} className="truncate">
@@ -931,7 +931,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                           </ul>
                         </div>
 
-                        <div className="flex flex-col gap-2 pt-2 border-t border-white/[0.06] text-[11px] text-muted-foreground">
+                        <div className="flex flex-col gap-2 pt-2 border-t border-border/50 text-[11px] text-muted-foreground">
                           {nota.fecha_entrega && (
                             <span className="flex items-center gap-1">
                               <Clock className="h-3 w-3 text-accent-blue" />
@@ -945,7 +945,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                         </div>
 
                         <div className="flex justify-between items-center pt-2">
-                          <span className="text-sm font-semibold text-white">
+                          <span className="text-sm font-semibold text-foreground">
                             ${nota.total.toFixed(2)}
                           </span>
                           <Button 
@@ -968,7 +968,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
 
         {/* Tab 2: Full History Table */}
         <TabsContent value="historial" className="mt-6">
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden p-4 space-y-4 shadow-lg">
+          <div className="bg-white/[0.03] border border-border/50 rounded-xl overflow-hidden p-4 space-y-4 shadow-lg">
             {/* Filters */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="relative col-span-2">
@@ -977,7 +977,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                   placeholder="Buscar por cliente, folio o concepto..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 bg-white/[0.04] border-white/10"
+                  className="pl-9 bg-white/[0.04] border-border"
                 />
               </div>
 
@@ -985,13 +985,13 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                 <select
                   value={filterUrgencia}
                   onChange={(e) => setFilterUrgencia(e.target.value)}
-                  className="block w-full sm:text-sm rounded-md py-2 px-3 border border-white/10 bg-white/[0.04] text-white focus:outline-none focus:ring-accent-blue focus:border-accent-blue h-10"
+                  className="block w-full sm:text-sm rounded-md py-2 px-3 border border-border bg-white/[0.04] text-foreground focus:outline-none focus:ring-accent-blue focus:border-accent-blue h-10"
                 >
-                  <option value="Todas" className="bg-zinc-900 text-white">Todas las Urgencias</option>
-                  <option value="Baja" className="bg-zinc-900 text-white">Baja</option>
-                  <option value="Media" className="bg-zinc-900 text-white">Media</option>
-                  <option value="Alta" className="bg-zinc-900 text-white">Alta</option>
-                  <option value="Urgente" className="bg-zinc-900 text-white">Urgente</option>
+                  <option value="Todas" className="bg-zinc-900 text-foreground">Todas las Urgencias</option>
+                  <option value="Baja" className="bg-zinc-900 text-foreground">Baja</option>
+                  <option value="Media" className="bg-zinc-900 text-foreground">Media</option>
+                  <option value="Alta" className="bg-zinc-900 text-foreground">Alta</option>
+                  <option value="Urgente" className="bg-zinc-900 text-foreground">Urgente</option>
                 </select>
               </div>
 
@@ -999,30 +999,30 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                 <select
                   value={filterEstado}
                   onChange={(e) => setFilterEstado(e.target.value)}
-                  className="block w-full sm:text-sm rounded-md py-2 px-3 border border-white/10 bg-white/[0.04] text-white focus:outline-none focus:ring-accent-blue focus:border-accent-blue h-10"
+                  className="block w-full sm:text-sm rounded-md py-2 px-3 border border-border bg-white/[0.04] text-foreground focus:outline-none focus:ring-accent-blue focus:border-accent-blue h-10"
                 >
-                  <option value="Todas" className="bg-zinc-900 text-white">Todos los Estados</option>
-                  <option value="Pendiente" className="bg-zinc-900 text-white">Pendiente</option>
-                  <option value="En Proceso" className="bg-zinc-900 text-white">En Proceso</option>
-                  <option value="Listo" className="bg-zinc-900 text-white">Listo</option>
-                  <option value="Entregado" className="bg-zinc-900 text-white">Entregado</option>
+                  <option value="Todas" className="bg-zinc-900 text-foreground">Todos los Estados</option>
+                  <option value="Pendiente" className="bg-zinc-900 text-foreground">Pendiente</option>
+                  <option value="En Proceso" className="bg-zinc-900 text-foreground">En Proceso</option>
+                  <option value="Listo" className="bg-zinc-900 text-foreground">Listo</option>
+                  <option value="Entregado" className="bg-zinc-900 text-foreground">Entregado</option>
                 </select>
               </div>
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto rounded-lg border border-white/[0.06]">
+            <div className="overflow-x-auto rounded-lg border border-border/50">
               <Table>
                 <TableHeader className="bg-white/[0.01]">
-                  <TableRow className="border-b border-white/[0.06] hover:bg-transparent">
-                    <TableHead className="text-white font-medium py-3">Folio</TableHead>
-                    <TableHead className="text-white font-medium">Cliente</TableHead>
-                    <TableHead className="text-white font-medium">Conceptos</TableHead>
-                    <TableHead className="text-white font-medium text-center">Urgencia</TableHead>
-                    <TableHead className="text-white font-medium text-center">Estado</TableHead>
-                    <TableHead className="text-white font-medium text-right">Total</TableHead>
-                    <TableHead className="text-white font-medium text-center">Fecha</TableHead>
-                    <TableHead className="text-white font-medium text-center">Acciones</TableHead>
+                  <TableRow className="border-b border-border/50 hover:bg-transparent">
+                    <TableHead className="text-foreground font-medium py-3">Folio</TableHead>
+                    <TableHead className="text-foreground font-medium">Cliente</TableHead>
+                    <TableHead className="text-foreground font-medium">Conceptos</TableHead>
+                    <TableHead className="text-foreground font-medium text-center">Urgencia</TableHead>
+                    <TableHead className="text-foreground font-medium text-center">Estado</TableHead>
+                    <TableHead className="text-foreground font-medium text-right">Total</TableHead>
+                    <TableHead className="text-foreground font-medium text-center">Fecha</TableHead>
+                    <TableHead className="text-foreground font-medium text-center">Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -1044,7 +1044,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                         <TableCell className="font-mono text-accent-blue font-semibold">
                           #{String(nota.folio || '').padStart(5, '0')}
                         </TableCell>
-                        <TableCell className="text-white font-medium">
+                        <TableCell className="text-foreground font-medium">
                           {nota.cliente_nombre}
                         </TableCell>
                         <TableCell className="text-zinc-400 text-xs max-w-[200px] truncate">
@@ -1060,7 +1060,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                             {nota.estado_taller}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-right text-white font-semibold">
+                        <TableCell className="text-right text-foreground font-semibold">
                           ${nota.total.toFixed(2)}
                         </TableCell>
                         <TableCell className="text-center text-xs text-zinc-400">
@@ -1104,9 +1104,9 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
 
       {/* Modal: Nueva Nota */}
       <Dialog open={isNewModalOpen} onOpenChange={setIsNewModalOpen}>
-        <DialogContent className="sm:max-w-[600px] bg-zinc-950 border border-white/10 text-white">
+        <DialogContent className="sm:max-w-[600px] bg-zinc-950 border border-border text-foreground">
           <DialogHeader>
-            <DialogTitle className="text-white text-lg font-bold flex items-center gap-2">
+            <DialogTitle className="text-foreground text-lg font-bold flex items-center gap-2">
               <ClipboardList className="h-5 w-5 text-accent-blue" />
               Nueva Nota Simple
             </DialogTitle>
@@ -1122,7 +1122,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                   placeholder="Ej. Juan Pérez"
                   value={clienteNombre}
                   onChange={(e) => setClienteNombre(e.target.value)}
-                  className="bg-white/[0.04] border-white/10 text-white focus:ring-accent-blue"
+                  className="bg-white/[0.04] border-border text-foreground focus:ring-accent-blue"
                 />
               </div>
 
@@ -1132,12 +1132,12 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                   id="urgencia"
                   value={urgencia}
                   onChange={(e) => setUrgencia(e.target.value as any)}
-                  className="block w-full sm:text-sm rounded-md py-2 px-3 border border-white/10 bg-white/[0.04] text-white focus:outline-none focus:ring-accent-blue focus:border-accent-blue h-10"
+                  className="block w-full sm:text-sm rounded-md py-2 px-3 border border-border bg-white/[0.04] text-foreground focus:outline-none focus:ring-accent-blue focus:border-accent-blue h-10"
                 >
-                  <option value="Baja" className="bg-zinc-900 text-white">Baja</option>
-                  <option value="Media" className="bg-zinc-900 text-white">Media</option>
-                  <option value="Alta" className="bg-zinc-900 text-white">Alta</option>
-                  <option value="Urgente" className="bg-zinc-900 text-white">Urgente</option>
+                  <option value="Baja" className="bg-zinc-900 text-foreground">Baja</option>
+                  <option value="Media" className="bg-zinc-900 text-foreground">Media</option>
+                  <option value="Alta" className="bg-zinc-900 text-foreground">Alta</option>
+                  <option value="Urgente" className="bg-zinc-900 text-foreground">Urgente</option>
                 </select>
               </div>
 
@@ -1148,7 +1148,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                   type="datetime-local"
                   value={fechaEntrega}
                   onChange={(e) => setFechaEntrega(e.target.value)}
-                  className="bg-white/[0.04] border-white/10 text-white focus:ring-accent-blue h-10 block"
+                  className="bg-white/[0.04] border-border text-foreground focus:ring-accent-blue h-10 block"
                 />
               </div>
 
@@ -1159,15 +1159,15 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                   placeholder="Vendedor"
                   value={vendedorNombre}
                   onChange={(e) => setVendedorNombre(e.target.value)}
-                  className="bg-white/[0.04] border-white/10 text-white focus:ring-accent-blue"
+                  className="bg-white/[0.04] border-border text-foreground focus:ring-accent-blue"
                 />
               </div>
             </div>
 
             {/* Conceptos List */}
-            <div className="space-y-3 pt-3 border-t border-white/[0.06]">
+            <div className="space-y-3 pt-3 border-t border-border/50">
               <div className="flex justify-between items-center">
-                <h4 className="text-sm font-semibold text-white">Conceptos de Venta</h4>
+                <h4 className="text-sm font-semibold text-foreground">Conceptos de Venta</h4>
                 <Button 
                   type="button" 
                   size="sm" 
@@ -1192,10 +1192,10 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                         }}
                         onFocus={() => setActiveItemSuggestIndex(index)}
                         onBlur={() => setTimeout(() => setActiveItemSuggestIndex(null), 250)}
-                        className="bg-white/[0.04] border-white/10 text-white text-sm w-full"
+                        className="bg-white/[0.04] border-border text-foreground text-sm w-full"
                       />
                       {activeItemSuggestIndex === index && (
-                        <div className="absolute z-[100] left-0 right-0 mt-1 bg-zinc-950 border border-white/10 rounded-md shadow-2xl max-h-48 overflow-y-auto backdrop-blur-md">
+                        <div className="absolute z-[100] left-0 right-0 mt-1 bg-zinc-950 border border-border rounded-md shadow-2xl max-h-48 overflow-y-auto backdrop-blur-md">
                           {(productos || [])
                             .filter(p => p.nombre.toLowerCase().includes(item.concepto.toLowerCase()))
                             .slice(0, 5)
@@ -1208,7 +1208,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                                   handleItemChange(index, 'precio', p.precio_unitario || 0);
                                   setActiveItemSuggestIndex(null);
                                 }}
-                                className="w-full text-left px-3 py-2 text-xs text-white hover:bg-white/[0.06] flex justify-between items-center transition-colors border-b border-white/[0.03] last:border-0"
+                                className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-white/[0.06] flex justify-between items-center transition-colors border-b border-white/[0.03] last:border-0"
                               >
                                 <span className="font-medium truncate mr-2">{p.nombre}</span>
                                 <span className="text-accent-blue font-semibold shrink-0">${(p.precio_unitario || 0).toFixed(2)}</span>
@@ -1228,7 +1228,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                         placeholder="Cant"
                         value={item.cantidad}
                         onChange={(e) => handleItemChange(index, 'cantidad', e.target.value)}
-                        className="bg-white/[0.04] border-white/10 text-white text-sm"
+                        className="bg-white/[0.04] border-border text-foreground text-sm"
                       />
                     </div>
                     <div className="w-24">
@@ -1239,10 +1239,10 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                         placeholder="Precio"
                         value={item.precio}
                         onChange={(e) => handleItemChange(index, 'precio', e.target.value)}
-                        className="bg-white/[0.04] border-white/10 text-white text-sm"
+                        className="bg-white/[0.04] border-border text-foreground text-sm"
                       />
                     </div>
-                    <div className="w-24 text-right pr-2 text-sm text-white font-medium">
+                    <div className="w-24 text-right pr-2 text-sm text-foreground font-medium">
                       ${item.total.toFixed(2)}
                     </div>
                     <Button
@@ -1260,9 +1260,9 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
             </div>
 
             {/* Total Row */}
-            <div className="flex justify-between items-center pt-3 border-t border-white/[0.06]">
+            <div className="flex justify-between items-center pt-3 border-t border-border/50">
               <span className="text-zinc-400 font-medium text-sm">Suma Total:</span>
-              <span className="text-xl font-bold text-white">${calculateTotal().toFixed(2)}</span>
+              <span className="text-xl font-bold text-foreground">${calculateTotal().toFixed(2)}</span>
             </div>
 
             <DialogFooter className="pt-2">
@@ -1270,7 +1270,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                 type="button" 
                 variant="outline" 
                 onClick={() => setIsNewModalOpen(false)}
-                className="border-white/10 text-white hover:bg-white/5"
+                className="border-border text-foreground hover:bg-muted/20"
               >
                 Cancelar
               </Button>
@@ -1284,21 +1284,21 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
 
       {/* Modal: Ver Ticket */}
       <Dialog open={isTicketModalOpen} onOpenChange={setIsTicketModalOpen}>
-        <DialogContent className={formatType === 'nota' ? "sm:max-w-[800px] bg-zinc-950 border border-white/10 text-white flex flex-col items-center" : "sm:max-w-[440px] bg-zinc-950 border border-white/10 text-white flex flex-col items-center"}>
-          <DialogHeader className="w-full pb-2 border-b border-white/[0.06] mb-2">
+        <DialogContent className={formatType === 'nota' ? "sm:max-w-[800px] bg-zinc-950 border border-border text-foreground flex flex-col items-center" : "sm:max-w-[440px] bg-zinc-950 border border-border text-foreground flex flex-col items-center"}>
+          <DialogHeader className="w-full pb-2 border-b border-border/50 mb-2">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2 pr-8">
-              <DialogTitle className="text-white text-lg font-bold flex items-center gap-2">
+              <DialogTitle className="text-foreground text-lg font-bold flex items-center gap-2">
                 <FileText className="h-5 w-5 text-accent-blue" />
                 Visualizador de Nota
               </DialogTitle>
-              <div className="flex bg-white/[0.04] p-0.5 rounded border border-white/10 gap-0.5">
+              <div className="flex bg-white/[0.04] p-0.5 rounded border border-border gap-0.5">
                 <button
                   type="button"
                   onClick={() => setFormatType('nota')}
                   className={`px-2.5 py-1 text-[11px] font-semibold rounded transition-colors ${
                     formatType === 'nota'
                       ? 'bg-accent-blue text-white'
-                      : 'text-zinc-400 hover:text-white'
+                      : 'text-zinc-400 hover:text-foreground'
                   }`}
                 >
                   Nota Premium
@@ -1309,7 +1309,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
                   className={`px-2.5 py-1 text-[11px] font-semibold rounded transition-colors ${
                     formatType === 'ticket'
                       ? 'bg-accent-blue text-white'
-                      : 'text-zinc-400 hover:text-white'
+                      : 'text-zinc-400 hover:text-foreground'
                   }`}
                 >
                   Ticket Térmico
@@ -1319,7 +1319,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
           </DialogHeader>
 
           {/* Ticket paper preview wrapper */}
-          <div className="bg-zinc-900 p-6 rounded-lg border border-white/10 w-full flex justify-center items-center shadow-inner my-2">
+          <div className="bg-zinc-900 p-6 rounded-lg border border-border w-full flex justify-center items-center shadow-inner my-2">
             {/* Visual canvas representation */}
             <canvas 
               ref={setCanvasNode} 
@@ -1337,7 +1337,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
             <Button 
               type="button" 
               onClick={handleSendWhatsApp}
-              className="bg-[#25D366] hover:bg-[#20ba56] text-white font-medium flex items-center justify-center gap-1.5 py-2.5 rounded"
+              className="bg-[#25D366] hover:bg-[#20ba56] text-foreground font-medium flex items-center justify-center gap-1.5 py-2.5 rounded"
             >
               <MessageSquare className="h-4.5 w-4.5" />
               WhatsApp
@@ -1355,7 +1355,7 @@ export const NotasManager: React.FC<NotasManagerProps> = ({
             <Button 
               type="button" 
               onClick={handlePrint}
-              className="bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-white font-medium flex items-center justify-center gap-1.5 py-2.5 rounded"
+              className="bg-zinc-800 hover:bg-zinc-700 border border-border text-foreground font-medium flex items-center justify-center gap-1.5 py-2.5 rounded"
             >
               <Printer className="h-4.5 w-4.5" />
               Imprimir

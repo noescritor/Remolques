@@ -37,7 +37,7 @@ function ModernCell({
     <div 
       className={`
         flex items-center justify-center overflow-hidden h-full
-        ${onClick ? 'cursor-pointer hover:bg-white/[0.04]' : ''}
+        ${onClick ? 'cursor-pointer hover:bg-muted/50' : ''}
         ${className}
       `}
       onClick={onClick}
@@ -52,7 +52,7 @@ function ModernCell({
 // Componente de checkbox moderno
 function ModernCheckbox({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (checked: boolean) => void }) {
   return (
-    <div className="bg-white/5 rounded-sm border border-white/20 w-4 h-4 flex items-center justify-center">
+    <div className="bg-muted/20 rounded-sm border border-white/20 w-4 h-4 flex items-center justify-center">
       <Checkbox
         checked={checked}
         onCheckedChange={onCheckedChange}
@@ -67,7 +67,7 @@ function ModernBadge({ estado }: { estado: EstadoCotizacion }) {
   const getBadgeColor = (estado: EstadoCotizacion) => {
     switch (estado.toLowerCase()) {
       case 'borrador':
-        return 'bg-white/10 text-white/70 border-white/20';
+        return 'bg-white/10 text-muted-foreground border-white/20';
       case 'enviada':
         return 'bg-accent-blue/20 text-accent-blue border-accent-blue/30';
       case 'aprobada':
@@ -80,7 +80,7 @@ function ModernBadge({ estado }: { estado: EstadoCotizacion }) {
       case 'pagada':
         return 'bg-emerald-400/20 text-emerald-400 border-emerald-400/30';
       default:
-        return 'bg-white/10 text-white/70 border-white/20';
+        return 'bg-white/10 text-muted-foreground border-white/20';
     }
   };
 
@@ -110,7 +110,7 @@ function SortableHeader({
   
   return (
     <div 
-      className="flex items-center gap-2 cursor-pointer hover:bg-white/[0.04] h-full w-full px-3"
+      className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 h-full w-full px-3"
       onClick={() => onSort(field)}
     >
       <div className="relative shrink-0 w-4 h-4">
@@ -142,7 +142,7 @@ function SortableHeader({
         )}
       </div>
       <div className="flex-grow">
-        <div className="font-semibold text-white/60 text-base leading-[1.5]">
+        <div className="font-semibold text-foreground/60 text-base leading-[1.5]">
           {children}
         </div>
       </div>
@@ -237,10 +237,10 @@ export function CotizacionesTableModern({
       {/* Vista de Cards para móvil */}
       <div className="lg:hidden space-y-3">
         {sortedCotizaciones.map((cotizacion) => (
-          <div key={cotizacion.id} className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
+          <div key={cotizacion.id} className="bg-card/50 border border-border/50 rounded-lg p-4">
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
-                <div className="font-semibold text-white">{cotizacion.folio}</div>
+                <div className="font-semibold text-foreground">{cotizacion.folio}</div>
                 <div className="text-sm text-muted-foreground mt-1">
                   {cotizacion.cliente?.nombre_razon_social || 'Sin cliente'}
                 </div>
@@ -280,17 +280,17 @@ export function CotizacionesTableModern({
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Descripción:</span>
-                <span className="text-white truncate ml-2">
+                <span className="text-foreground truncate ml-2">
                   {cotizacion.descripcion || 'Sin descripción'}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Fecha:</span>
-                <span className="text-white">{formatearFecha(cotizacion.fecha)}</span>
+                <span className="text-foreground">{formatearFecha(cotizacion.fecha)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Total:</span>
-                <span className="font-semibold text-white">{formatearMoneda(cotizacion.total)}</span>
+                <span className="font-semibold text-foreground">{formatearMoneda(cotizacion.total)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Estado:</span>
@@ -312,11 +312,11 @@ export function CotizacionesTableModern({
       </div>
 
       {/* Tabla para desktop */}
-      <div className="hidden lg:block bg-white/[0.02] border border-white/[0.06] rounded-lg overflow-hidden">
+      <div className="hidden lg:block bg-card/50 border border-border/50 rounded-lg overflow-hidden">
         {/* Tabla */}
         <div className="w-full overflow-x-auto">
           {/* Header */}
-          <div className="bg-white/[0.03] border-b border-white/[0.06] h-14 grid grid-cols-[40px_120px_200px_1fr_160px_140px_120px_120px_60px] gap-0">
+          <div className="bg-white/[0.03] border-b border-border/50 h-14 grid grid-cols-[40px_120px_200px_1fr_160px_140px_120px_120px_60px] gap-0">
           <ModernCell type="header">
             <ModernCheckbox
               checked={isAllSelected}
@@ -349,7 +349,7 @@ export function CotizacionesTableModern({
           </ModernCell>
 
           <ModernCell type="header">
-            <div className="font-semibold text-white/60 text-base cursor-pointer hover:text-white flex items-center gap-1 transition-colors group">
+            <div className="font-semibold text-foreground/60 text-base cursor-pointer hover:text-foreground flex items-center gap-1 transition-colors group">
               Fecha Entrega
             </div>
           </ModernCell>
@@ -367,7 +367,7 @@ export function CotizacionesTableModern({
           </ModernCell>
           
           <ModernCell type="header">
-            <div className="font-semibold text-white/60 text-base">
+            <div className="font-semibold text-foreground/60 text-base">
               {/* Acciones */}
             </div>
           </ModernCell>
@@ -378,7 +378,7 @@ export function CotizacionesTableModern({
           {sortedCotizaciones.map((cotizacion) => (
             <div 
               key={cotizacion.id} 
-              className="h-16 grid grid-cols-[40px_120px_200px_1fr_160px_140px_120px_120px_60px] gap-0 hover:bg-white/[0.04] transition-colors"
+              className="h-16 grid grid-cols-[40px_120px_200px_1fr_160px_140px_120px_120px_60px] gap-0 hover:bg-muted/50 transition-colors"
             >
               <ModernCell>
                 <ModernCheckbox
@@ -389,7 +389,7 @@ export function CotizacionesTableModern({
               
               <ModernCell onClick={() => onVerCotizacion(cotizacion.id)}>
                 <div className="flex flex-col justify-center w-full">
-                  <div className="font-semibold text-white text-sm">
+                  <div className="font-semibold text-foreground text-sm">
                     {cotizacion.folio} {cotizacion.version > 1 ? `v${cotizacion.version}` : ''}
                   </div>
                   {cotizacion.cotizacion_padre_id && (
@@ -400,7 +400,7 @@ export function CotizacionesTableModern({
               
               <ModernCell onClick={() => onVerCotizacion(cotizacion.id)}>
                 <div className="flex flex-col justify-center w-full">
-                  <div className="font-semibold text-white text-sm">
+                  <div className="font-semibold text-foreground text-sm">
                     {cotizacion.cliente?.nombre_razon_social || 'Sin cliente'}
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -411,7 +411,7 @@ export function CotizacionesTableModern({
 
               <ModernCell onClick={() => onVerCotizacion(cotizacion.id)}>
                 <div className="flex flex-col justify-center w-full">
-                  <div className="text-sm text-white/80 truncate" title={cotizacion.descripcion || 'Sin descripción'}>
+                  <div className="text-sm text-foreground/80 truncate" title={cotizacion.descripcion || 'Sin descripción'}>
                     {cotizacion.descripcion || 'Sin descripción'}
                   </div>
                 </div>
@@ -419,7 +419,7 @@ export function CotizacionesTableModern({
               
               <ModernCell onClick={() => onVerCotizacion(cotizacion.id)}>
                 <div className="flex flex-col justify-center w-full">
-                  <div className="text-sm text-white/70">
+                  <div className="text-sm text-muted-foreground">
                     {formatearFecha(cotizacion.fecha)}
                   </div>
                 </div>
@@ -427,7 +427,7 @@ export function CotizacionesTableModern({
 
               <ModernCell onClick={() => onVerCotizacion(cotizacion.id)}>
                 <div className="flex flex-col justify-center w-full">
-                  <div className="text-sm text-white/70">
+                  <div className="text-sm text-muted-foreground">
                     {cotizacion.fecha_entrega ? new Date(cotizacion.fecha_entrega).toLocaleDateString() : '—'}
                   </div>
                 </div>
@@ -435,7 +435,7 @@ export function CotizacionesTableModern({
               
               <ModernCell onClick={() => onVerCotizacion(cotizacion.id)}>
                 <div className="flex flex-col justify-center w-full">
-                  <div className="font-semibold text-sm text-white">
+                  <div className="font-semibold text-sm text-foreground">
                     {formatearMoneda(cotizacion.total)}
                   </div>
                 </div>
@@ -486,7 +486,7 @@ export function CotizacionesTableModern({
           {cotizaciones.length === 0 && (
             <div className="py-12 text-center text-muted-foreground">
               <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-lg font-medium text-white">No hay cotizaciones</p>
+              <p className="text-lg font-medium text-foreground">No hay cotizaciones</p>
               <p className="text-sm">Crea tu primera cotización para comenzar</p>
             </div>
           )}

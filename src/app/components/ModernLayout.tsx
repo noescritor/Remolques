@@ -89,13 +89,13 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading
   ].filter(item => item.visible !== false);
 
   return (
-    <div className="flex flex-col h-full bg-background border-r border-white/[0.06]">
+    <div className="flex flex-col h-full bg-card border-r border-border/50">
       {/* Logo */}
-      <div className="flex items-center px-6 py-6 border-b border-white/[0.06]">
+      <div className="flex items-center px-6 py-6 border-b border-border/50">
         <div className="flex items-center gap-3">
           <LogoIdeally size={32} />
           <div>
-            <h1 className="font-bold text-xl text-white">Cotizador</h1>
+            <h1 className="font-bold text-xl text-foreground">Cotizador</h1>
             <p className="text-xs text-muted-foreground">Sistema de Gestión</p>
           </div>
         </div>
@@ -114,7 +114,7 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading
                   w-full flex items-center gap-3 px-3 py-2.5 text-left rounded-lg font-medium transition-colors
                   ${item.isActive 
                     ? 'bg-accent-blue/10 text-accent-blue border border-accent-blue/20' 
-                    : 'text-white/70 hover:bg-white/[0.04] hover:text-white'
+                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                   }
                 `}
               >
@@ -127,13 +127,13 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading
       </nav>
 
       {/* User Section */}
-      <div className="p-4 border-t border-white/[0.06]">
-        <div className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-white/[0.04] rounded-lg transition-colors" onClick={() => setProfileOpen(true)}>
+      <div className="p-4 border-t border-border/50">
+        <div className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-muted/50 rounded-lg transition-colors" onClick={() => setProfileOpen(true)}>
           <div className="w-8 h-8 bg-accent-blue/20 rounded-full flex items-center justify-center flex-shrink-0 border border-accent-blue/30">
             <span className="text-sm font-medium text-accent-blue">{userInitial}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">{userName}</p>
+            <p className="text-sm font-medium text-foreground truncate">{userName}</p>
             <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
           </div>
           <button 
@@ -179,7 +179,7 @@ export function ModernLayout({ children, currentPage, onNavigate, session, organ
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-card">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block w-64 flex-shrink-0">
         <ModernSideNav currentPage={currentPage} onNavigate={onNavigate} session={session} organizacion={organizacion} loading={loading} />
@@ -188,11 +188,11 @@ export function ModernLayout({ children, currentPage, onNavigate, session, organ
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden w-full">
         {/* Mobile Header */}
-        <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-background border-b border-white/[0.06]">
+        <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-card border-b border-border/50">
           <div className="flex items-center gap-3">
             <LogoIdeally size={28} />
             <div>
-              <h1 className="font-bold text-lg text-white">Cotizador</h1>
+              <h1 className="font-bold text-lg text-foreground">Cotizador</h1>
             </div>
           </div>
           

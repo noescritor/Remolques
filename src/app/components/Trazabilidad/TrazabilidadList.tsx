@@ -19,7 +19,7 @@ export function TrazabilidadList({
   }, {} as Record<string, Cotizacion>);
 
   if (loading) {
-    return <div className="animate-pulse h-64 bg-white/[0.02] rounded-xl"></div>;
+    return <div className="animate-pulse h-64 bg-card/50 rounded-xl"></div>;
   }
 
   // Ordenar eventos del más reciente al más antiguo
@@ -33,13 +33,13 @@ export function TrazabilidadList({
       </div>
 
       {eventosOrdenados.length === 0 ? (
-        <div className="text-center py-20 bg-white/[0.02] rounded-xl border border-white/[0.06]">
+        <div className="text-center py-20 bg-card/50 rounded-xl border border-border/50">
           <Clock className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">No hay eventos</h3>
+          <h3 className="text-lg font-medium text-foreground mb-2">No hay eventos</h3>
           <p className="text-muted-foreground">La actividad de las órdenes aparecerá aquí.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden p-6 relative">
+        <div className="rounded-xl border border-border/50 bg-card/50 overflow-hidden p-6 relative">
           <div className="absolute left-[39px] top-6 bottom-6 w-px bg-white/10" />
           <div className="space-y-6">
             {eventosOrdenados.map((ev) => {
@@ -47,13 +47,13 @@ export function TrazabilidadList({
               const date = new Date(ev.created_at);
               return (
                 <div key={ev.id} className="flex gap-4 relative z-10">
-                  <div className="w-8 h-8 rounded-full bg-white/5 border border-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <div className="w-2 h-2 rounded-full bg-white/50" />
+                  <div className="w-8 h-8 rounded-full bg-muted/20 border border-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-2 h-2 rounded-full bg-muted/200" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-mono text-sm bg-white/10 px-2 py-0.5 rounded text-white">{cot?.folio || 'Desconocido'}</span>
-                      <span className="text-sm font-medium text-white">{ev.evento}</span>
+                      <span className="font-mono text-sm bg-white/10 px-2 py-0.5 rounded text-foreground">{cot?.folio || 'Desconocido'}</span>
+                      <span className="text-sm font-medium text-foreground">{ev.evento}</span>
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {date.toLocaleDateString()} a las {date.toLocaleTimeString()} · por {ev.usuario?.email || 'Sistema'}

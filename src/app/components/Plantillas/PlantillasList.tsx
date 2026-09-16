@@ -84,7 +84,7 @@ export function PlantillasList({
     return (
       <div className="space-y-4">
         {[1, 2, 3].map(i => (
-          <div key={i} className="h-32 bg-white/[0.04] animate-pulse rounded-lg border border-white/[0.06]" />
+          <div key={i} className="h-32 bg-white/[0.04] animate-pulse rounded-lg border border-border/50" />
         ))}
       </div>
     );
@@ -95,7 +95,7 @@ export function PlantillasList({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Plantillas</h1>
+          <h1 className="text-2xl font-bold text-foreground">Plantillas</h1>
           <p className="text-sm text-muted-foreground mt-1">Reutiliza listas de conceptos en nuevas cotizaciones</p>
         </div>
         <Button onClick={abrirCrear} className="bg-accent-blue hover:bg-accent-blue/80 text-white">
@@ -106,13 +106,13 @@ export function PlantillasList({
 
       {/* Lista */}
       {safePlantillas.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-4 bg-white/[0.02] border border-white/[0.06] rounded-xl">
+        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-4 bg-card/50 border border-border/50 rounded-xl">
           <BookTemplate className="w-16 h-16 opacity-30 text-accent-blue" />
-          <p className="text-lg font-medium text-white">Sin plantillas todavía</p>
+          <p className="text-lg font-medium text-foreground">Sin plantillas todavía</p>
           <p className="text-sm text-center max-w-xs text-muted-foreground">
             Crea una plantilla con conceptos frecuentes y úsala al crear cualquier cotización para ahorrar tiempo.
           </p>
-          <Button onClick={abrirCrear} variant="outline" className="border-white/10 hover:bg-white/[0.04]">
+          <Button onClick={abrirCrear} variant="outline" className="border-border hover:bg-muted/50">
             <Plus className="mr-2 h-4 w-4" />
             Crear primera plantilla
           </Button>
@@ -123,12 +123,12 @@ export function PlantillasList({
             const itemsList = Array.isArray(p.items) ? p.items : [];
             const subtotalVal = totalItems(itemsList);
             return (
-              <Card key={p.id} className="hover:shadow-md transition-shadow bg-white/[0.03] border-white/[0.06]">
+              <Card key={p.id} className="hover:shadow-md transition-shadow bg-white/[0.03] border-border/50">
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-base leading-snug text-white">{p.nombre}</CardTitle>
+                    <CardTitle className="text-base leading-snug text-foreground">{p.nombre}</CardTitle>
                     <div className="flex gap-1 shrink-0">
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-white" onClick={() => abrirEditar(p)}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => abrirEditar(p)}>
                         <Edit className="h-3.5 w-3.5" />
                       </Button>
                       <Button
@@ -147,8 +147,8 @@ export function PlantillasList({
                 </CardHeader>
                 <CardContent className="pt-0 space-y-3">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="secondary" className="bg-white/[0.05] text-white border-none">{itemsList.length} concepto{itemsList.length !== 1 ? 's' : ''}</Badge>
-                    {p.con_factura && <Badge variant="outline" className="text-xs border-white/10 text-muted-foreground">Con IVA</Badge>}
+                    <Badge variant="secondary" className="bg-white/[0.05] text-foreground border-none">{itemsList.length} concepto{itemsList.length !== 1 ? 's' : ''}</Badge>
+                    {p.con_factura && <Badge variant="outline" className="text-xs border-border text-muted-foreground">Con IVA</Badge>}
                     {subtotalVal > 0 && (
                       <span className="text-xs text-accent-green ml-auto">{formatearMoneda(subtotalVal)}</span>
                     )}
@@ -156,7 +156,7 @@ export function PlantillasList({
                   {itemsList.slice(0, 3).map((item, idx) => (
                     <div key={idx} className="text-xs text-muted-foreground flex justify-between">
                       <span className="truncate flex-1 mr-2">{item.descripcion || '(sin descripción)'}</span>
-                      <span className="shrink-0 text-white/50">×{item.cantidad}</span>
+                      <span className="shrink-0 text-foreground/50">×{item.cantidad}</span>
                     </div>
                   ))}
                   {itemsList.length > 3 && (
@@ -171,9 +171,9 @@ export function PlantillasList({
 
       {/* Modal crear / editar */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="max-w-lg bg-[#18181b] border-white/10 text-white">
+        <DialogContent className="max-w-lg bg-[#18181b] border-border text-foreground">
           <DialogHeader>
-            <DialogTitle className="text-white">{editando ? 'Editar Plantilla' : 'Nueva Plantilla'}</DialogTitle>
+            <DialogTitle className="text-foreground">{editando ? 'Editar Plantilla' : 'Nueva Plantilla'}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
               {editando
                 ? 'Modifica los datos de la plantilla.'
@@ -183,40 +183,40 @@ export function PlantillasList({
 
           <div className="space-y-4 py-2">
             <div>
-              <Label className="text-white">Nombre *</Label>
+              <Label className="text-foreground">Nombre *</Label>
               <Input
                 placeholder="Ej: Diseño de identidad corporativa"
                 value={form.nombre}
                 onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
-                className="bg-white/[0.04] border-white/10 text-white focus:ring-accent-blue focus:border-accent-blue"
+                className="bg-white/[0.04] border-border text-foreground focus:ring-accent-blue focus:border-accent-blue"
               />
             </div>
             <div>
-              <Label className="text-white">Descripción</Label>
+              <Label className="text-foreground">Descripción</Label>
               <Input
                 placeholder="Breve descripción del tipo de proyecto"
                 value={form.descripcion}
                 onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))}
-                className="bg-white/[0.04] border-white/10 text-white focus:ring-accent-blue focus:border-accent-blue"
+                className="bg-white/[0.04] border-border text-foreground focus:ring-accent-blue focus:border-accent-blue"
               />
             </div>
             <div>
-              <Label className="text-white">Nota por defecto</Label>
+              <Label className="text-foreground">Nota por defecto</Label>
               <Textarea
                 placeholder="Nota que aparecerá al usar esta plantilla"
                 value={form.nota}
                 onChange={e => setForm(f => ({ ...f, nota: e.target.value }))}
                 rows={3}
-                className="bg-white/[0.04] border-white/10 text-white focus:ring-accent-blue focus:border-accent-blue"
+                className="bg-white/[0.04] border-border text-foreground focus:ring-accent-blue focus:border-accent-blue"
               />
             </div>
             {editando && Array.isArray(form.items) && form.items.length > 0 && (
-              <div className="rounded-md border border-white/10 p-3 bg-white/[0.02] space-y-1">
+              <div className="rounded-md border border-border p-3 bg-card/50 space-y-1">
                 <p className="text-xs font-medium text-muted-foreground mb-2">{form.items.length} conceptos guardados</p>
                 {form.items.map((item, i) => (
                   <div key={i} className="text-xs text-muted-foreground flex justify-between">
                     <span className="truncate">{item.descripcion}</span>
-                    <span className="text-white/50 ml-2">×{item.cantidad}</span>
+                    <span className="text-foreground/50 ml-2">×{item.cantidad}</span>
                   </div>
                 ))}
               </div>
@@ -224,7 +224,7 @@ export function PlantillasList({
           </div>
 
           <DialogFooter>
-            <Button variant="outline" className="border-white/10 text-white hover:bg-white/[0.04]" onClick={() => setModalOpen(false)}>Cancelar</Button>
+            <Button variant="outline" className="border-border text-foreground hover:bg-muted/50" onClick={() => setModalOpen(false)}>Cancelar</Button>
             <Button onClick={handleGuardar} disabled={!form.nombre.trim() || guardando} className="bg-accent-blue hover:bg-accent-blue/80 text-white">
               {guardando ? 'Guardando…' : editando ? 'Guardar cambios' : 'Crear plantilla'}
             </Button>
@@ -234,15 +234,15 @@ export function PlantillasList({
 
       {/* Confirmar eliminación */}
       <AlertDialog open={!!eliminandoId} onOpenChange={open => !open && setEliminandoId(null)}>
-        <AlertDialogContent className="bg-[#18181b] border-white/10 text-white">
+        <AlertDialogContent className="bg-[#18181b] border-border text-foreground">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">¿Eliminar plantilla?</AlertDialogTitle>
+            <AlertDialogTitle className="text-foreground">¿Eliminar plantilla?</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
               Esta acción no se puede deshacer. Las cotizaciones creadas con esta plantilla no se verán afectadas.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-white/10 text-white hover:bg-white/[0.04]">Cancelar</AlertDialogCancel>
+            <AlertDialogCancel className="border-border text-foreground hover:bg-muted/50">Cancelar</AlertDialogCancel>
             <AlertDialogAction
               className="bg-accent-red hover:bg-accent-red/80 text-white"
               onClick={async () => {

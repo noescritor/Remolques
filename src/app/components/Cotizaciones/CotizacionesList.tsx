@@ -54,8 +54,8 @@ export function CotizacionesList({
           <Skeleton className="h-10 flex-1" />
           <Skeleton className="h-10 w-48" />
         </div>
-        <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg overflow-hidden">
-          <div className="border-b border-white/[0.06] h-14">
+        <div className="bg-card/50 border border-border/50 rounded-lg overflow-hidden">
+          <div className="border-b border-border/50 h-14">
             <Skeleton className="h-full w-full" />
           </div>
           <div className="divide-y divide-white/[0.04]">
@@ -73,7 +73,7 @@ export function CotizacionesList({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Cotizaciones</h1>
+          <h1 className="text-3xl font-bold text-foreground">Cotizaciones</h1>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Gestiona y da seguimiento a todas las cotizaciones
           </p>
@@ -85,18 +85,18 @@ export function CotizacionesList({
       </div>
 
       {/* Filtros */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center bg-white/[0.02] p-4 rounded-lg border border-white/[0.06]">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center bg-card/50 p-4 rounded-lg border border-border/50">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar por folio, cliente..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="pl-10 bg-transparent border-white/10 text-white placeholder:text-muted-foreground"
+            className="pl-10 bg-transparent border-border text-foreground placeholder:text-muted-foreground"
           />
         </div>
         <Select value={filtroEstado} onValueChange={setFiltroEstado}>
-          <SelectTrigger className="w-full sm:w-48 bg-transparent border-white/10 text-white">
+          <SelectTrigger className="w-full sm:w-48 bg-transparent border-border text-foreground">
             <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
             <SelectValue />
           </SelectTrigger>
@@ -113,9 +113,9 @@ export function CotizacionesList({
 
       {/* Tabla */}
       {cotizacionesFiltradas.length === 0 ? (
-        <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-12 text-center">
+        <div className="bg-card/50 border border-border/50 rounded-xl p-12 text-center">
           <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">
+          <h3 className="text-lg font-medium text-foreground mb-2">
             {busqueda || filtroEstado !== 'todos' ? 'No se encontraron cotizaciones' : 'No hay cotizaciones'}
           </h3>
           <p className="text-muted-foreground mb-6">

@@ -12,20 +12,20 @@ export function Login() {
         <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] rounded-full bg-accent-blue/5 blur-[120px] pointer-events-none"></div>
         
         <div className="relative z-10 flex items-center gap-3">
-          <LogoIdeally size={40} className="text-white" />
-          <h1 className="font-bold text-2xl tracking-tight text-white">Ideally</h1>
+          <LogoIdeally size={40} className="text-foreground" />
+          <h1 className="font-bold text-2xl tracking-tight text-foreground">Ideally</h1>
         </div>
         
         <div className="relative z-10 max-w-md">
-          <h2 className="text-4xl font-bold font-sans text-white mb-6 leading-tight">
+          <h2 className="text-4xl font-bold font-sans text-foreground mb-6 leading-tight">
             El sistema de <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue to-accent-green">cotizaciones</span> que tu negocio necesita.
           </h2>
-          <p className="text-lg text-white/60 font-medium">
+          <p className="text-lg text-foreground/60 font-medium">
             Agiliza tus procesos, gestiona tus clientes y cierra más ventas desde una sola plataforma.
           </p>
         </div>
         
-        <div className="relative z-10 text-sm text-white/40 font-mono">
+        <div className="relative z-10 text-sm text-muted-foreground font-mono">
           &copy; {new Date().getFullYear()} Ideally Platform. Todos los derechos reservados.
         </div>
       </div>
@@ -37,15 +37,15 @@ export function Login() {
         <div className="w-full max-w-md space-y-8 relative z-10">
           <div className="text-center lg:text-left">
             <div className="flex lg:hidden justify-center mb-8">
-              <LogoIdeally size={48} className="text-white" />
+              <LogoIdeally size={48} className="text-foreground" />
             </div>
-            <h2 className="text-3xl font-bold tracking-tight text-white">Bienvenido de vuelta</h2>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">Bienvenido de vuelta</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Ingresa a tu cuenta para continuar
             </p>
           </div>
           
-          <div className="mt-8 bg-white/[0.02] border border-white/[0.06] p-8 rounded-2xl shadow-2xl backdrop-blur-sm">
+          <div className="mt-8 bg-card/50 border border-border/50 p-8 rounded-2xl shadow-2xl backdrop-blur-sm">
             <Auth
               supabaseClient={supabase}
               appearance={{

@@ -72,7 +72,7 @@ function formatearMoneda(cantidad: number) {
 
 function PDFHeader({ cotizacion, ajustes }: { cotizacion: any, ajustes: any }) {
   return (
-    <div className="bg-[rgba(0,0,0,1)] text-white p-8 rounded-t-lg">
+    <div className="bg-[rgba(0,0,0,1)] text-foreground p-8 rounded-t-lg">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
         {/* Logo y nombre de empresa */}
         <div className="lg:col-span-2">

@@ -64,12 +64,12 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
     <div className="space-y-6 pb-20 print:pb-0">
       <div className="flex justify-between items-center print:hidden">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Órdenes de Trabajo</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Órdenes de Trabajo</h1>
           <p className="text-gray-400">Control de producción y nomenclatura oficial</p>
         </div>
         <div className="flex gap-4">
           <Select value={clienteLiberacion || ''} onValueChange={setClienteLiberacion}>
-            <SelectTrigger className="w-64 bg-slate-900 border-white/10">
+            <SelectTrigger className="w-64 bg-slate-900 border-border">
               <SelectValue placeholder="Liberar equipos por cliente..." />
             </SelectTrigger>
             <SelectContent>
@@ -81,7 +81,7 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
           <Button 
             disabled={!clienteLiberacion || ordenesParaLiberar.length === 0}
             onClick={() => window.print()}
-            className="bg-green-600 hover:bg-green-700 text-white"
+            className="bg-green-600 hover:bg-green-700 text-foreground"
           >
             <FileCheck className="w-4 h-4 mr-2" />
             Imprimir Liberación ({ordenesParaLiberar.length})
@@ -99,15 +99,15 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
       </div>
 
       {/* Lista Principal */}
-      <div className="bg-slate-900 border border-white/10 rounded-xl overflow-hidden print:hidden">
-        <div className="p-4 border-b border-white/10">
+      <div className="bg-slate-900 border border-border rounded-xl overflow-hidden print:hidden">
+        <div className="p-4 border-b border-border">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
             <Input 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por Nomenclatura, NIV o Cliente..." 
-              className="pl-10 bg-slate-800 border-white/10 text-white"
+              className="pl-10 bg-slate-800 border-border text-foreground"
             />
           </div>
         </div>
@@ -125,8 +125,8 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
             </thead>
             <tbody>
               {ordenesFiltradas.map(orden => (
-                <tr key={orden.id} className="border-b border-white/5 hover:bg-white/[0.02]">
-                  <td className="px-6 py-4 font-mono font-bold text-white">{orden.nomenclatura_id}</td>
+                <tr key={orden.id} className="border-b border-white/5 hover:bg-card/50">
+                  <td className="px-6 py-4 font-mono font-bold text-foreground">{orden.nomenclatura_id}</td>
                   <td className="px-6 py-4">{orden.cliente?.nombre}</td>
                   <td className="px-6 py-4">{orden.caracteristicas?.descripcion_corta}</td>
                   <td className="px-6 py-4">
@@ -171,7 +171,7 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
 
       {/* Modal Editor */}
       <Dialog open={!!ordenEditando} onOpenChange={(open) => !open && setOrdenEditando(null)}>
-        <DialogContent className="bg-slate-900 border-white/10 text-white w-full max-w-md">
+        <DialogContent className="bg-slate-900 border-border text-foreground w-full max-w-md">
           <h2 className="text-xl font-bold mb-4">Editar Orden: {ordenEditando?.nomenclatura_id}</h2>
           <div className="space-y-4">
             <div>
@@ -189,7 +189,7 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
             <div>
               <Label>Estado de Producción</Label>
               <Select value={editEstado} onValueChange={setEditEstado}>
-                <SelectTrigger className="bg-slate-800 border-white/10">
+                <SelectTrigger className="bg-slate-800 border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -200,7 +200,7 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={handleSave} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+            <Button onClick={handleSave} className="w-full bg-blue-600 hover:bg-blue-700 text-foreground">
               Guardar Cambios
             </Button>
           </div>
@@ -209,9 +209,9 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
 
       {/* Modal Visor de PDF (Orden Individual) */}
       <Dialog open={!!ordenParaPDF} onOpenChange={(open) => !open && setOrdenParaPDF(null)}>
-        <DialogContent className="w-full sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-white/10 p-6 print:hidden">
+        <DialogContent className="w-full sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-border p-6 print:hidden">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-white">Vista Previa de Orden de Trabajo</h2>
+            <h2 className="text-lg font-bold text-foreground">Vista Previa de Orden de Trabajo</h2>
             <Button onClick={handlePrint} className="bg-white text-black hover:bg-slate-200">
               <Printer className="h-4 w-4 mr-2" /> Imprimir Orden
             </Button>

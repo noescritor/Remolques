@@ -180,18 +180,18 @@ export function ClienteModal({ open, onOpenChange, cliente, categorias = [], onG
             {cliente && (
               <div className="space-y-2">
                 <Label>Saldo Usado</Label>
-                <div className="h-10 px-3 py-2 border rounded-md bg-white/[0.02] text-sm flex items-center text-muted-foreground border-white/10">
+                <div className="h-10 px-3 py-2 border rounded-md bg-card/50 text-sm flex items-center text-muted-foreground border-border">
                   ${(cliente.saldo_usado || 0).toLocaleString()}
                 </div>
               </div>
             )}
           </div>
 
-          <div className="border-t pt-4 mt-4 border-white/10">
+          <div className="border-t pt-4 mt-4 border-border">
             <h3 className="text-sm font-medium mb-3 text-muted-foreground">Contactos Adicionales</h3>
             <div className="space-y-4">
               {formData.contactos.map((contacto) => (
-                <div key={contacto.id} className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-white/[0.02] border border-white/5 rounded-lg relative">
+                <div key={contacto.id} className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-card/50 border border-white/5 rounded-lg relative">
                   <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-6 w-6 text-red-500 hover:text-red-400" onClick={() => eliminarContacto(contacto.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>

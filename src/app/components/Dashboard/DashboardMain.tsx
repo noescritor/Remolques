@@ -39,7 +39,7 @@ interface DashboardMainProps {
 }
 
 const COLORS = {
-  borrador: 'rgba(255,255,255,0.25)',
+  borrador: 'var(--text-muted)',
   enviada: '#91CAFF',
   aprobada: '#91FFB0',
   rechazada: '#FF919F',
@@ -226,9 +226,9 @@ export function DashboardMain({
       <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {modulos.cotizaciones !== false && (
           <>
-            <Card className="bg-white/[0.02] border-white/[0.06]">
+            <Card className="bg-card/50 border-border/50">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-label text-white/40 font-mono tracking-wide">TOTAL COTIZACIONES</CardTitle>
+                <CardTitle className="text-label text-muted-foreground font-mono tracking-wide">TOTAL COTIZACIONES</CardTitle>
                 <FileText className="h-4 w-4 text-accent-blue" />
               </CardHeader>
               <CardContent>
@@ -237,9 +237,9 @@ export function DashboardMain({
               </CardContent>
             </Card>
 
-            <Card className="bg-white/[0.02] border-white/[0.06]">
+            <Card className="bg-card/50 border-border/50">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-label text-white/40 font-mono tracking-wide">INGRESOS REALES</CardTitle>
+                <CardTitle className="text-label text-muted-foreground font-mono tracking-wide">INGRESOS REALES</CardTitle>
                 <DollarSign className="h-4 w-4 text-accent-green" />
               </CardHeader>
               <CardContent>
@@ -248,9 +248,9 @@ export function DashboardMain({
               </CardContent>
             </Card>
 
-            <Card className="bg-white/[0.02] border-white/[0.06]">
+            <Card className="bg-card/50 border-border/50">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-label text-white/40 font-mono tracking-wide">VENTAS (APROBADAS)</CardTitle>
+                <CardTitle className="text-label text-muted-foreground font-mono tracking-wide">VENTAS (APROBADAS)</CardTitle>
                 <TrendingUp className="h-4 w-4 text-accent-violet" />
               </CardHeader>
               <CardContent>
@@ -262,9 +262,9 @@ export function DashboardMain({
         )}
 
         {modulos.clientes !== false && (
-          <Card className="bg-white/[0.02] border-white/[0.06]">
+          <Card className="bg-card/50 border-border/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-label text-white/40 font-mono tracking-wide">CLIENTES</CardTitle>
+              <CardTitle className="text-label text-muted-foreground font-mono tracking-wide">CLIENTES</CardTitle>
               <Users className="h-4 w-4 text-accent-yellow" />
             </CardHeader>
             <CardContent>
@@ -275,9 +275,9 @@ export function DashboardMain({
         )}
 
         {modulos.productos !== false && (
-          <Card className="bg-white/[0.02] border-white/[0.06]">
+          <Card className="bg-card/50 border-border/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-label text-white/40 font-mono tracking-wide">PRODUCTOS</CardTitle>
+              <CardTitle className="text-label text-muted-foreground font-mono tracking-wide">PRODUCTOS</CardTitle>
               <Package className="h-4 w-4 text-accent-pink" />
             </CardHeader>
             <CardContent>
@@ -292,9 +292,9 @@ export function DashboardMain({
       {modulos.cotizaciones !== false && (
         <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
           {/* 1. Pendientes de Producción */}
-          <Card className="bg-white/[0.02] border-white/[0.06] flex flex-col">
+          <Card className="bg-card/50 border-border/50 flex flex-col">
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-lg text-white">
+              <CardTitle className="flex items-center gap-2 text-lg text-foreground">
                 <Factory className="h-5 w-5 text-[#FFD391]" />
                 Por Fabricar / Entregar
               </CardTitle>
@@ -307,7 +307,7 @@ export function DashboardMain({
                   pendientesProduccion.slice(0, 5).map(c => (
                     <div key={c.id} className="flex justify-between items-start border-b border-border-soft pb-2 cursor-pointer hover:opacity-80" onClick={() => onVerCotizacion(c.id)}>
                       <div>
-                        <div className="font-mono text-sm font-bold text-white">{c.folio}</div>
+                        <div className="font-mono text-sm font-bold text-foreground">{c.folio}</div>
                         <div className="text-xs text-muted-foreground truncate w-40">{getClientName(c.cliente_id)}</div>
                       </div>
                       <Badge style={{ backgroundColor: '#FFD391', color: '#000' }} className="text-[10px]">
@@ -324,9 +324,9 @@ export function DashboardMain({
           </Card>
 
           {/* 2. Perdidas de Vista */}
-          <Card className="bg-white/[0.02] border-white/[0.06] flex flex-col">
+          <Card className="bg-card/50 border-border/50 flex flex-col">
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-lg text-white">
+              <CardTitle className="flex items-center gap-2 text-lg text-foreground">
                 <AlertTriangle className="h-5 w-5 text-[#FF919F]" />
                 Perdidas de Vista
               </CardTitle>
@@ -339,7 +339,7 @@ export function DashboardMain({
                   perdidasDeVista.slice(0, 5).map(c => (
                     <div key={c.id} className="flex justify-between items-start border-b border-border-soft pb-2 cursor-pointer hover:opacity-80" onClick={() => onVerCotizacion(c.id)}>
                       <div>
-                        <div className="font-mono text-sm font-bold text-white">{c.folio}</div>
+                        <div className="font-mono text-sm font-bold text-foreground">{c.folio}</div>
                         <div className="text-xs text-muted-foreground">Hace {formatDistanceToNow(new Date((c as any).created_at || c.fecha || ''), {locale: es})}</div>
                       </div>
                       <Badge style={{ backgroundColor: c.estado === 'Borrador' ? '#FFD391' : '#FF919F', color: '#000' }} className="text-[10px]">
@@ -356,9 +356,9 @@ export function DashboardMain({
           </Card>
 
           {/* 3. Fechas Críticas */}
-          <Card className="bg-white/[0.02] border-white/[0.06] flex flex-col">
+          <Card className="bg-card/50 border-border/50 flex flex-col">
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-lg text-white">
+              <CardTitle className="flex items-center gap-2 text-lg text-foreground">
                 <Calendar className="h-5 w-5 text-[#91CAFF]" />
                 Próximas Entregas
               </CardTitle>
@@ -379,11 +379,11 @@ export function DashboardMain({
                     return (
                     <div key={c.id} className="flex justify-between items-start border-b border-border-soft pb-2 cursor-pointer hover:opacity-80" onClick={() => onVerCotizacion(c.id)}>
                       <div>
-                        <div className="font-mono text-sm font-bold text-white">{c.folio}</div>
+                        <div className="font-mono text-sm font-bold text-foreground">{c.folio}</div>
                         <div className="text-xs text-muted-foreground truncate w-40">{getClientName(c.cliente_id)}</div>
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="text-[11px] text-white/60 font-mono mb-1">{new Date(c.fecha_entrega!).toLocaleDateString('es-ES')}</span>
+                        <span className="text-[11px] text-muted-foreground font-mono mb-1">{new Date(c.fecha_entrega!).toLocaleDateString('es-ES')}</span>
                         <Badge style={{ backgroundColor: badgeColor, color: '#000' }} className="text-[10px]">
                            {past ? 'Vencida' : (isTodayOrTomorrow ? 'Urgente' : 'A tiempo')}
                         </Badge>
@@ -400,9 +400,9 @@ export function DashboardMain({
       {/* Gráficos Recharts */}
       {modulos.cotizaciones !== false && (
         <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-          <Card className="bg-white/[0.02] border-white/[0.06]">
+          <Card className="bg-card/50 border-border/50">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-sans text-white">
+              <CardTitle className="flex items-center gap-2 font-sans text-foreground">
                 <TrendingUp className="h-5 w-5 text-accent-violet" />
                 Tendencia Mensual
               </CardTitle>
@@ -411,12 +411,12 @@ export function DashboardMain({
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={estadisticas.tendenciaMensual}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="mes" stroke="rgba(255,255,255,0.4)" fontSize={12} />
-                    <YAxis yAxisId="left" stroke="rgba(255,255,255,0.4)" fontSize={12} />
-                    <YAxis yAxisId="right" orientation="right" stroke="rgba(255,255,255,0.4)" fontSize={12} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-hover)" />
+                    <XAxis dataKey="mes" stroke="var(--text-muted)" fontSize={12} />
+                    <YAxis yAxisId="left" stroke="var(--text-muted)" fontSize={12} />
+                    <YAxis yAxisId="right" orientation="right" stroke="var(--text-muted)" fontSize={12} />
                     <Tooltip 
-                      contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }}
+                      contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid var(--border-hover)' }}
                       formatter={(value, name) => [
                         name === 'ingresos' ? formatearMoneda(value as number) : value,
                         name === 'ingresos' ? 'Ingresos' : 'Cotizaciones'
@@ -430,9 +430,9 @@ export function DashboardMain({
             </CardContent>
           </Card>
 
-          <Card className="bg-white/[0.02] border-white/[0.06]">
+          <Card className="bg-card/50 border-border/50">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-sans text-white">
+              <CardTitle className="flex items-center gap-2 font-sans text-foreground">
                 <PieChart className="h-5 w-5 text-accent-blue" />
                 Distribución por Estado
               </CardTitle>
@@ -449,7 +449,7 @@ export function DashboardMain({
                         <Cell key={`cell-${entry.name}`} fill={entry.color} stroke="transparent" />
                       ))}
                     </Pie>
-                    <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }} />
+                    <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid var(--border-hover)' }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -457,7 +457,7 @@ export function DashboardMain({
                 {estadisticas.estadosCotizaciones.map((estado) => (
                   <div key={`legend-${estado.name}`} className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: estado.color }}></div>
-                    <span className="text-xs text-white/60">{estado.name} ({estado.value})</span>
+                    <span className="text-xs text-muted-foreground">{estado.name} ({estado.value})</span>
                   </div>
                 ))}
               </div>

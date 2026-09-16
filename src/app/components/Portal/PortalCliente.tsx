@@ -180,7 +180,7 @@ export function PortalCliente() {
       <div id="portal-content" className="max-w-3xl mx-auto space-y-6">
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-700 to-purple-900 rounded-xl p-6 text-white flex items-center gap-4">
+        <div className="bg-gradient-to-r from-purple-700 to-purple-900 rounded-xl p-6 text-foreground flex items-center gap-4">
           <LogoIdeally size={48} />
           <div>
             <h1 className="text-2xl font-bold">IDEALLY</h1>
@@ -274,7 +274,7 @@ export function PortalCliente() {
           <Card>
             <CardHeader><CardTitle className="text-base">Tu respuesta</CardTitle></CardHeader>
             <CardContent className="flex flex-col sm:flex-row gap-3">
-              <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={() => setAccion('aprobar')}>
+              <Button className="flex-1 bg-green-600 hover:bg-green-700 text-foreground" onClick={() => setAccion('aprobar')}>
                 <CheckCircle className="mr-2 h-4 w-4" /> Aprobar cotización
               </Button>
               <Button variant="outline" className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50" onClick={() => setAccion('cambios')}>
@@ -334,7 +334,7 @@ export function PortalCliente() {
               />
               <div className="flex gap-3">
                 <Button variant="outline" onClick={() => setAccion('idle')} disabled={enviando}>Cancelar</Button>
-                <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white" onClick={handleCambios} disabled={enviando}>
+                <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-foreground" onClick={handleCambios} disabled={enviando}>
                   {enviando ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enviando…</> : '💬 Enviar comentarios'}
                 </Button>
               </div>
@@ -353,7 +353,7 @@ export function PortalCliente() {
               />
               <div className="flex gap-3">
                 <Button variant="outline" onClick={() => setAccion('idle')} disabled={enviando}>Cancelar</Button>
-                <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white" onClick={handleRechazar} disabled={enviando}>
+                <Button className="flex-1 bg-red-600 hover:bg-red-700 text-foreground" onClick={handleRechazar} disabled={enviando}>
                   {enviando ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enviando…</> : '❌ Confirmar rechazo'}
                 </Button>
               </div>

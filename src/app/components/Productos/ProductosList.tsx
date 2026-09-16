@@ -151,7 +151,7 @@ export function ProductosList({
           <p className="text-muted-foreground mt-1">Catálogo y listas de precios</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setModalCatOpen(true)} className="border-white/10 hover:bg-white/5">
+          <Button variant="outline" onClick={() => setModalCatOpen(true)} className="border-border hover:bg-muted/20">
             <FolderPlus className="mr-2 h-4 w-4" /> Categoría
           </Button>
           <Button onClick={() => { setProductoEditando(null); setModalOpen(true); }} className="bg-primary text-primary-foreground hover:bg-primary/90">
@@ -160,19 +160,19 @@ export function ProductosList({
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/[0.02] p-4 rounded-lg border border-white/[0.06]">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-card/50 p-4 rounded-lg border border-border/50">
         <div className="relative w-full sm:w-96">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input 
             placeholder="Buscar por nombre..." 
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="pl-10 bg-transparent border-white/10"
+            className="pl-10 bg-transparent border-border"
           />
         </div>
         
         <Tabs value={categoriaActiva} onValueChange={setCategoriaActiva} className="w-full sm:w-auto overflow-x-auto">
-          <TabsList className="bg-transparent border border-white/10">
+          <TabsList className="bg-transparent border border-border">
             <TabsTrigger value="todas">Todas</TabsTrigger>
             {categorias.map(cat => (
               <TabsTrigger key={cat.id} value={cat.id}>
@@ -185,9 +185,9 @@ export function ProductosList({
       </div>
 
       {productosFiltrados.length === 0 ? (
-        <div className="text-center py-20 bg-white/[0.02] rounded-xl border border-white/[0.06]">
+        <div className="text-center py-20 bg-card/50 rounded-xl border border-border/50">
           <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">No se encontraron productos</h3>
+          <h3 className="text-lg font-medium text-foreground mb-2">No se encontraron productos</h3>
           <p className="text-muted-foreground">Prueba con otra búsqueda o añade un producto nuevo.</p>
         </div>
       ) : (
@@ -195,7 +195,7 @@ export function ProductosList({
           {productosFiltrados.map(producto => {
             const cat = categorias.find(c => c.id === producto.categoria_id);
             return (
-              <Card key={producto.id} className="bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04] transition-all flex flex-col group overflow-hidden">
+              <Card key={producto.id} className="bg-card/50 border-border/50 hover:bg-muted/50 transition-all flex flex-col group overflow-hidden">
                 <div className="h-2 w-full" style={{ backgroundColor: cat?.color || 'rgba(255,255,255,0.1)' }}></div>
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
@@ -207,7 +207,7 @@ export function ProductosList({
                       <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-accent-red" onClick={() => setProductoAEliminar(producto.id)}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   </div>
-                  <CardTitle className="text-lg text-white line-clamp-1">{producto.nombre}</CardTitle>
+                  <CardTitle className="text-lg text-foreground line-clamp-1">{producto.nombre}</CardTitle>
                   <CardDescription className="line-clamp-2 text-xs min-h-[32px]">{producto.descripcion || 'Sin descripción'}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1">
@@ -219,17 +219,17 @@ export function ProductosList({
                     {producto.costo ? (
                       <div className="text-right">
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-mono mb-1">Costo</p>
-                        <p className="text-sm font-mono text-white/70">{formatearMoneda(producto.costo)}</p>
+                        <p className="text-sm font-mono text-muted-foreground">{formatearMoneda(producto.costo)}</p>
                       </div>
                     ) : null}
                   </div>
                 </CardContent>
-                <CardFooter className="bg-black/20 py-3 border-t border-white/[0.06] flex justify-between">
-                  <span className="text-xs text-white/50 flex items-center">
+                <CardFooter className="bg-black/20 py-3 border-t border-border/50 flex justify-between">
+                  <span className="text-xs text-foreground/50 flex items-center">
                     <Tag className="w-3 h-3 mr-1" />
                     {cat?.nombre || 'Sin categoría'}
                   </span>
-                  <span className="text-xs text-white/50">{producto.unidad}</span>
+                  <span className="text-xs text-foreground/50">{producto.unidad}</span>
                 </CardFooter>
               </Card>
             );

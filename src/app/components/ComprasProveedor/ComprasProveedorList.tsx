@@ -52,7 +52,7 @@ export function ComprasProveedorList({
   }, {} as Record<string, Producto>);
 
   if (loading) {
-    return <div className="animate-pulse h-64 bg-white/[0.02] rounded-xl"></div>;
+    return <div className="animate-pulse h-64 bg-card/50 rounded-xl"></div>;
   }
 
   const getStatusBadge = (estado: string) => {
@@ -72,23 +72,23 @@ export function ComprasProveedorList({
       </div>
 
       {compras.length === 0 ? (
-        <div className="text-center py-20 bg-white/[0.02] rounded-xl border border-white/[0.06]">
+        <div className="text-center py-20 bg-card/50 rounded-xl border border-border/50">
           <ShoppingCart className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">No hay compras</h3>
+          <h3 className="text-lg font-medium text-foreground mb-2">No hay compras</h3>
           <p className="text-muted-foreground">Las compras a proveedores aparecerán aquí automáticamente.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+        <div className="rounded-xl border border-border/50 bg-card/50 overflow-hidden">
           {compras.map((c, i) => {
             const prov = c.proveedor_id ? proveedoresLookup[c.proveedor_id] : null;
             return (
               <div key={c.id} className="p-4 flex items-center justify-between group" style={{ borderTop: i ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-sm bg-white/10 px-2 py-0.5 rounded text-white">{c.folio}</span>
+                    <span className="font-mono text-sm bg-white/10 px-2 py-0.5 rounded text-foreground">{c.folio}</span>
                     <span className="text-xs text-muted-foreground">creada el {new Date(c.fecha).toLocaleDateString()}</span>
                   </div>
-                  <span className="text-sm text-white">{prov ? prov.nombre : "Sin proveedor asignado"}</span>
+                  <span className="text-sm text-foreground">{prov ? prov.nombre : "Sin proveedor asignado"}</span>
                   <span className="text-xs text-muted-foreground">
                     {c.items?.map((m) => {
                       const matName = productosLookup[m.material_id]?.nombre || 'Desconocido';
@@ -115,9 +115,9 @@ export function ComprasProveedorList({
 
       {/* Modal para ver e imprimir PDF */}
       <Dialog open={!!compraParaPDF} onOpenChange={(open) => !open && setCompraParaPDF(null)}>
-        <DialogContent className="w-full sm:max-w-[1000px] max-h-[90vh] overflow-y-auto bg-slate-900 border-white/10 p-6">
+        <DialogContent className="w-full sm:max-w-[1000px] max-h-[90vh] overflow-y-auto bg-slate-900 border-border p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-white">Vista Previa de Orden de Compra</h2>
+            <h2 className="text-lg font-bold text-foreground">Vista Previa de Orden de Compra</h2>
             <Button onClick={handlePrint} className="bg-white text-black hover:bg-slate-200">
               <FileText className="h-4 w-4 mr-2" /> Imprimir / Descargar PDF
             </Button>
