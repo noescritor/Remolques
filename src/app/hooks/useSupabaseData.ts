@@ -888,18 +888,7 @@ export function useSupabaseData(token?: string) {
       );
       setCotizaciones(cotizacionesActualizadas);
       saveToLocalStorage('cotizaciones', cotizacionesActualizadas);
-      return {
-
-    
-    ordenesTrabajo,
-    actualizarOrdenTrabajo,
-    generarOrdenesDesdeCotizacion,
-    presupuestos,
-    crearPresupuesto,
-    actualizarPresupuesto,
-    eliminarPresupuesto,
-
- token: tokenPortal, expira: expira.toISOString() };
+      return { token: tokenPortal, expira: expira.toISOString() };
     }
 
     const resultado = await sendJson('generar portal', `${BASE_URL}/cotizaciones/${id}/generar-token-portal`, token, {
@@ -1280,6 +1269,14 @@ return {
 
     // Eventos
     onExportPDF,
+    // Producción
+    ordenesTrabajo,
+    actualizarOrdenTrabajo,
+    generarOrdenesDesdeCotizacion,
+    presupuestos,
+    crearPresupuesto,
+    actualizarPresupuesto,
+    eliminarPresupuesto,
 
     // Utilities
     loadData
