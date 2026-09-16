@@ -212,7 +212,7 @@ export function AjustesForm({ ajustes, onActualizarAjustes }: AjustesFormProps) 
           <div className="p-4 bg-blue-50 rounded-md">
             <h4 className="font-medium text-blue-900">Vista Previa del Folio</h4>
             <p className="text-blue-700 mt-1">
-              Ejemplo: {formData.prefijo_folio}{new Date().getFullYear()}-{formData.offset_folio.toString().padStart(5, '0')}
+              Ejemplo: {formData.prefijo_folio}{new Date().getFullYear()}-{(formData.offset_folio || 0).toString().padStart(5, '0')}
             </p>
           </div>
         </CardContent>
