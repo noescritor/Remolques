@@ -97,8 +97,9 @@ export function useSupabaseData(token?: string) {
   // CRUD Categorías Producto
   const crearCategoriaProducto = async (categoria: Omit<CategoriaProducto, 'id' | 'organizacion_id'>) => {
     try {
-      const { data, error } = await supabase.from('categorias_producto').insert(categoria).select().single();
-      if (error) throw error;
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/categorias_producto?select=*`, { method: 'POST', headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }, body: JSON.stringify(categoria) });
+      if (!res.ok) throw new Error('Error creating categoria');
+      const data = (await res.json())[0];
       setCategoriasProducto([...categoriasProducto, data]);
       toast.success('Categoría creada', { description: 'La categoría se creó correctamente.' });
       return data;
@@ -110,8 +111,9 @@ export function useSupabaseData(token?: string) {
 
   const actualizarCategoriaProducto = async (id: string, categoria: Partial<CategoriaProducto>) => {
     try {
-      const { data, error } = await supabase.from('categorias_producto').update(categoria).eq('id', id).select().single();
-      if (error) throw error;
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/categorias_producto?id=eq.${id}&select=*`, { method: 'PATCH', headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }, body: JSON.stringify(categoria) });
+      if (!res.ok) throw new Error('Error updating categoria');
+      const data = (await res.json())[0];
       setCategoriasProducto(categoriasProducto.map(c => c.id === id ? data : c));
       toast.success('Categoría actualizada');
     } catch (error: any) {
@@ -122,8 +124,8 @@ export function useSupabaseData(token?: string) {
 
   const eliminarCategoriaProducto = async (id: string) => {
     try {
-      const { error } = await supabase.from('categorias_producto').delete().eq('id', id);
-      if (error) throw error;
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/categorias_producto?id=eq.${id}`, { method: 'DELETE', headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` }});
+      if (!res.ok) throw new Error('Error deleting categoria');
       setCategoriasProducto(categoriasProducto.filter(c => c.id !== id));
       toast.success('Categoría eliminada');
     } catch (error: any) {
@@ -136,8 +138,9 @@ export function useSupabaseData(token?: string) {
   // CRUD Categorías Cliente
   const crearCategoriaCliente = async (categoria: Omit<CategoriaCliente, 'id' | 'organizacion_id'>) => {
     try {
-      const { data, error } = await supabase.from('categorias_cliente').insert(categoria).select().single();
-      if (error) throw error;
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/categorias_cliente?select=*`, { method: 'POST', headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }, body: JSON.stringify(categoria) });
+      if (!res.ok) throw new Error('Error creating categoria');
+      const data = (await res.json())[0];
       setCategoriasCliente([...categoriasCliente, data]);
       toast.success('Categoría creada', { description: 'La categoría se creó correctamente.' });
       return data;
@@ -149,8 +152,9 @@ export function useSupabaseData(token?: string) {
 
   const actualizarCategoriaCliente = async (id: string, categoria: Partial<CategoriaCliente>) => {
     try {
-      const { data, error } = await supabase.from('categorias_cliente').update(categoria).eq('id', id).select().single();
-      if (error) throw error;
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/categorias_cliente?id=eq.${id}&select=*`, { method: 'PATCH', headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }, body: JSON.stringify(categoria) });
+      if (!res.ok) throw new Error('Error updating categoria');
+      const data = (await res.json())[0];
       setCategoriasCliente(categoriasCliente.map(c => c.id === id ? data : c));
       toast.success('Categoría actualizada');
     } catch (error: any) {
@@ -161,8 +165,8 @@ export function useSupabaseData(token?: string) {
 
   const eliminarCategoriaCliente = async (id: string) => {
     try {
-      const { error } = await supabase.from('categorias_cliente').delete().eq('id', id);
-      if (error) throw error;
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/categorias_cliente?id=eq.${id}`, { method: 'DELETE', headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` }});
+      if (!res.ok) throw new Error('Error deleting categoria');
       setCategoriasCliente(categoriasCliente.filter(c => c.id !== id));
       toast.success('Categoría eliminada');
     } catch (error: any) {
@@ -290,12 +294,12 @@ export function useSupabaseData(token?: string) {
       const eventosData = await fetchJson('cotizacion-eventos', `${BASE_URL}/cotizacion-eventos`, token).catch(() => []);
 
 
-      const categoriasReq = await supabase.from('categorias_producto').select('*').order('orden');
-      if (categoriasReq.data) setCategoriasProducto(categoriasReq.data);
+      const catProdRes = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/categorias_producto?select=*&order=orden.asc`, { headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` }});
+      if (catProdRes.ok) setCategoriasProducto(await catProdRes.json());
 
 
-      const categoriasReqC = await supabase.from('categorias_cliente').select('*').order('orden');
-      if (categoriasReqC.data) setCategoriasCliente(categoriasReqC.data);
+      const catCliRes = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/categorias_cliente?select=*&order=orden.asc`, { headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` }});
+      if (catCliRes.ok) setCategoriasCliente(await catCliRes.json());
 
       const ajustesData = await fetchJson('ajustes', `${BASE_URL}/ajustes`, token);
       const plantillasData = await fetchJson('plantillas', `${BASE_URL}/plantillas`, token).catch(error => {
