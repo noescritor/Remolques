@@ -72,6 +72,7 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading
     { id: 'dashboard',    label: 'Dashboard',     icon: LayoutDashboard, isActive: currentPage === 'dashboard' },
     { id: 'cotizaciones', label: 'Cotizaciones',  icon: FileText,        isActive: currentPage === 'cotizaciones', visible: modulos.cotizaciones !== false },
     { id: 'trazabilidad', label: 'Trazabilidad',  icon: ClipboardList,   isActive: currentPage === 'trazabilidad' },
+    { id: 'presupuestos', label: 'Presupuestos',  icon: Calculator,      isActive: currentPage === 'presupuestos' },
     { id: 'plantillas',   label: 'Plantillas',    icon: BookTemplate,    isActive: currentPage === 'plantillas', visible: modulos.cotizaciones !== false },
     { id: 'clientes',     label: 'Clientes',      icon: Users,           isActive: currentPage === 'clientes', visible: modulos.clientes !== false },
     { id: 'productos',    label: 'Productos',     icon: Package,         isActive: currentPage === 'productos', visible: modulos.productos !== false },

@@ -16,6 +16,7 @@ import { CuentasPorCobrar } from './components/Finanzas/CuentasPorCobrar';
 import { CuentasPorPagar } from './components/Finanzas/CuentasPorPagar';
 import { TrazabilidadList } from './components/Trazabilidad/TrazabilidadList';
 import { OrdenesTrabajoList } from './components/OrdenesTrabajo/OrdenesTrabajoList';
+import { PresupuestosList } from './components/Presupuestos/PresupuestosList';
 import { ClientesList } from './components/Clientes/ClientesList';
 import { CalculadoraPage } from './components/Calculadora/CalculadoraPage';
 import { ProductosList } from './components/Productos/ProductosList';
@@ -79,6 +80,10 @@ export default function App() {
     ordenesTrabajo,
     actualizarOrdenTrabajo,
     generarOrdenesDesdeCotizacion,
+    presupuestos,
+    crearPresupuesto,
+    actualizarPresupuesto,
+    eliminarPresupuesto,
     crearProveedor,
     actualizarProveedor,
     eliminarProveedor,
@@ -618,6 +623,18 @@ export default function App() {
           />
         } />
         
+
+        <Route path="/presupuestos" element={
+          <PresupuestosList
+            presupuestos={presupuestos}
+            clientes={clientes}
+            loading={loading}
+            onSave={crearPresupuesto}
+            onUpdate={actualizarPresupuesto}
+            onDelete={eliminarPresupuesto}
+          />
+        } />
+
         <Route path="/produccion" element={
           <OrdenesTrabajoList
             ordenes={ordenesTrabajo}
