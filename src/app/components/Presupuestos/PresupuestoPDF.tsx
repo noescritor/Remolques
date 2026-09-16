@@ -140,13 +140,13 @@ export function PresupuestoPDF({ presupuesto, cliente }: Props) {
         <View key={idx} style={styles.tableRow}>
           <Text style={styles.colPzas}>{item.pzas}</Text>
           <Text style={styles.colMat}>{item.material}</Text>
-          <Text style={styles.colCu}>{item.cu > 0 ? \`\$\${item.cu.toLocaleString()}\` : ''}</Text>
-          <Text style={styles.colImp}>{item.importe > 0 ? \`\$\${item.importe.toLocaleString(undefined, { minimumFractionDigits: 2 })}\` : ''}</Text>
+          <Text style={styles.colCu}>{item.cu > 0 ? `$${item.cu.toLocaleString()}` : ''}</Text>
+          <Text style={styles.colImp}>{item.importe > 0 ? `$${item.importe.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : ''}</Text>
         </View>
       ))}
       <View style={styles.tableTotal}>
         <Text style={{ width: '85%', textAlign: 'right', paddingRight: 10 }}>TOTAL</Text>
-        <Text style={{ width: '15%', textAlign: 'right' }}>\${(sec.total || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
+        <Text style={{ width: '15%', textAlign: 'right' }}>${(sec.total || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
       </View>
     </View>
   );
@@ -203,11 +203,11 @@ export function PresupuestoPDF({ presupuesto, cliente }: Props) {
         <View style={styles.grandTotals}>
           <View style={[styles.grandRow, { backgroundColor: '#f1f5f9', borderBottomWidth: 1, borderBottomColor: '#c7cdd6' }]}>
             <Text style={styles.grandLabel}>TOTAL (COSTO):</Text>
-            <Text style={styles.grandValue}>\${(presupuesto.total_costo || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
+            <Text style={styles.grandValue}>${(presupuesto.total_costo || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
           </View>
           <View style={[styles.grandRow, { backgroundColor: '#dce9f5' }]}>
             <Text style={[styles.grandLabel, { fontSize: 11 }]}>PRECIO DE VENTA:</Text>
-            <Text style={[styles.grandValue, { fontSize: 11 }]}>\${(presupuesto.precio_venta || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
+            <Text style={[styles.grandValue, { fontSize: 11 }]}>${(presupuesto.precio_venta || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
           </View>
         </View>
       </Page>
