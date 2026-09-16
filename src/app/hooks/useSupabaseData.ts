@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase/client';
-import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente, NotaSimple, Proveedor, CompraProveedor, CotizacionEvento, OrdenTrabajo } from '../types';
+import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente, NotaSimple, Proveedor, CompraProveedor, CotizacionEvento, OrdenTrabajo, Presupuesto } from '../types';
 import { toast } from 'sonner';
 // Remueve la barra final para evitar URLs duplicadas como //clientes
 const BASE_URL = `https://remolques-remolques-api.gehkp3.easypanel.host`;
@@ -57,7 +57,10 @@ export function useSupabaseData(token?: string) {
   const [comprasProveedor, setComprasProveedor] = useState<CompraProveedor[]>([]);
   
   const [pagosProveedor, setPagosProveedor] = useState<any[]>([]);
+  
   const [ordenesTrabajo, setOrdenesTrabajo] = useState<OrdenTrabajo[]>([]);
+  const [presupuestos, setPresupuestos] = useState<Presupuesto[]>([]);
+
 
 
   const [cotizacionEventos, setCotizacionEventos] = useState<CotizacionEvento[]>([]);
@@ -289,6 +292,8 @@ export function useSupabaseData(token?: string) {
       const productosData = await fetchJson('productos', `${BASE_URL}/productos`, token);
       const cotizacionesData = await fetchJson('cotizaciones', `${BASE_URL}/cotizaciones`, token);
       const pagosData = await fetchJson('pagos', `${BASE_URL}/pagos`, token);
+        const ordenesData = await fetchJson('ordenes', `${BASE_URL}/ordenes-trabajo`, token).catch(() => []);
+        const presupuestosData = await fetchJson('presupuestos', `${BASE_URL}/presupuestos`, token).catch(() => []);
       const proveedoresData = await fetchJson('proveedores', `${BASE_URL}/proveedores`, token).catch(() => []);
       const comprasProveedorData = await fetchJson('compras-proveedor', `${BASE_URL}/compras-proveedor`, token).catch(() => []);
       const eventosData = await fetchJson('cotizacion-eventos', `${BASE_URL}/cotizacion-eventos`, token).catch(() => []);
@@ -328,6 +333,8 @@ export function useSupabaseData(token?: string) {
       setProductos(Array.isArray(productosData) ? productosData : []);
       setCotizaciones(Array.isArray(cotizacionesData) ? cotizacionesData : []);
       setPagos(Array.isArray(pagosData) ? pagosData : []);
+        setOrdenesTrabajo(Array.isArray(ordenesData) ? ordenesData : []);
+        setPresupuestos(Array.isArray(presupuestosData) ? presupuestosData : []);
       setProveedores(Array.isArray(proveedoresData) ? proveedoresData : []);
       setComprasProveedor(Array.isArray(comprasProveedorData) ? comprasProveedorData : []);
       setCotizacionEventos(Array.isArray(eventosData) ? eventosData : []);
@@ -883,9 +890,15 @@ export function useSupabaseData(token?: string) {
       saveToLocalStorage('cotizaciones', cotizacionesActualizadas);
       return {
 
+    
     ordenesTrabajo,
     actualizarOrdenTrabajo,
     generarOrdenesDesdeCotizacion,
+    presupuestos,
+    crearPresupuesto,
+    actualizarPresupuesto,
+    eliminarPresupuesto,
+
  token: tokenPortal, expira: expira.toISOString() };
     }
 
@@ -1127,7 +1140,50 @@ export function useSupabaseData(token?: string) {
     }
   };
 
+  
+  const crearPresupuesto = async (presupuesto: Partial<Presupuesto>) => {
+    try {
+      const result = await sendJson('crear presupuesto', `${BASE_URL}/presupuestos`, token, {
+        method: 'POST',
+        body: JSON.stringify(presupuesto)
+      });
+      setPresupuestos([result, ...presupuestos]);
+      toast.success('Presupuesto creado');
+      return result;
+    } catch (error: any) {
+      toast.error('Error al crear presupuesto', { description: error.message });
+      throw error;
+    }
+  };
+
+  const actualizarPresupuesto = async (id: string, updates: Partial<Presupuesto>) => {
+    try {
+      const result = await sendJson('actualizar presupuesto', `${BASE_URL}/presupuestos/${id}`, token, {
+        method: 'PUT',
+        body: JSON.stringify(updates)
+      });
+      setPresupuestos(prev => prev.map(p => p.id === id ? { ...p, ...result } : p));
+      toast.success('Presupuesto actualizado');
+      return result;
+    } catch (error: any) {
+      toast.error('Error al actualizar presupuesto', { description: error.message });
+      throw error;
+    }
+  };
+
+  const eliminarPresupuesto = async (id: string) => {
+    try {
+      await sendJson('eliminar presupuesto', `${BASE_URL}/presupuestos/${id}`, token, { method: 'DELETE' });
+      setPresupuestos(prev => prev.filter(p => p.id !== id));
+      toast.success('Presupuesto eliminado');
+    } catch (error: any) {
+      toast.error('Error al eliminar presupuesto', { description: error.message });
+      throw error;
+    }
+  };
+
   const generarOrdenesDesdeCotizacion = async (cotizacionId: string) => {
+
     try {
       const results = await sendJson('generar ordenes', `${BASE_URL}/cotizaciones/${cotizacionId}/generar-ordenes`, token, {
         method: 'POST'
