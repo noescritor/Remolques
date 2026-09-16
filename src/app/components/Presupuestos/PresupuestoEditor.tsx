@@ -158,7 +158,7 @@ export function PresupuestoEditor({ presupuesto, clientes, onSave, onUpdate, onC
         <div className="flex items-center gap-4">
           <Button variant="ghost" onClick={onClose}><ArrowLeft className="mr-2 h-4 w-4" /> Volver</Button>
           <h2 className="text-xl font-bold">
-            {presupuesto ? \`Editar Presupuesto \${presupuesto.folio}\` : 'Nuevo Presupuesto'}
+            {presupuesto ? `Editar Presupuesto ${presupuesto.folio}` : 'Nuevo Presupuesto'}
           </h2>
         </div>
         <Button onClick={handleSave} disabled={saving}>
