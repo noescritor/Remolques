@@ -348,6 +348,10 @@ export default function App() {
     } catch (error) {
       toast.error('Error al guardar ajustes', {
         description: error instanceof Error ? error.message : String(error)
+      });
+    }
+  };
+
   // Handler para pagos
   const manejarCrearPago = async (pagoData: Omit<Pago, 'id'>) => {
     try {
