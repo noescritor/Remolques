@@ -294,9 +294,13 @@ export function useSupabaseData(token?: string) {
       const productosData = await fetchJson('productos', `${BASE_URL}/productos`, token);
       const cotizacionesData = await fetchJson('cotizaciones', `${BASE_URL}/cotizaciones`, token);
       const pagosData = await fetchJson('pagos', `${BASE_URL}/pagos`, token);
+
         const ordenesData = await fetchJson('ordenes', `${BASE_URL}/ordenes-trabajo`, token).catch(() => []);
-        const lineasData = await fetchJson('lineas', `${BASE_URL}/produccion/lineas`, token).catch(() => []);
-        const fasesData = await fetchJson('fases', `${BASE_URL}/produccion/fases`, token).catch(() => []);
+        
+        // Fetch directamente de Supabase para evitar problema con el backend desactualizado
+        const { data: lineasData } = await supabase.from('lineas_producto').select('*').eq('organizacion_id', organizacionData.id).order('nombre');
+        const { data: fasesData } = await supabase.from('fases_produccion').select('*').eq('organizacion_id', organizacionData.id).order('orden');
+
         const presupuestosData = await fetchJson('presupuestos', `${BASE_URL}/presupuestos`, token).catch(() => []);
       const proveedoresData = await fetchJson('proveedores', `${BASE_URL}/proveedores`, token).catch(() => []);
       const comprasProveedorData = await fetchJson('compras-proveedor', `${BASE_URL}/compras-proveedor`, token).catch(() => []);
@@ -1193,12 +1197,26 @@ export function useSupabaseData(token?: string) {
     }
   };
 
+
   const moverOrdenKanban = async (id: string, fase_actual_id: string | null, estado_kanban: string) => {
     try {
-      await sendJson('mover orden kanban', `${BASE_URL}/produccion/ordenes/${id}/mover`, token, {
-        method: 'PUT',
-        body: JSON.stringify({ fase_actual_id, estado_kanban })
-      });
+      // By-pass the backend
+      const { error } = await supabase
+        .from('ordenes_trabajo')
+        .update({ fase_actual_id, estado_kanban, updated_at: new Date().toISOString() })
+        .eq('id', id);
+        
+      if (error) throw error;
+      
+      if (fase_actual_id) {
+        await supabase.from('historial_fases').insert({
+          orden_trabajo_id: id,
+          fase_id: fase_actual_id,
+          estado: 'en_proceso',
+          organizacion_id: organizacion?.id
+        });
+      }
+
       const ordenesActualizadas = await fetchJson('ordenes', `${BASE_URL}/ordenes-trabajo`, token);
       setOrdenesTrabajo(ordenesActualizadas);
     } catch (error) {
@@ -1207,12 +1225,21 @@ export function useSupabaseData(token?: string) {
     }
   };
 
+
+
   const actualizarMaterialFaltante = async (id: string, material_faltante: string | null) => {
     try {
-      await sendJson('actualizar material kanban', `${BASE_URL}/produccion/ordenes/${id}/material`, token, {
-        method: 'PUT',
-        body: JSON.stringify({ material_faltante })
-      });
+      const { error } = await supabase
+        .from('ordenes_trabajo')
+        .update({ 
+          material_faltante, 
+          estado_kanban: material_faltante ? 'material_faltante' : 'en_proceso',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id);
+        
+      if (error) throw error;
+
       const ordenesActualizadas = await fetchJson('ordenes', `${BASE_URL}/ordenes-trabajo`, token);
       setOrdenesTrabajo(ordenesActualizadas);
     } catch (error) {
@@ -1220,6 +1247,7 @@ export function useSupabaseData(token?: string) {
       throw error;
     }
   };
+
 
   const importarExcelKanban = async (payload: any) => {
     try {
