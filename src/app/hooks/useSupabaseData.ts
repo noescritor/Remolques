@@ -61,6 +61,8 @@ export function useSupabaseData(token?: string) {
   const [ordenesTrabajo, setOrdenesTrabajo] = useState<OrdenTrabajo[]>([]);
   const [lineasProducto, setLineasProducto] = useState<any[]>([]);
   const [fasesProduccion, setFasesProduccion] = useState<any[]>([]);
+  const [lineasProducto, setLineasProducto] = useState<any[]>([]);
+  const [fasesProduccion, setFasesProduccion] = useState<any[]>([]);
   const [presupuestos, setPresupuestos] = useState<Presupuesto[]>([]);
 
 
@@ -297,6 +299,8 @@ export function useSupabaseData(token?: string) {
         const ordenesData = await fetchJson('ordenes', `${BASE_URL}/ordenes-trabajo`, token).catch(() => []);
         const lineasData = await fetchJson('lineas', `${BASE_URL}/produccion/lineas`, token).catch(() => []);
         const fasesData = await fetchJson('fases', `${BASE_URL}/produccion/fases`, token).catch(() => []);
+        const lineasData = await fetchJson('lineas', `${BASE_URL}/produccion/lineas`, token).catch(() => []);
+        const fasesData = await fetchJson('fases', `${BASE_URL}/produccion/fases`, token).catch(() => []);
         const presupuestosData = await fetchJson('presupuestos', `${BASE_URL}/presupuestos`, token).catch(() => []);
       const proveedoresData = await fetchJson('proveedores', `${BASE_URL}/proveedores`, token).catch(() => []);
       const comprasProveedorData = await fetchJson('compras-proveedor', `${BASE_URL}/compras-proveedor`, token).catch(() => []);
@@ -338,6 +342,8 @@ export function useSupabaseData(token?: string) {
       setCotizaciones(Array.isArray(cotizacionesData) ? cotizacionesData : []);
       setPagos(Array.isArray(pagosData) ? pagosData : []);
         setOrdenesTrabajo(Array.isArray(ordenesData) ? ordenesData : []);
+        setLineasProducto(Array.isArray(lineasData) ? lineasData : []);
+        setFasesProduccion(Array.isArray(fasesData) ? fasesData : []);
         setLineasProducto(Array.isArray(lineasData) ? lineasData : []);
         setFasesProduccion(Array.isArray(fasesData) ? fasesData : []);
         setPresupuestos(Array.isArray(presupuestosData) ? presupuestosData : []);
@@ -894,7 +900,49 @@ export function useSupabaseData(token?: string) {
       );
       setCotizaciones(cotizacionesActualizadas);
       saveToLocalStorage('cotizaciones', cotizacionesActualizadas);
-      return { token: tokenPortal, expira: expira.toISOString() };
+    
+  const moverOrdenKanban = async (id: string, fase_actual_id: string | null, estado_kanban: string) => {
+    try {
+      await sendJson('mover orden kanban', `${BASE_URL}/produccion/ordenes/${id}/mover`, token, {
+        method: 'PUT',
+        body: JSON.stringify({ fase_actual_id, estado_kanban })
+      });
+      const ordenesActualizadas = await fetchJson('ordenes', `${BASE_URL}/ordenes-trabajo`, token);
+      setOrdenesTrabajo(ordenesActualizadas);
+    } catch (error) {
+      console.error('Error moving orden kanban:', error);
+      throw error;
+    }
+  };
+
+  const actualizarMaterialFaltante = async (id: string, material_faltante: string | null) => {
+    try {
+      await sendJson('actualizar material kanban', `${BASE_URL}/produccion/ordenes/${id}/material`, token, {
+        method: 'PUT',
+        body: JSON.stringify({ material_faltante })
+      });
+      const ordenesActualizadas = await fetchJson('ordenes', `${BASE_URL}/ordenes-trabajo`, token);
+      setOrdenesTrabajo(ordenesActualizadas);
+    } catch (error) {
+      console.error('Error updating material kanban:', error);
+      throw error;
+    }
+  };
+
+  const importarExcelKanban = async (payload: any) => {
+    try {
+      await sendJson('importar excel kanban', `${BASE_URL}/produccion/import`, token, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      await loadData();
+    } catch (error) {
+      console.error('Error importing excel kanban:', error);
+      throw error;
+    }
+  };
+
+  return { token: tokenPortal, expira: expira.toISOString() };
     }
 
     const resultado = await sendJson('generar portal', `${BASE_URL}/cotizaciones/${id}/generar-token-portal`, token, {
