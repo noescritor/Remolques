@@ -2129,6 +2129,7 @@ app.delete("/presupuestos/:id", async (c) => {
 app.get("/produccion/lineas", async (c) => {
   try {
     const orgId = c.get("organizacionId");
+    const supabase = c.get("supabase") as any;
     const { data, error } = await supabase
       .from("lineas_producto")
       .select("*")
@@ -2144,6 +2145,7 @@ app.get("/produccion/lineas", async (c) => {
 app.get("/produccion/fases", async (c) => {
   try {
     const orgId = c.get("organizacionId");
+    const supabase = c.get("supabase") as any;
     const { data, error } = await supabase
       .from("fases_produccion")
       .select("*")
@@ -2159,6 +2161,7 @@ app.get("/produccion/fases", async (c) => {
 app.put("/produccion/ordenes/:id/mover", async (c) => {
   try {
     const orgId = c.get("organizacionId");
+    const supabase = c.get("supabase") as any;
     const id = c.req.param("id");
     const body = await c.req.json();
     
@@ -2195,6 +2198,7 @@ app.put("/produccion/ordenes/:id/mover", async (c) => {
 app.put("/produccion/ordenes/:id/material", async (c) => {
   try {
     const orgId = c.get("organizacionId");
+    const supabase = c.get("supabase") as any;
     const id = c.req.param("id");
     const body = await c.req.json();
     
