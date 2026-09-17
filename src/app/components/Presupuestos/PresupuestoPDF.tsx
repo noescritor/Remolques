@@ -136,7 +136,7 @@ export function PresupuestoPDF({ presupuesto, cliente }: Props) {
         <Text style={styles.colCu}>$ C/U</Text>
         <Text style={styles.colImp}>IMPORTE</Text>
       </View>
-      {sec.items.filter((i:any) => i.material.trim() !== '' || i.importe > 0).map((item: any, idx: number) => (
+      {(sec.items || []).filter((i:any) => i.material.trim() !== '' || i.importe > 0).map((item: any, idx: number) => (
         <View key={idx} style={styles.tableRow}>
           <Text style={styles.colPzas}>{item.pzas}</Text>
           <Text style={styles.colMat}>{item.material}</Text>

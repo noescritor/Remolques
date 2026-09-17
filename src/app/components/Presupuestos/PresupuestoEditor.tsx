@@ -118,7 +118,7 @@ export function PresupuestoEditor({ presupuesto, clientes, onSave, onUpdate, onC
             </tr>
           </thead>
           <tbody className="divide-y">
-            {datos[key].items.map((item, idx) => (
+            {Array.isArray(datos[key]?.items) && datos[key].items.map((item, idx) => (
               <tr key={idx} className="hover:bg-muted/30">
                 <td className="p-1">
                   <Input className="h-8 text-xs" value={item.pzas} onChange={e => updateItem(key, idx, 'pzas', e.target.value)} />
