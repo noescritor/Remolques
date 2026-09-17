@@ -30,7 +30,7 @@ export function TableroProduccionPage({
 
   const handleOrderClick = (orden: OrdenTrabajo) => {
     // In a future update, we can open a modal to change its 'estado_kanban' (pausado, incompleto, material faltante)
-    alert(\`Orden: \${orden.cotizacion?.folio || 'Sin folio'} - \${orden.cliente?.nombre}\`);
+    alert(`Orden: ${orden.cotizacion?.folio || 'Sin folio'} - ${orden.cliente?.nombre}`);
   };
 
   const filteredOrdenes = useMemo(() => {
