@@ -199,9 +199,9 @@ export function PresupuestoEditor({ presupuesto, clientes, onSave, onUpdate, onC
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
-          {renderSeccion('Acero', 'acero', 'bg-slate-700')}
-          {renderSeccion('Pirámide', 'piramide', 'bg-slate-700')}
-          {renderSeccion('Truckzone', 'truckzone', 'bg-slate-700')}
+          {renderSeccion('Acero', 'acero', 'bg-muted text-foreground')}
+          {renderSeccion('Pirámide', 'piramide', 'bg-muted text-foreground')}
+          {renderSeccion('Truckzone', 'truckzone', 'bg-muted text-foreground')}
         </div>
         <div>
           {renderSeccion('Otros', 'otros', 'bg-emerald-700')}
@@ -209,8 +209,8 @@ export function PresupuestoEditor({ presupuesto, clientes, onSave, onUpdate, onC
           {renderSeccion('Extras', 'extras', 'bg-teal-700')}
           {renderSeccion('Rines y Llantas', 'rines', 'bg-teal-700')}
           {renderSeccion('Mano de Obra', 'manoobra', 'bg-emerald-700')}
-          {renderSeccion('Adicionales', 'adicionales', 'bg-slate-700')}
-          {renderSeccion('Gastos Indirectos', 'indirectos', 'bg-slate-700')}
+          {renderSeccion('Adicionales', 'adicionales', 'bg-muted text-foreground')}
+          {renderSeccion('Gastos Indirectos', 'indirectos', 'bg-muted text-foreground')}
         </div>
       </div>
 

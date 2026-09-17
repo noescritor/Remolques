@@ -115,15 +115,15 @@ export function ComprasProveedorList({
 
       {/* Modal para ver e imprimir PDF */}
       <Dialog open={!!compraParaPDF} onOpenChange={(open) => !open && setCompraParaPDF(null)}>
-        <DialogContent className="w-full sm:max-w-[1000px] max-h-[90vh] overflow-y-auto bg-slate-900 border-border p-6">
+        <DialogContent className="w-full sm:max-w-[1000px] max-h-[90vh] overflow-y-auto bg-card border-border/50 p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold text-foreground">Vista Previa de Orden de Compra</h2>
-            <Button onClick={handlePrint} className="bg-white text-black hover:bg-slate-200">
+            <Button onClick={handlePrint} className="bg-primary text-primary-foreground hover:bg-primary/90">
               <FileText className="h-4 w-4 mr-2" /> Imprimir / Descargar PDF
             </Button>
           </div>
           
-          <div className="flex justify-center bg-slate-800 p-8 rounded-lg overflow-x-auto">
+          <div className="flex justify-center bg-muted/50 p-8 rounded-lg overflow-x-auto">
             {compraParaPDF && (
               <div className="bg-white shadow-xl">
                 <CompraPDFTemplate 

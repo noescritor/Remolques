@@ -69,7 +69,7 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
         </div>
         <div className="flex gap-4">
           <Select value={clienteLiberacion || ''} onValueChange={setClienteLiberacion}>
-            <SelectTrigger className="w-64 bg-slate-900 border-border">
+            <SelectTrigger className="w-64 bg-card border-border">
               <SelectValue placeholder="Liberar equipos por cliente..." />
             </SelectTrigger>
             <SelectContent>
@@ -99,7 +99,7 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
       </div>
 
       {/* Lista Principal */}
-      <div className="bg-slate-900 border border-border rounded-xl overflow-hidden print:hidden">
+      <div className="bg-card border border-border/50 rounded-xl overflow-hidden print:hidden">
         <div className="p-4 border-b border-border">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
@@ -107,13 +107,13 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por Nomenclatura, NIV o Cliente..." 
-              className="pl-10 bg-slate-800 border-border text-foreground"
+              className="pl-10 bg-background border-border text-foreground"
             />
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left text-gray-300">
-            <thead className="text-xs text-gray-400 uppercase bg-slate-800/50">
+          <table className="w-full text-sm text-left text-muted-foreground">
+            <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
               <tr>
                 <th className="px-6 py-3">ID / Nomenclatura</th>
                 <th className="px-6 py-3">Cliente</th>
@@ -125,7 +125,7 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
             </thead>
             <tbody>
               {ordenesFiltradas.map(orden => (
-                <tr key={orden.id} className="border-b border-white/5 hover:bg-card/50">
+                <tr key={orden.id} className="border-b border-border/50 hover:bg-muted/50">
                   <td className="px-6 py-4 font-mono font-bold text-foreground">{orden.nomenclatura_id}</td>
                   <td className="px-6 py-4">{orden.cliente?.nombre}</td>
                   <td className="px-6 py-4">{orden.caracteristicas?.descripcion_corta}</td>
@@ -142,7 +142,7 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
                       orden.estado === 'Terminado' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
                       orden.estado === 'En Producción' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
                       orden.estado === 'Liberado' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' :
-                      'bg-slate-500/10 text-slate-300 border-slate-500/20'
+                      'bg-muted text-muted-foreground border-border'
                     }>
                       {orden.estado}
                     </Badge>
@@ -171,25 +171,25 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
 
       {/* Modal Editor */}
       <Dialog open={!!ordenEditando} onOpenChange={(open) => !open && setOrdenEditando(null)}>
-        <DialogContent className="bg-slate-900 border-border text-foreground w-full max-w-md">
+        <DialogContent className="bg-card border-border/50 text-foreground w-full max-w-md">
           <h2 className="text-xl font-bold mb-4">Editar Orden: {ordenEditando?.nomenclatura_id}</h2>
           <div className="space-y-4">
             <div>
               <Label>NIV (Número de Identificación Vehicular)</Label>
-              <Input value={editNiv} onChange={e => setEditNiv(e.target.value)} className="bg-slate-800 uppercase font-mono" />
+              <Input value={editNiv} onChange={e => setEditNiv(e.target.value)} className="bg-background uppercase font-mono" />
             </div>
             <div>
               <Label>Modelo (Año)</Label>
-              <Input value={editModelo} onChange={e => setEditModelo(e.target.value)} className="bg-slate-800" />
+              <Input value={editModelo} onChange={e => setEditModelo(e.target.value)} className="bg-background" />
             </div>
             <div>
               <Label>Color de la unidad</Label>
-              <Input value={editColor} onChange={e => setEditColor(e.target.value)} className="bg-slate-800" />
+              <Input value={editColor} onChange={e => setEditColor(e.target.value)} className="bg-background" />
             </div>
             <div>
               <Label>Estado de Producción</Label>
               <Select value={editEstado} onValueChange={setEditEstado}>
-                <SelectTrigger className="bg-slate-800 border-border">
+                <SelectTrigger className="bg-background border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -209,10 +209,10 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
 
       {/* Modal Visor de PDF (Orden Individual) */}
       <Dialog open={!!ordenParaPDF} onOpenChange={(open) => !open && setOrdenParaPDF(null)}>
-        <DialogContent className="w-full sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-border p-6 print:hidden">
+        <DialogContent className="w-full sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-card border-border p-6 print:hidden">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold text-foreground">Vista Previa de Orden de Trabajo</h2>
-            <Button onClick={handlePrint} className="bg-white text-black hover:bg-slate-200">
+            <Button onClick={handlePrint} className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Printer className="h-4 w-4 mr-2" /> Imprimir Orden
             </Button>
           </div>
