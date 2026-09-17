@@ -44,7 +44,7 @@ export function OrderCard({ orden, onDragStart, onClick }: OrderCardProps) {
       <CardContent className="p-3">
         <div className="flex justify-between items-start mb-2">
           <div className="font-mono text-xs font-bold bg-muted/50 px-1.5 py-0.5 rounded text-foreground">{orden.cotizacion?.folio || 'Sin Folio'}</div>
-          <Badge variant="outline" className={\`text-[10px] px-1.5 py-0 border \${getStatusColor(orden.estado_kanban || 'pendiente')}\`}>
+          <Badge variant="outline" className={`text-[10px] px-1.5 py-0 border ${getStatusColor(orden.estado_kanban || 'pendiente')}`}>
             {getStatusText(orden.estado_kanban || 'pendiente')}
           </Badge>
         </div>

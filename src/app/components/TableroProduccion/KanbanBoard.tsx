@@ -78,7 +78,7 @@ export function KanbanBoard({ fases, ordenes, onMoverOrden, onOrderClick }: Kanb
         return (
           <div 
             key={col.id} 
-            className={\`flex flex-col flex-shrink-0 w-72 max-h-full bg-muted/20 rounded-xl border \${isDragOver ? 'border-primary/50 bg-primary/5' : 'border-border/50'} transition-colors snap-center\`}
+            className={`flex flex-col flex-shrink-0 w-72 max-h-full bg-muted/20 rounded-xl border ${isDragOver ? 'border-primary/50 bg-primary/5' : 'border-border/50'} transition-colors snap-center`}
             onDragOver={(e) => handleDragOver(e, col.id)}
             onDrop={(e) => handleDrop(e, col.id)}
             onDragLeave={() => setDragOverColumn(null)}

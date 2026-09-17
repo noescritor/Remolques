@@ -101,7 +101,7 @@ export function TableroProduccionPage({
           <Button
             key={linea.id}
             variant={activeTab === linea.id ? 'default' : 'ghost'}
-            className={\`\${activeTab === linea.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}\`}
+            className={`${activeTab === linea.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             onClick={() => setActiveTab(linea.id)}
           >
             {linea.nombre}
