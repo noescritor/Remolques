@@ -22,6 +22,81 @@ app.use(
 
 // ─── Portal público (SIN autenticación) ───────────────────────────────────────
 
+
+app.get("/productos/:id/materiales", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    
+    const { data, error } = await supabase
+      .from("producto_materiales")
+      .select("*, material:material_id(*)")
+      .eq("producto_id", id)
+      .eq("organizacion_id", orgId);
+      
+    if (error) throw error;
+    return c.json(data);
+  } catch (err: any) {
+    return c.json({ error: err.message }, 500);
+  }
+});
+
+app.put("/productos/:id/materiales", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    const materiales = await c.req.json(); // Array of { material_id, cantidad, organizacion_id }
+    
+    // Verify product belongs to org
+    const { data: prod } = await supabase.from("productos").select("id").eq("id", id).eq("organizacion_id", orgId).single();
+    if (!prod) return c.json({ error: "Producto no encontrado o no autorizado" }, 404);
+    
+    // Replace all
+    await supabase.from("producto_materiales").delete().eq("producto_id", id).eq("organizacion_id", orgId);
+    
+    if (materiales && materiales.length > 0) {
+      // Validar materia prima
+      const matIds = materiales.map((m: any) => m.material_id);
+      const { data: validMats } = await supabase.from("productos")
+        .select("id, tipo_item")
+        .in("id", matIds)
+        .eq("organizacion_id", orgId);
+        
+      const validIds = new Set(validMats?.filter((m: any) => m.tipo_item === 'materia_prima').map((m: any) => m.id));
+      
+      const toInsert = materiales.filter((m: any) => validIds.has(m.material_id)).map((m: any) => ({
+        producto_id: id,
+        material_id: m.material_id,
+        cantidad: m.cantidad,
+        organizacion_id: orgId
+      }));
+      
+      if (toInsert.length > 0) {
+        const { error } = await supabase.from("producto_materiales").insert(toInsert);
+        if (error) throw error;
+      }
+    }
+    return c.json({ success: true });
+  } catch (err: any) {
+    return c.json({ error: err.message }, 500);
+  }
+});
+
+app.get("/cotizaciones/:id/requisicion", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    
+    const faltantes = await calcularRequisicion(supabase, id, orgId);
+    return c.json(faltantes);
+  } catch (err: any) {
+    return c.json({ error: err.message }, 500);
+  }
+});
+
 app.get("/health", (c) => c.json({ ok: true }));
 app.get("/make-server-feea4382/health", (c) => c.json({ ok: true }));
 

@@ -66,6 +66,8 @@ export function ProductosList({
   const [errores, setErrores] = useState<string[]>([]);
 
   // Form Categoria
+  const [materialesBOM, setMaterialesBOM] = useState<any[]>([]);
+  const [loadingBOM, setLoadingBOM] = useState(false);
   const [catFormData, setCatFormData] = useState({ nombre: '', color: '#3b82f6' });
 
   // Filter products
@@ -104,7 +106,7 @@ export function ProductosList({
     setModalOpen(true);
   };
 
-  const handleGuardar = () => {
+  const handleGuardar = async () => {
     if (!formData.nombre.trim()) {
       setErrores(['El nombre es requerido']);
       return;
@@ -125,11 +127,32 @@ export function ProductosList({
       productPayload.servicio = formData.servicio;
     }
 
-    if (productoEditando) {
-      onActualizarProducto(productoEditando.id, productPayload);
-    } else {
-      onCrearProducto(productPayload);
-    }
+    
+      productPayload.tipo_item = formData.tipo_item;
+      let targetId = productoEditando?.id;
+      if (productoEditando) {
+        onActualizarProducto(productoEditando.id, productPayload);
+      } else {
+        const result = await onCrearProducto(productPayload);
+        if (result && result.id) targetId = result.id;
+      }
+      
+      // Guardar materiales BOM si es producto terminado
+      if (targetId && productPayload.tipo_item === 'producto_terminado') {
+        try {
+           const { supabase: supa } = await import('../../utils/supabase/client');
+           const orgId = (await supa.auth.getUser()).data.user?.user_metadata?.organizacion_id || localStorage.getItem('org_id');
+           const token = (await supa.auth.getSession()).data.session?.access_token;
+           await fetch(`${import.meta.env.VITE_SUPABASE_API_URL}/productos/${targetId}/materiales`, {
+             method: 'PUT',
+             headers: { 'Authorization': `Bearer ${token}`, 'x-org-id': orgId, 'Content-Type': 'application/json' },
+             body: JSON.stringify(materialesBOM.map(m => ({ material_id: m.material_id, cantidad: m.cantidad })))
+           });
+        } catch (e) {
+           console.error('Error guardando materiales', e);
+        }
+      }
+
     setModalOpen(false);
   };
 
@@ -266,8 +289,22 @@ export function ProductosList({
                 </Select>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>Nombre</Label>
+            
+                <div className="space-y-2">
+                  <Label>Tipo de Ítem</Label>
+                  <Select value={formData.tipo_item || 'ninguno'} onValueChange={(v) => setFormData({...formData, tipo_item: v === 'ninguno' ? undefined : v as any})}>
+                    <SelectTrigger><SelectValue placeholder="General (Sin tipo)" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ninguno">General (Sin tipo)</SelectItem>
+                      <SelectItem value="producto_terminado">Producto Terminado (Lleva BOM)</SelectItem>
+                      <SelectItem value="materia_prima">Materia Prima / Refacción</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Nombre</Label>
               <Input value={formData.nombre} onChange={e => setFormData({...formData, nombre: e.target.value})} />
             </div>
             <div className="space-y-2">
@@ -287,9 +324,36 @@ export function ProductosList({
                 <Label>Costo (opcional)</Label>
                 <Input type="number" value={formData.costo || ''} onChange={e => setFormData({...formData, costo: Number(e.target.value)})} />
               </div>
-            </div>
-          </div>
-          <DialogFooter>
+            </div></div>
+                {formData.tipo_item === 'producto_terminado' && (
+                  <div className="col-span-2 mt-4 border-t border-border pt-4">
+                    <div className="flex justify-between items-center mb-2">
+                       <Label>Materiales (BOM)</Label>
+                       <Button size="sm" variant="outline" onClick={() => setMaterialesBOM([...materialesBOM, { material_id: '', cantidad: 1 }])}>+ Agregar Material</Button>
+                    </div>
+                    {loadingBOM ? <div>Cargando...</div> : (
+                      <div className="space-y-2">
+                        {materialesBOM.map((mat, idx) => (
+                          <div key={idx} className="flex gap-2">
+                             <Select value={mat.material_id} onValueChange={(v) => {
+                               const newM = [...materialesBOM]; newM[idx].material_id = v; setMaterialesBOM(newM);
+                             }}>
+                               <SelectTrigger className="flex-1"><SelectValue placeholder="Seleccione material" /></SelectTrigger>
+                               <SelectContent>{productos.filter(p => p.tipo_item === 'materia_prima').map(p => (
+                            <SelectItem key={p.id} value={p.id}>{p.nombre}</SelectItem>
+                          ))}</SelectContent>
+                             </Select>
+                             <Input type="number" min="1" step="0.01" className="w-24" value={mat.cantidad} onChange={(e) => {
+                               const newM = [...materialesBOM]; newM[idx].cantidad = parseFloat(e.target.value); setMaterialesBOM(newM);
+                             }} />
+                             <Button variant="ghost" className="text-red-400" onClick={() => setMaterialesBOM(materialesBOM.filter((_, i) => i !== idx))}><Trash2 className="w-4 h-4" /></Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+<DialogFooter>
             <Button variant="outline" onClick={() => setModalOpen(false)}>Cancelar</Button>
             <Button onClick={handleGuardar}>Guardar</Button>
           </DialogFooter>

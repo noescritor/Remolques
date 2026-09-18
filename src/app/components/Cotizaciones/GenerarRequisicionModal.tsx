@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -7,6 +7,7 @@ import { Label } from '../ui/label';
 import { Cotizacion, Producto, Proveedor } from '../../types';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase as supa } from '../../utils/supabase/client';
 
 interface GenerarRequisicionModalProps {
   cotizacion: Cotizacion;
@@ -28,8 +29,39 @@ export function GenerarRequisicionModal({
   const [proveedorId, setProveedorId] = useState<string>('');
   const [items, setItems] = useState<{ material_id: string; cantidad: number; costo_unitario: number }[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingReq, setLoadingReq] = useState(false);
 
-  const materiasPrimas = productos.filter(p => p.categoria_id === productos.find(x => x.nombre === 'Eje de 3500 lbs')?.categoria_id || true); // Default all or filter by category
+  const materiasPrimas = productos.filter(p => p.tipo_item === 'materia_prima');
+
+  useEffect(() => {
+    if (isOpen && cotizacion) {
+      cargarFaltantes();
+    }
+  }, [isOpen, cotizacion]);
+
+  const cargarFaltantes = async () => {
+    setLoadingReq(true);
+    try {
+      
+      const orgId = (await supa.auth.getUser()).data.user?.user_metadata?.organizacion_id || localStorage.getItem('org_id');
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_API_URL}/cotizaciones/${cotizacion.id}/requisicion`, {
+        headers: { 'Authorization': `Bearer ${(await supa.auth.getSession()).data.session?.access_token}`, 'x-org-id': orgId }
+      });
+      if (res.ok) {
+        const faltantes = await res.json();
+        const itemsList = faltantes.filter((f: any) => f.faltante > 0).map((f: any) => ({
+          material_id: f.material_id,
+          cantidad: f.faltante,
+          costo_unitario: f.costo || 0
+        }));
+        setItems(itemsList);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingReq(false);
+    }
+  };
 
   const handleAddItem = () => {
     setItems([...items, { material_id: '', cantidad: 1, costo_unitario: 0 }]);
@@ -108,7 +140,9 @@ export function GenerarRequisicionModal({
               </Button>
             </div>
 
-            {items.map((item, idx) => (
+            {loadingReq ? (
+              <div className="flex justify-center py-4"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+            ) : items.map((item, idx) => (
               <div key={idx} className="flex gap-4 items-end bg-card/50 p-3 rounded-lg border border-white/5">
                 <div className="flex-1 space-y-2">
                   <Label className="text-xs">Materia Prima / Refacción</Label>
@@ -148,9 +182,9 @@ export function GenerarRequisicionModal({
               </div>
             ))}
 
-            {items.length === 0 && (
+            {!loadingReq && items.length === 0 && (
               <div className="text-center py-8 text-muted-foreground border border-dashed border-border rounded-lg">
-                Haz clic en "Agregar Material" para comenzar a armar la requisición.
+                No hay faltantes calculados. Haz clic en "Agregar Material" para añadir uno manualmente.
               </div>
             )}
           </div>
