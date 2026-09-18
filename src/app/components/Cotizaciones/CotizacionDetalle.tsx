@@ -35,6 +35,7 @@ interface CotizacionDetalleProps {
   onCrearPago: (pago: Omit<Pago, 'id'>) => void;
   onGenerarTokenPortal?: (id: string) => Promise<{ token: string; expira: string; portalUrl: string }>;
   proveedores?: any[];
+  comprasProveedor?: any[];
   onCrearCompraProveedor?: (compra: any) => Promise<any>;
   onRegistrarMovimientoInventario?: (movimiento: any) => Promise<any>;
   onGenerarOrdenesTrabajo?: (cotizacionId: string) => Promise<any>;
@@ -49,6 +50,7 @@ const estadoColors: Record<EstadoCotizacion, string> = {
 };
 
 export function CotizacionDetalle({
+  comprasProveedor,
   cotizacion,
   todasLasCotizaciones = [],
   pagos,

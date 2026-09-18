@@ -102,7 +102,8 @@ export function useSupabaseData(token?: string) {
   // CRUD Categorías Producto
   const crearCategoriaProducto = async (categoria: Omit<CategoriaProducto, 'id' | 'organizacion_id'>) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/categorias_producto?select=*`, { method: 'POST', headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }, body: JSON.stringify(categoria) });
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/categorias_producto?select=*`, { method: 'POST',
+          headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }, body: JSON.stringify(categoria) });
       if (!res.ok) throw new Error('Error creating categoria');
       const data = (await res.json())[0];
       setCategoriasProducto([...categoriasProducto, data]);
@@ -1177,12 +1178,12 @@ export function useSupabaseData(token?: string) {
     }
   };
 
-  const generarOrdenesDesdeCotizacion = async (cotizacionId: string) => {
-
-    try {
-      const results = await sendJson('generar ordenes', `${BASE_URL}/cotizaciones/${cotizacionId}/generar-ordenes`, token, {
-        method: 'POST'
-      });
+  const generarOrdenesDesdeCotizacion = async (cotizacionId: string, force: boolean = false) => {
+      try {
+        const results = await sendJson('generar ordenes', `${BASE_URL}/cotizaciones/${cotizacionId}/generar-ordenes`, token, {
+          method: 'POST',
+          body: JSON.stringify({ force })
+        });
       // Volver a cargar para traer las relaciones (cliente, cotizacion)
       const ordenesReq = await fetchJson('ordenes', `${BASE_URL}/ordenes-trabajo`, token).catch(() => []);
       setOrdenesTrabajo(Array.isArray(ordenesReq) ? ordenesReq : []);
