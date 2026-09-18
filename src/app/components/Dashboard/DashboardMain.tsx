@@ -136,7 +136,7 @@ export function DashboardMain({
     // 1. Pendientes de Producción / Entrega
     const pendientes = cotizaciones.filter(c => 
       (c.estado === 'Aprobada' || c.estado === 'Pagada') && 
-      (c.estado_produccion !== 'Entregado')
+      (c.estado_produccion !== 'Surtido')
     ).sort((a, b) => new Date((b as any).created_at || b.fecha || '').getTime() - new Date((a as any).created_at || a.fecha || '').getTime());
 
     // 2. Perdidas de Vista (Borrador o Enviada por más de 5 días)
@@ -152,7 +152,7 @@ export function DashboardMain({
 
     // 3. Próximas Entregas (Tienen fecha de entrega y no están entregadas)
     const entregas = cotizaciones.filter(c => 
-      c.fecha_entrega && c.estado_produccion !== 'Entregado' && c.estado !== 'Cancelada'
+      c.fecha_entrega && c.estado_produccion !== 'Surtido' && c.estado !== 'Cancelada'
     ).sort((a, b) => new Date(a.fecha_entrega!).getTime() - new Date(b.fecha_entrega!).getTime())
      .slice(0, 5); // top 5
 

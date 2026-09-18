@@ -431,3 +431,14 @@ export interface Presupuesto {
   created_at: string;
   cliente?: Cliente;
 }
+
+export type EstadoProduccion = 'Nueva' | 'Requisición: falta material' | 'Compra en curso' | 'Listo para producción' | 'En producción' | 'Surtido';
+
+export const ESTADOS_PRODUCCION: EstadoProduccion[] = [
+  'Nueva',
+  'Requisición: falta material',
+  'Compra en curso',
+  'Listo para producción',
+  'En producción',
+  'Surtido'
+];

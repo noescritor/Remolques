@@ -192,22 +192,31 @@ app.get("/portal/:token", async (c) => {
 app.post("/portal/:token/aprobar", async (c) => {
   try {
     const token = c.req.param("token");
-    const { firma_imagen, firma_nombre, firma_ip } = await c.req.json();
+    const { firma_imagen, firma_nombre } = await c.req.json();
+    const firma_ip = c.req.header("x-forwarded-for") || c.req.header("remote-addr") || "unknown";
     const supabase = getServiceClient();
+    
     const { data: cot } = await supabase
-      .from("cotizaciones").select("id, token_expira_en").eq("token_publico", token).single();
+      .from("cotizaciones").select("id, token_expira_en, estado, organizacion_id").eq("token_publico", token).single();
     if (!cot) return c.json({ error: "Token inválido" }, 404);
     if (cot.token_expira_en && new Date(cot.token_expira_en) < new Date()) {
       return c.json({ error: "Link expirado" }, 410);
     }
+    if (cot.estado !== 'Enviada') {
+      return c.json({ error: "La cotización ya fue procesada" }, 409);
+    }
+    
     const { error } = await supabase.from("cotizaciones").update({
       estado: "Aprobada",
       firma_imagen: firma_imagen || null,
       firma_nombre: firma_nombre || null,
       firma_fecha: new Date().toISOString(),
-      firma_ip: firma_ip || null,
+      firma_ip: firma_ip,
     }).eq("id", cot.id);
     if (error) throw error;
+    
+    await aplicarAprobacion(supabase, { id: cot.id, estado: "Aprobada", estado_produccion: "Nueva" }, cot.organizacion_id, null);
+    
     return c.json({ success: true });
   } catch (e) {
     return c.json({ error: "Error al aprobar" }, 500);
@@ -219,14 +228,30 @@ app.post("/portal/:token/rechazar", async (c) => {
     const token = c.req.param("token");
     const { comentario } = await c.req.json();
     const supabase = getServiceClient();
+    
     const { data: cot } = await supabase
-      .from("cotizaciones").select("id").eq("token_publico", token).single();
+      .from("cotizaciones").select("id, token_expira_en, estado, organizacion_id").eq("token_publico", token).single();
     if (!cot) return c.json({ error: "Token inválido" }, 404);
+    if (cot.token_expira_en && new Date(cot.token_expira_en) < new Date()) {
+      return c.json({ error: "Link expirado" }, 410);
+    }
+    if (cot.estado !== 'Enviada') {
+      return c.json({ error: "La cotización ya fue procesada" }, 409);
+    }
+    
     const { error } = await supabase.from("cotizaciones").update({
       estado: "Cancelada",
       comentario_cliente: comentario || null,
     }).eq("id", cot.id);
     if (error) throw error;
+    
+    await registrarEvento(supabase, {
+      cotizacion_id: cot.id,
+      organizacion_id: cot.organizacion_id,
+      evento: `Cotización rechazada por el cliente. Comentario: ${comentario || 'Ninguno'}`,
+      usuario_id: null
+    });
+    
     return c.json({ success: true });
   } catch (e) {
     return c.json({ error: "Error al rechazar" }, 500);
@@ -238,13 +263,29 @@ app.post("/portal/:token/solicitar-cambios", async (c) => {
     const token = c.req.param("token");
     const { comentario } = await c.req.json();
     const supabase = getServiceClient();
+    
     const { data: cot } = await supabase
-      .from("cotizaciones").select("id").eq("token_publico", token).single();
+      .from("cotizaciones").select("id, token_expira_en, estado, organizacion_id").eq("token_publico", token).single();
     if (!cot) return c.json({ error: "Token inválido" }, 404);
+    if (cot.token_expira_en && new Date(cot.token_expira_en) < new Date()) {
+      return c.json({ error: "Link expirado" }, 410);
+    }
+    if (cot.estado !== 'Enviada') {
+      return c.json({ error: "La cotización ya fue procesada" }, 409);
+    }
+    
     const { error } = await supabase.from("cotizaciones").update({
       comentario_cliente: comentario || null,
     }).eq("id", cot.id);
     if (error) throw error;
+    
+    await registrarEvento(supabase, {
+      cotizacion_id: cot.id,
+      organizacion_id: cot.organizacion_id,
+      evento: `El cliente solicitó cambios. Comentario: ${comentario || 'Ninguno'}`,
+      usuario_id: null
+    });
+    
     return c.json({ success: true });
   } catch (e) {
     return c.json({ error: "Error al guardar comentario" }, 500);
@@ -563,8 +604,16 @@ app.post("/cotizaciones", async (c) => {
 app.put("/cotizaciones/:id", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user") as any; const userId = user?.id || null;
     const id = c.req.param('id');
     const payload = await c.req.json();
+    
+    // Leer estado previo
+    const { data: previous } = await supabase.from('cotizaciones').select('estado, estado_produccion').eq('id', id).single();
+    const wasApproved = previous?.estado === 'Aprobada';
+    const isNowApproved = payload.estado === 'Aprobada';
+
 
     const items = payload.items;
     const cotizacionData = { ...payload };

@@ -31,3 +31,8 @@ Este archivo contiene el contexto histórico y arquitectónico del proyecto "Rem
 
 ### 5. Errores de Sintaxis en JSX (Vite)
 - **NO escapes comillas invertidas (`\``) usando barras invertidas (`\` )** dentro de JSX. Vite lanzará un `SyntaxError: Invalid escape sequence`. Si necesitas un string literal dentro de props, usa las comillas simples o dobles cuando sea posible.
+
+### 6. Bitácora de cambios (obligatoria)
+- Todo cambio de código, migración o hallazgo se registra en `CHANGELOG_ANTIGRAVITY.md` (entradas nuevas arriba, con la plantilla del archivo): qué cambió, por qué, archivos tocados, acciones manuales pendientes (Rebuild / SQL) y referencia a la auditoría (`AUDITORIA_*.md`) si aplica.
+- No dejes scripts de parche sueltos en la raíz (`fix_*.cjs`, `append_*.cjs`). Si necesitas uno, va en `scripts/` y **nunca** con llaves incrustadas: lee de `process.env`.
+- Nunca escribas llaves de Supabase (`service_role` o anon) en archivos versionados.
