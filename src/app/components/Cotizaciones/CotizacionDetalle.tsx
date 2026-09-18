@@ -76,7 +76,7 @@ export function CotizacionDetalle({
   const handleGenerarRequisicion = async (proveedorId: string, items: any[]) => {
     if (!onCrearCompraProveedor) return;
     await onCrearCompraProveedor({
-      folio: `OC-${Date.now().toString().slice(-6)}`,
+      
       cotizacion_id: cotizacion.id,
       proveedor_id: proveedorId,
       estado: 'Pendiente',
