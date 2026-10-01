@@ -9,6 +9,7 @@ import { PresupuestoPDF } from './PresupuestoPDF';
 import { pdf } from '@react-pdf/renderer';
 import { useNavigate } from 'react-router-dom';
 import { formatearMoneda } from '../../utils/calculations';
+import { ModeloConfiguratorModal } from './ModeloConfiguratorModal';
 
 interface Props {
   productos?: Producto[];
@@ -25,6 +26,7 @@ export function PresupuestosList({ productos = [], presupuestos, clientes, loadi
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [selectedPresupuesto, setSelectedPresupuesto] = useState<Presupuesto | null>(null);
   const navigate = useNavigate();
+  const [modeloConfig, setModeloConfig] = useState<Producto | null>(null);
 
   const handleEdit = (presu: Presupuesto) => {
     setSelectedPresupuesto(presu);
@@ -114,9 +116,9 @@ export function PresupuestosList({ productos = [], presupuestos, clientes, loadi
                   <Button 
                     size="sm" 
                     className="bg-accent-blue text-white hover:bg-blue-700"
-                    onClick={() => navigate(`/cotizaciones/nueva?producto_id=${modelo.id}`)}
+                    onClick={() => setModeloConfig(modelo)}
                   >
-                    Cotizar <ArrowRight className="w-4 h-4 ml-1" />
+                    Configurar (CPQ) <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
                 </CardContent>
               </Card>
@@ -185,6 +187,12 @@ export function PresupuestosList({ productos = [], presupuestos, clientes, loadi
           </div>
         )}
       </div>
+    
+      <ModeloConfiguratorModal 
+        modelo={modeloConfig} 
+        productosCatalog={productos} 
+        onClose={() => setModeloConfig(null)} 
+      />
     </div>
   );
 }
