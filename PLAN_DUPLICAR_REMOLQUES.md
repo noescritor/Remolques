@@ -134,3 +134,19 @@ se cuelga de esa Cotización, igual que en el demo.
 - `types/index.ts` (esquema actual)
 - El demo interactivo (`.jsx`) ya construido y con el estilo del Moodboard Kit aplicado, como
   referencia de pantallas y flujo
+
+
+## 7. Estado de Avance - Bloque 1 Completado (Antigravity)
+
+**Actualización: 18 de septiembre de 2026**
+
+El **Bloque 1** (Aprobación, Requisición y Producción) ha sido implementado y estabilizado por Antigravity. Claude Code debe considerar lo siguiente antes de continuar con los siguientes bloques:
+
+- **Bugs Corregidos**: Se arregló el error crítico del Hono backend donde `supabase` no estaba definido, y se corrigieron los checkboxes de estado Kanban (F1, F2, F3, S4, F14, F15, F16).
+- **Aprobación y Portal**: Los enlaces de portal de cliente tienen caducidad de IP y estado.
+- **BOM y Requisición**: Se agregó la tabla `producto_materiales` y la función SQL `ajustar_stock` (con prevención de race conditions). El endpoint `/requisicion` calcula correctamente los faltantes comparando BOM vs. Stock Actual.
+- **Compras e Idempotencia**: La generación de compras a proveedor es idempotente. El folio se genera en el backend (`MAX+1`). La recepción de compras ajusta el stock de forma atómica y transiciona automáticamente las cotizaciones de "Compra en curso" a "Listo para producción".
+- **Generación de Órdenes (Producción)**: Es idempotente, detecta productos terminados por la columna `tipo_item` (y keywords como fallback), usa secuencias SQL verdaderas, bloquea con 409 si hay faltantes (a menos que se fuerce desde UI), e inicializa correctamente la trazabilidad y los campos del Kanban.
+- **Trazabilidad (1E)**: Se agregó la tabla `cotizacion_eventos`. En el frontend de `CotizacionDetalle.tsx`, ahora se visualizan las compras asociadas en solo-lectura y se muestra un estado visual de espera de materiales.
+
+Claude, puedes iniciar tus tareas leyendo las reglas restrictivas de desarrollo definidas en `AGENTS.md`, el progreso del `CHANGELOG_ANTIGRAVITY.md` y asumiendo que la infraestructura de base del Bloque 1 (Producción y Compras básicas) está sólida.

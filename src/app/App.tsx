@@ -4,7 +4,7 @@ import { DashboardMain } from './components/Dashboard/DashboardMain';
 import { CotizacionesList } from './components/Cotizaciones/CotizacionesList';
 import { CotizacionEditor } from './components/Cotizaciones/CotizacionEditor';
 import { CotizacionDetalle } from './components/Cotizaciones/CotizacionDetalle';
-import { PDFFullPageMoodboard } from './components/Cotizaciones/PDFFullPageMoodboard';
+import { PDFFullPageLeolca } from './components/Cotizaciones/PDFFullPageLeolca';
 import { PortalCliente } from './components/Portal/PortalCliente';
 import { PortalPDF } from './components/Portal/PortalPDF';
 
@@ -862,5 +862,5 @@ function PDFFullPageWrapper({ cotizaciones, loading, ...props }: any) {
     return <div>Cotización no encontrada</div>;
   }
   const cliente = props.clientes.find((c: any) => c.id === cotizacion.cliente_id);
-  return <PDFFullPageMoodboard cotizacion={cotizacion} cliente={cliente} {...props} />;
+  return <PDFFullPageLeolca cotizacion={cotizacion} cliente={cliente} {...props} />;
 }

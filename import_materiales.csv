@@ -1,0 +1,144 @@
+nombre,precio_base,tipo_item,tipo,categoria
+BORDA DELANTERA,2064,materia_prima,bien,Acero/Materiales
+BORDA TRASERA,2236,materia_prima,bien,Acero/Materiales
+PORTA PLACA,88.14999999999999,materia_prima,bien,Acero/Materiales
+BASE PARA ESTRIBO,924.5,materia_prima,bien,Acero/Materiales
+PTR 4*4 PARA ESTRIBO,2016,materia_prima,bien,Acero/Materiales
+PORTALODERA,442.90000000000003,materia_prima,bien,Acero/Materiales
+SEPARADOR CENTRO,408.5,materia_prima,bien,Acero/Materiales
+JUEGO ALETAS (ALERONES),2113.45,materia_prima,bien,Acero/Materiales
+PUENTES PARA PLANCHA,425,materia_prima,bien,Acero/Materiales
+PLACA P/QUINTA,5203,materia_prima,bien,Acero/Materiales
+PAR/PESTAÑAS,220.16,materia_prima,bien,Acero/Materiales
+PAR FLEJES,145,materia_prima,bien,Acero/Materiales
+CAJA DE HERRAMIENTAS,4751.5,materia_prima,bien,Acero/Materiales
+KIT BASE P/TANQUE,344,materia_prima,bien,Acero/Materiales
+PAR BASES PARA PORTALLANTAS,266.6,materia_prima,bien,Acero/Materiales
+PUENTES PARA SUSPENSIÓN,967.5,materia_prima,bien,Acero/Materiales
+BUCHACAS,55.9,materia_prima,bien,Acero/Materiales
+BASE PARA PATÍN,2322,materia_prima,bien,Acero/Materiales
+JUEGO BASE L P/PATIN,709.5,materia_prima,bien,Acero/Materiales
+CANAL PARA PERCHA 1.10 m,709.5,materia_prima,bien,Acero/Materiales
+PLACA REF PARA PERCHA 30 X 15,838.5,materia_prima,bien,Acero/Materiales
+PLACA REF PARA PLATO 7.6 X 20,301,materia_prima,bien,Acero/Materiales
+BUCHACAS PARA PATIN,86,materia_prima,bien,Acero/Materiales
+JALON P/ GANCHO DE ARRASTRE,4224.75,materia_prima,bien,Acero/Materiales
+CON RIEL,5805,materia_prima,bien,Acero/Materiales
+BUCHACAS P/ BURRO,89.22500000000001,materia_prima,bien,Acero/Materiales
+ESTACA P/BURRO,655.75,materia_prima,bien,Acero/Materiales
+TUBO 1 1/4,136,materia_prima,bien,Acero/Materiales
+PLACA 1/4,20137,materia_prima,bien,Acero/Materiales
+"SOLERA DE 1/2""* 6"" *12M",6482,materia_prima,bien,Acero/Materiales
+"CANAL U DE 6"" *12M",5060.56,materia_prima,bien,Acero/Materiales
+GANCHO PARA LAZO 1/2,33.333,materia_prima,bien,Acero/Materiales
+"SOLERAS DE 3/8"" *2",799,materia_prima,bien,Acero/Materiales
+SOLERA PORTALLANTAS 1/2*3,266.225,materia_prima,bien,Acero/Materiales
+"REDONDO PORTALLANTAS Y JALON 1""",140,materia_prima,bien,Acero/Materiales
+REDONDO DE 5/8 X 6MTS P/REDILAS,43,materia_prima,bien,Acero/Materiales
+ANGULO 1/8 *1  1/2 PORTALLANTAS,59,materia_prima,bien,Acero/Materiales
+ANGULO 2 X 2 X 3/16,172.072,materia_prima,bien,Acero/Materiales
+"SOLERA 1 1/2""*3/16 P/ESQUINEROS",67.462,materia_prima,bien,Acero/Materiales
+SOLERA PLACA 1/8 X 2 X 6MTS,43,materia_prima,bien,Acero/Materiales
+TUBO DE 2 CED 40,203.406,materia_prima,bien,Acero/Materiales
+TUBO MEC 3/4 CED 40,116.39,materia_prima,bien,Acero/Materiales
+TUBO 1  1/2 CED 40,183.4,materia_prima,bien,Acero/Materiales
+"CARGADORES DE 4""",577,materia_prima,bien,Acero/Materiales
+PERNO REY HOLLAND,1409.3999999999999,materia_prima,bien,Acero/Materiales
+CINTA REFLEJANTE,2436,materia_prima,bien,Acero/Materiales
+ROTULACIÓN,927.9999999999999,materia_prima,bien,Acero/Materiales
+TANQUE DE AIRE,1081.12,materia_prima,bien,Acero/Materiales
+MATRACA CORREDIZA,307.4,materia_prima,bien,Acero/Materiales
+SIN MATRACAS,0,materia_prima,bien,Acero/Materiales
+KIT DE ABS Y CONEXIONES 2 EJES,23000,materia_prima,bien,Acero/Materiales
+KIT DE ABS Y CONEXIONES 3 EJES,27000,materia_prima,bien,Acero/Materiales
+SUSPENSIÓN FLEET MASTER,23118,materia_prima,bien,Acero/Materiales
+SUSPENSIÓN AMPRO,23118,materia_prima,bien,Acero/Materiales
+SUSPENSIÓN HENDRICKSON,35844,materia_prima,bien,Acero/Materiales
+SUSPENSIÓN ALTA HENDRICKSON,43700,materia_prima,bien,Acero/Materiales
+SUSPENSION HJ ALTA,28477.999999999996,materia_prima,bien,Acero/Materiales
+EJES AMPRO,22231.399999999998,materia_prima,bien,Acero/Materiales
+EJES FLEET MASTER,20099.99,materia_prima,bien,Acero/Materiales
+PATÍN HOLLAND,13461.4,materia_prima,bien,Acero/Materiales
+PATÍN HJ,5798.81,materia_prima,bien,Acero/Materiales
+PATIN AMPRO,5336,materia_prima,bien,Acero/Materiales
+CO2,905,materia_prima,bien,Acero/Materiales
+MICROTUBULAR,945,materia_prima,bien,Acero/Materiales
+CONSUMIBLE,638,materia_prima,bien,Acero/Materiales
+TOPES HULE 3 BARRENOS,82,materia_prima,bien,Acero/Materiales
+DISCOS DE CORTADORA,46.4,materia_prima,bien,Acero/Materiales
+DISCOS LAMINADOS #7,75.39999999999999,materia_prima,bien,Acero/Materiales
+DISCOS DE DESBASTE #9,40.599999999999994,materia_prima,bien,Acero/Materiales
+CARDA DE COPA TRENZADA,104.39999999999999,materia_prima,bien,Acero/Materiales
+HOJAS DE LIJA,23.2,materia_prima,bien,Acero/Materiales
+CABLEADO,827,materia_prima,bien,Acero/Materiales
+LODERAS,670,materia_prima,bien,Acero/Materiales
+BANDEROLAS,400.2,materia_prima,bien,Acero/Materiales
+LUCES,8939.64,materia_prima,bien,Acero/Materiales
+TORNILLOS,2000,materia_prima,bien,Acero/Materiales
+MATERIAL COMPLEMENTARIO,2500,materia_prima,bien,Acero/Materiales
+PIJAS/BROCAS,2552,materia_prima,bien,Acero/Materiales
+PISO DE MADERA DE PINO,22000,materia_prima,bien,Acero/Materiales
+PISO DE MADERA DE ENCINO,22000,materia_prima,bien,Acero/Materiales
+PISO DE PLÁSTICO CAFÉ,35000,materia_prima,bien,Acero/Materiales
+PISO DE PLASTICO NEGRO,36182.72,materia_prima,bien,Acero/Materiales
+PISO LAMINADO,28224,materia_prima,bien,Acero/Materiales
+PISO LAMINADO CON BASE DE MADERA,50000,materia_prima,bien,Acero/Materiales
+PISO LAMINADO CON BASE DE PLÁSTICO,63500,materia_prima,bien,Acero/Materiales
+PISO ANTIDERRAPANTE,22000,materia_prima,bien,Acero/Materiales
+GANCHO PREMIER 8 BARRENOS,12979.24,materia_prima,bien,Acero/Materiales
+GANCHO PREMIER BESTIA 6 BARRENOS,21892.68,materia_prima,bien,Acero/Materiales
+GANCHO HOLLAND 8/10 BARRENOS,6948.4,materia_prima,bien,Acero/Materiales
+SISTEMA RETRÁCTIL,15000,materia_prima,bien,Acero/Materiales
+REFUERZOS,10000,materia_prima,bien,Acero/Materiales
+CANDADO,461,materia_prima,bien,Acero/Materiales
+SIN SISTEMA RETRÁCTIL,0,materia_prima,bien,Acero/Materiales
+REDILAS DE 70 CM,35000,materia_prima,bien,Acero/Materiales
+REDILAS DE 75 CM,35500,materia_prima,bien,Acero/Materiales
+REDILAS DE 80 CM,36000,materia_prima,bien,Acero/Materiales
+REDILAS DE 1M,42000,materia_prima,bien,Acero/Materiales
+CONCHA LAMINADA A 1.20 M,6160,materia_prima,bien,Acero/Materiales
+CONCHA LAMINADA A 1.70 M,6891,materia_prima,bien,Acero/Materiales
+CONCHA LAMINADA 1.50 M,7500,materia_prima,bien,Acero/Materiales
+CONCHA A 2.35 M,11750,materia_prima,bien,Acero/Materiales
+CONCHA LISA REFORZADA A 1.20 M,7536,materia_prima,bien,Acero/Materiales
+CONCHA A 1.40 M,8800,materia_prima,bien,Acero/Materiales
+CONCHA A 2.00 MTS,10000,materia_prima,bien,Acero/Materiales
+CONCHA A 1.50 M,7680,materia_prima,bien,Acero/Materiales
+BURRO LAMINADO A 1.50,7250,materia_prima,bien,Acero/Materiales
+BURRO LAMINADO A 1.80,8700,materia_prima,bien,Acero/Materiales
+BURRO LAMINADO A 1.20 M,5800,materia_prima,bien,Acero/Materiales
+CONCHA A 1 M,6240,materia_prima,bien,Acero/Materiales
+BURRO DE MADERA 1.20 M,4515,materia_prima,bien,Acero/Materiales
+CONCHA 1.10 M,5891,materia_prima,bien,Acero/Materiales
+RINES DE ACERO,1391.97,materia_prima,bien,Acero/Materiales
+RINES DE ALUMINIO,4268.8,materia_prima,bien,Acero/Materiales
+LLANTAS CEREX,3586,materia_prima,bien,Acero/Materiales
+LLANTAS FIRESTONE,8790,materia_prima,bien,Acero/Materiales
+LLANTAS ROYAL BLACK,5600,materia_prima,bien,Acero/Materiales
+LLANTAS BF GOODRICH,11750,materia_prima,bien,Acero/Materiales
+LLANTAS EUDEMON,5400,materia_prima,bien,Acero/Materiales
+LLANTAS CHINAS,4000,materia_prima,bien,Acero/Materiales
+LLANTAS VALIANT,3581,materia_prima,bien,Acero/Materiales
+LLANTAS AMULET,5400.01,materia_prima,bien,Acero/Materiales
+POLINERA  GRANDE,6000,materia_prima,bien,Acero/Materiales
+POLINERA CON PUERTA,10000,materia_prima,bien,Acero/Materiales
+CAJA DE HRRTAS CHICA,9500,materia_prima,bien,Acero/Materiales
+BICiCLETERA,5000,materia_prima,bien,Acero/Materiales
+PORTALLANTAS EXTRA,3500,materia_prima,bien,Acero/Materiales
+CANASTILLA,8000,materia_prima,bien,Acero/Materiales
+PLAFONES AMBAR,400,materia_prima,bien,Acero/Materiales
+PLAFONES ROJO,400,materia_prima,bien,Acero/Materiales
+PLAFONES DE CARRITO AMBAR LATERALES,168.2,materia_prima,bien,Acero/Materiales
+PLAFONES DE CARRITO ROJOS LATERALES,168.2,materia_prima,bien,Acero/Materiales
+PATA DE ELEFANTE,3250,materia_prima,bien,Acero/Materiales
+POLINERA CON BICICLETERA,8000,materia_prima,bien,Acero/Materiales
+CAJA AUXILIARES,1500,materia_prima,bien,Acero/Materiales
+LODERA DE CENTRO,874,materia_prima,bien,Acero/Materiales
+SISTEMA PSI,20000,materia_prima,bien,Acero/Materiales
+JALON,3768,materia_prima,bien,Acero/Materiales
+POLINERA ATRAVESADA,6000,materia_prima,bien,Acero/Materiales
+CANDADOS,1450,materia_prima,bien,Acero/Materiales
+MUTI MODAL,50000,materia_prima,bien,Acero/Materiales
+BARRENADO SOBRE CHASIS,1250,materia_prima,bien,Acero/Materiales
+PLAFONES DE CARRITO AMBAR P/ESTRIBO,168.2,materia_prima,bien,Acero/Materiales
+PLAFONES DE CARRITO ROJOS P/ESTRIBO,168.2,materia_prima,bien,Acero/Materiales

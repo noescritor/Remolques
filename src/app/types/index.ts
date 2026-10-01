@@ -101,7 +101,15 @@ export interface MovimientoInventario {
   producto?: { nombre: string }; // Join relation
 }
 
+export interface SubItemCotizacion {
+  material_id: string;
+  nombre: string;
+  cantidad: number;
+  precio_unitario?: number;
+}
+
 export interface ItemCotizacion {
+  sub_items?: SubItemCotizacion[];
   id: string;
   producto_id?: string;
   posicion: number;

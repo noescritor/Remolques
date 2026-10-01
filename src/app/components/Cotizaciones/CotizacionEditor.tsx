@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Alert, AlertDescription } from '../ui/alert';
-import { ArrowLeft, Plus, Trash2, FileDown, Copy, Save, UserPlus, Eye, BookTemplate, FileSpreadsheet, Sparkles, Loader2 , AlertTriangle} from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, FileDown, Copy, Save, UserPlus, Eye, BookTemplate, FileSpreadsheet, Sparkles, Loader2, AlertTriangle, Settings, X } from 'lucide-react';
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, TRANSICIONES_ESTADO, CostosIndirectos, ComisionesPago, Plantilla } from '../../types';
 import { ExcelImportModal } from './ExcelImportModal';
 import { supabase } from '../../utils/supabase/client';
@@ -919,7 +919,8 @@ export function CotizacionEditor({
                   }
                   
                   return (
-                    <TableRow key={item.id}>
+                    <React.Fragment key={item.id}>
+<TableRow className='group'>
                     <TableCell>{item.posicion}</TableCell>
                     <TableCell>
                       <Input
@@ -1106,6 +1107,10 @@ export function CotizacionEditor({
                       </div>
                     </TableCell>
                   </TableRow>
+{item.sub_items && (
+<TableRow className='bg-[var(--surface-secondary)]/30'><TableCell colSpan={11} className='p-0 border-b'><div className='p-4 bg-gray-50/50 m-2 rounded-md border border-gray-100'><h4 className='text-sm font-semibold mb-2 flex items-center'><Settings className='w-4 h-4 mr-1'/> Configurador de Componentes (Receta Base)</h4><div className='grid grid-cols-1 md:grid-cols-2 gap-2'>{item.sub_items.map((sub, idx) => (<div key={idx} className='flex items-center gap-2 bg-white p-2 rounded border text-sm'><Input type='number' value={sub.cantidad} onChange={(e) => { const newCant = parseFloat(e.target.value) || 0; const newSub = [...item.sub_items]; newSub[idx].cantidad = newCant; actualizarItem(item.id, { sub_items: newSub }); }} className='w-16 h-8 text-xs'/><span className='flex-1 truncate' title={sub.nombre}>{sub.nombre}</span><Button variant='ghost' size='sm' className='h-6 w-6 p-0 text-red-500' onClick={() => { const newSub = item.sub_items.filter((_, i) => i !== idx); actualizarItem(item.id, { sub_items: newSub }); }}><X className='h-3 w-3'/></Button></div>))}</div></div></TableCell></TableRow>
+)}
+</React.Fragment>
                 );
                 })}
               </TableBody>
