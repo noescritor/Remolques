@@ -175,57 +175,64 @@ export function CotizacionEditor({
     }));
   };
 
-  const agregarItemDesdeProducto = (producto: Producto) => {
-    let nuevoItem: ItemCotizacion;
-
-    if (producto.tipo === 'servicio' && producto.servicio) {
-      // Para servicios, usamos valores por defecto y permitimos configuración posterior
-      const servicio = producto.servicio;
-      nuevoItem = {
-        id: Date.now().toString(),
-        producto_id: producto.id,
-        posicion: formData.items.length + 1,
-        cantidad: 1, // Para servicios puede representar base/asientos
-        unidad: producto.unidad || 'servicio',
-        descripcion: producto.nombre,
-        incluir_setup: servicio.modo === 'unico' || servicio.modo === 'hibrido',
-        meses_cobrados: 1,
-        asientos_extra: 0,
-        iva_item: 0, // Se calculará dinámicamente
-        total_item: 0, // Se calculará dinámicamente
-        numero_proyecto: producto.id
-      };
-    } else {
-      // Para bienes, mantener la lógica existente
-      const { iva_item, total_item } = calcularItemCotizacion(
-        1,
-        producto.precio_unitario || 0,
-        formData.con_factura ? ajustes.iva_por_defecto : 0
-      );
+  const agregarItemDesdeProducto = async (producto: Producto) => {
+      let nuevoItem: ItemCotizacion;
+      let sub_items = undefined;
+  
+      if (producto.tipo === 'bien' && producto.tipo_item === 'producto_terminado') {
+        try {
+          const { data: receta } = await supabase.from('producto_materiales').select('cantidad, material:productos(id, nombre, precio_unitario, costo)').eq('producto_id', producto.id);
+          if (receta && receta.length > 0) {
+            sub_items = receta.map((rm: any) => ({
+              material_id: rm.material.id,
+              nombre: rm.material.nombre,
+              cantidad: rm.cantidad,
+              precio_unitario: rm.material.precio_unitario || rm.material.costo
+            }));
+          }
+        } catch (err) {
+            console.error(err);
+        }
+      }
+  
+      if (producto.tipo === 'servicio' && producto.servicio) {
+        const servicio = producto.servicio;
+        nuevoItem = {
+          id: Date.now().toString(),
+          producto_id: producto.id,
+          posicion: formData.items.length + 1,
+          cantidad: 1,
+          unidad: producto.unidad || 'servicio',
+          descripcion: producto.nombre,
+          incluir_setup: servicio.modo === 'unico' || servicio.modo === 'hibrido',
+          meses_cobrados: 1,
+          asientos_extra: 0,
+          iva_item: 0,
+          total_item: 0,
+          numero_proyecto: producto.id
+        };
+      } else {
+        const { iva_item, total_item } = calcularItemCotizacion(1, producto.precio_unitario || 0, formData.con_factura ? ajustes.iva_por_defecto : 0);
+        nuevoItem = {
+          id: Date.now().toString(),
+          producto_id: producto.id,
+          posicion: formData.items.length + 1,
+          cantidad: 1,
+          unidad: producto.unidad || 'pz',
+          descripcion: producto.nombre,
+          precio_unitario: producto.precio_unitario,
+          costo_unitario: producto.costo || 0,
+          iva_item,
+          total_item,
+          numero_proyecto: producto.id,
+          sub_items
+        };
+      }
       
-      nuevoItem = {
-        id: Date.now().toString(),
-        producto_id: producto.id,
-        posicion: formData.items.length + 1,
-        cantidad: 1,
-        unidad: producto.unidad || 'pz',
-        descripcion: producto.nombre,
-        precio_unitario: producto.precio_unitario,
-        costo_unitario: producto.costo || 0,
-        iva_item,
-        total_item,
-        numero_proyecto: producto.id
-      };
-    }
-    
-    setFormData(prev => ({
-      ...prev,
-      items: [...prev.items, nuevoItem]
-    }));
-    
-    setBusquedaProducto('');
-    setShowProductoDropdown(false);
-  };
+      setFormData(prev => ({ ...prev, items: [...prev.items, nuevoItem] }));
+      setBusquedaProducto('');
+      setShowProductoDropdown(false);
+    };
 
   const actualizarItem = (itemId: string, cambios: Partial<ItemCotizacion>) => {
     setFormData(prev => ({
