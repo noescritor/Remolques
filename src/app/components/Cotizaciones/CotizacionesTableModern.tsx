@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
 import { Badge } from '../ui/badge';
-import { MoreVertical, Edit2, Copy, Trash2, FileText } from 'lucide-react';
+import { MoreVertical, Edit2, Copy, Trash2, FileText, ClipboardList } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { formatearMoneda, formatearFecha } from '../../utils/calculations';
 import { Cotizacion, EstadoCotizacion } from '../../types';
@@ -14,6 +14,7 @@ interface CotizacionesTableModernProps {
   onVerCotizacion: (id: string) => void;
   onEditarCotizacion?: (id: string) => void;
   onDuplicarCotizacion: (id: string) => void;
+  onGenerarPresupuesto?: (cotizacion: Cotizacion) => void;
   onEliminarCotizacion: (id: string) => void;
 
 }
@@ -252,7 +253,14 @@ export function CotizacionesTableModern({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onVerCotizacion(cotizacion.id)}>
+                  
+                    {onGenerarPresupuesto && (
+                      <DropdownMenuItem onClick={() => onGenerarPresupuesto(cotizacion)}>
+                        <ClipboardList className="mr-2 h-4 w-4" />
+                        Generar Presupuesto
+                      </DropdownMenuItem>
+                    )}
+<DropdownMenuItem onClick={() => onVerCotizacion(cotizacion.id)}>
                     <FileText className="mr-2 h-4 w-4" />
                     Ver detalles
                   </DropdownMenuItem>
@@ -453,7 +461,14 @@ export function CotizacionesTableModern({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onVerCotizacion(cotizacion.id)}>
+                    
+                    {onGenerarPresupuesto && (
+                      <DropdownMenuItem onClick={() => onGenerarPresupuesto(cotizacion)}>
+                        <ClipboardList className="mr-2 h-4 w-4" />
+                        Generar Presupuesto
+                      </DropdownMenuItem>
+                    )}
+<DropdownMenuItem onClick={() => onVerCotizacion(cotizacion.id)}>
                       <FileText className="mr-2 h-4 w-4" />
                       Ver detalles
                     </DropdownMenuItem>

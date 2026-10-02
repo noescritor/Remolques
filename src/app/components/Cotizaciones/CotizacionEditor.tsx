@@ -14,7 +14,6 @@ import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, TRANSI
 import { ExcelImportModal } from './ExcelImportModal';
 import { supabase } from '../../utils/supabase/client';
 import { calcularItemCotizacion, calcularTotalesCotizacion, formatearMoneda, calcularAnalisisCompleto, calcularUtilidadItem, calcularTotalesCotizacionServiciosAware, totalItemServicio } from '../../utils/calculations';
-import { useSearchParams } from 'react-router-dom';
 import { ClienteModal } from '../Clientes/ClienteModal';
 import { AnalisisUtilidad } from './AnalisisUtilidad';
 import { CostosIndirectos as CostosIndirectosComponent } from './CostosIndirectos';
@@ -52,7 +51,6 @@ export function CotizacionEditor({
   onGuardarComoPlantilla,
   esNueva = false
 }: CotizacionEditorProps) {
-  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     cliente_id: '',
     contacto_id: '' as string | undefined,
