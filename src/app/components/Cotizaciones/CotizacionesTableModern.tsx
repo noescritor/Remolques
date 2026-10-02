@@ -157,6 +157,7 @@ export function CotizacionesTableModern({
   onVerCotizacion,
   onEditarCotizacion,
   onDuplicarCotizacion,
+  onGenerarPresupuesto,
   onEliminarCotizacion
 }: CotizacionesTableModernProps) {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
