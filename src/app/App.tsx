@@ -541,7 +541,7 @@ export default function App() {
             onCrearPago={manejarCrearPago}
             onGenerarTokenPortal={manejarGenerarTokenPortal}
             proveedores={proveedores}
-            comprasProveedor={comprasProveedor}
+            comprasProveedor={props.comprasProveedor}
             onCrearCompraProveedor={crearCompraProveedor}
             onRegistrarMovimientoInventario={registrarMovimientoInventario}
             onGenerarOrdenesTrabajo={generarOrdenesDesdeCotizacion}
