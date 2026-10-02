@@ -17,6 +17,8 @@ interface CotizacionesListProps {
   onVerCotizacion: (id: string) => void;
   onDuplicarCotizacion: (id: string) => void;
   onEliminarCotizacion: (id: string) => void;
+  crearPresupuesto?: any;
+  productos?: any[];
 }
 
 export function CotizacionesList({
@@ -25,7 +27,9 @@ export function CotizacionesList({
   onNuevaCotizacion,
   onVerCotizacion,
   onDuplicarCotizacion,
-  onEliminarCotizacion
+  onEliminarCotizacion,
+  crearPresupuesto,
+  productos = []
 }: CotizacionesListProps) {
   const [busqueda, setBusqueda] = useState('');
   const [filtroEstado, setFiltroEstado] = useState<string>('todos');
@@ -50,29 +54,50 @@ export function CotizacionesList({
       const requiredMaterials: { pzas: string, material: string, cu: number, importe: number }[] = [];
       let totalCosto = 0;
 
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      };
+      const BASE_URL = 'https://remolques-remolques-api.gehkp3.easypanel.host';
+
       for (const item of mainItems) {
         if (!item.producto_id) continue;
         
-        const { data: prod } = await supabase.from('productos').select('tipo_item').eq('id', item.producto_id).single();
-        if (prod && prod.tipo_item === 'producto_terminado') {
-          // Fetch BOM
-          const { data: receta } = await supabase.from('producto_materiales')
-            .select('cantidad, material:productos(id, nombre, costo, precio_unitario)')
-            .eq('producto_id', item.producto_id);
-            
-          if (receta && receta.length > 0) {
-            for (const rm of receta) {
-              const cant = Number(rm.cantidad) * item.cantidad;
-              const costo = Number((rm.material as any).costo || (rm.material as any).precio_unitario || 0);
-              const importe = cant * costo;
-              
-              requiredMaterials.push({
-                pzas: cant.toString(),
-                material: (rm.material as any).nombre,
-                cu: costo,
-                importe: importe
-              });
-              totalCosto += importe;
+        // Use proxy to bypass CORS
+        const resProd = await fetch(`${BASE_URL}/productos/${item.producto_id}`, { headers }).catch(() => null);
+        let esTerminado = false;
+        
+        if (resProd && resProd.ok) {
+           const pData = await resProd.json();
+           esTerminado = (pData?.tipo_item === 'producto_terminado' || pData?.[0]?.tipo_item === 'producto_terminado');
+        } else {
+           // Si falla la API proxy, asumimos que s lo es para intentar sacar la receta
+           esTerminado = true;
+        }
+
+        if (esTerminado) {
+          // Fetch BOM via proxy
+          const recetaRes = await fetch(`${BASE_URL}/productos/${item.producto_id}/materiales`, { headers });
+          if (recetaRes.ok) {
+            const receta = await recetaRes.json();
+            if (receta && receta.length > 0) {
+              for (const rm of receta) {
+                const cant = Number(rm.cantidad) * item.cantidad;
+                const mat = rm.material || {};
+                const costo = Number(mat.costo || mat.precio_unitario || 0);
+                const importe = cant * costo;
+                
+                requiredMaterials.push({
+                  pzas: cant.toString(),
+                  material: mat.nombre || 'Material',
+                  cu: costo,
+                  importe: importe
+                });
+                totalCosto += importe;
+              }
             }
           }
         }
