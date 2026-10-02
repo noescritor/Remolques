@@ -541,7 +541,7 @@ export default function App() {
             onCrearPago={manejarCrearPago}
             onGenerarTokenPortal={manejarGenerarTokenPortal}
             proveedores={proveedores}
-            comprasProveedor={props.comprasProveedor}
+            comprasProveedor={comprasProveedor}
             onCrearCompraProveedor={crearCompraProveedor}
             onRegistrarMovimientoInventario={registrarMovimientoInventario}
             onGenerarOrdenesTrabajo={generarOrdenesDesdeCotizacion}
@@ -835,8 +835,8 @@ function CotizacionDetalleWrapper({ cotizaciones, loading, ...props }: any) {
     <CotizacionDetalle
       cotizacion={cotizacion}
       todasLasCotizaciones={cotizaciones}
-      comprasProveedor={comprasProveedor}
-      cliente={currentCliente}
+      comprasProveedor={props.comprasProveedor}
+        cliente={currentCliente}
       pagos={pagos}
       saldoPendiente={saldoPendiente}
       onVerCotizacion={(vid) => navigate(`/cotizaciones/${vid}`)}
