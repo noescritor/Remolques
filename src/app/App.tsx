@@ -78,6 +78,7 @@ export default function App() {
     proveedores,
     comprasProveedor,
     cotizacionEventos,
+    crearCotizacionEvento,
     ordenesTrabajo,
     lineasProducto,
     fasesProduccion,
