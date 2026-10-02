@@ -175,25 +175,9 @@ export function CotizacionEditor({
     }));
   };
 
-  const agregarItemDesdeProducto = async (producto: Producto) => {
+    const agregarItemDesdeProducto = (producto: Producto) => {
       let nuevoItem: ItemCotizacion;
       let sub_items = undefined;
-  
-      if (producto.tipo === 'bien' && producto.tipo_item === 'producto_terminado') {
-        try {
-          const { data: receta } = await supabase.from('producto_materiales').select('cantidad, material:productos(id, nombre, precio_unitario, costo)').eq('producto_id', producto.id);
-          if (receta && receta.length > 0) {
-            sub_items = receta.map((rm: any) => ({
-              material_id: rm.material.id,
-              nombre: rm.material.nombre,
-              cantidad: rm.cantidad,
-              precio_unitario: rm.material.precio_unitario || rm.material.costo
-            }));
-          }
-        } catch (err) {
-            console.error(err);
-        }
-      }
   
       if (producto.tipo === 'servicio' && producto.servicio) {
         const servicio = producto.servicio;
