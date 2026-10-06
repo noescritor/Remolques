@@ -3,6 +3,14 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**. Una entrada por sesión/cambio.
 
+### 2026-10-06 (8) - Sub-bloque 2R-0b completado
+- **Backend:** Se definieron `registrarEvento` y `aplicarAprobacion` en `index.ts`. Se recuperaron rutas borradas (`/presupuestos`, `/produccion/lineas`, `/produccion/fases`). Las rutas públicas de historial/requisición se bajaron del middleware de auth.
+- **Frontend:** En `GenerarRequisicionModal` se quitó la cabecera `x-org-id`, se muestra el mensaje de error por `sin_receta` explícitamente y se listan todos los materiales indicados (sin el filtro local de >0, respetando el backend). En `App.tsx` se recuperó el import faltante de `PDFFullPageMoodboard` y se importó `Pago`. Además, en `App.tsx` se corrigió el paso del `organizacion_id` al evento de cotización. En `CompraPDFTemplate.tsx` se evadió `proveedor.rfc` y `proveedor.correo` ya que la interfaz `Proveedor` actual no los contiene.
+- **Higiene:** Se borró `20261005_01_recetas_nuevas.sql` de la raíz y los txt de outputs. El servidor no arroja ningún `TS2304` (excepto en la carpeta `src/app/supabase/functions/server` que propongo borrar).
+- **Configuración (tsconfig.json):** Se removió temporalmente la propiedad `"baseUrl": "."` para que la salida de `tsc` no de errores estructurales ya que el alias de rutas ya está cubierto por bundler/Vite en `paths`.
+- **Acciones Manuales Pendientes:** Ninguna. Rama `bloque-2r-0` lista.
+
+
 ## 2026-10-06 - Bloque 2R-0: Contención de recetas planas y preparar diagnóstico
 **Herramienta:** Antigravity
 
