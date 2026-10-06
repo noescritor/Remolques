@@ -23,7 +23,7 @@ async function aplicarAprobacion(supabase: any, cotizacionId: string, orgId: str
 }
 
 async function calcularRequisicion(supabase, cotizacionId, orgId) {
-  // 2R-0: Leer items desde la tabla correcta y verificar configuraciÃ³n
+  // 2R-0: Leer items desde la tabla correcta y verificar configuración
   const { data: items, error } = await supabase.from('items_cotizacion')
     .select('producto_id, cantidad, descripcion, metadata, producto:productos(tipo_item)')
     .eq('cotizacion_id', cotizacionId);
@@ -31,14 +31,14 @@ async function calcularRequisicion(supabase, cotizacionId, orgId) {
     
   if (!items || items.length === 0) return [];
 
-  // Verificamos si hay productos terminados sin configuraciÃ³n resuelta
+  // Verificamos si hay productos terminados sin configuración resuelta
   const faltanConfiguracion = items.filter(item => 
     item.producto?.tipo_item === 'producto_terminado' &&
     (!item.metadata || !item.metadata.configuracion || !item.metadata.configuracion.resuelta)
   );
 
   if (faltanConfiguracion.length > 0) {
-    // Si falta configuraciÃ³n en algÃºn equipo, fallamos a la vista
+    // Si falta configuración en algún equipo, fallamos a la vista
     return faltanConfiguracion.map(item => ({
       estado: 'sin_receta',
       mensaje: `Falta configurar el equipo: ${item.descripcion}`,
@@ -46,7 +46,7 @@ async function calcularRequisicion(supabase, cotizacionId, orgId) {
     }));
   }
 
-  // Hasta 2R-2 esto es solo contenciÃ³n. No calculamos nada porque no tenemos motor.
+  // Hasta 2R-2 esto es solo contención. No calculamos nada porque no tenemos motor.
   return [];
 }
 
@@ -65,13 +65,13 @@ app.use(
   }),
 );
 
-// â”€â”€â”€ Portal pÃºblico (SIN autenticaciÃ³n) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Portal público (SIN autenticación) ───────────────────────────────────────
 
 
 app.get("/health", (c) => c.json({ ok: true }));
 app.get("/make-server-feea4382/health", (c) => c.json({ ok: true }));
 
-// â”€â”€â”€ Proxy transparente hacia Supabase (resuelve mixed-content HTTPâ†’HTTPS) â”€â”€â”€â”€
+// ─── Proxy transparente hacia Supabase (resuelve mixed-content HTTP→HTTPS) ────
 const SUPA_URL = Deno.env.get("SUPABASE_URL") ?? "";
 
 const CORS_HEADERS = {
@@ -214,17 +214,17 @@ app.get("/portal/:token", async (c) => {
       .select("*, items:items_cotizacion(*), cliente:clientes(*)")
       .eq("token_publico", token)
       .single();
-    if (error || !data) return c.json({ error: "CotizaciÃ³n no encontrada o token invÃ¡lido." }, 404);
+    if (error || !data) return c.json({ error: "Cotización no encontrada o token inválido." }, 404);
     if (data.token_expira_en && new Date(data.token_expira_en) < new Date()) {
       return c.json({ error: "Este link ha expirado." }, 410);
     }
-    // Incluir ajustes de empresa para el PDF pÃºblico
+    // Incluir ajustes de empresa para el PDF público
     const { data: ajustesRow } = await supabase
       .from("ajustes")
       .select("data")
       .eq("id", data.organizacion_id)
       .single();
-    // Incluir productos de la organizaciÃ³n para el template Moodboard
+    // Incluir productos de la organización para el template Moodboard
     const { data: productosData } = await supabase
       .from("productos")
       .select("*")
@@ -244,12 +244,12 @@ app.post("/portal/:token/aprobar", async (c) => {
     
     const { data: cot } = await supabase
       .from("cotizaciones").select("id, token_expira_en, estado, organizacion_id").eq("token_publico", token).single();
-    if (!cot) return c.json({ error: "Token invÃ¡lido" }, 404);
+    if (!cot) return c.json({ error: "Token inválido" }, 404);
     if (cot.token_expira_en && new Date(cot.token_expira_en) < new Date()) {
       return c.json({ error: "Link expirado" }, 410);
     }
     if (cot.estado !== 'Enviada') {
-      return c.json({ error: "La cotizaciÃ³n ya fue procesada" }, 409);
+      return c.json({ error: "La cotización ya fue procesada" }, 409);
     }
     
     const { error } = await supabase.from("cotizaciones").update({
@@ -277,12 +277,12 @@ app.post("/portal/:token/rechazar", async (c) => {
     
     const { data: cot } = await supabase
       .from("cotizaciones").select("id, token_expira_en, estado, organizacion_id").eq("token_publico", token).single();
-    if (!cot) return c.json({ error: "Token invÃ¡lido" }, 404);
+    if (!cot) return c.json({ error: "Token inválido" }, 404);
     if (cot.token_expira_en && new Date(cot.token_expira_en) < new Date()) {
       return c.json({ error: "Link expirado" }, 410);
     }
     if (cot.estado !== 'Enviada') {
-      return c.json({ error: "La cotizaciÃ³n ya fue procesada" }, 409);
+      return c.json({ error: "La cotización ya fue procesada" }, 409);
     }
     
     const { error } = await supabase.from("cotizaciones").update({
@@ -294,7 +294,7 @@ app.post("/portal/:token/rechazar", async (c) => {
     await registrarEvento(supabase, {
       cotizacion_id: cot.id,
       organizacion_id: cot.organizacion_id,
-      evento: `CotizaciÃ³n rechazada por el cliente. Comentario: ${comentario || 'Ninguno'}`,
+      evento: `Cotización rechazada por el cliente. Comentario: ${comentario || 'Ninguno'}`,
       usuario_id: null
     });
     
@@ -312,12 +312,12 @@ app.post("/portal/:token/solicitar-cambios", async (c) => {
     
     const { data: cot } = await supabase
       .from("cotizaciones").select("id, token_expira_en, estado, organizacion_id").eq("token_publico", token).single();
-    if (!cot) return c.json({ error: "Token invÃ¡lido" }, 404);
+    if (!cot) return c.json({ error: "Token inválido" }, 404);
     if (cot.token_expira_en && new Date(cot.token_expira_en) < new Date()) {
       return c.json({ error: "Link expirado" }, 410);
     }
     if (cot.estado !== 'Enviada') {
-      return c.json({ error: "La cotizaciÃ³n ya fue procesada" }, 409);
+      return c.json({ error: "La cotización ya fue procesada" }, 409);
     }
     
     const { error } = await supabase.from("cotizaciones").update({
@@ -328,7 +328,7 @@ app.post("/portal/:token/solicitar-cambios", async (c) => {
     await registrarEvento(supabase, {
       cotizacion_id: cot.id,
       organizacion_id: cot.organizacion_id,
-      evento: `El cliente solicitÃ³ cambios. Comentario: ${comentario || 'Ninguno'}`,
+      evento: `El cliente solicitó cambios. Comentario: ${comentario || 'Ninguno'}`,
       usuario_id: null
     });
     
@@ -354,12 +354,12 @@ app.post("/cotizaciones/:id/generar-token-portal", async (c) => {
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
-      return c.json({ error: "No autorizado. Token invÃ¡lido." }, 401);
+      return c.json({ error: "No autorizado. Token inválido." }, 401);
     }
 
     const id = c.req.param("id");
     const { data: cot } = await supabase.from("cotizaciones").select("validez_dias").eq("id", id).single();
-    if (!cot) return c.json({ error: "CotizaciÃ³n no encontrada" }, 404);
+    if (!cot) return c.json({ error: "Cotización no encontrada" }, 404);
     const token = crypto.randomUUID();
     const expira = new Date();
     expira.setDate(expira.getDate() + (cot.validez_dias || 30));
@@ -391,7 +391,7 @@ const authMiddleware = async (c: any, next: any) => {
   if (!supabaseUrl || !supabaseAnonKey) {
     // If not running in Supabase environment, pass through for local dev if needed
     // or fail. Better to fail securely.
-    return c.json({ error: "Error de configuraciÃ³n de servidor." }, 500);
+    return c.json({ error: "Error de configuración de servidor." }, 500);
   }
 
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -401,10 +401,10 @@ const authMiddleware = async (c: any, next: any) => {
   const { data: { user }, error } = await supabase.auth.getUser();
 
   if (error || !user) {
-    return c.json({ error: "No autorizado. Token invÃ¡lido." }, 401);
+    return c.json({ error: "No autorizado. Token inválido." }, 401);
   }
 
-  // Extraer organizaciÃ³n (Saas Phase 2)
+  // Extraer organización (Saas Phase 2)
   // Usamos el Service Client para bypasear RLS (evita dependencia circular)
   const adminClient = getServiceClient();
   const { data: orgData } = await adminClient
@@ -417,7 +417,7 @@ const authMiddleware = async (c: any, next: any) => {
   if (orgData?.organizacion_id) {
     c.set("organizacionId", orgData.organizacion_id);
   } else {
-    return c.json({ error: "El usuario no pertenece a ninguna organizaciÃ³n." }, 403);
+    return c.json({ error: "El usuario no pertenece a ninguna organización." }, 403);
   }
 
   c.set("user", user);
@@ -427,123 +427,10 @@ const authMiddleware = async (c: any, next: any) => {
 
 app.use("/*", authMiddleware);
 
-
 // --- PRESUPUESTOS ---
-app.get("/presupuestos", async (c) => {
-  try {
-    const supabase = getServiceClient();
-    const orgId = c.get("organizacionId");
-    const { data, error } = await supabase
-      .from("presupuestos")
-      .select("*, cliente:clientes(*)")
-      .eq("organizacion_id", orgId)
-      .order("created_at", { ascending: false });
-    if (error) throw error;
-    return c.json(data || []);
-  } catch (error: any) {
-    console.error("[make-server] Error fetching presupuestos:", error);
-    return c.json({ error: error.message }, 500);
-  }
-});
 
-app.post("/presupuestos", async (c) => {
-  try {
-    const supabase = getServiceClient();
-    const orgId = c.get("organizacionId");
-    const payload = await c.req.json();
-    payload.organizacion_id = orgId;
-    const { data, error } = await supabase
-      .from("presupuestos")
-      .insert(payload)
-      .select("*, cliente:clientes(*)")
-      .single();
-    if (error) throw error;
-    return c.json(data);
-  } catch (error: any) {
-    console.error("[make-server] Error creating presupuesto:", error);
-    return c.json({ error: error.message }, 500);
-  }
-});
+// --- PRODUCCION ---
 
-app.put("/presupuestos/:id", async (c) => {
-  try {
-    const supabase = getServiceClient();
-    const orgId = c.get("organizacionId");
-    const id = c.req.param("id");
-    const payload = await c.req.json();
-    
-    const { data, error } = await supabase
-      .from("presupuestos")
-      .update(payload)
-      .eq("id", id)
-      .eq("organizacion_id", orgId)
-      .select("*, cliente:clientes(*)")
-      .single();
-      
-    if (error) throw error;
-    return c.json(data);
-  } catch (error: any) {
-    console.error("[make-server] Error updating presupuesto:", error);
-    return c.json({ error: error.message }, 500);
-  }
-});
-
-app.delete("/presupuestos/:id", async (c) => {
-  try {
-    const supabase = getServiceClient();
-    const orgId = c.get("organizacionId");
-    const id = c.req.param("id");
-    
-    const { error } = await supabase
-      .from("presupuestos")
-      .delete()
-      .eq("id", id)
-      .eq("organizacion_id", orgId);
-      
-    if (error) throw error;
-    return c.json({ success: true });
-  } catch (error: any) {
-    console.error("[make-server] Error deleting presupuesto:", error);
-    return c.json({ error: error.message }, 500);
-  }
-});
-
-
-// ==========================================
-// M+¦dulo de Tablero de Producci+¦n (Kanban)
-// ==========================================
-
-app.get("/produccion/lineas", async (c) => {
-  try {
-    const orgId = c.get("organizacionId");
-    const supabase = c.get("supabase") as any;
-    const { data, error } = await supabase
-      .from("lineas_producto")
-      .select("*")
-      .eq("organizacion_id", orgId)
-      .order("nombre");
-    if (error) throw error;
-    return c.json(data);
-  } catch (err: any) {
-    return c.json({ error: err.message }, 400);
-  }
-});
-
-app.get("/produccion/fases", async (c) => {
-  try {
-    const orgId = c.get("organizacionId");
-    const supabase = c.get("supabase") as any;
-    const { data, error } = await supabase
-      .from("fases_produccion")
-      .select("*")
-      .eq("organizacion_id", orgId)
-      .order("orden");
-    if (error) throw error;
-    return c.json(data);
-  } catch (err: any) {
-    return c.json({ error: err.message }, 400);
-  }
-});
 
 app.get("/productos/:id/materiales", async (c) => {
   try {
@@ -812,22 +699,22 @@ app.post("/cotizaciones", async (c) => {
     const prefijo = ajustes?.data?.prefijo_folio || '';
 
     if (cotizacionData.cotizacion_padre_id) {
-      // Es una nueva versiÃ³n
+      // Es una nueva versión
       const { data: padre } = await supabase.from('cotizaciones').select('folio').eq('id', cotizacionData.cotizacion_padre_id).single();
       if (padre) {
         const baseFolio = padre.folio.split('-V')[0];
         cotizacionData.folio = `${baseFolio}-V${cotizacionData.version || 2}`;
       } else {
-        // Fallback si el padre no existe por alguna razÃ³n
-        const aÃ±o = new Date().getFullYear();
+        // Fallback si el padre no existe por alguna razón
+        const año = new Date().getFullYear();
         const numeroFormateado = (ultimaFolio + 1).toString().padStart(5, '0');
-        cotizacionData.folio = prefijo ? `${prefijo}-${aÃ±o}-${numeroFormateado}` : `${aÃ±o}-${numeroFormateado}`;
+        cotizacionData.folio = prefijo ? `${prefijo}-${año}-${numeroFormateado}` : `${año}-${numeroFormateado}`;
       }
     } else {
-      // GeneraciÃ³n de folio estÃ¡ndar correlativo
-      const aÃ±o = new Date().getFullYear();
+      // Generación de folio estándar correlativo
+      const año = new Date().getFullYear();
       const numeroFormateado = (ultimaFolio + 1).toString().padStart(5, '0');
-      cotizacionData.folio = prefijo ? `${prefijo}-${aÃ±o}-${numeroFormateado}` : `${aÃ±o}-${numeroFormateado}`;
+      cotizacionData.folio = prefijo ? `${prefijo}-${año}-${numeroFormateado}` : `${año}-${numeroFormateado}`;
     }
 
     // Remove frontend-only fields that have no column in the cotizaciones table
@@ -963,12 +850,12 @@ app.post("/cotizaciones/:id/duplicate", async (c) => {
     const { data: ajustesWrapper } = await supabase.from('ajustes').select('data').eq('id', c.get("organizacionId")).single();
     const prefijo = ajustesWrapper?.data?.prefijo_folio || '';
 
-    const aÃ±o = new Date().getFullYear();
+    const año = new Date().getFullYear();
     const numeroFormateado = (ultimaFolio + 1).toString().padStart(5, '0');
 
     const cotizacionDuplicadaPayload: any = {
       ...cotizacionExistente,
-      folio: prefijo ? `${prefijo}-${aÃ±o}-${numeroFormateado}` : `${aÃ±o}-${numeroFormateado}`,
+      folio: prefijo ? `${prefijo}-${año}-${numeroFormateado}` : `${año}-${numeroFormateado}`,
       estado: 'Borrador',
       fecha: new Date().toISOString().split('T')[0],
       organizacion_id: c.get("organizacionId")
@@ -1115,13 +1002,13 @@ app.post("/enviar-email", async (c) => {
       console.error('[make-server] Error enviando email: RESEND_API_KEY no configurada correctamente');
       return c.json({
         error: 'API key de Resend no configurada',
-        hint: 'ObtÃ©n una API key gratis en https://resend.com/api-keys y configÃºrala en los secretos de Supabase'
+        hint: 'Obtén una API key gratis en https://resend.com/api-keys y configúrala en los secretos de Supabase'
       }, 500);
     }
 
     const { data: cotizacion, error: getCotError } = await supabase.from('cotizaciones').select('*').eq('id', cotizacionId).single();
     if (getCotError || !cotizacion) {
-      return c.json({ error: 'CotizaciÃ³n no encontrada' }, 404);
+      return c.json({ error: 'Cotización no encontrada' }, 404);
     }
 
     const { data: cliente } = await supabase.from('clientes').select('*').eq('id', cotizacion.cliente_id).single();
@@ -1148,14 +1035,14 @@ app.post("/enviar-email", async (c) => {
   <div class="container">
     <div class="header">
       <h1 style="margin: 0; font-size: 28px;">${ajustes.nombre_empresa || 'IDEALLY'}</h1>
-      <p style="margin: 5px 0 0 0; opacity: 0.9;">${ajustes.tagline || 'Arte . DiseÃ±o . IngenierÃ­a'}</p>
+      <p style="margin: 5px 0 0 0; opacity: 0.9;">${ajustes.tagline || 'Arte . Diseño . Ingeniería'}</p>
     </div>
     
     <div class="content">
       ${mensaje ? `<p>${mensaje.replace(/\n/g, '<br>')}</p>` : ''}
       
       <div style="background: white; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #667eea;">
-        <h2 style="margin-top: 0; color: #667eea;">Detalles de la CotizaciÃ³n</h2>
+        <h2 style="margin-top: 0; color: #667eea;">Detalles de la Cotización</h2>
         
         <div class="info-row">
           <span class="label">Folio:</span> ${cotizacion.folio}
@@ -1168,14 +1055,14 @@ app.post("/enviar-email", async (c) => {
         </div>
         ${cotizacion.descripcion ? `
         <div class="info-row">
-          <span class="label">DescripciÃ³n:</span> ${cotizacion.descripcion}
+          <span class="label">Descripción:</span> ${cotizacion.descripcion}
         </div>
         ` : ''}
         <div class="info-row">
           <span class="label">Total:</span> <strong style="color: #059669; font-size: 18px;">${cotizacion.total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${cotizacion.con_factura ? '+ IVA' : ''}</strong>
         </div>
         <div class="info-row">
-          <span class="label">Validez:</span> ${cotizacion.validez_dias} dÃ­as
+          <span class="label">Validez:</span> ${cotizacion.validez_dias} días
         </div>
       </div>
       
@@ -1221,14 +1108,14 @@ app.post("/enviar-email", async (c) => {
       let hint = '';
 
       if (response.status === 401) {
-        errorMessage = 'API key de Resend invÃ¡lida';
-        hint = 'Verifica que hayas ingresado una API key vÃ¡lida de Resend. ObtÃ©n una en https://resend.com/api-keys';
+        errorMessage = 'API key de Resend inválida';
+        hint = 'Verifica que hayas ingresado una API key válida de Resend. Obtén una en https://resend.com/api-keys';
       } else if (response.status === 403) {
         errorMessage = 'Acceso denegado por Resend';
-        hint = 'Verifica que tu cuenta de Resend estÃ© activa y el dominio verificado';
+        hint = 'Verifica que tu cuenta de Resend esté activa y el dominio verificado';
       } else if (response.status === 422) {
-        errorMessage = 'Datos de email invÃ¡lidos';
-        hint = result.message || 'Verifica el email del destinatario y que el dominio "from" estÃ© verificado en Resend';
+        errorMessage = 'Datos de email inválidos';
+        hint = result.message || 'Verifica el email del destinatario y que el dominio "from" esté verificado en Resend';
       }
 
       return c.json({
@@ -1247,12 +1134,12 @@ app.post("/enviar-email", async (c) => {
     console.error('[make-server] Error sending email:', error);
     return c.json({
       error: 'Error al enviar el email: ' + error.message,
-      hint: 'Verifica tu conexiÃ³n a internet y la configuraciÃ³n de Resend'
+      hint: 'Verifica tu conexión a internet y la configuración de Resend'
     }, 500);
   }
 });
 
-// â”€â”€â”€ IA â€” RedacciÃ³n con Claude â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── IA — Redacción con Claude ───────────────────────────────────────────────
 
 app.post("/ia/mejorar-descripcion", async (c) => {
   try {
@@ -1266,11 +1153,11 @@ app.post("/ia/mejorar-descripcion", async (c) => {
       return c.json({ error: "descripcion es requerida" }, 400);
     }
 
-    const prompt = `Eres un redactor profesional de cotizaciones para IDEALLY, una empresa mexicana de Arte, DiseÃ±o e IngenierÃ­a. Tu tarea es reformular descripciones tÃ©cnicas de servicios/productos para que sean claras, profesionales y orientadas al valor que recibe el cliente (no tÃ©cnicas).
+    const prompt = `Eres un redactor profesional de cotizaciones para IDEALLY, una empresa mexicana de Arte, Diseño e Ingeniería. Tu tarea es reformular descripciones técnicas de servicios/productos para que sean claras, profesionales y orientadas al valor que recibe el cliente (no técnicas).
 
-DescripciÃ³n original: "${descripcion}"${contexto ? `\nContexto adicional: ${contexto}` : ""}
+Descripción original: "${descripcion}"${contexto ? `\nContexto adicional: ${contexto}` : ""}
 
-Responde ÃšNICAMENTE con la descripciÃ³n reformulada. Sin explicaciones, sin comillas, sin listas. MÃ¡ximo 2 oraciones concisas.`;
+Responde ÚNICAMENTE con la descripción reformulada. Sin explicaciones, sin comillas, sin listas. Máximo 2 oraciones concisas.`;
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -1310,13 +1197,13 @@ app.post("/ia/generar-nota", async (c) => {
 
     const { cliente, descripcion, items } = await c.req.json();
 
-    const prompt = `Eres un redactor profesional de IDEALLY (Arte, DiseÃ±o e IngenierÃ­a, MÃ©xico). Genera una nota de cierre cÃ¡lida y profesional para una cotizaciÃ³n.
+    const prompt = `Eres un redactor profesional de IDEALLY (Arte, Diseño e Ingeniería, México). Genera una nota de cierre cálida y profesional para una cotización.
 
 Cliente: ${cliente || "cliente"}
 Proyecto: ${descripcion || "proyecto"}
 Servicios incluidos: ${Array.isArray(items) ? items.map((i: any) => i.descripcion).join(", ") : "servicios"}
 
-Escribe una nota de cierre de 2-3 oraciones que exprese disposiciÃ³n para responder dudas y proyecte confianza. Tono: profesional pero cercano. Solo la nota, sin saludos ni despedidas formales.`;
+Escribe una nota de cierre de 2-3 oraciones que exprese disposición para responder dudas y proyecte confianza. Tono: profesional pero cercano. Solo la nota, sin saludos ni despedidas formales.`;
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -1341,7 +1228,7 @@ Escribe una nota de cierre de 2-3 oraciones que exprese disposiciÃ³n para resp
   }
 });
 
-// â”€â”€â”€ Plantillas de cotizaciÃ³n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Plantillas de cotización ────────────────────────────────────────────────
 
 app.get("/plantillas", async (c) => {
   try {
@@ -1462,7 +1349,7 @@ app.delete("/plantillas/:id", async (c) => {
   }
 });
 
-// â”€â”€â”€ Historial de precios â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Historial de precios ─────────────────────────────────────────────────────
 
 app.post("/productos/:id/historial-precio", async (c) => {
   try {
@@ -1501,7 +1388,7 @@ app.get("/productos/:id/historial-precios", async (c) => {
   }
 });
 
-// â”€â”€â”€ GestiÃ³n de Equipo e Invitaciones (SaaS) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Gestión de Equipo e Invitaciones (SaaS) ────────────────────────────────
 
 app.get("/equipo", async (c) => {
   try {
@@ -1516,7 +1403,7 @@ app.get("/equipo", async (c) => {
     
     if (error) throw error;
 
-    // Necesitamos los emails, que estÃ¡n en auth.users (solo accesible con service role)
+    // Necesitamos los emails, que están en auth.users (solo accesible con service role)
     const adminSupabase = getServiceClient();
     
     // Obtenemos todos los usuarios para mapear el email
@@ -1610,20 +1497,20 @@ app.post("/organizaciones/crear-con-invitacion", async (c) => {
     const user = c.get("user");
     const currentOrgId = c.get("organizacionId");
 
-    // Restringir a la OrganizaciÃ³n Principal (Super-Admin)
+    // Restringir a la Organización Principal (Super-Admin)
     if (currentOrgId !== ORG_PRINCIPAL_ID) {
-      return c.json({ error: "No autorizado. Solo la OrganizaciÃ³n Principal puede crear nuevas organizaciones." }, 403);
+      return c.json({ error: "No autorizado. Solo la Organización Principal puede crear nuevas organizaciones." }, 403);
     }
 
     const { nombre, email } = await c.req.json();
 
     if (!nombre || !email) {
-      return c.json({ error: "Nombre de organizaciÃ³n y correo son requeridos" }, 400);
+      return c.json({ error: "Nombre de organización y correo son requeridos" }, 400);
     }
 
     const adminClient = getServiceClient();
 
-    // 1. Crear la nueva organizaciÃ³n
+    // 1. Crear la nueva organización
     const { data: org, error: orgError } = await adminClient
       .from('organizaciones')
       .insert({ nombre })
@@ -1631,30 +1518,30 @@ app.post("/organizaciones/crear-con-invitacion", async (c) => {
       .single();
 
     if (orgError) {
-      console.error("[make-server] Error al crear la organizaciÃ³n:", orgError);
+      console.error("[make-server] Error al crear la organización:", orgError);
       throw orgError;
     }
 
-    // 2. Crear la invitaciÃ³n para esa organizaciÃ³n
+    // 2. Crear la invitación para esa organización
     const { data: inv, error: invError } = await adminClient
       .from('invitaciones_equipo')
       .insert({
         organizacion_id: org.id,
         email: email.toLowerCase(),
-        rol: 'propietario', // El nuevo usuario es el propietario de esta nueva organizaciÃ³n
+        rol: 'propietario', // El nuevo usuario es el propietario de esta nueva organización
         invitado_por: user.id
       })
       .select()
       .single();
 
     if (invError) {
-      console.error("[make-server] Error al crear la invitaciÃ³n para la nueva organizaciÃ³n:", invError);
-      // Intentar limpiar la organizaciÃ³n creada para evitar registros huÃ©rfanos
+      console.error("[make-server] Error al crear la invitación para la nueva organización:", invError);
+      // Intentar limpiar la organización creada para evitar registros huérfanos
       await adminClient.from('organizaciones').delete().eq('id', org.id);
       throw invError;
     }
 
-    // 3. Inicializar unos ajustes bÃ¡sicos para la nueva organizaciÃ³n
+    // 3. Inicializar unos ajustes básicos para la nueva organización
     const { error: ajustesError } = await adminClient
       .from('ajustes')
       .insert({
@@ -1670,17 +1557,17 @@ app.post("/organizaciones/crear-con-invitacion", async (c) => {
       });
 
     if (ajustesError) {
-      console.error("[make-server] Advertencia: no se pudieron inicializar los ajustes de la nueva organizaciÃ³n:", ajustesError);
+      console.error("[make-server] Advertencia: no se pudieron inicializar los ajustes de la nueva organización:", ajustesError);
     }
 
     return c.json({ success: true, organizacion: org, invitacion: inv });
   } catch (error: any) {
     console.error("[make-server] Error in /organizaciones/crear-con-invitacion:", error);
-    return c.json({ error: error.message || "Error al crear la organizaciÃ³n y la invitaciÃ³n" }, 500);
+    return c.json({ error: error.message || "Error al crear la organización y la invitación" }, 500);
   }
 });
 
-// Obtener datos de la organizaciÃ³n actual
+// Obtener datos de la organización actual
 app.get("/organizacion", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
@@ -1696,7 +1583,7 @@ app.get("/organizacion", async (c) => {
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error fetching /organizacion:", error);
-    return c.json({ error: error.message || "Error al obtener la organizaciÃ³n" }, 500);
+    return c.json({ error: error.message || "Error al obtener la organización" }, 500);
   }
 });
 
@@ -1722,7 +1609,7 @@ app.get("/organizaciones", async (c) => {
   }
 });
 
-// Actualizar mÃ³dulos de una organizaciÃ³n (Solo Super-Admin)
+// Actualizar módulos de una organización (Solo Super-Admin)
 app.put("/organizaciones/:id/modulos", async (c) => {
   try {
     const currentOrgId = c.get("organizacionId");
@@ -1734,7 +1621,7 @@ app.put("/organizaciones/:id/modulos", async (c) => {
     const { modulos } = await c.req.json();
 
     if (!modulos) {
-      return c.json({ error: "MÃ³dulos son requeridos" }, 400);
+      return c.json({ error: "Módulos son requeridos" }, 400);
     }
 
     const adminClient = getServiceClient();
@@ -1749,7 +1636,7 @@ app.put("/organizaciones/:id/modulos", async (c) => {
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error updating /organizaciones/:id/modulos:", error);
-    return c.json({ error: error.message || "Error al actualizar los mÃ³dulos" }, 500);
+    return c.json({ error: error.message || "Error al actualizar los módulos" }, 500);
   }
 });
 
@@ -1801,7 +1688,7 @@ app.put("/notas/:id", async (c) => {
     const id = c.req.param('id');
     const updates = await c.req.json();
 
-    // No permitir alterar fecha de creaciÃ³n ni organizaciÃ³n asociada
+    // No permitir alterar fecha de creación ni organización asociada
     delete updates.created_at;
     delete updates.organizacion_id;
     updates.updated_at = new Date().toISOString();
@@ -1969,7 +1856,7 @@ app.post("/compras-proveedor", async (c) => {
        await registrarEvento(supabase, {
          cotizacion_id: compraData.cotizacion_id,
          organizacion_id: orgId,
-         evento: `Compra generada (${compraData.folio}). Estado de producciÃ³n: Compra en curso`,
+         evento: `Compra generada (${compraData.folio}). Estado de producción: Compra en curso`,
          usuario_id: c.get("user")?.id || null
        });
     }
@@ -2004,7 +1891,7 @@ app.put("/compras-proveedor/:id", async (c) => {
       
     if (compraError) throw compraError;
     
-    // RecepciÃ³n idempotente
+    // Recepción idempotente
     if (compraData.estado === 'Recibida' && prevCompra.estado !== 'Recibida') {
        const { data: existingItems } = await supabase.from("compra_items").select("*").eq("compra_id", id);
        if (existingItems && existingItems.length > 0) {
@@ -2017,7 +1904,7 @@ app.put("/compras-proveedor/:id", async (c) => {
              cantidad: item.cantidad,
              referencia: `Compra ${compra.folio || id}`
            });
-           // Stock atÃ³mico usando RPC (ajustar_stock se crearÃ¡ en la migraciÃ³n SQL)
+           // Stock atómico usando RPC (ajustar_stock se creará en la migración SQL)
            await adminClient.rpc('ajustar_stock', { p_producto_id: item.material_id, p_delta: item.cantidad });
          }
        }
@@ -2030,12 +1917,12 @@ app.put("/compras-proveedor/:id", async (c) => {
              const totalFaltante = faltantes.reduce((sum, f) => sum + (f.faltante || 0), 0);
              if (totalFaltante === 0) {
            const { data: cot } = await supabase.from("cotizaciones").select("estado_produccion").eq("id", prevCompra.cotizacion_id).single();
-           if (cot && (cot.estado_produccion === 'RequisiciÃ³n: falta material' || cot.estado_produccion === 'Compra en curso')) {
-             await supabase.from("cotizaciones").update({ estado_produccion: 'Listo para producciÃ³n' }).eq("id", prevCompra.cotizacion_id);
+           if (cot && (cot.estado_produccion === 'Requisición: falta material' || cot.estado_produccion === 'Compra en curso')) {
+             await supabase.from("cotizaciones").update({ estado_produccion: 'Listo para producción' }).eq("id", prevCompra.cotizacion_id);
              await registrarEvento(supabase, {
                cotizacion_id: prevCompra.cotizacion_id,
                organizacion_id: orgId,
-               evento: `Compra ${compra.folio} recibida. No hay faltantes. Estado: Listo para producciÃ³n`,
+               evento: `Compra ${compra.folio} recibida. No hay faltantes. Estado: Listo para producción`,
                usuario_id: userId
                });
              }
@@ -2143,7 +2030,7 @@ app.post("/inventario/movimientos", async (c) => {
       return c.json({ error: "Tipo de movimiento no permitido por API manual" }, 400);
     }
 
-    // Validaciones bÃ¡sicas
+    // Validaciones básicas
     if (!payload.producto_id) {
       return c.json({ error: "producto_id es requerido" }, 400);
     }
@@ -2174,7 +2061,7 @@ app.post("/inventario/movimientos", async (c) => {
 
     if (prodError) {
       console.error("[make-server] prodError:", JSON.stringify(prodError));
-      // No tiramos error fatal, el movimiento ya quedÃ³ registrado
+      // No tiramos error fatal, el movimiento ya quedó registrado
     } else if (prod) {
       const stockActual = prod.stock_actual ?? 0;
       const nuevoStock = stockActual + diff;
@@ -2306,7 +2193,7 @@ app.post("/cotizaciones/:id/generar-ordenes", async (c) => {
     if (cotError) throw cotError;
     
     if (cotizacion.estado !== 'Aprobada') {
-      return c.json({ error: "La cotizaciÃ³n debe estar Aprobada para generar Ã³rdenes" }, 400);
+      return c.json({ error: "La cotización debe estar Aprobada para generar órdenes" }, 400);
     }
     
     // Idempotency check: if orders already exist
@@ -2331,7 +2218,7 @@ app.post("/cotizaciones/:id/generar-ordenes", async (c) => {
         const totalFaltante = faltantes.reduce((sum, f) => sum + (f.faltante || 0), 0);
         if (totalFaltante > 0) {
         return c.json({ 
-          error: "AÃºn faltan materiales para esta cotizaciÃ³n", 
+          error: "Aún faltan materiales para esta cotización", 
           requiresForce: true,
           faltantes: faltantes.filter((f) => f.faltante > 0)
         }, 409);
@@ -2386,7 +2273,7 @@ app.post("/cotizaciones/:id/generar-ordenes", async (c) => {
          // Fallback keyword check
          const desc = item.descripcion.toLowerCase();
          if (desc.includes("dolly")) tipoEquipo = "02";
-         else if (desc.includes("gondola") || desc.includes("gÃ¡ndola") || desc.includes("gÃ³ndola")) tipoEquipo = "03";
+         else if (desc.includes("gondola") || desc.includes("gándola") || desc.includes("góndola")) tipoEquipo = "03";
          else if (desc.includes("jaula")) tipoEquipo = "04";
          else if (desc.includes("cama baja")) tipoEquipo = "05";
          else if (desc.includes("multimodal")) tipoEquipo = "06";
@@ -2403,7 +2290,7 @@ app.post("/cotizaciones/:id/generar-ordenes", async (c) => {
       
       for (let i = 0; i < item.cantidad; i++) {
         const { data: numResult, error: seqError } = await supabase.rpc('obtener_siguiente_produccion');
-        if (seqError) throw new Error("Fallo al obtener secuencia de producciÃ³n: " + seqError.message);
+        if (seqError) throw new Error("Fallo al obtener secuencia de producción: " + seqError.message);
         
         const nomenclatura = `${numResult}-${iniciales}${tipoEquipo}${mesStr}${anio}-${trailerCounter}`;
         
@@ -2425,17 +2312,17 @@ app.post("/cotizaciones/:id/generar-ordenes", async (c) => {
     }
     
     if (ordenesToInsert.length === 0) {
-      return c.json({ error: "No se encontraron equipos (productos terminados) en la cotizaciÃ³n." }, 400);
+      return c.json({ error: "No se encontraron equipos (productos terminados) en la cotización." }, 400);
     }
     
     const { data: ordenes, error: insError } = await supabase.from("ordenes_trabajo").insert(ordenesToInsert).select();
     if (insError) throw insError;
     
-    await supabase.from("cotizaciones").update({ estado_produccion: 'En producciÃ³n' }).eq("id", cotizacionId);
+    await supabase.from("cotizaciones").update({ estado_produccion: 'En producción' }).eq("id", cotizacionId);
     await registrarEvento(supabase, {
       cotizacion_id: cotizacionId,
       organizacion_id: orgId,
-      evento: `Ã“rdenes de producciÃ³n generadas (${ordenesToInsert.length} unidades). Estado: En producciÃ³n`,
+      evento: `Órdenes de producción generadas (${ordenesToInsert.length} unidades). Estado: En producción`,
       usuario_id: c.get("user")?.id || null
     });
     
@@ -2451,7 +2338,7 @@ app.put("/produccion/ordenes/:id/mover", async (c) => {
     const id = c.req.param("id");
     const body = await c.req.json();
     
-    // Iniciar transacciÃ³n manual
+    // Iniciar transacción manual
     const { error: errorUpdate } = await supabase
       .from("ordenes_trabajo")
       .update({
@@ -2526,5 +2413,3 @@ Deno.serve({ port: 8000, hostname: "0.0.0.0" }, (req) => {
 
   return app.fetch(req);
 });
-
-
