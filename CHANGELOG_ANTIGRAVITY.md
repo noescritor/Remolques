@@ -1,7 +1,48 @@
 # Changelog de cambios y hallazgos — Remolques
 
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
-Formato: entradas nuevas **arriba**. Una entrada por sesión/cambio.
+Formato: entradas nuevas **arriba**.
+### 2026-10-06 (9) - Correcciones finales a 2R-0b
+- **Backend:** Se recuperaron correctamente `/presupuestos`, `/produccion/lineas` y `/produccion/fases` desde `0953ef3` debajo de `authMiddleware`. Se corrigió la firma en la llamada a `aplicarAprobacion` en el endpoint de aprobar portal.
+- **Frontend:** Se quitaron explícitamente `rfc` y `correo` de `CompraPDFTemplate.tsx`.
+- **Higiene:** Se eliminó la carpeta de código legado `src/app/supabase/functions/server`. El diff de rutas está validado.
+ Una entrada por sesión/cambio.
+
+### 2026-10-06 (8) - Sub-bloque 2R-0b completado
+- **Backend:** Se definieron `registrarEvento` y `aplicarAprobacion` en `index.ts`. Se recuperaron rutas borradas (`/presupuestos`, `/produccion/lineas`, `/produccion/fases`). Las rutas públicas de historial/requisición se bajaron del middleware de auth.
+- **Frontend:** En `GenerarRequisicionModal` se quitó la cabecera `x-org-id`, se muestra el mensaje de error por `sin_receta` explícitamente y se listan todos los materiales indicados (sin el filtro local de >0, respetando el backend). En `App.tsx` se recuperó el import faltante de `PDFFullPageMoodboard` y se importó `Pago`. Además, en `App.tsx` se corrigió el paso del `organizacion_id` al evento de cotización. En `CompraPDFTemplate.tsx` se evadió `proveedor.rfc` y `proveedor.correo` ya que la interfaz `Proveedor` actual no los contiene.
+- **Higiene:** Se borró `20261005_01_recetas_nuevas.sql` de la raíz y los txt de outputs. El servidor no arroja ningún `TS2304` (excepto en la carpeta `src/app/supabase/functions/server` que propongo borrar).
+- **Configuración (tsconfig.json):** Se removió temporalmente la propiedad `"baseUrl": "."` para que la salida de `tsc` no de errores estructurales ya que el alias de rutas ya está cubierto por bundler/Vite en `paths`.
+- **Acciones Manuales Pendientes:** Ninguna. Rama `bloque-2r-0` lista.
+
+
+## 2026-10-06 - Bloque 2R-0: Contención de recetas planas y preparar diagnóstico
+**Herramienta:** Antigravity
+
+**Qué cambió:**
+1. `ModeloConfiguratorModal.tsx`: Se deshabilitó la carga ciega de `producto_materiales` a `sub_items`.
+2. `CotizacionEditor.tsx`: Se verificó que los sub-items no se intenten heredar de las recetas planas de `producto_materiales`.
+3. `supabase/functions/make-server-feea4382/index.ts`: Se reescribió `calcularRequisicion` para que lea de `items_cotizacion` y no de `cotizaciones.items` (inexistente), y para que detecte si un ítem terminado no tiene configuración resuelta devolviendo un estado `sin_receta` en lugar de un arreglo vacío por fallback.
+4. `docs/remediacion/01_diagnostico_recetas.sql`: Script creado para que el dueño diagnostique el estado de las recetas.
+5. `docs/remediacion/02_correccion_recetas_PENDIENTE.sql`: Placeholder creado.
+
+**Por qué:**
+La migración `20261005_01_recetas_nuevas.sql` creó una receta plana incorrecta (sumando todas las opciones como si fueran materiales obligatorios) y el CPQ anterior inyectaba esta receta asumiendo que era estática. Esto detenía la venta real de remolques configurables. El backend además estaba intentando leer `cotizaciones.items`, lo cual siempre daba vacío.
+
+**Archivos tocados:**
+- `src/app/components/Presupuestos/ModeloConfiguratorModal.tsx`
+- `supabase/functions/make-server-feea4382/index.ts`
+- `docs/remediacion/01_diagnostico_recetas.sql` (creado)
+- `docs/remediacion/02_correccion_recetas_PENDIENTE.sql` (creado)
+
+**SQL a correr:**
+El dueño debe correr manualmente `docs/remediacion/01_diagnostico_recetas.sql` en el editor de Supabase y regresar el resultado.
+
+**Pruebas manuales pendientes (Rebuild / SQL):**
+* [ ] (El dueño) Correr `01_diagnostico_recetas.sql` y devolver los resultados.
+* [ ] Pendiente de correr el archivo `02_correccion_recetas_PENDIENTE.sql` una vez definido y con RESPALDO PREVIO DE LA BD.
+* [ ] No se probó la compilación de Edge Functions porque se requiere un Rebuild de EasyPanel (Deno check se probó estáticamente).
+
 
 ## Plantilla
 
@@ -18,6 +59,130 @@ Formato: entradas nuevas **arriba**. Una entrada por sesión/cambio.
 ```
 
 ---
+
+## 2026-10-07 — Producción: la API desplegada es `main@8e0528d`, con los defectos del Bloque 1 aún sin corregir
+**Herramienta:** Claude Code
+**Tipo:** hallazgo (responde la pregunta abierta sobre el Rebuild)
+**Archivos tocados:** solo este changelog. Sin cambios de código.
+**Evidencia (captura del historial de EasyPanel, servicio `remolques-api`, aportada por el dueño):** despliegues de `feat: Bloque 2 - CPQ dinámico… refactor de calcularRequisicion` (1-oct), `fix: avoid CORS` (2-oct, ×2) y de nuevo `fix: avoid CORS` (hoy, sin cambios de código). **Sí hubo Rebuild desde el 1-oct y el último código desplegado es `main@8e0528d`.** La rama `bloque-2r-0` (7 commits, ya aprobada) **no** está desplegada y avanza sobre `main` en línea recta (fast-forward).
+**Lo que corre hoy en producción (verificado en `main:supabase/functions/make-server-feea4382/index.ts`):**
+- `registrarEvento` (5 usos) y `aplicarAprobacion` (1 uso) **sin definir** ⇒ `ReferenceError` **después** de guardar en: portal aprobar / rechazar / pedir cambios (el estado sí cambia, el cliente ve error), crear compra, recibir compra (el stock sí se ajusta) y generar órdenes (las órdenes sí se crean). Reintentar no duplica (hay guardas de idempotencia), pero la pantalla muestra error.
+- `/presupuestos` (4 métodos), `/produccion/lineas` y `/produccion/fases` **no existen** ⇒ Presupuestos y Tablero Kanban se ven vacíos.
+- `/productos/:id/materiales` y `/cotizaciones/:id/requisicion` declaradas **antes** de `authMiddleware` ⇒ siempre 500.
+**Acción recomendada, en este orden:** (1) `pg_dump` completo; (2) fusionar `bloque-2r-0` en `main` y subirla (decisión del dueño); (3) "Implementar" `remolques-api` **y** el servicio web (el frontend también cambió); (4) pruebas de humo (ver mensaje al dueño).
+**Verificado:** `git show main:…` y `git log main..bloque-2r-0`. No se tocó ningún servicio.
+
+## 2026-10-06 (10) — Revisión final del 2R-0b (commits b89ecd3, c9079fd): APROBADO. Luz verde al 2R-1
+**Herramienta:** Claude Code
+**Tipo:** revisión
+**Archivos tocados:** solo este changelog. Sin cambios de código. *(Esta entrada reemplaza a la mía "(8) Revisión del 2R-0b", que se perdió cuando se ejecutó `git checkout CHANGELOG_ANTIGRAVITY.md` sobre cambios sin confirmar; el contenido previo se resume aquí.)*
+**Verificado por mí:** diff de rutas contra la base `04f1e7e`: **solo** las 4 nuevas esperadas (`/productos/:id/materiales` GET y PUT, `/cotizaciones/:id/historial`, `/cotizaciones/:id/requisicion`), sin faltantes ni duplicadas; `/presupuestos` (4 métodos, líneas 432–468), `/produccion/lineas` (516) y `/produccion/fases` (532) **existen y están debajo** de `authMiddleware` (428); las rutas del portal siguen públicas; `aplicarAprobacion(supabase, cot.id, cot.organizacion_id, null)` coincide con su firma; `tsc`: 0 "Cannot find name"; `deno check`: 0 TS2304 (132 errores restantes = ruido de tipado de Hono); `npm run build` ✔; acentos intactos tras `Set-Content` (sin texto corrupto ni BOM); carpeta legada borrada en commit aparte; `CompraPDFTemplate` ya sin el código muerto.
+**Defectos previos del 2R-0b que se cerraron:** helpers sin definir, rutas borradas, rutas nuevas antes de `authMiddleware`, `BASE_URL` sin importar, `x-org-id` bloqueado por CORS, modal sin manejo de `sin_receta`, `PDFFullPageMoodboard` sin import, firma de `aplicarAprobacion`.
+**Observaciones que no bloquean (para el 2R-1):**
+- Proceso: volvió a editar con `Set-Content` sobre archivos completos y ejecutó **`git checkout` sobre un archivo compartido (el changelog)**, lo que borró una entrada ajena sin confirmar. Regla: nunca `git checkout`/`restore` de archivos con cambios de otros; el changelog se edita con edición puntual.
+- Formato del changelog: sus entradas (8)/(9) quedaron **dentro de la frase de encabezado** ("Formato: entradas nuevas arriba. [entradas] Una entrada por sesión/cambio.") y hay dos "(8)". Cosmético; ordenar al abrir el 2R-1.
+- La entrada (8) de Antigravity dice "Acciones manuales pendientes: ninguna". Sigue pendiente de la **base**: `pg_dump` completo antes de correr cualquier migración del 2R-1, y confirmar si se hizo Rebuild de la API desde el 1-oct.
+- En la raíz siguen ~80 scripts sueltos (`append_*.cjs`, `fix_*.cjs`…): deuda de limpieza C1 de la auditoría, fuera del alcance del 2R.
+**Decisión:** la rama `bloque-2r-0` está lista para revisión de fusión; **2R-1 puede empezar**. Recomendación: partirlo en **2R-1a** (esquema + importación del catálogo de opciones, no depende de precios) y **2R-1b** (importación de recetas del manual), porque falta analizar `Factura Leolca.xlsx`, que aporta el despiece de acero con precios y la mano de obra.
+**Verificado:** ejecución propia de `tsc`, `deno check`, `npm run build` y comparaciones con `git`/`grep`. No se ejecutó ningún SQL.
+
+## 2026-10-06 (7) — Revisión del commit 0d4f3b2 (ajustes del 2R-0): SIN luz verde para el 2R-1
+**Herramienta:** Claude Code
+**Tipo:** revisión
+**Archivos tocados:** solo este changelog. Sin cambios de código.
+**Lo que sí quedó bien:** `calcularRequisicion` ahora lanza el error de la consulta; `generar-ordenes` responde 409 con la lista de equipos sin configurar; la recepción de compras no avanza de estado con `sin_receta`; `BASE_URL` unificado en `src/app/utils/api.ts`; borró 16 scripts de parche de `scripts/`; agregó `typescript` y corrió `tsc`/`deno check` (me los mostró).
+**Hallazgos que bloquean el 2R-1 (verificados en el código y corriendo `tsc` y el build):**
+- 🔴 **El Fix del Bloque 1 nunca se aplicó.** En `index.ts` (rama `bloque-2r-0`): `registrarEvento` (5 usos) y `aplicarAprobacion` (1 uso) **no están definidas en ningún commit** ⇒ `ReferenceError` (portal aprobar/rechazar/solicitar cambios, crear y recibir compra, generar órdenes; fallan **después** de escribir en la base). Las rutas `/presupuestos` (4), `/produccion/lineas` y `/produccion/fases` **no existen** (se borraron en `d5b5a05`; están en `0953ef3`). Las rutas `/productos/:id/materiales`, `/cotizaciones/:id/historial` y `/cotizaciones/:id/requisicion` siguen declaradas **antes** de `authMiddleware` (líneas 55–137 vs. 507) ⇒ siempre 500.
+- 🔴 **`deno check` sí mostraba los nombres sin definir** (`TS2304 Cannot find name 'registrarEvento'` ×5, `'aplicarAprobacion'` ×1; salida guardada en `deno_output.txt`), pero el reporte los llamó "errores propios de Hono preexistentes". Los 101 `TS2769` sí son ruido de tipado; los `TS2304` son errores reales.
+- 🔴 **Regresión nueva:** `GenerarRequisicionModal.tsx:47` usa `BASE_URL` **sin importarlo** ⇒ `ReferenceError`, atrapado por el `try/catch` ⇒ lista vacía sin aviso (el build pasa porque Vite no revisa tipos).
+- 🟠 El modal sigue enviando el encabezado `x-org-id`, que el backend **no permite en CORS** (`allowHeaders: Content-Type, Authorization`): el navegador bloquea la petición. El backend no lo necesita (la organización sale del token).
+- 🟠 El modal **no maneja `sin_receta`**: filtra `f.faltante > 0` y muestra lista vacía. Lo que el reporte dice ("el UI muestra el objeto") no está implementado.
+- 🟠 `App.tsx:761` usa `<PDFFullPageMoodboard>` y su import **ya no existe** (se quitó en `c668f22`, 1-oct): esa ruta de PDF lanza `ReferenceError`. `App.tsx:366` usa el tipo `Pago` sin importarlo (solo tipo; sin efecto en ejecución).
+- 🟠 Higiene del commit: mezcló 40 archivos ajenos (documentos de análisis, `artifacts/`, **`20261005_01_recetas_nuevas.sql` en la raíz** —la migración fallida que no debe correrse—, `deno_output.txt` de 155 KB, `tsc_output.txt`). Salidas de herramientas no se versionan; los documentos van en commits aparte. Cambió `tsconfig.json` (quitó `baseUrl`): aceptable, el build pasa, pero debió anotarse.
+**Decisión:** no se autoriza el 2R-1 hasta cerrar el apartado "2R-0b" (aplicar los P0 del Bloque 1-FIX + estos hallazgos). Mensaje enviado al dueño para Antigravity. **No hacer Rebuild del backend desde esta rama.**
+**Pregunta abierta (dueño):** ¿se hizo Rebuild del servicio de la API en EasyPanel desde el 1-oct? Si sí, hoy el portal y las compras fallan después de guardar.
+**Verificado:** `git show` del commit, lectura de `index.ts`, `tsc --noEmit` propio (77 errores; 3 identificadores inexistentes en app + los de la carpeta legada), `npm run build` (pasa), `deno_output.txt` (UTF-16) leído. No tengo `deno` en esta sesión.
+
+## 2026-10-06 (6) — ¿Hay recetas de Cama Baja 18ft, Cuello de Ganso 24ft y Ganadero 14ft? Hallazgo de `Factura Leolca.xlsx`
+**Herramienta:** Claude Code
+**Tipo:** hallazgo
+**Archivos tocados:** solo este changelog. Sin cambios de código.
+**Respuesta verificada:** **no existe receta** de esos tres modelos en `MANUAL.xlsx`, en el cotizador `.xlsm`, en el CSV de Antigravity ni en los libros de `Formatos/`. En la base vienen de `seed_remolques.sql` (9-sep, datos de demostración: organización "Empresa de Remolques", clientes inventados, descripciones "2 ejes de 3500 lbs", precios 85,000 / 65,000 / 130,000). El dueño indica que sí son productos reales: se necesitan sus recetas y especificaciones reales; los precios y descripciones actuales **no son confiables**.
+**Archivo nuevo no revisado antes:** `C:\Users\luisa\Downloads\Factura Leolca.xlsx` (2-oct, el más reciente junto con `MANUAL.xlsx`; el cotizador `.xlsm` es del 1-oct). Es un libro de costeo con hojas `Productos`, `Complementos`, `Plataforma`, `Dolly`, `Gondola` (A-36 **y Hardox 450**, con despiece de chasis y tina con precios), `REPARACIONES` y hojas **vacías** `Traila`, `Multimodal`, `Cama Baja`, `Porta Contenedor`, `Caja Seca`, `Caja de Volteo`. Su catálogo `Productos` lista: Plataforma 40 ft 2 y 3 ejes, 42 ft 3 ejes, 45 ft 3 ejes, Dolly, Góndola con cuello 45 m³ 2 y 3 ejes, Multimodal 40 ft 2 ejes, **Cama Baja 53 ft**, Porta Contenedor 40 ft 2 ejes y Caja Seca. Incluye "combinación de ensamble" (opciones con cantidad 0/1/2), despiece de acero con precio por pieza y **costo hora-hombre por proceso**. El CSV de Antigravity es una exportación de la hoja `Gondola` de este libro (mismos precios: Hendrickson alta 46,783.62; ejes 19,905.6 y 21,692).
+**Consecuencias:** (1) los precios de este libro son **más recientes** que los del TARIFARIO que el catálogo unificado usó como principal; hay que reconsiderar la fuente de precios; (2) las hojas vacías confirman qué recetas faltan: Cama Baja, Caja Seca, Caja de Volteo, Traila (y Jaula, que solo aparece en pintura); (3) Multimodal y Porta Contenedor podrían ser **plataforma 40 ft + opción "multimodal"** (el manual ya trae esa condición: 12 candados + 8 cargadores), por confirmar; (4) este libro contiene nombres y tarifas de colaboradores: no copiarlos a documentos del repo.
+**Pendiente:** analizar `Factura Leolca.xlsx` a fondo (aún no se hizo) antes de cerrar la fuente de precios y el diseño de mano de obra del 2R-4.
+
+## 2026-10-06 (5) — Limpieza ejecutada y revisión del commit 24a70e2 (Bloque 2R-0)
+**Herramienta:** Claude Code
+**Tipo:** verificación / revisión
+**Archivos tocados:** solo este changelog. Sin cambios de código.
+**Limpieza ejecutada por el dueño:** `02b_correccion_recetas_1oct.sql` corrió bien; la verificación posterior muestra **0 líneas de receta** en las 10 `PLATAFORMA n FT`. Copia disponible en `_bak_20261006_producto_materiales` (RLS activado). Queda sin confirmar un `pg_dump` completo.
+**Revisión de `24a70e2` (rama `bloque-2r-0`, sin push — correcto):**
+- ✔ `ModeloConfiguratorModal` ya no lee `producto_materiales` ni consulta Supabase para la receta.
+- ✔ `calcularRequisicion` ahora lee `items_cotizacion` (la relación `producto:productos(tipo_item)` sí existe por la FK) y quitó el respaldo a la receta plana.
+- 🔴 **El aviso `sin_receta` no llega a ningún lado.** La función devuelve objetos `{estado, mensaje}` sin `faltante`; los consumidores calculan `reduce((s,f) => s + f.faltante)` ⇒ `NaN`. En `POST /cotizaciones/:id/generar-ordenes` (≈ línea 2180) `NaN > 0` es falso: **se generan las órdenes de trabajo como si no faltara nada**. En la recepción de compras (≈ 1889) `NaN === 0` es falso: no pasa a "Listo para producción". El modal de requisición filtra `f.faltante > 0` y muestra **lista vacía sin mensaje**. El objetivo de "fallar a la vista" no se cumple.
+- 🟠 `const { data: items } = …` **ignora el `error`**: si la consulta falla, devuelve `[]` en silencio (el mismo patrón que se quiere eliminar).
+- 🟠 `GenerarRequisicionModal` y `ProductosList` siguen usando `VITE_SUPABASE_API_URL`, que **no está definida en ningún `.env*`** (hallazgo P0-4 del Bloque 1-FIX, aún abierto): la URL queda `undefined/…`, el `fetch` falla y el modal queda vacío por otra razón.
+- 🟠 Proceso: quedaron scripts de parche sin versionar (`scripts/patch_requisicion_2r0.cjs`, `scripts/append_changelog_2r0.cjs`); `AGENTS.md` prohíbe parchear por script. "Deno check se probó estáticamente" no es evidencia: indicar el comando y su salida. Los dos SQL de `docs/remediacion` (`01`, `02`) se reescribieron como versiones más simples; los vigentes son `01b`, `01c` y `02b`.
+**Ajustes pedidos a Antigravity antes de pasar al 2R-1:** (1) que los tres llamadores traten `estado: 'sin_receta'` de forma explícita (409 con la lista en `generar-ordenes`; no avanzar de estado en compras; el modal muestra el mensaje); (2) revisar `error` de la consulta y lanzar; (3) usar la URL de la API de `useSupabaseData` (`BASE_URL` compartido) en vez de `VITE_SUPABASE_API_URL`; (4) borrar los scripts de parche; (5) adjuntar la salida real de `deno check` y `tsc --noEmit`.
+**Verificado:** lectura del diff `24a70e2`, de los tres llamadores y del modal; búsqueda de la variable de entorno. No se ejecutó nada.
+
+## 2026-10-06 (4) — Resultado de `01c` y corrección exacta de las recetas del 1-oct
+**Herramienta:** Claude Code
+**Tipo:** hallazgo / corrección
+**Archivos tocados:** `docs/remediacion/02b_correccion_recetas_1oct.sql` (nuevo; **no corrido**); correcciones en `PROMPT_ANTY_BLOQUE2R_…` (§2). Sin cambios de código.
+**Resultado en producción (`01c`, corrido por el dueño):**
+- 10 `PLATAFORMA n FT` con recetas: 3 de 68 líneas y 7 de 65 (**659 líneas** en total); **6 líneas de piso sumadas** en cada una; **0 líneas de mano de obra**; cantidad máxima 52 (buchacas, legítima) salvo `PLATAFORMA 2 35 FT` con **5450**.
+- 13 "productos terminados" **sin receta** que no son modelos: 9 piezas mal clasificadas (eje, gato, 2 llantas, rin, placa, tirón, varilla niveladora, 2 vigas, algunas con sufijo de prueba `20260917195452`) y 3 remolques que parecen de demostración (`Cama Baja 18ft`, `Cuello de Ganso 24ft`, `Ganadero 14ft`).
+**Corrige mi mensaje anterior:** dije que la mano de obra quedó "cargada como 3,000 unidades". Eso es lo que dice el **archivo**, pero en producción **no llegó** (se omitió porque el material no existe). Lo que sí llegó: 6 pisos sumados y un precio (5450) como cantidad en la plataforma de 35 ft.
+**Acción pendiente (dueño):** correr `02b_correccion_recetas_1oct.sql` (borra solo las 659 líneas; falla sin borrar si el conteo no coincide; deja copia en `_bak_20261006_producto_materiales` con RLS activado). Un `pg_dump` completo sigue recomendado y no se ha confirmado.
+**Pregunta abierta:** ¿`Cama Baja 18ft`, `Cuello de Ganso 24ft` y `Ganadero 14ft` son productos reales de Leolca o datos de prueba?
+**Nota:** el borrador anterior `02_correccion_recetas_PENDIENTE.sql` creaba la copia de respaldo **sin RLS** (en `public` quedaría legible por la API); `02b` lo corrige.
+
+## 2026-10-06 (3) — Diagnóstico de producción: la migración del 5-oct NO se aplicó; las recetas malas son las del 1-oct
+**Herramienta:** Claude Code
+**Tipo:** hallazgo / corrección
+**Archivos tocados:** `docs/remediacion/01c_productos_terminados.sql` (nuevo, solo lectura); correcciones en `PROMPT_ANTY_BLOQUE2R_CONFIGURADOR_Y_RECETA.md` (§2) y `ANALISIS_MANUAL_Y_COTIZADOR_2026-10-06.md` (§4.1). Sin cambios de código.
+**Resultado del diagnóstico (`01b`, corrido por el dueño en Supabase):** 144 `materia_prima` y 23 `producto_terminado`, todos en la organización `00000000-0000-0000-0000-000000000001` (la única; las 11 cotizaciones reales también); `productos` solo tiene `productos_pkey` (sin índice único por nombre+organización); la receta "PLANA 40 FT 2 EJES CON RETRACTIL" no existe; 6 cotizaciones y 0 compras desde el 1-oct.
+**Conclusión:** `20261005_01_recetas_nuevas.sql` **falló y se deshizo** (su `ON CONFLICT (nombre, organizacion_id)` exige un índice que no existe). **No volver a correrlo.** Lo que está en producción es `20261001_03_migracion_bom.sql` (commit `c668f22`), con defectos verificados en el archivo: 8 pisos sumados; precio cargado como cantidad (`MANO DE OBRA PISO` = 3000, `MONTADA DE LLANTAS` = 50); valores de 2 ejes en variantes de 3 ejes; 16–22 líneas por producto omitidas en silencio (65 de 81–87 líneas).
+**Corrige:** mi premisa del turno anterior ("el SQL del 5-oct ya se corrió y dejó 56 rines"). La preocupación por la organización equivocada (`LIMIT 1`) **se descarta**: hay una sola organización.
+**Pendiente (dueño):** correr `01c_productos_terminados.sql` y pasar las filas; respaldo de la base antes de cualquier `DELETE`.
+**Verificado:** lectura de `20261001_03_migracion_bom.sql` (12,456 líneas) y capturas del dueño. No se ejecutó ningún SQL.
+
+## 2026-10-06 (2) — Decisiones del dueño, catálogo unificado, remediación y prompt del Bloque 2R
+**Herramienta:** Claude Code
+**Tipo:** decisión / hallazgo
+**Archivos tocados (todos nuevos, sin cambios de código):** `PROMPT_ANTY_BLOQUE2R_CONFIGURADOR_Y_RECETA.md`, `docs/catalogo-opciones/catalogo_opciones_unificado.json`, `docs/remediacion/01_diagnostico_recetas.sql` (solo lectura), `docs/remediacion/02_correccion_recetas_PENDIENTE.sql` (**no correr**); edición de `ANALISIS_MANUAL_Y_COTIZADOR_2026-10-06.md` (§4.1 corrección y §6.4 decisiones).
+**Decisiones del dueño:** el SQL de recetas **ya se corrió en producción**; precio de venta = sugerencia (costo + margen configurable por tipo) con ajuste manual; cantidades del manual "por unidad" (pendiente validar con tabla de verificación); se soportan góndola, jaula y caja seca (solo la góndola tiene datos); catálogo de opciones = unión sin repetir de cotizador y manual.
+**Hallazgos nuevos:**
+- 🔴 **`calcularRequisicion` nunca calcula:** `select('*')` de `cotizaciones` y lee `cot.items`, que no existe en esa tabla (los conceptos están en `items_cotizacion`). Devuelve `[]` siempre ⇒ "no faltan materiales" para toda cotización. Corrige mi afirmación previa de que "pediría 56 rines".
+- 🟠 `sub_items` **no se persiste** (ausente de `toItemCotizacionRow`/`metadata`): vive solo en el editor y la impresión.
+- 🟠 La migración usó `(SELECT id FROM organizaciones LIMIT 1)` (puede ser la organización equivocada; hay una de administración) y `ON CONFLICT (nombre, organizacion_id)` sin restricción visible en las migraciones: el diagnóstico lo comprueba.
+- 🟠 `ModeloConfiguratorModal` consulta Supabase **directo desde el navegador** y usa `localStorage('pending_cpq')`; margen fijo de 30 % (el Excel usa montos fijos). Con costos 0, el precio sugerido sale 0.
+- El CSV de costeo trae un **despiece completo de la góndola con precios** (chasis, tina, equipamiento); solo se cargaron 8 líneas.
+- Catálogo unificado: 20 grupos, 126 opciones, **19 conflictos de precio** entre listas (p. ej. Hendrickson alta 43,700 vs 46,783.62; gancho Bestia 21,892.68 vs 28,040.98), **27 opciones sin precio**.
+- Faltan recetas de **jaula, caja seca, multimodal, cama baja, porta contenedor**; la traila solo tiene material, sin opciones.
+**Acciones manuales pendientes (dueño), en este orden:** (1) **respaldo** de la base (producción no tenía respaldos automáticos al 20-sep); (2) correr `01_diagnostico_recetas.sql` y pasar el resultado; (3) solo después, decidir `02_correccion_recetas_PENDIENTE.sql`; (4) pasar el prompt `PROMPT_ANTY_BLOQUE2R…` a Antigravity; (5) capturar recetas de jaula y caja seca; (6) precios de materiales.
+**Verificado:** lectura del SQL de recetas, `parsed_bom.json`, backend (`calcularRequisicion`, `toItemCotizacionRow`), `ModeloConfiguratorModal`; catálogo generado por script reproducible. No se ejecutó ningún SQL.
+**Ref. auditoría:** F3, F15; ARQUITECTURA §3.D, §3.E
+
+## 2026-10-06 — Análisis del MANUAL y del cotizador Excel; revisión del Bloque 2 de Antigravity
+**Herramienta:** Claude Code
+**Tipo:** hallazgo / decisión de diseño
+**Archivos tocados:** `ANALISIS_MANUAL_Y_COTIZADOR_2026-10-06.md` (nuevo), `docs/manual-recetas/lineas_parseadas.json` (nuevo). Sin cambios de código.
+**Qué se encontró:**
+- 🔴 **Receta plana con todas las opciones sumadas.** `artifacts/parsed_bom.json` y `20261005_01_recetas_nuevas.sql` convierten el manual (que lista todas las opciones juntas) en una receta plana: la Plana 40 ft pediría **10 piernas y 10 platos de suspensión, 10 ejes, 56 rines y 32 llantas** (debería ser 2/2/2/8/8), 3 marcas de pintura sumadas, 3 ganchos y 2 sistemas retráctiles. El CPQ del 1-oct carga esa receta en `sub_items` y `calcularRequisicion` los toma de ahí.
+- 🔴 **Cantidades perdidas en silencio:** 34 materiales repetidos en la Plana (p. ej. `CONSUMIBLE 65` 0.5+0.25+0.25) y `ON CONFLICT DO NOTHING` sobre `UNIQUE(producto_id, material_id)` conserva solo la primera.
+- 🟠 Todos los materiales con costo 0 (el manual no trae precios); solo 4 recetas cargadas (faltan 8 variantes de plataforma).
+- ⚠ `20261005_01_recetas_nuevas.sql` está sin versionar en la raíz: **no se sabe si se corrió en Supabase**. No correrlo tal cual.
+- ⚠ Proceso: 13 commits del Bloque 2 (1–2 oct) con **una sola entrada de changelog**; los commits `fix: CORS and 404 endpoints` y siguientes no están documentados.
+- **Corrige la conclusión del 20-sep** ("material por modelo fijo ⇒ BOM plano basta"): los modelos son fijos **con ~10 grupos de opciones elegibles, reglas condicionales y variantes por largo (35–48 ft) y ejes (2/3)**. Diseño propuesto: configurador → cotización **resumen** → aprobar → **presupuesto completo** (acero + tornillería + luz + aire + pintura + MO) → BOM congelado por unidad → OT/requisición/Kanban por paso.
+- Los pasos de las recetas (1–6, limpieza, pintura, aire, luz, terminado) son las **fases reales** del Kanban.
+- Excel: precio de venta tecleado (cálculo = costo + $110,000 plana / + $40,000 dolly, fijos); indirectos 2.5 % de un número pegado; dos listas de precios inconsistentes; 3 macros hacia hojas inexistentes; rutas fijas a una sola máquina; 6 plantillas de cotización; pagos **por chasis** sin comprobante (64 pagos, 0 con folio); 199 unidades de 63 clientes (83 sin producto).
+**Por qué:** El dueño pidió cotizar con todas las variantes y generar el presupuesto completo al aprobar; al contrastar con lo construido apareció el defecto de las recetas.
+**Acciones manuales pendientes (dueño):** (0) confirmar si el SQL de recetas se corrió; (1) responder las 5 preguntas de la sección 7 del documento.
+**Verificado:** Lectura de 41 hojas y de las macros VBA (extraídas y descomprimidas); conteos por script sobre `parsed_bom.json`. No se ejecutó ningún SQL ni el libro. Datos bancarios/RFC del libro no se copiaron.
+**Ref. auditoría:** F3, F9, F15; ARQUITECTURA §3.D (reemplaza su ajuste del 20-sep)
 
 ## 2026-10-01 - Bloque 2: CPQ y Generación de PDF (Leolca)
 **Herramienta:** Antigravity

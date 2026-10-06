@@ -1,0 +1,1326 @@
+{
+ "version": "2026-10-06",
+ "fuentes": {
+  "TARIFARIO": "PRESUPUESTOS Y COTIZACIONES LEOLCA.xlsm, hoja TARIFARIO (precio principal)",
+  "DATOS_EQUIPAMIENTO": "mismo libro, hoja DATOS DE EQUIPAMIENTO (lista del cotizador; varios precios provisionales)",
+  "CSV_GONDOLA": "CSV de costeo de góndola exportado por Antigravity (artifacts/raw_bom.csv)",
+  "MANUAL": "MANUAL.xlsx (grupos TIPO DE... y estatus)"
+ },
+ "regla_de_union": "Una opción por concepto. Si el mismo concepto está en varias listas se une bajo un nombre canónico y los nombres alternos van en aliases. El precio principal es el del TARIFARIO; los demás quedan en otros_precios para revisión.",
+ "parametros": {
+  "precio_acero_kg": {
+   "general": 43,
+   "puentes_plancha": 34,
+   "fuente": "TARIFARIO"
+  },
+  "margen_sugerido": {
+   "plataforma": 110000,
+   "dolly": 40000,
+   "fuente": "PRES PLANAS / PRES DOLLY (monto fijo en pesos)"
+  },
+  "gastos_indirectos_pct": 2.5,
+  "iva_pct": 16,
+  "nota": "Margen e indirectos tomados del Excel; en el sistema deben ser parámetros editables."
+ },
+ "modelos": [
+  {
+   "tipo": "plataforma",
+   "variantes": [
+    "35 ft x2",
+    "40 ft x2",
+    "40 ft x3",
+    "42 ft x2",
+    "42 ft x3",
+    "43 ft x3",
+    "45 ft x2",
+    "45 ft x3",
+    "48 ft x2",
+    "48 ft x3"
+   ],
+   "receta": "Manual PLANA (40 ft, 2 ejes) y cantidades de acero por variante en BASE DAT PLANAS",
+   "estado": "datos disponibles"
+  },
+  {
+   "tipo": "dolly",
+   "variantes": [
+    "2 ejes con o sin retráctil"
+   ],
+   "receta": "Manual DOLLY y PRES DOLLY",
+   "estado": "datos disponibles"
+  },
+  {
+   "tipo": "gondola",
+   "variantes": [
+    "2 ejes 1 retráctil",
+    "3 ejes 2 retráctiles",
+    "tina A-36",
+    "tina Hardox 450"
+   ],
+   "receta": "Manual GONDOLA (receta) y CSV de costeo con precios (despiece de chasis y tina)",
+   "estado": "datos disponibles, hay que unirlos"
+  },
+  {
+   "tipo": "jaula",
+   "variantes": [
+    "por definir"
+   ],
+   "receta": "Solo litros de pintura (hoja PINTURA)",
+   "estado": "FALTA la receta"
+  },
+  {
+   "tipo": "caja_seca",
+   "variantes": [
+    "por definir"
+   ],
+   "receta": "No existe en ningún archivo",
+   "estado": "FALTA la receta"
+  },
+  {
+   "tipo": "traila",
+   "variantes": [
+    "15 ft",
+    "20 ft / 6 m"
+   ],
+   "receta": "Hoja 'presupuestos traila' del cotizador (material y proveedor, sin opciones)",
+   "estado": "datos parciales"
+  },
+  {
+   "tipo": "multimodal / cama_baja / porta_contenedor",
+   "variantes": [
+    "por definir"
+   ],
+   "receta": "Solo aparecen como condición (candados, cargadores) y en los tipos de OT",
+   "estado": "FALTA la receta"
+  }
+ ],
+ "grupos": [
+  {
+   "clave": "eje",
+   "nombre": "Marca de ejes",
+   "seleccion": "unica",
+   "aplica": [
+    "plataforma",
+    "dolly",
+    "gondola",
+    "jaula",
+    "caja_seca"
+   ],
+   "cantidad": "= nº de ejes",
+   "unidad_precio": "pieza",
+   "opciones": [
+    {
+     "clave": "fleet_master",
+     "nombre": "Fleet Master",
+     "precio": 20099.99,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "FLET MASTER",
+      "FLEET MASTER"
+     ],
+     "otros_precios": {
+      "CSV_GONDOLA": 19905.6,
+      "DATOS_EQUIPAMIENTO": 24421
+     }
+    },
+    {
+     "clave": "ampro",
+     "nombre": "Ampro",
+     "precio": 22231.4,
+     "precio_fuente": "TARIFARIO",
+     "otros_precios": {
+      "CSV_GONDOLA": 21692,
+      "DATOS_EQUIPAMIENTO": 24421
+     }
+    },
+    {
+     "clave": "fcr",
+     "nombre": "FCR",
+     "precio": null,
+     "precio_fuente": null,
+     "notas": "Solo en el manual (proveedor Cadeco). Falta precio."
+    },
+    {
+     "clave": "prat_max",
+     "nombre": "Prat Max",
+     "precio": null,
+     "precio_fuente": null,
+     "notas": "Solo en el manual. Falta precio."
+    },
+    {
+     "clave": "hj",
+     "nombre": "HJ",
+     "precio": null,
+     "precio_fuente": null,
+     "notas": "Solo en el manual. Falta precio."
+    }
+   ]
+  },
+  {
+   "clave": "suspension",
+   "nombre": "Suspensión",
+   "seleccion": "unica",
+   "aplica": [
+    "plataforma",
+    "dolly",
+    "gondola",
+    "jaula",
+    "caja_seca"
+   ],
+   "cantidad": "= nº de ejes",
+   "unidad_precio": "kit por eje",
+   "regla": "clase alta implica retráctil grande; clase normal implica retráctil chico",
+   "opciones": [
+    {
+     "clave": "fleet_master",
+     "nombre": "Fleet Master (normal)",
+     "precio": 23118,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "SUSPENSIÓN FLEET MASTER"
+     ],
+     "otros_precios": {
+      "CSV_GONDOLA": 23118,
+      "DATOS_EQUIPAMIENTO": 23118
+     },
+     "clase": "normal"
+    },
+    {
+     "clave": "ampro",
+     "nombre": "Ampro (normal)",
+     "precio": 23118,
+     "precio_fuente": "TARIFARIO",
+     "otros_precios": {
+      "CSV_GONDOLA": 23118,
+      "DATOS_EQUIPAMIENTO": 23118
+     },
+     "clase": "normal"
+    },
+    {
+     "clave": "hendrickson",
+     "nombre": "Hendrickson HT300 (normal)",
+     "precio": 35844,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "HENDRICKS"
+     ],
+     "otros_precios": {
+      "CSV_GONDOLA": 35844,
+      "DATOS_EQUIPAMIENTO": 23118
+     },
+     "clase": "normal"
+    },
+    {
+     "clave": "fcr",
+     "nombre": "FCR (normal)",
+     "precio": null,
+     "precio_fuente": null,
+     "clase": "normal",
+     "notas": "Solo en el manual. Falta precio."
+    },
+    {
+     "clave": "alta_hendrickson",
+     "nombre": "Hendrickson alta HT300US",
+     "precio": 43700,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "ALTA HENDRICKS",
+      "SUSPENSIÓN ALTA HENDRICKSON"
+     ],
+     "otros_precios": {
+      "CSV_GONDOLA": 46783.62,
+      "DATOS_EQUIPAMIENTO": 23118
+     },
+     "clase": "alta"
+    },
+    {
+     "clave": "hj_alta",
+     "nombre": "HJ tipo Low alta HT300US",
+     "precio": 28478,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "SUSPENSION HJ ALTA"
+     ],
+     "otros_precios": {
+      "CSV_GONDOLA": 25000
+     },
+     "clase": "alta",
+     "notas": "Solo se usa en góndola según el manual."
+    },
+    {
+     "clave": "alta_fleet_master",
+     "nombre": "Fleet Master alta",
+     "precio": null,
+     "precio_fuente": null,
+     "aliases": [
+      "ALTA FM"
+     ],
+     "otros_precios": {
+      "DATOS_EQUIPAMIENTO": 23118
+     },
+     "clase": "alta",
+     "notas": "Solo en el cotizador; su 23,118 parece provisional. Confirmar si existe."
+    },
+    {
+     "clave": "phm",
+     "nombre": "PHM",
+     "precio": null,
+     "precio_fuente": null,
+     "otros_precios": {
+      "CSV_GONDOLA": 30000
+     },
+     "notas": "Solo en el costeo de góndola."
+    },
+    {
+     "clave": "sin_suspension",
+     "nombre": "Sin suspensión",
+     "precio": 0,
+     "precio_fuente": "definido"
+    }
+   ]
+  },
+  {
+   "clave": "patin",
+   "nombre": "Patines",
+   "seleccion": "unica",
+   "aplica": [
+    "plataforma",
+    "gondola",
+    "jaula",
+    "caja_seca"
+   ],
+   "cantidad": "1 o 2 juegos",
+   "unidad_precio": "por confirmar (pieza o par)",
+   "opciones": [
+    {
+     "clave": "hj",
+     "nombre": "HJ",
+     "precio": 5798.81,
+     "precio_fuente": "TARIFARIO",
+     "otros_precios": {
+      "CSV_GONDOLA": 5646.88
+     }
+    },
+    {
+     "clave": "ampro",
+     "nombre": "Ampro",
+     "precio": 5336,
+     "precio_fuente": "TARIFARIO",
+     "otros_precios": {
+      "CSV_GONDOLA": 5916
+     }
+    },
+    {
+     "clave": "holland",
+     "nombre": "Holland (Mark V)",
+     "precio": 13461.4,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "HOLAND MARK V"
+     ],
+     "otros_precios": {
+      "CSV_GONDOLA": 17980
+     }
+    },
+    {
+     "clave": "flet_master",
+     "nombre": "Fleet Master",
+     "precio": null,
+     "precio_fuente": null,
+     "notas": "Solo en el manual. Falta precio."
+    }
+   ]
+  },
+  {
+   "clave": "piso",
+   "nombre": "Piso",
+   "seleccion": "unica",
+   "aplica": [
+    "plataforma"
+   ],
+   "notas": "En DATOS DE EQUIPAMIENTO casi todos los pisos valen 35,000 (provisional); se usa TARIFARIO.",
+   "opciones": [
+    {
+     "clave": "pino",
+     "nombre": "Madera de pino",
+     "precio": 22000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "encino",
+     "nombre": "Madera de encino",
+     "precio": 22000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "plastico_cafe",
+     "nombre": "Plástico café",
+     "precio": 35000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "plastico_negro",
+     "nombre": "Plástico negro",
+     "precio": 36182.72,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "laminado",
+     "nombre": "Laminado",
+     "precio": 28224,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "laminado_madera",
+     "nombre": "Laminado con base de madera",
+     "precio": 50000,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "PISO LAMIN C/MADERA"
+     ]
+    },
+    {
+     "clave": "laminado_plastico",
+     "nombre": "Laminado con base de plástico",
+     "precio": 63500,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "PISO LAMIN C/PLASTICO"
+     ]
+    },
+    {
+     "clave": "antiderrapante",
+     "nombre": "Antiderrapante",
+     "precio": 22000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "encino_centro_plastico_lados",
+     "nombre": "Encino al centro y plástico a los lados",
+     "precio": null,
+     "precio_fuente": null,
+     "otros_precios": {
+      "DATOS_EQUIPAMIENTO": 35000
+     },
+     "notas": "Solo en el cotizador; 35,000 es el valor repetido de la lista, parece provisional."
+    },
+    {
+     "clave": "sin_piso",
+     "nombre": "Sin piso",
+     "precio": 0,
+     "precio_fuente": "definido"
+    }
+   ]
+  },
+  {
+   "clave": "riel",
+   "nombre": "Riel",
+   "seleccion": "unica",
+   "aplica": [
+    "plataforma"
+   ],
+   "opciones": [
+    {
+     "clave": "con_riel",
+     "nombre": "Con riel",
+     "precio": 5805,
+     "precio_fuente": "TARIFARIO",
+     "otros_precios": {
+      "DATOS_EQUIPAMIENTO": 6240
+     }
+    },
+    {
+     "clave": "sin_riel",
+     "nombre": "Sin riel",
+     "precio": 0,
+     "precio_fuente": "definido"
+    }
+   ]
+  },
+  {
+   "clave": "matracas",
+   "nombre": "Matracas / winches",
+   "seleccion": "unica",
+   "aplica": [
+    "plataforma"
+   ],
+   "cantidad": "típico 10",
+   "opciones": [
+    {
+     "clave": "corrediza",
+     "nombre": "Matraca corrediza",
+     "precio": 307.4,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "soldable",
+     "nombre": "Matraca soldable",
+     "precio": null,
+     "precio_fuente": null
+    },
+    {
+     "clave": "sin_matracas",
+     "nombre": "Sin matracas",
+     "precio": 0,
+     "precio_fuente": "definido"
+    }
+   ]
+  },
+  {
+   "clave": "gancho",
+   "nombre": "Gancho de arrastre",
+   "seleccion": "unica",
+   "aplica": [
+    "plataforma",
+    "gondola"
+   ],
+   "regla": "sin gancho: el jalón de arrastre pasa a 0",
+   "opciones": [
+    {
+     "clave": "holland_8_10",
+     "nombre": "Holland 8/10 barrenos",
+     "precio": 6948.4,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "GANCHO HOLLAND 10 BARRENOS",
+      "HOLLAN"
+     ],
+     "otros_precios": {
+      "CSV_GONDOLA": 6844,
+      "DATOS_EQUIPAMIENTO": 7100
+     }
+    },
+    {
+     "clave": "premier_8",
+     "nombre": "Premier 8 barrenos",
+     "precio": 12979.24,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "GANCHO PREMIER 10 BARRENOS"
+     ],
+     "otros_precios": {
+      "CSV_GONDOLA": 11890,
+      "DATOS_EQUIPAMIENTO": 8000
+     }
+    },
+    {
+     "clave": "premier_bestia_6",
+     "nombre": "Premier Bestia 6 barrenos",
+     "precio": 21892.68,
+     "precio_fuente": "TARIFARIO",
+     "otros_precios": {
+      "CSV_GONDOLA": 28040.98,
+      "DATOS_EQUIPAMIENTO": 8000
+     }
+    },
+    {
+     "clave": "sin_gancho",
+     "nombre": "Sin gancho",
+     "precio": 0,
+     "precio_fuente": "definido"
+    }
+   ]
+  },
+  {
+   "clave": "frente",
+   "nombre": "Frente",
+   "seleccion": "unica_con_medida",
+   "aplica": [
+    "plataforma"
+   ],
+   "notas": "El cotizador separa tipo y medida; el tarifario las junta. Aquí quedan como tipo por medida. 'CONCHA A 2.35 M' estaba duplicada.",
+   "opciones": [
+    {
+     "clave": "concha_laminada",
+     "nombre": "Concha laminada",
+     "precio": null,
+     "precio_fuente": "TARIFARIO",
+     "medidas": {
+      "1.20": 6160,
+      "1.50": 7500,
+      "1.70": 6891
+     }
+    },
+    {
+     "clave": "concha_lisa_reforzada",
+     "nombre": "Concha lisa reforzada",
+     "precio": null,
+     "precio_fuente": "TARIFARIO",
+     "medidas": {
+      "1.20": 7536
+     }
+    },
+    {
+     "clave": "concha",
+     "nombre": "Concha (tipo sin especificar)",
+     "precio": null,
+     "precio_fuente": "TARIFARIO",
+     "medidas": {
+      "1.00": 6240,
+      "1.10": 5891,
+      "1.40": 8800,
+      "1.50": 7680,
+      "2.00": 10000,
+      "2.35": 11750
+     },
+     "notas": "Confirmar si 'concha' es laminada o lisa. A 1.50 m hay dos precios (7,500 laminada y 7,680 concha)."
+    },
+    {
+     "clave": "concha_madera",
+     "nombre": "Concha de madera",
+     "precio": null,
+     "precio_fuente": null,
+     "notas": "Solo en el cotizador, sin precio."
+    },
+    {
+     "clave": "burro_laminado",
+     "nombre": "Burro laminado",
+     "precio": null,
+     "precio_fuente": "TARIFARIO",
+     "medidas": {
+      "1.20": 5800,
+      "1.50": 7250,
+      "1.80": 8700
+     }
+    },
+    {
+     "clave": "burro_madera",
+     "nombre": "Burro de madera",
+     "precio": null,
+     "precio_fuente": "TARIFARIO",
+     "medidas": {
+      "1.20": 4515
+     }
+    },
+    {
+     "clave": "sin_frente",
+     "nombre": "Sin frente",
+     "precio": 0,
+     "precio_fuente": "definido"
+    }
+   ]
+  },
+  {
+   "clave": "redilas",
+   "nombre": "Redilas",
+   "seleccion": "unica",
+   "aplica": [
+    "plataforma"
+   ],
+   "regla": "con redilas: suma 444 tornillos con tuerca y rondana, 48 chavetas y 6 L de pintura",
+   "opciones": [
+    {
+     "clave": "70",
+     "nombre": "Redilas de 70 cm",
+     "precio": 35000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "75",
+     "nombre": "Redilas de 75 cm",
+     "precio": 35500,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "80",
+     "nombre": "Redilas de 80 cm",
+     "precio": 36000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "90",
+     "nombre": "Redilas de 90 cm",
+     "precio": null,
+     "precio_fuente": null,
+     "notas": "Solo en el cotizador (su 2,500 es provisional)."
+    },
+    {
+     "clave": "100",
+     "nombre": "Redilas de 1 m",
+     "precio": 42000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "sin_redilas",
+     "nombre": "Sin redilas",
+     "precio": 0,
+     "precio_fuente": "definido"
+    }
+   ]
+  },
+  {
+   "clave": "retractil",
+   "nombre": "Sistema retráctil",
+   "seleccion": "unica",
+   "aplica": [
+    "plataforma",
+    "dolly",
+    "gondola",
+    "jaula",
+    "caja_seca"
+   ],
+   "cantidad": "0 a 2",
+   "opciones": [
+    {
+     "clave": "grande",
+     "nombre": "Retráctil grande",
+     "precio": 15000,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "SISTEMA RETRÁCTIL"
+     ],
+     "otros_precios": {
+      "CSV_GONDOLA": 15000
+     },
+     "notas": "Va con suspensión alta."
+    },
+    {
+     "clave": "chico",
+     "nombre": "Retráctil chico (UBL)",
+     "precio": 15000,
+     "precio_fuente": "TARIFARIO",
+     "otros_precios": {
+      "CSV_GONDOLA": 15000
+     },
+     "notas": "Va con suspensión normal."
+    },
+    {
+     "clave": "paleta",
+     "nombre": "Retráctil paleta",
+     "precio": null,
+     "precio_fuente": null,
+     "otros_precios": {
+      "CSV_GONDOLA": 15000
+     },
+     "notas": "Solo en el costeo de góndola."
+    },
+    {
+     "clave": "sin_retractil",
+     "nombre": "Sin sistema retráctil",
+     "precio": 0,
+     "precio_fuente": "definido"
+    }
+   ]
+  },
+  {
+   "clave": "rines",
+   "nombre": "Rines",
+   "seleccion": "unica_con_cantidad",
+   "aplica": [
+    "plataforma",
+    "dolly",
+    "gondola",
+    "jaula",
+    "caja_seca"
+   ],
+   "medidas": [
+    "24.5",
+    "22.5"
+   ],
+   "cantidad": "0 a 12",
+   "unidad_precio": "pieza",
+   "opciones": [
+    {
+     "clave": "acero",
+     "nombre": "Rines de acero",
+     "precio": 1391.97,
+     "precio_fuente": "TARIFARIO",
+     "marcas": [
+      "Fleet Master",
+      "Acurrai",
+      "Ampro"
+     ]
+    },
+    {
+     "clave": "aluminio",
+     "nombre": "Rines de aluminio",
+     "precio": 4268.8,
+     "precio_fuente": "TARIFARIO",
+     "marcas": [
+      "Fleet Master",
+      "Fleet Master trapezoidal",
+      "Ampro",
+      "Ampro trapezoidal"
+     ]
+    },
+    {
+     "clave": "cliente",
+     "nombre": "Proporciona el cliente",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "sin_rines",
+     "nombre": "Sin rines",
+     "precio": 0,
+     "precio_fuente": "definido"
+    }
+   ]
+  },
+  {
+   "clave": "llantas",
+   "nombre": "Llantas",
+   "seleccion": "unica_con_cantidad",
+   "aplica": [
+    "plataforma",
+    "dolly",
+    "gondola",
+    "jaula",
+    "caja_seca"
+   ],
+   "medidas": [
+    "24.5",
+    "22.5"
+   ],
+   "cantidad": "0 a 12",
+   "unidad_precio": "pieza",
+   "opciones": [
+    {
+     "clave": "cerex",
+     "nombre": "Cerex",
+     "precio": 3586,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "firestone",
+     "nombre": "Firestone",
+     "precio": 8790,
+     "precio_fuente": "TARIFARIO",
+     "aliases": [
+      "FIRESTON LINEAL"
+     ]
+    },
+    {
+     "clave": "royal_black",
+     "nombre": "Royal Black",
+     "precio": 5600,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "bf_goodrich",
+     "nombre": "BF Goodrich",
+     "precio": 11750,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "eudemon",
+     "nombre": "Eudemon",
+     "precio": 5400,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "chinas",
+     "nombre": "Chinas",
+     "precio": 4000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "valiant",
+     "nombre": "Valiant",
+     "precio": 3581,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "amulet",
+     "nombre": "Amulet",
+     "precio": 5400.01,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "kpatos_lineal",
+     "nombre": "K Patos lineal",
+     "precio": null,
+     "precio_fuente": null,
+     "notas": "Solo en el manual."
+    },
+    {
+     "clave": "kpatos_traccion",
+     "nombre": "K Patos tracción",
+     "precio": null,
+     "precio_fuente": null,
+     "notas": "Solo en el manual."
+    },
+    {
+     "clave": "godshield_lineal",
+     "nombre": "Godshield lineal",
+     "precio": null,
+     "precio_fuente": null,
+     "notas": "Solo en el manual."
+    },
+    {
+     "clave": "roadmaster",
+     "nombre": "Road Master",
+     "precio": null,
+     "precio_fuente": null,
+     "notas": "Solo en el inventario de llantas."
+    },
+    {
+     "clave": "sin_llantas",
+     "nombre": "Sin llantas",
+     "precio": 0,
+     "precio_fuente": "definido"
+    }
+   ]
+  },
+  {
+   "clave": "plafones",
+   "nombre": "Plafones de carrito",
+   "seleccion": "cantidad",
+   "aplica": [
+    "plataforma"
+   ],
+   "notas": "El cotizador trae además plafón ámbar y rojo a 400 (formato anterior).",
+   "opciones": [
+    {
+     "clave": "ambar_laterales",
+     "nombre": "Ámbar laterales",
+     "precio": 168.2,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "rojo_laterales",
+     "nombre": "Rojos laterales",
+     "precio": 168.2,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "ambar_estribo",
+     "nombre": "Ámbar en estribo",
+     "precio": 168.2,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "rojo_estribo",
+     "nombre": "Rojos en estribo",
+     "precio": 168.2,
+     "precio_fuente": "TARIFARIO"
+    }
+   ]
+  },
+  {
+   "clave": "abs",
+   "nombre": "Kit de aire / ABS",
+   "seleccion": "derivada",
+   "aplica": [
+    "plataforma",
+    "dolly",
+    "gondola",
+    "jaula",
+    "caja_seca"
+   ],
+   "regla": "se deriva del nº de ejes y retráctiles; el tarifario solo distingue 2 y 3 ejes (23,000 / 27,000)",
+   "opciones": [
+    {
+     "clave": "2e_sin_retractil",
+     "nombre": "2 ejes sin retráctil",
+     "precio": 22000,
+     "precio_fuente": "CSV_GONDOLA",
+     "otros_precios": {
+      "TARIFARIO": 23000
+     }
+    },
+    {
+     "clave": "2e_1_retractil",
+     "nombre": "2 ejes 1 retráctil",
+     "precio": 26700,
+     "precio_fuente": "CSV_GONDOLA",
+     "otros_precios": {
+      "TARIFARIO": 23000
+     }
+    },
+    {
+     "clave": "3e_1_retractil",
+     "nombre": "3 ejes 1 retráctil",
+     "precio": 27200,
+     "precio_fuente": "CSV_GONDOLA",
+     "otros_precios": {
+      "TARIFARIO": 27000
+     }
+    },
+    {
+     "clave": "3e_2_retractil",
+     "nombre": "3 ejes 2 retráctiles",
+     "precio": 30500,
+     "precio_fuente": "CSV_GONDOLA",
+     "otros_precios": {
+      "TARIFARIO": 27000
+     }
+    }
+   ]
+  },
+  {
+   "clave": "quinta",
+   "nombre": "Quinta",
+   "seleccion": "unica",
+   "aplica": [
+    "dolly"
+   ],
+   "opciones": [
+    {
+     "clave": "holland",
+     "nombre": "Holland",
+     "precio": 28998.81,
+     "precio_fuente": "TARIFARIO",
+     "otros_precios": {
+      "PRES_DOLLY": 29998.81
+     }
+    },
+    {
+     "clave": "fontaine",
+     "nombre": "Fontaine",
+     "precio": null,
+     "precio_fuente": null,
+     "notas": "Solo en el manual."
+    }
+   ]
+  },
+  {
+   "clave": "dona",
+   "nombre": "Dona (dolly)",
+   "seleccion": "unica",
+   "aplica": [
+    "dolly"
+   ],
+   "regla": "debe corresponder al tipo de gancho de la plana",
+   "opciones": [
+    {
+     "clave": "holland",
+     "nombre": "Dona Holland",
+     "precio": 4400,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "premier",
+     "nombre": "Dona Premier",
+     "precio": 4400,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "bestia",
+     "nombre": "Dona Premier Bestia",
+     "precio": null,
+     "precio_fuente": null
+    }
+   ]
+  },
+  {
+   "clave": "tina_material",
+   "nombre": "Material de la tina",
+   "seleccion": "unica",
+   "aplica": [
+    "gondola"
+   ],
+   "notas": "En el costeo de góndola las vueltas y cuellos son placa Hardox; el resto A-36.",
+   "opciones": [
+    {
+     "clave": "a36",
+     "nombre": "Acero A-36",
+     "precio": null,
+     "precio_fuente": null
+    },
+    {
+     "clave": "hardox_450",
+     "nombre": "Acero Hardox 450",
+     "precio": null,
+     "precio_fuente": null
+    }
+   ]
+  },
+  {
+   "clave": "pintura",
+   "nombre": "Marca de pintura",
+   "seleccion": "unica",
+   "aplica": [
+    "plataforma",
+    "dolly",
+    "gondola",
+    "jaula",
+    "caja_seca"
+   ],
+   "notas": "Los litros dependen del modelo y del largo (hoja PINTURA).",
+   "opciones": [
+    {
+     "clave": "sherwin_williams",
+     "nombre": "Sherwin-Williams",
+     "precio": null,
+     "precio_fuente": null,
+     "aliases": [
+      "SHERVI"
+     ],
+     "proveedor": "La Nueva Estrella"
+    },
+    {
+     "clave": "ppg",
+     "nombre": "PPG",
+     "precio": null,
+     "precio_fuente": null,
+     "proveedor": "Pinturas Dayman"
+    },
+    {
+     "clave": "axalta",
+     "nombre": "Axalta",
+     "precio": null,
+     "precio_fuente": null,
+     "proveedor": "Axalta"
+    }
+   ]
+  },
+  {
+   "clave": "color",
+   "nombre": "Color",
+   "seleccion": "unica",
+   "aplica": [
+    "plataforma",
+    "dolly",
+    "gondola",
+    "jaula",
+    "caja_seca"
+   ],
+   "cantidad": "hasta 2 colores",
+   "opciones": [
+    {
+     "clave": "rojo_claro",
+     "nombre": "Rojo claro",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "rojo",
+     "nombre": "Rojo",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "rojo_coca_cola",
+     "nombre": "Rojo Coca-Cola",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "rojo_bermellon",
+     "nombre": "Rojo bermellón",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "vino",
+     "nombre": "Vino",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "negro",
+     "nombre": "Negro",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "anaranjado_con_borda_blanca",
+     "nombre": "Anaranjado con borda blanca",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "azul_rey",
+     "nombre": "Azul rey",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "blanco",
+     "nombre": "Blanco",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "gris",
+     "nombre": "Gris",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "naranja",
+     "nombre": "Naranja",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "amarillo",
+     "nombre": "Amarillo",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "rosa",
+     "nombre": "Rosa",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "verde",
+     "nombre": "Verde",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "morado",
+     "nombre": "Morado",
+     "precio": 0,
+     "precio_fuente": "definido"
+    },
+    {
+     "clave": "cafe",
+     "nombre": "Café",
+     "precio": 0,
+     "precio_fuente": "definido"
+    }
+   ]
+  },
+  {
+   "clave": "adicionales",
+   "nombre": "Adicionales",
+   "seleccion": "multiple_con_cantidad",
+   "aplica": [
+    "plataforma",
+    "dolly",
+    "gondola",
+    "jaula",
+    "caja_seca"
+   ],
+   "opciones": [
+    {
+     "clave": "polinera_grande",
+     "nombre": "Polinera grande",
+     "precio": 6000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "polinera_puerta",
+     "nombre": "Polinera con puerta",
+     "precio": 10000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "polinera_atravesada",
+     "nombre": "Polinera atravesada",
+     "precio": 6000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "polinera_bicicletera",
+     "nombre": "Polinera con bicicletera",
+     "precio": 8000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "caja_herr_chica",
+     "nombre": "Caja de herramientas chica",
+     "precio": 9500,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "caja_herr_grande",
+     "nombre": "Caja de herramientas grande 1.10 m",
+     "precio": null,
+     "precio_fuente": null
+    },
+    {
+     "clave": "caja_auxiliar",
+     "nombre": "Caja auxiliar",
+     "precio": 1500,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "bicicletera",
+     "nombre": "Bicicletera",
+     "precio": 5000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "portallantas_extra",
+     "nombre": "Portallantas extra",
+     "precio": 3500,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "canastilla",
+     "nombre": "Canastilla",
+     "precio": 8000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "pata_elefante",
+     "nombre": "Pata de elefante",
+     "precio": 3250,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "lodera_centro",
+     "nombre": "Lodera de centro",
+     "precio": 874,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "sistema_psi",
+     "nombre": "Sistema PSI",
+     "precio": 20000,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "jalon",
+     "nombre": "Jalón",
+     "precio": 3768,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "candados",
+     "nombre": "Candados",
+     "precio": 1450,
+     "precio_fuente": "TARIFARIO",
+     "otros_precios": {
+      "TARIFARIO_extras": 461
+     }
+    },
+    {
+     "clave": "multimodal",
+     "nombre": "Multimodal",
+     "precio": 50000,
+     "precio_fuente": "TARIFARIO",
+     "notas": "Implica 12 candados y 8 cargadores 3x102."
+    },
+    {
+     "clave": "refuerzos",
+     "nombre": "Refuerzos",
+     "precio": 14786,
+     "precio_fuente": "TARIFARIO",
+     "otros_precios": {
+      "TARIFARIO_extras": 10000
+     }
+    },
+    {
+     "clave": "barrenado_chasis",
+     "nombre": "Barrenado sobre chasis",
+     "precio": 1250,
+     "precio_fuente": "TARIFARIO"
+    },
+    {
+     "clave": "doble_solera_trasera",
+     "nombre": "Doble solera parte trasera (colita)",
+     "precio": null,
+     "precio_fuente": null
+    },
+    {
+     "clave": "base_bolsa_piernas",
+     "nombre": "Base completa de bolsa en piernas",
+     "precio": null,
+     "precio_fuente": null
+    },
+    {
+     "clave": "amarres",
+     "nombre": "Amarres",
+     "precio": null,
+     "precio_fuente": null
+    }
+   ]
+  }
+ ]
+}

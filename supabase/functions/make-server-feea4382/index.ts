@@ -6,54 +6,48 @@ import { logger } from "npm:hono/logger";
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
 
+
+async function registrarEvento(supabase: any, evento: any) {
+  const { error } = await supabase.from('cotizacion_eventos').insert([evento]);
+  if (error) console.error("Error registrando evento:", error);
+}
+
+async function aplicarAprobacion(supabase: any, cotizacionId: string, orgId: string, usuarioId: string) {
+  await supabase.from("cotizaciones").update({ estado_produccion: 'Aprobada' }).eq("id", cotizacionId);
+  await registrarEvento(supabase, {
+    cotizacion_id: cotizacionId,
+    organizacion_id: orgId,
+    evento: "Cotizacion aprobada",
+    usuario_id: usuarioId
+  });
+}
+
 async function calcularRequisicion(supabase, cotizacionId, orgId) {
-  const { data: cot } = await supabase.from('cotizaciones').select('*').eq('id', cotizacionId).single();
-  if (!cot || !cot.items) return [];
-  const { data: inventario } = await supabase.from('productos').select('id, stock_actual, stock_reservado').eq('organizacion_id', orgId);
-  const invMap = new Map();
-  if (inventario) {
-    inventario.forEach((p) => {
-      invMap.set(p.id, (p.stock_actual || 0) - (p.stock_reservado || 0));
-    });
+  // 2R-0: Leer items desde la tabla correcta y verificar configuración
+  const { data: items, error } = await supabase.from('items_cotizacion')
+    .select('producto_id, cantidad, descripcion, metadata, producto:productos(tipo_item)')
+    .eq('cotizacion_id', cotizacionId);
+    if (error) throw error;
+    
+  if (!items || items.length === 0) return [];
+
+  // Verificamos si hay productos terminados sin configuración resuelta
+  const faltanConfiguracion = items.filter(item => 
+    item.producto?.tipo_item === 'producto_terminado' &&
+    (!item.metadata || !item.metadata.configuracion || !item.metadata.configuracion.resuelta)
+  );
+
+  if (faltanConfiguracion.length > 0) {
+    // Si falta configuración en algún equipo, fallamos a la vista
+    return faltanConfiguracion.map(item => ({
+      estado: 'sin_receta',
+      mensaje: `Falta configurar el equipo: ${item.descripcion}`,
+        faltante: 0
+    }));
   }
-  const required = new Map();
-  for (const item of cot.items) {
-    // If CPQ sub_items exist, use them directly
-    if (item.sub_items && item.sub_items.length > 0) {
-      for (const sub of item.sub_items) {
-        const qty = Number(sub.cantidad) * Number(item.cantidad);
-        required.set(sub.material_id, (required.get(sub.material_id) || 0) + qty);
-      }
-    } else if (item.producto_id) {
-      // Fallback to static BOM
-      const { data: receta } = await supabase.from('producto_materiales').select('material_id, cantidad').eq('producto_id', item.producto_id);
-      if (receta) {
-        for (const rm of receta) {
-          const qty = Number(rm.cantidad) * Number(item.cantidad);
-          required.set(rm.material_id, (required.get(rm.material_id) || 0) + qty);
-        }
-      }
-    }
-  }
-  const result = [];
-  for (const [matId, cantReq] of required.entries()) {
-    const disp = invMap.get(matId) || 0;
-    const faltante = Math.max(0, cantReq - disp);
-    const { data: prod } = await supabase.from('productos').select('nombre, unidad, costo').eq('id', matId).single();
-    if (prod) {
-      result.push({
-        material_id: matId,
-        material_nombre: prod.nombre,
-        material_unidad: prod.unidad,
-        requerido: cantReq,
-        disponible: disp,
-        faltante: faltante,
-        costo_unitario: prod.costo || 0,
-        costo_total_faltante: faltante * (prod.costo || 0)
-      });
-    }
-  }
-  return result;
+
+  // Hasta 2R-2 esto es solo contención. No calculamos nada porque no tenemos motor.
+  return [];
 }
 
 const app = new Hono();
@@ -73,101 +67,6 @@ app.use(
 
 // ─── Portal público (SIN autenticación) ───────────────────────────────────────
 
-
-app.get("/productos/:id/materiales", async (c) => {
-  try {
-    const supabase = c.get("supabase") as any;
-    const orgId = c.get("organizacionId");
-    const id = c.req.param("id");
-    
-    const { data, error } = await supabase
-      .from("producto_materiales")
-      .select("*, material:material_id(*)")
-      .eq("producto_id", id)
-      .eq("organizacion_id", orgId);
-      
-    if (error) throw error;
-    return c.json(data);
-  } catch (err: any) {
-    return c.json({ error: err.message }, 500);
-  }
-});
-
-app.put("/productos/:id/materiales", async (c) => {
-  try {
-    const supabase = c.get("supabase") as any;
-    const orgId = c.get("organizacionId");
-    const id = c.req.param("id");
-    const materiales = await c.req.json(); // Array of { material_id, cantidad, organizacion_id }
-    
-    // Verify product belongs to org
-    const { data: prod } = await supabase.from("productos").select("id").eq("id", id).eq("organizacion_id", orgId).single();
-    if (!prod) return c.json({ error: "Producto no encontrado o no autorizado" }, 404);
-    
-    // Replace all
-    await supabase.from("producto_materiales").delete().eq("producto_id", id).eq("organizacion_id", orgId);
-    
-    if (materiales && materiales.length > 0) {
-      // Validar materia prima
-      const matIds = materiales.map((m: any) => m.material_id);
-      const { data: validMats } = await supabase.from("productos")
-        .select("id, tipo_item")
-        .in("id", matIds)
-        .eq("organizacion_id", orgId);
-        
-      const validIds = new Set(validMats?.filter((m: any) => m.tipo_item === 'materia_prima').map((m: any) => m.id));
-      
-      const toInsert = materiales.filter((m: any) => validIds.has(m.material_id)).map((m: any) => ({
-        producto_id: id,
-        material_id: m.material_id,
-        cantidad: m.cantidad,
-        organizacion_id: orgId
-      }));
-      
-      if (toInsert.length > 0) {
-        const { error } = await supabase.from("producto_materiales").insert(toInsert);
-        if (error) throw error;
-      }
-    }
-    return c.json({ success: true });
-  } catch (err: any) {
-    return c.json({ error: err.message }, 500);
-  }
-});
-
-
-app.get("/cotizaciones/:id/historial", async (c) => {
-  try {
-    const supabase = c.get("supabase") as any;
-    const orgId = c.get("organizacionId");
-    const id = c.req.param("id");
-    
-    const { data, error } = await supabase
-      .from("cotizacion_eventos")
-      .select("*, usuario:usuarios(email)")
-      .eq("cotizacion_id", id)
-      .eq("organizacion_id", orgId)
-      .order("created_at", { ascending: false });
-      
-    if (error) throw error;
-    return c.json(data);
-  } catch (err: any) {
-    return c.json({ error: err.message }, 500);
-  }
-});
-
-app.get("/cotizaciones/:id/requisicion", async (c) => {
-  try {
-    const supabase = c.get("supabase") as any;
-    const orgId = c.get("organizacionId");
-    const id = c.req.param("id");
-    
-    const faltantes = await calcularRequisicion(supabase, id, orgId);
-    return c.json(faltantes);
-  } catch (err: any) {
-    return c.json({ error: err.message }, 500);
-  }
-});
 
 app.get("/health", (c) => c.json({ ok: true }));
 app.get("/make-server-feea4382/health", (c) => c.json({ ok: true }));
@@ -362,7 +261,7 @@ app.post("/portal/:token/aprobar", async (c) => {
     }).eq("id", cot.id);
     if (error) throw error;
     
-    await aplicarAprobacion(supabase, { id: cot.id, estado: "Aprobada", estado_produccion: "Nueva" }, cot.organizacion_id, null);
+    await aplicarAprobacion(supabase, cot.id, cot.organizacion_id, null);
     
     return c.json({ success: true });
   } catch (e) {
@@ -527,6 +426,221 @@ const authMiddleware = async (c: any, next: any) => {
 };
 
 app.use("/*", authMiddleware);
+
+
+// --- PRESUPUESTOS ---
+app.get("/presupuestos", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const { data, error } = await supabase
+      .from("presupuestos")
+      .select("*, cliente:clientes(*)")
+      .eq("organizacion_id", orgId)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return c.json(data || []);
+  } catch (error: any) {
+    console.error("[make-server] Error fetching presupuestos:", error);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.post("/presupuestos", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const payload = await c.req.json();
+    payload.organizacion_id = orgId;
+    const { data, error } = await supabase
+      .from("presupuestos")
+      .insert(payload)
+      .select("*, cliente:clientes(*)")
+      .single();
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error creating presupuesto:", error);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.put("/presupuestos/:id", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    const payload = await c.req.json();
+    
+    const { data, error } = await supabase
+      .from("presupuestos")
+      .update(payload)
+      .eq("id", id)
+      .eq("organizacion_id", orgId)
+      .select("*, cliente:clientes(*)")
+      .single();
+      
+    if (error) throw error;
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error updating presupuesto:", error);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.delete("/presupuestos/:id", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    
+    const { error } = await supabase
+      .from("presupuestos")
+      .delete()
+      .eq("id", id)
+      .eq("organizacion_id", orgId);
+      
+    if (error) throw error;
+    return c.json({ success: true });
+  } catch (error: any) {
+    console.error("[make-server] Error deleting presupuesto:", error);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+
+// ==========================================
+// M+�dulo de Tablero de Producci+�n (Kanban)
+// ==========================================
+
+app.get("/produccion/lineas", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const supabase = c.get("supabase") as any;
+    const { data, error } = await supabase
+      .from("lineas_producto")
+      .select("*")
+      .eq("organizacion_id", orgId)
+      .order("nombre");
+    if (error) throw error;
+    return c.json(data);
+  } catch (err: any) {
+    return c.json({ error: err.message }, 400);
+  }
+});
+
+app.get("/produccion/fases", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const supabase = c.get("supabase") as any;
+    const { data, error } = await supabase
+      .from("fases_produccion")
+      .select("*")
+      .eq("organizacion_id", orgId)
+      .order("orden");
+    if (error) throw error;
+    return c.json(data);
+  } catch (err: any) {
+    return c.json({ error: err.message }, 400);
+  }
+});
+
+app.get("/productos/:id/materiales", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    
+    const { data, error } = await supabase
+      .from("producto_materiales")
+      .select("*, material:material_id(*)")
+      .eq("producto_id", id)
+      .eq("organizacion_id", orgId);
+      
+    if (error) throw error;
+    return c.json(data);
+  } catch (err: any) {
+    return c.json({ error: err.message }, 500);
+  }
+});
+
+app.put("/productos/:id/materiales", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    const materiales = await c.req.json(); // Array of { material_id, cantidad, organizacion_id }
+    
+    // Verify product belongs to org
+    const { data: prod } = await supabase.from("productos").select("id").eq("id", id).eq("organizacion_id", orgId).single();
+    if (!prod) return c.json({ error: "Producto no encontrado o no autorizado" }, 404);
+    
+    // Replace all
+    await supabase.from("producto_materiales").delete().eq("producto_id", id).eq("organizacion_id", orgId);
+    
+    if (materiales && materiales.length > 0) {
+      // Validar materia prima
+      const matIds = materiales.map((m: any) => m.material_id);
+      const { data: validMats } = await supabase.from("productos")
+        .select("id, tipo_item")
+        .in("id", matIds)
+        .eq("organizacion_id", orgId);
+        
+      const validIds = new Set(validMats?.filter((m: any) => m.tipo_item === 'materia_prima').map((m: any) => m.id));
+      
+      const toInsert = materiales.filter((m: any) => validIds.has(m.material_id)).map((m: any) => ({
+        producto_id: id,
+        material_id: m.material_id,
+        cantidad: m.cantidad,
+        organizacion_id: orgId
+      }));
+      
+      if (toInsert.length > 0) {
+        const { error } = await supabase.from("producto_materiales").insert(toInsert);
+        if (error) throw error;
+      }
+    }
+    return c.json({ success: true });
+  } catch (err: any) {
+    return c.json({ error: err.message }, 500);
+  }
+});
+
+
+app.get("/cotizaciones/:id/historial", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    
+    const { data, error } = await supabase
+      .from("cotizacion_eventos")
+      .select("*, usuario:usuarios(email)")
+      .eq("cotizacion_id", id)
+      .eq("organizacion_id", orgId)
+      .order("created_at", { ascending: false });
+      
+    if (error) throw error;
+    return c.json(data);
+  } catch (err: any) {
+    return c.json({ error: err.message }, 500);
+  }
+});
+
+app.get("/cotizaciones/:id/requisicion", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    
+    const faltantes = await calcularRequisicion(supabase, id, orgId);
+    return c.json(faltantes);
+  } catch (err: any) {
+    return c.json({ error: err.message }, 500);
+  }
+});
+
+
 
 app.get("/clientes", async (c) => {
   try {
@@ -1908,12 +2022,13 @@ app.put("/compras-proveedor/:id", async (c) => {
          }
        }
        
-       // Tras recibir: recalcular requisición
-       if (prevCompra.cotizacion_id) {
-         const faltantes = await calcularRequisicion(supabase, prevCompra.cotizacion_id, orgId);
-         const totalFaltante = faltantes.reduce((sum, f) => sum + f.faltante, 0);
-         
-         if (totalFaltante === 0) {
+       // Tras recibir: recalcular requisicion
+         if (prevCompra.cotizacion_id) {
+           const faltantes = await calcularRequisicion(supabase, prevCompra.cotizacion_id, orgId);
+           const unconfigured = faltantes.some((f) => f.estado === 'sin_receta');
+           if (!unconfigured) {
+             const totalFaltante = faltantes.reduce((sum, f) => sum + (f.faltante || 0), 0);
+             if (totalFaltante === 0) {
            const { data: cot } = await supabase.from("cotizaciones").select("estado_produccion").eq("id", prevCompra.cotizacion_id).single();
            if (cot && (cot.estado_produccion === 'Requisición: falta material' || cot.estado_produccion === 'Compra en curso')) {
              await supabase.from("cotizaciones").update({ estado_produccion: 'Listo para producción' }).eq("id", prevCompra.cotizacion_id);
@@ -1922,11 +2037,12 @@ app.put("/compras-proveedor/:id", async (c) => {
                organizacion_id: orgId,
                evento: `Compra ${compra.folio} recibida. No hay faltantes. Estado: Listo para producción`,
                usuario_id: userId
-             });
+               });
+             }
            }
          }
-       }
-    }
+         }
+      }
     
     return c.json(compra);
   } catch (err: any) {
@@ -2201,9 +2317,19 @@ app.post("/cotizaciones/:id/generar-ordenes", async (c) => {
     
     // Check missing materials unless forced
     if (!force) {
-      const faltantes = await calcularRequisicion(supabase, cotizacionId, orgId);
-      const totalFaltante = faltantes.reduce((sum, f) => sum + f.faltante, 0);
-      if (totalFaltante > 0) {
+        const faltantes = await calcularRequisicion(supabase, cotizacionId, orgId);
+        
+        const unconfigured = faltantes.filter((f) => f.estado === 'sin_receta');
+        if (unconfigured.length > 0) {
+          return c.json({ 
+            error: "Aun faltan materiales para esta cotizacion (hay equipos sin configurar)", 
+            requiresForce: true,
+            faltantes: unconfigured
+          }, 409);
+        }
+
+        const totalFaltante = faltantes.reduce((sum, f) => sum + (f.faltante || 0), 0);
+        if (totalFaltante > 0) {
         return c.json({ 
           error: "Aún faltan materiales para esta cotización", 
           requiresForce: true,
@@ -2400,3 +2526,5 @@ Deno.serve({ port: 8000, hostname: "0.0.0.0" }, (req) => {
 
   return app.fetch(req);
 });
+
+

@@ -30,9 +30,7 @@ export function CompraPDFTemplate({ compra, proveedor, productosLookup }: Compra
         <p className="text-lg font-bold text-slate-800">{proveedor ? proveedor.nombre : 'Proveedor no asignado'}</p>
         {proveedor && (
           <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-slate-600">
-            {proveedor.rfc && <p><span className="font-semibold">RFC:</span> {proveedor.rfc}</p>}
             {proveedor.telefono && <p><span className="font-semibold">Tel:</span> {proveedor.telefono}</p>}
-            {proveedor.correo && <p><span className="font-semibold">Email:</span> {proveedor.correo}</p>}
             {proveedor.dias_credito > 0 && <p><span className="font-semibold">Términos:</span> {proveedor.dias_credito} días de crédito</p>}
           </div>
         )}
@@ -87,3 +85,4 @@ export function CompraPDFTemplate({ compra, proveedor, productosLookup }: Compra
     </div>
   );
 }
+

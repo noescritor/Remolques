@@ -1,0 +1,1 @@
+export const BASE_URL = 'https://remolques-remolques-api.gehkp3.easypanel.host';
