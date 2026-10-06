@@ -3,6 +3,34 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**. Una entrada por sesión/cambio.
 
+## 2026-10-06 - Bloque 2R-0: Contención de recetas planas y preparar diagnóstico
+**Herramienta:** Antigravity
+
+**Qué cambió:**
+1. `ModeloConfiguratorModal.tsx`: Se deshabilitó la carga ciega de `producto_materiales` a `sub_items`.
+2. `CotizacionEditor.tsx`: Se verificó que los sub-items no se intenten heredar de las recetas planas de `producto_materiales`.
+3. `supabase/functions/make-server-feea4382/index.ts`: Se reescribió `calcularRequisicion` para que lea de `items_cotizacion` y no de `cotizaciones.items` (inexistente), y para que detecte si un ítem terminado no tiene configuración resuelta devolviendo un estado `sin_receta` en lugar de un arreglo vacío por fallback.
+4. `docs/remediacion/01_diagnostico_recetas.sql`: Script creado para que el dueño diagnostique el estado de las recetas.
+5. `docs/remediacion/02_correccion_recetas_PENDIENTE.sql`: Placeholder creado.
+
+**Por qué:**
+La migración `20261005_01_recetas_nuevas.sql` creó una receta plana incorrecta (sumando todas las opciones como si fueran materiales obligatorios) y el CPQ anterior inyectaba esta receta asumiendo que era estática. Esto detenía la venta real de remolques configurables. El backend además estaba intentando leer `cotizaciones.items`, lo cual siempre daba vacío.
+
+**Archivos tocados:**
+- `src/app/components/Presupuestos/ModeloConfiguratorModal.tsx`
+- `supabase/functions/make-server-feea4382/index.ts`
+- `docs/remediacion/01_diagnostico_recetas.sql` (creado)
+- `docs/remediacion/02_correccion_recetas_PENDIENTE.sql` (creado)
+
+**SQL a correr:**
+El dueño debe correr manualmente `docs/remediacion/01_diagnostico_recetas.sql` en el editor de Supabase y regresar el resultado.
+
+**Pruebas manuales pendientes (Rebuild / SQL):**
+* [ ] (El dueño) Correr `01_diagnostico_recetas.sql` y devolver los resultados.
+* [ ] Pendiente de correr el archivo `02_correccion_recetas_PENDIENTE.sql` una vez definido y con RESPALDO PREVIO DE LA BD.
+* [ ] No se probó la compilación de Edge Functions porque se requiere un Rebuild de EasyPanel (Deno check se probó estáticamente).
+
+
 ## Plantilla
 
 ```
@@ -18,6 +46,41 @@ Formato: entradas nuevas **arriba**. Una entrada por sesión/cambio.
 ```
 
 ---
+
+## 2026-10-06 (2) — Decisiones del dueño, catálogo unificado, remediación y prompt del Bloque 2R
+**Herramienta:** Claude Code
+**Tipo:** decisión / hallazgo
+**Archivos tocados (todos nuevos, sin cambios de código):** `PROMPT_ANTY_BLOQUE2R_CONFIGURADOR_Y_RECETA.md`, `docs/catalogo-opciones/catalogo_opciones_unificado.json`, `docs/remediacion/01_diagnostico_recetas.sql` (solo lectura), `docs/remediacion/02_correccion_recetas_PENDIENTE.sql` (**no correr**); edición de `ANALISIS_MANUAL_Y_COTIZADOR_2026-10-06.md` (§4.1 corrección y §6.4 decisiones).
+**Decisiones del dueño:** el SQL de recetas **ya se corrió en producción**; precio de venta = sugerencia (costo + margen configurable por tipo) con ajuste manual; cantidades del manual "por unidad" (pendiente validar con tabla de verificación); se soportan góndola, jaula y caja seca (solo la góndola tiene datos); catálogo de opciones = unión sin repetir de cotizador y manual.
+**Hallazgos nuevos:**
+- 🔴 **`calcularRequisicion` nunca calcula:** `select('*')` de `cotizaciones` y lee `cot.items`, que no existe en esa tabla (los conceptos están en `items_cotizacion`). Devuelve `[]` siempre ⇒ "no faltan materiales" para toda cotización. Corrige mi afirmación previa de que "pediría 56 rines".
+- 🟠 `sub_items` **no se persiste** (ausente de `toItemCotizacionRow`/`metadata`): vive solo en el editor y la impresión.
+- 🟠 La migración usó `(SELECT id FROM organizaciones LIMIT 1)` (puede ser la organización equivocada; hay una de administración) y `ON CONFLICT (nombre, organizacion_id)` sin restricción visible en las migraciones: el diagnóstico lo comprueba.
+- 🟠 `ModeloConfiguratorModal` consulta Supabase **directo desde el navegador** y usa `localStorage('pending_cpq')`; margen fijo de 30 % (el Excel usa montos fijos). Con costos 0, el precio sugerido sale 0.
+- El CSV de costeo trae un **despiece completo de la góndola con precios** (chasis, tina, equipamiento); solo se cargaron 8 líneas.
+- Catálogo unificado: 20 grupos, 126 opciones, **19 conflictos de precio** entre listas (p. ej. Hendrickson alta 43,700 vs 46,783.62; gancho Bestia 21,892.68 vs 28,040.98), **27 opciones sin precio**.
+- Faltan recetas de **jaula, caja seca, multimodal, cama baja, porta contenedor**; la traila solo tiene material, sin opciones.
+**Acciones manuales pendientes (dueño), en este orden:** (1) **respaldo** de la base (producción no tenía respaldos automáticos al 20-sep); (2) correr `01_diagnostico_recetas.sql` y pasar el resultado; (3) solo después, decidir `02_correccion_recetas_PENDIENTE.sql`; (4) pasar el prompt `PROMPT_ANTY_BLOQUE2R…` a Antigravity; (5) capturar recetas de jaula y caja seca; (6) precios de materiales.
+**Verificado:** lectura del SQL de recetas, `parsed_bom.json`, backend (`calcularRequisicion`, `toItemCotizacionRow`), `ModeloConfiguratorModal`; catálogo generado por script reproducible. No se ejecutó ningún SQL.
+**Ref. auditoría:** F3, F15; ARQUITECTURA §3.D, §3.E
+
+## 2026-10-06 — Análisis del MANUAL y del cotizador Excel; revisión del Bloque 2 de Antigravity
+**Herramienta:** Claude Code
+**Tipo:** hallazgo / decisión de diseño
+**Archivos tocados:** `ANALISIS_MANUAL_Y_COTIZADOR_2026-10-06.md` (nuevo), `docs/manual-recetas/lineas_parseadas.json` (nuevo). Sin cambios de código.
+**Qué se encontró:**
+- 🔴 **Receta plana con todas las opciones sumadas.** `artifacts/parsed_bom.json` y `20261005_01_recetas_nuevas.sql` convierten el manual (que lista todas las opciones juntas) en una receta plana: la Plana 40 ft pediría **10 piernas y 10 platos de suspensión, 10 ejes, 56 rines y 32 llantas** (debería ser 2/2/2/8/8), 3 marcas de pintura sumadas, 3 ganchos y 2 sistemas retráctiles. El CPQ del 1-oct carga esa receta en `sub_items` y `calcularRequisicion` los toma de ahí.
+- 🔴 **Cantidades perdidas en silencio:** 34 materiales repetidos en la Plana (p. ej. `CONSUMIBLE 65` 0.5+0.25+0.25) y `ON CONFLICT DO NOTHING` sobre `UNIQUE(producto_id, material_id)` conserva solo la primera.
+- 🟠 Todos los materiales con costo 0 (el manual no trae precios); solo 4 recetas cargadas (faltan 8 variantes de plataforma).
+- ⚠ `20261005_01_recetas_nuevas.sql` está sin versionar en la raíz: **no se sabe si se corrió en Supabase**. No correrlo tal cual.
+- ⚠ Proceso: 13 commits del Bloque 2 (1–2 oct) con **una sola entrada de changelog**; los commits `fix: CORS and 404 endpoints` y siguientes no están documentados.
+- **Corrige la conclusión del 20-sep** ("material por modelo fijo ⇒ BOM plano basta"): los modelos son fijos **con ~10 grupos de opciones elegibles, reglas condicionales y variantes por largo (35–48 ft) y ejes (2/3)**. Diseño propuesto: configurador → cotización **resumen** → aprobar → **presupuesto completo** (acero + tornillería + luz + aire + pintura + MO) → BOM congelado por unidad → OT/requisición/Kanban por paso.
+- Los pasos de las recetas (1–6, limpieza, pintura, aire, luz, terminado) son las **fases reales** del Kanban.
+- Excel: precio de venta tecleado (cálculo = costo + $110,000 plana / + $40,000 dolly, fijos); indirectos 2.5 % de un número pegado; dos listas de precios inconsistentes; 3 macros hacia hojas inexistentes; rutas fijas a una sola máquina; 6 plantillas de cotización; pagos **por chasis** sin comprobante (64 pagos, 0 con folio); 199 unidades de 63 clientes (83 sin producto).
+**Por qué:** El dueño pidió cotizar con todas las variantes y generar el presupuesto completo al aprobar; al contrastar con lo construido apareció el defecto de las recetas.
+**Acciones manuales pendientes (dueño):** (0) confirmar si el SQL de recetas se corrió; (1) responder las 5 preguntas de la sección 7 del documento.
+**Verificado:** Lectura de 41 hojas y de las macros VBA (extraídas y descomprimidas); conteos por script sobre `parsed_bom.json`. No se ejecutó ningún SQL ni el libro. Datos bancarios/RFC del libro no se copiaron.
+**Ref. auditoría:** F3, F9, F15; ARQUITECTURA §3.D (reemplaza su ajuste del 20-sep)
 
 ## 2026-10-01 - Bloque 2: CPQ y Generación de PDF (Leolca)
 **Herramienta:** Antigravity

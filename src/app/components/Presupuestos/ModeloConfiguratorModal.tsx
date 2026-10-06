@@ -37,24 +37,8 @@ export function ModeloConfiguratorModal({ modelo, onClose, productosCatalog }: P
   const cargarReceta = async (productoId: string) => {
     setLoading(true);
     try {
-      const { data: receta, error } = await supabase
-        .from('producto_materiales')
-        .select('cantidad, material:productos(id, nombre, costo, precio_unitario)')
-        .eq('producto_id', productoId);
-
-      if (error) throw error;
-      
-      if (receta) {
-        const subItems = receta.map((rm: any) => ({
-          material_id: rm.material.id,
-          nombre: rm.material.nombre,
-          cantidad: Number(rm.cantidad),
-          costo_unitario: Number(rm.material.costo || rm.material.precio_unitario || 0)
-        }));
-        setItems(subItems);
-      } else {
-        setItems([]);
-      }
+      // 2R-0: Se deshabilita la carga de producto_materiales porque la receta plana era incorrecta.
+      setItems([]);
     } catch (err) {
       console.error(err);
     } finally {
