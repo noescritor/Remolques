@@ -2,6 +2,11 @@
 
 Bit谩cora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
+## 2026-10-06 - Despliegue de Producci髇 (Merge 2R-0/2R-0b)
+**Herramienta:** Antigravity
+**Hash:** c5f3367
+**Desplegado:** Fusi髇 de bloque-2r-0 a main. Contenci髇 de recetas planas, arreglo de la calculadora de requisiciones para detectar estados 'sin_receta', recuperaci髇 de rutas /presupuestos, /produccion/* y eliminaci髇 de la carpeta legada en el frontend.
+
 ### 2026-10-06 (9) - Correcciones finales a 2R-0b
 - **Backend:** Se recuperaron correctamente `/presupuestos`, `/produccion/lineas` y `/produccion/fases` desde `0953ef3` debajo de `authMiddleware`. Se corrigi贸 la firma en la llamada a `aplicarAprobacion` en el endpoint de aprobar portal.
 - **Frontend:** Se quitaron expl铆citamente `rfc` y `correo` de `CompraPDFTemplate.tsx`.
@@ -284,3 +289,4 @@ El due帽o debe correr manualmente `docs/remediacion/01_diagnostico_recetas.sql` 
 **Qu茅 cambi贸 / qu茅 se encontr贸:** Auditor铆a est谩tica de seguridad, conexiones entre m贸dulos y salud del c贸digo. Detalle completo, con IDs (S=seguridad, F=flujos, C=c贸digo), en `AUDITORIA_2026-09-18.md`. No se modific贸 c贸digo de la aplicaci贸n.
 **Acciones manuales pendientes:** Revisar S1 (llaves en scripts versionados) y decidir rotaci贸n.
 **Verificado:** `npm run build` OK (26 s, bundle 3.15 MB). Sin type-check disponible (C2).
+
