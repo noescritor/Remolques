@@ -60,6 +60,32 @@ El dueño debe correr manualmente `docs/remediacion/01_diagnostico_recetas.sql` 
 
 ---
 
+## 2026-10-07 — Producción: la API desplegada es `main@8e0528d`, con los defectos del Bloque 1 aún sin corregir
+**Herramienta:** Claude Code
+**Tipo:** hallazgo (responde la pregunta abierta sobre el Rebuild)
+**Archivos tocados:** solo este changelog. Sin cambios de código.
+**Evidencia (captura del historial de EasyPanel, servicio `remolques-api`, aportada por el dueño):** despliegues de `feat: Bloque 2 - CPQ dinámico… refactor de calcularRequisicion` (1-oct), `fix: avoid CORS` (2-oct, ×2) y de nuevo `fix: avoid CORS` (hoy, sin cambios de código). **Sí hubo Rebuild desde el 1-oct y el último código desplegado es `main@8e0528d`.** La rama `bloque-2r-0` (7 commits, ya aprobada) **no** está desplegada y avanza sobre `main` en línea recta (fast-forward).
+**Lo que corre hoy en producción (verificado en `main:supabase/functions/make-server-feea4382/index.ts`):**
+- `registrarEvento` (5 usos) y `aplicarAprobacion` (1 uso) **sin definir** ⇒ `ReferenceError` **después** de guardar en: portal aprobar / rechazar / pedir cambios (el estado sí cambia, el cliente ve error), crear compra, recibir compra (el stock sí se ajusta) y generar órdenes (las órdenes sí se crean). Reintentar no duplica (hay guardas de idempotencia), pero la pantalla muestra error.
+- `/presupuestos` (4 métodos), `/produccion/lineas` y `/produccion/fases` **no existen** ⇒ Presupuestos y Tablero Kanban se ven vacíos.
+- `/productos/:id/materiales` y `/cotizaciones/:id/requisicion` declaradas **antes** de `authMiddleware` ⇒ siempre 500.
+**Acción recomendada, en este orden:** (1) `pg_dump` completo; (2) fusionar `bloque-2r-0` en `main` y subirla (decisión del dueño); (3) "Implementar" `remolques-api` **y** el servicio web (el frontend también cambió); (4) pruebas de humo (ver mensaje al dueño).
+**Verificado:** `git show main:…` y `git log main..bloque-2r-0`. No se tocó ningún servicio.
+
+## 2026-10-06 (10) — Revisión final del 2R-0b (commits b89ecd3, c9079fd): APROBADO. Luz verde al 2R-1
+**Herramienta:** Claude Code
+**Tipo:** revisión
+**Archivos tocados:** solo este changelog. Sin cambios de código. *(Esta entrada reemplaza a la mía "(8) Revisión del 2R-0b", que se perdió cuando se ejecutó `git checkout CHANGELOG_ANTIGRAVITY.md` sobre cambios sin confirmar; el contenido previo se resume aquí.)*
+**Verificado por mí:** diff de rutas contra la base `04f1e7e`: **solo** las 4 nuevas esperadas (`/productos/:id/materiales` GET y PUT, `/cotizaciones/:id/historial`, `/cotizaciones/:id/requisicion`), sin faltantes ni duplicadas; `/presupuestos` (4 métodos, líneas 432–468), `/produccion/lineas` (516) y `/produccion/fases` (532) **existen y están debajo** de `authMiddleware` (428); las rutas del portal siguen públicas; `aplicarAprobacion(supabase, cot.id, cot.organizacion_id, null)` coincide con su firma; `tsc`: 0 "Cannot find name"; `deno check`: 0 TS2304 (132 errores restantes = ruido de tipado de Hono); `npm run build` ✔; acentos intactos tras `Set-Content` (sin texto corrupto ni BOM); carpeta legada borrada en commit aparte; `CompraPDFTemplate` ya sin el código muerto.
+**Defectos previos del 2R-0b que se cerraron:** helpers sin definir, rutas borradas, rutas nuevas antes de `authMiddleware`, `BASE_URL` sin importar, `x-org-id` bloqueado por CORS, modal sin manejo de `sin_receta`, `PDFFullPageMoodboard` sin import, firma de `aplicarAprobacion`.
+**Observaciones que no bloquean (para el 2R-1):**
+- Proceso: volvió a editar con `Set-Content` sobre archivos completos y ejecutó **`git checkout` sobre un archivo compartido (el changelog)**, lo que borró una entrada ajena sin confirmar. Regla: nunca `git checkout`/`restore` de archivos con cambios de otros; el changelog se edita con edición puntual.
+- Formato del changelog: sus entradas (8)/(9) quedaron **dentro de la frase de encabezado** ("Formato: entradas nuevas arriba. [entradas] Una entrada por sesión/cambio.") y hay dos "(8)". Cosmético; ordenar al abrir el 2R-1.
+- La entrada (8) de Antigravity dice "Acciones manuales pendientes: ninguna". Sigue pendiente de la **base**: `pg_dump` completo antes de correr cualquier migración del 2R-1, y confirmar si se hizo Rebuild de la API desde el 1-oct.
+- En la raíz siguen ~80 scripts sueltos (`append_*.cjs`, `fix_*.cjs`…): deuda de limpieza C1 de la auditoría, fuera del alcance del 2R.
+**Decisión:** la rama `bloque-2r-0` está lista para revisión de fusión; **2R-1 puede empezar**. Recomendación: partirlo en **2R-1a** (esquema + importación del catálogo de opciones, no depende de precios) y **2R-1b** (importación de recetas del manual), porque falta analizar `Factura Leolca.xlsx`, que aporta el despiece de acero con precios y la mano de obra.
+**Verificado:** ejecución propia de `tsc`, `deno check`, `npm run build` y comparaciones con `git`/`grep`. No se ejecutó ningún SQL.
+
 ## 2026-10-06 (7) — Revisión del commit 0d4f3b2 (ajustes del 2R-0): SIN luz verde para el 2R-1
 **Herramienta:** Claude Code
 **Tipo:** revisión
