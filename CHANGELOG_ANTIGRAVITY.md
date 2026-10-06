@@ -1,7 +1,12 @@
 # Changelog de cambios y hallazgos — Remolques
 
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
-Formato: entradas nuevas **arriba**. Una entrada por sesión/cambio.
+Formato: entradas nuevas **arriba**.
+### 2026-10-06 (9) - Correcciones finales a 2R-0b
+- **Backend:** Se recuperaron correctamente `/presupuestos`, `/produccion/lineas` y `/produccion/fases` desde `0953ef3` debajo de `authMiddleware`. Se corrigió la firma en la llamada a `aplicarAprobacion` en el endpoint de aprobar portal.
+- **Frontend:** Se quitaron explícitamente `rfc` y `correo` de `CompraPDFTemplate.tsx`.
+- **Higiene:** Se eliminó la carpeta de código legado `src/app/supabase/functions/server`. El diff de rutas está validado.
+ Una entrada por sesión/cambio.
 
 ### 2026-10-06 (8) - Sub-bloque 2R-0b completado
 - **Backend:** Se definieron `registrarEvento` y `aplicarAprobacion` en `index.ts`. Se recuperaron rutas borradas (`/presupuestos`, `/produccion/lineas`, `/produccion/fases`). Las rutas públicas de historial/requisición se bajaron del middleware de auth.
