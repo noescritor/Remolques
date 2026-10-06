@@ -1,0 +1,9875 @@
+[
+ {
+  "hoja": "PLANA",
+  "fila": 3,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "CONSUMIBLE 65",
+  "estatus_o_uso": "CORTE DE PLACA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 4,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DISCO DE DESBASTE 9",
+  "estatus_o_uso": "ESMERILAR PLACAS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 5,
+  "proceso": "PASO 2",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "CO2",
+  "estatus_o_uso": "UNION DE SOLERAS",
+  "proveedores": [
+   "EL BENJA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 6,
+  "proceso": "PASO 2",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "ROLLO DE MICRO ALAMBRE",
+  "estatus_o_uso": "UNION DE SOLERAS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 7,
+  "proceso": "PASO 2",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DISCO DE CORTE 7",
+  "estatus_o_uso": "UNION DE SOLERAS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 8,
+  "proceso": "PASO 2",
+  "tipo": "linea",
+  "cantidad_raw": "0.25",
+  "cantidad": 0.25,
+  "unidad": null,
+  "producto": "CONSUMIBLE 65",
+  "estatus_o_uso": "UNION DE SOLERAS",
+  "proveedores": [
+   "EL BENJA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 9,
+  "proceso": "PASO 3",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "PERNO REY 3/8",
+  "estatus_o_uso": "PLANCHA",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 10,
+  "proceso": "PASO 3",
+  "tipo": "linea",
+  "cantidad_raw": "0.25",
+  "cantidad": 0.25,
+  "unidad": null,
+  "producto": "CONSUMIBLE 65",
+  "estatus_o_uso": "PUENTES Y BORDAS",
+  "proveedores": [
+   "EL BENJA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 11,
+  "proceso": "PASO 3",
+  "tipo": "linea",
+  "cantidad_raw": "0.25",
+  "cantidad": 0.25,
+  "unidad": null,
+  "producto": "ROLLO DE MICRO ALAMBRE",
+  "estatus_o_uso": "PUENTES Y BORDAS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 12,
+  "proceso": "PASO 3",
+  "tipo": "linea",
+  "cantidad_raw": "0.25",
+  "cantidad": 0.25,
+  "unidad": null,
+  "producto": "CO2",
+  "estatus_o_uso": "PUENTES Y BORDAS",
+  "proveedores": [
+   "EL BENJA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 13,
+  "proceso": "PASO 3",
+  "tipo": "linea",
+  "cantidad_raw": "0.25",
+  "cantidad": 0.25,
+  "unidad": null,
+  "producto": "OXIGENO",
+  "estatus_o_uso": "PUENTES Y BORDAS",
+  "proveedores": [
+   "EL BENJA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 14,
+  "proceso": "PASO 3",
+  "tipo": "linea",
+  "cantidad_raw": "0.25",
+  "cantidad": 0.25,
+  "unidad": null,
+  "producto": "DISCO LAMINADO 7",
+  "estatus_o_uso": "PUENTES Y BORDAS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 15,
+  "proceso": "PASO 3",
+  "tipo": "linea",
+  "cantidad_raw": "0.25",
+  "cantidad": 0.25,
+  "unidad": null,
+  "producto": "DISCO DE CORTE 7",
+  "estatus_o_uso": "PUENTES Y BORDAS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 16,
+  "proceso": "PASO 3",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "DISCO DE DESBASTE 9",
+  "estatus_o_uso": "PUENTES Y BORDAS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 18,
+  "proceso": "PASO 4",
+  "tipo": "linea",
+  "cantidad_raw": "38",
+  "cantidad": 38,
+  "unidad": null,
+  "producto": "CARGADORES 4X 102 IN",
+  "estatus_o_uso": "CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR",
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 19,
+  "proceso": "PASO 4",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "DISCO LAMINADO 7",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 20,
+  "proceso": "PASO 4",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "DISCO DE CORTE 7",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 21,
+  "proceso": "PASO 4",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "DISCO DE DESBASTE 9",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 22,
+  "proceso": "PASO 4",
+  "tipo": "linea",
+  "cantidad_raw": "0.25",
+  "cantidad": 0.25,
+  "unidad": null,
+  "producto": "OXIGENO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 23,
+  "proceso": "PASO 4",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "ROLLO DE MICROALAMBRE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 24,
+  "proceso": "PASO 4",
+  "tipo": "linea",
+  "cantidad_raw": "0.25",
+  "cantidad": 0.25,
+  "unidad": null,
+  "producto": "CO2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 25,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "DISCO LAMINADO 7",
+  "estatus_o_uso": "RESOLDE, RETRACTIL Y SUSPENSION",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 26,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "DISCO DE CORTE 7",
+  "estatus_o_uso": "RESOLDE, RETRACTIL Y SUSPENSION",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 27,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "DISCO DE DESBASTE 9",
+  "estatus_o_uso": "RESOLDE, RETRACTIL Y SUSPENSION",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 28,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "ROLLO DE MICROALAMBRE",
+  "estatus_o_uso": "RESOLDE, RETRACTIL Y SUSPENSION",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 29,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "CO2",
+  "estatus_o_uso": "RESOLDE, RETRACTIL Y SUSPENSION",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 30,
+  "proceso": "PASO 5",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "1 PZA",
+  "cantidad": 1,
+  "unidad": "PZA",
+  "producto": "TIPO DE SISTEMA RETRACTIL",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 31,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "SISTEMA RETRACTIL GRANDE",
+  "estatus_o_uso": "SUSPENSION ALTA",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR",
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 32,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "SISTEMA RETRACTIL CHICO",
+  "estatus_o_uso": "SUSPENSION NORMAL",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR",
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 34,
+  "proceso": "PASO 5",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "2 PARES",
+  "cantidad": 2,
+  "unidad": "PARES",
+  "producto": "TIPO DE SUSPENSION",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 35,
+  "proceso": "PASO 5",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION HENDRICKSON HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION HENDRICKSON HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "producto": "1 SUSPENSION HENDRICKSON HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 36,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 37,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 38,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR HENDRICKSON 23743",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 39,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR MONRROE 65512",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 40,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION HENDRICKSON C-25319 O R14-152",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 41,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 42,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 43,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL CON TORNILLO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 44,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 45,
+  "proceso": "PASO 5",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION HENDRICKSON HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION HENDRICKSON HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "producto": "1 SUSPENSION HENDRICKSON HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 46,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 47,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 48,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR HENDRICKSON 20126",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 49,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION HENDRICKSON R14-083-38",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 50,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 51,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 52,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL CON TORNILLO 7/8",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 53,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 54,
+  "proceso": "PASO 5",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION FLET MASTER HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION FLET MASTER HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "producto": "1 SUSPENSION FLET MASTER HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 55,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 56,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 57,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION FLET MASTER 8050",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 58,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION AMPRO 1R14-039",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 59,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION FCR 1R14-039",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 60,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR FLET MASTER 323",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 61,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR FCR",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 62,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR GABRIEL",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 63,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS FLET MASTER",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 64,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS HENDRICKSON",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 65,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS HENDRICKSON",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 66,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL HENDRICKSON 7/8",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 67,
+  "proceso": "PASO 5",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION AMPRO HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION AMPRO HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "producto": "1 SUSPENSION AMPRO HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 68,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 69,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 70,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION AMPRO 8050",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 71,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR GABRIEL",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 72,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS AMPRO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 73,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 74,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 75,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 76,
+  "proceso": "PASO 5",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION FCR HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION FCR HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "producto": "1 SUSPENSION FCR HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 77,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 78,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 79,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION AMPRO 8050",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 80,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR GABRIEL",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 81,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS AMPRO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 82,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 83,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 84,
+  "proceso": "PASO 5",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 85,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "TORNILLO ALLEN 1/2X1 1/2",
+  "estatus_o_uso": "CAJA DE HERRAMIENTA Y PORTA LLANTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 86,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 1/2 GRADO 5",
+  "estatus_o_uso": "CAJA DE HERRAMIENTA Y PORTA LLANTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 87,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "44",
+  "cantidad": 44,
+  "unidad": null,
+  "producto": "TORNILLO 5/8X1 1/2 GRADO 5",
+  "estatus_o_uso": "2 PARES DE PATINES",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 88,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "44",
+  "cantidad": 44,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 5/8 GRADO 5",
+  "estatus_o_uso": "2 PARES DE PATINES",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 89,
+  "proceso": "PASO 6",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "2 PARES",
+  "cantidad": 2,
+  "unidad": "PARES",
+  "producto": "TIPO DE PATIN",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 90,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PATIN AMPRO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 91,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PATIN HOLAND MARK V",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 92,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PATIN HJ",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 93,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PATIN FLET MASTER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 94,
+  "proceso": "PASO 6",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "2 PZA",
+  "cantidad": 2,
+  "unidad": "PZA",
+  "producto": "TIPO DE EJE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 95,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE FLET MASTER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 96,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE AMPRO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 97,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE FCR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 98,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE PRAT MAX",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 99,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE HJ",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 101,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DISCO LAMINADO 7",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 102,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DISCO DE CORTE 7",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 103,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "DISCO DE DESBASTE 9",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 104,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CO2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 105,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "0.5",
+  "cantidad": 0.5,
+  "unidad": null,
+  "producto": "ROLLO DE MICRO ALAMBRE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 106,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "LIJA #80",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 107,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CARDA 5/8 DE 3\"",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 108,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DISCO LAMINADO 4 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 109,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "1 L",
+  "cantidad": 1,
+  "unidad": "L",
+  "producto": "FOSFATO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 110,
+  "proceso": "PINTURA",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE PINTURA",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 111,
+  "proceso": "PINTURA",
+  "tipo": "opcion_pintura",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "PINTURA SHERVI",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 112,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "19",
+  "cantidad": 19,
+  "unidad": null,
+  "producto": "PINTURA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 113,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "20",
+  "cantidad": 20,
+  "unidad": null,
+  "producto": "THINER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 114,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "4.5",
+  "cantidad": 4.5,
+  "unidad": null,
+  "producto": "TRANSPARENTE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 115,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CATALIZADOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 116,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "PRAIMER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 117,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "THINER O REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 118,
+  "proceso": "PINTURA",
+  "tipo": "opcion_pintura",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "PINTURA PPG",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 119,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "16",
+  "cantidad": 16,
+  "unidad": null,
+  "producto": "PINTURA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 120,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "15",
+  "cantidad": 15,
+  "unidad": null,
+  "producto": "REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 121,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "2.5",
+  "cantidad": 2.5,
+  "unidad": null,
+  "producto": "CATALIZADOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 122,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "7",
+  "cantidad": 7,
+  "unidad": null,
+  "producto": "PRAIMER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 123,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "5",
+  "cantidad": 5,
+  "unidad": null,
+  "producto": "THINER O REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 124,
+  "proceso": "PINTURA",
+  "tipo": "opcion_pintura",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "PINTURA AXALTA",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 125,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "20",
+  "cantidad": 20,
+  "unidad": null,
+  "producto": "PINTURA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 126,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "15",
+  "cantidad": 15,
+  "unidad": null,
+  "producto": "REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 127,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "2.5",
+  "cantidad": 2.5,
+  "unidad": null,
+  "producto": "CATALIZADOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 128,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "PRAIMER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 129,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "KIT ABS",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 130,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "REDUCCION 3/4 * 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 131,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "REDUCCION 3/8 * 1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 132,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "NIPLE 1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 133,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TAPON 3/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 134,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TAPON 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 135,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "TAPON 1/4 SUSPENSION FM + 4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 136,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TAPON 1/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 137,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TE UNIO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 138,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "TE LATERAL 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 139,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TE CENTRO 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 140,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "RECTA 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 141,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "12",
+  "cantidad": 12,
+  "unidad": null,
+  "producto": "CODO 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 142,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CODO 3/8*1/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 143,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CODO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 144,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CODO 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 145,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "ADAPTADOR 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 146,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "MACHO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 147,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "HEMBRA 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 148,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "KIT DE ABS 2 EJES BENDIX",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 149,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VALVULA PROTECTORA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 150,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VALVULA NIVELADORA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 151,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VALVULA PALANQUETA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 152,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VARILLA NIVELADORA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 153,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VALVULA RETRACTIL SEALCO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 154,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "MANITA AZUL C/LLAVE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 155,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "MANITA ROJA C/LLAVE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 156,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "MANITA AZUL S/LLAVE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 157,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "MANITA ROJA S/LLAVE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 158,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "ESPARRAGO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 159,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TEFLON DE 13 METROS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 160,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "38",
+  "cantidad": 38,
+  "unidad": null,
+  "producto": "INCERTO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 161,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "INCERTO 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 162,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "30",
+  "cantidad": 30,
+  "unidad": null,
+  "producto": "MANGUERA AZUL 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 163,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "13",
+  "cantidad": 13,
+  "unidad": null,
+  "producto": "MANGUERA ROJA 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 164,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "MANGUERA CHAMBER 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 165,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TORNILLO 3/8 X 1 GRADO 8",
+  "estatus_o_uso": "KIT DE TANQUE DE AIRE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 166,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RONDANA PLANA 3/8",
+  "estatus_o_uso": "KIT DE TANQUE DE AIRE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 167,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 3/8",
+  "estatus_o_uso": "KIT DE TANQUE DE AIRE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 168,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 5/16 X 5 GRADO 8",
+  "estatus_o_uso": "KIT DE TORNILLOS DE ABS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 169,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "RONDANA PLANA 5/16",
+  "estatus_o_uso": "KIT DE TORNILLOS DE ABS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 170,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 5/16",
+  "estatus_o_uso": "KIT DE TORNILLOS DE ABS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 171,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TANQUE DE AIRE DE PLANA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 172,
+  "proceso": "AIRE",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE GANCHO",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 173,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "GANCHO HOLLAND 10 BARRENOS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 174,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "GANCHO PREMIER 10 BARRENOS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 175,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "GANCHO PREMIER BESTIA 6 BARRENOS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 176,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 3/4X3 1/2 GRADO 8",
+  "estatus_o_uso": "KIT DE GANCHO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 177,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "TORNILLO 3/4X 2 1/2 GRADO 8",
+  "estatus_o_uso": "KIT DE GANCHO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 178,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TUERCA GRIPCO 3/4",
+  "estatus_o_uso": "KIT DE GANCHO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 179,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 3/4",
+  "estatus_o_uso": "KIT DE GANCHO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 180,
+  "proceso": "AIRE",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE BOLSA RETRACTIL",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 181,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "BOLSA RETRACTIL GRANDE",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL GRANDE",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 182,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TUERCAS DE SEGURIDAD 1/2",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL GRANDE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 183,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "BOLSA RETRACTIL CHICA UBL",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 184,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TORNILLO 3/8 X 3/4 GRADO 8",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 185,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "RONDANAS PLANAS 3/8",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 186,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA ROSCA MILIMETRICA 3/4",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 188,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "HEMBRA 7 POLOS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 189,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "TORNILLO 1/4X1 GALVANIZADO",
+  "estatus_o_uso": "HEMBRAS Y PLAFON ABS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 190,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "RONDANA PLANA 5/16",
+  "estatus_o_uso": "HEMBRAS Y PLAFON ABS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 191,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 1/4",
+  "estatus_o_uso": "HEMBRAS Y PLAFON ABS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 192,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "15.9",
+  "cantidad": 15.9,
+  "unidad": null,
+  "producto": "CABLE AZUL CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 193,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "17.3",
+  "cantidad": 17.3,
+  "unidad": null,
+  "producto": "CABLE ROJO CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 194,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "22",
+  "cantidad": 22,
+  "unidad": null,
+  "producto": "CABLE AMARILLO CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 195,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "22",
+  "cantidad": 22,
+  "unidad": null,
+  "producto": "CABLE VERDE CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 196,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "28.5",
+  "cantidad": 28.5,
+  "unidad": null,
+  "producto": "CABLE CAFE CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 197,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "15.9",
+  "cantidad": 15.9,
+  "unidad": null,
+  "producto": "CABLE NEGRO CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 198,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "25.8",
+  "cantidad": 25.8,
+  "unidad": null,
+  "producto": "CABLE NEGRO CAL,12",
+  "estatus_o_uso": "SI LLEVA LATERALES Y ESTRIBO",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 199,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "14.5",
+  "cantidad": 14.5,
+  "unidad": null,
+  "producto": "CORRUGADO 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 200,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "2.8",
+  "cantidad": 2.8,
+  "unidad": null,
+  "producto": "CORRUGADO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 201,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "21.8",
+  "cantidad": 21.8,
+  "unidad": null,
+  "producto": "CORRUGADO 1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 202,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "CORRUGADO 3/8",
+  "estatus_o_uso": "SI LLEVA LATERALES Y ESTRIBO",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 203,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "22.8",
+  "cantidad": 22.8,
+  "unidad": null,
+  "producto": "CORRUGADO 1/4",
+  "estatus_o_uso": "SI LLEVA LATERALES Y ESTRIBO",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 204,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "18",
+  "cantidad": 18,
+  "unidad": null,
+  "producto": "TERMINAL 3/16",
+  "estatus_o_uso": "PLAFONES PRINCIPALES",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 205,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TERMINAL 1/4",
+  "estatus_o_uso": "HEMBRAS",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 206,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "36",
+  "cantidad": 36,
+  "unidad": null,
+  "producto": "TERMINAL 3/16",
+  "estatus_o_uso": "SI LLEVA LATERALES Y ESTRIBO",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 207,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "51",
+  "cantidad": 51,
+  "unidad": null,
+  "producto": "REMACHE 3/16 X 5/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "WURTH",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 208,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CINTA DE AISLAR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "PJ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 209,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "PLAFON ROJO 4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "TROGRIM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 210,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "5",
+  "cantidad": 5,
+  "unidad": null,
+  "producto": "PLAFON ROJO 2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "TROGRIM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 211,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLAFON AMBAR 2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "TROGRIM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 212,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "PLAFON AVALADO AMBAR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "TROGRIM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 213,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "20",
+  "cantidad": 20,
+  "unidad": null,
+  "producto": "PLAFON DE CARRITO AMBAR",
+  "estatus_o_uso": "LATERALES",
+  "proveedores": [
+   "TROGRIM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 214,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "16",
+  "cantidad": 16,
+  "unidad": null,
+  "producto": "PLAFON DE CARRITO ROJO",
+  "estatus_o_uso": "ESTRIBO",
+  "proveedores": [
+   "TROGRIM"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 215,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "72",
+  "cantidad": 72,
+  "unidad": null,
+  "producto": "TORNILLO 1/8X 1 1/4",
+  "estatus_o_uso": "SI LLEVA LATERALES Y ESTRIBO",
+  "proveedores": [
+   "EL BENJA",
+   "PJ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 216,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "72",
+  "cantidad": 72,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 1/8",
+  "estatus_o_uso": "SI LLEVA LATERALES Y ESTRIBO",
+  "proveedores": [
+   "EL BENJA",
+   "PJ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 217,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "LODERA BLANCA O NEGRA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PUEBLA LODERAS",
+   "PJ",
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 218,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "FLEJE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "JAIRO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 219,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TORNILLO 1/4X1 ACERO INOXIDABLE",
+  "estatus_o_uso": "TORNILLERIA DE LODERA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 220,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 1/4",
+  "estatus_o_uso": "TORNILLERIA DE LODERA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 221,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TOPE DE HULE 3 BARRENOS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ESPECIALIDADES DE HULE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 222,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "TORNILLO 1/2 X 2 1/2 GALVANIZADO",
+  "estatus_o_uso": "TORNILLERIA DE TOPE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 223,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 1/2 GALVANIZADA",
+  "estatus_o_uso": "TORNILLERIA DE TOPE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 224,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "RONDANA PLANA 1/2",
+  "estatus_o_uso": "TORNILLERIA DE TOPE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 225,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "20",
+  "cantidad": 20,
+  "unidad": null,
+  "producto": "WINCHES",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 226,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 1/2X 1 3/4",
+  "estatus_o_uso": "TORNILLERIA DE RIEL",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 227,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 1/2",
+  "estatus_o_uso": "TORNILLERIA DE RIEL",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 228,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "KIT DE ROTULACION",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PUEBLA LODERAS",
+   "PJ",
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 229,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CINTA REFLEJANTE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PUEBLA LODERAS",
+   "PJ",
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 230,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "PLACA DE NIP",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 231,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TORNILLO 1/4X1 ACERO INOXIDABLE",
+  "estatus_o_uso": "TORNILLERIA DE PORTA PLACA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 232,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 234,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "444",
+  "cantidad": 444,
+  "unidad": null,
+  "producto": "TORNILLO CABEZA DE COCHE 1/4 X 1 1/2",
+  "estatus_o_uso": "JUEGO DE REDILAS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 235,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "444",
+  "cantidad": 444,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 1/4",
+  "estatus_o_uso": "JUEGO DE REDILAS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 236,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "444",
+  "cantidad": 444,
+  "unidad": null,
+  "producto": "RONDANA PLANA 5/16",
+  "estatus_o_uso": "JUEGO DE REDILAS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 237,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "48",
+  "cantidad": 48,
+  "unidad": null,
+  "producto": "CHAVETAS 3/16*2",
+  "estatus_o_uso": "JUEGO DE REDILAS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 238,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "20",
+  "cantidad": 20,
+  "unidad": null,
+  "producto": "ESLABONES DE CADENA 1/2",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 239,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 5/8*3 GRADO 8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 240,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 5/8*5 GRADO 8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 241,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 3/4*6 GRADO 8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 242,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 3/4",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 243,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 3/4",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 244,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 5/8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 245,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 5/8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 246,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 3/4 X 6 GRADO 8",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 247,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 3/4",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 248,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 3/4 X 3 1/2 GRADO 8",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 249,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 3/4",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 250,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "12",
+  "cantidad": 12,
+  "unidad": null,
+  "producto": "CANDADO PARA PLANA",
+  "estatus_o_uso": "SI ES MULTIMODAL O PORTA CONTENEDOR",
+  "proveedores": [
+   "PJ",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 251,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "CARGADO 3X102 IN",
+  "estatus_o_uso": "SI ES MULTIMODAL O PORTA CONTENEDOR",
+  "proveedores": [
+   "PJ",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 252,
+  "proceso": "EXTRAS",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE RINES 24,5 Y 22,5",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 253,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE ACERO FLET MASTER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 254,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE ACERO ACURRAI",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 255,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE ACERO AMPRO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 256,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE AUMINIO FLET MASTER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 257,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE AUMINIO FLET MASTER TRAPEZOIDAL",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 258,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE AUMINIO AMPRO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 259,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE AUMINIO AMPRO MASTER TRAPEZOIDAL",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 260,
+  "proceso": "EXTRAS",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE LLANTAS 24,5 Y 22,5",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 261,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "LLANTA K PATOS LINEAL",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 262,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "LLANTA K PATOS TRACCION",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 263,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "LLANTA FIRESTON LINEAL",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "RADIAL LLANTAS",
+   "EL POTRERO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 264,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "LLANTA GODSHIELD LINEAL",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "RADIAL LLANTAS",
+   "EL POTRERO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 265,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "RADIAL LLANTAS",
+   "EL POTRERO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 266,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "RADIAL LLANTAS",
+   "EL POTRERO"
+  ]
+ },
+ {
+  "hoja": "PLANA",
+  "fila": 267,
+  "proceso": "EXTRAS",
+  "tipo": "encabezado",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "8",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 3,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "OREJA",
+  "estatus_o_uso": "CUADRO",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 4,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "BISAGRAS",
+  "estatus_o_uso": "CUADRO",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 5,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PERNO DE DOLLY",
+  "estatus_o_uso": "CUADRO",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 6,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "BUJE CONICO GRANDE",
+  "estatus_o_uso": "CUADRO",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 7,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "GATA DE MATRACA O TRINQUETE",
+  "estatus_o_uso": "LANZA",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 8,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DONA HOLLAND",
+  "estatus_o_uso": "PARA GANCHO HOLLAND",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 9,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DONA PREMIER",
+  "estatus_o_uso": "PARA GANCHO PREMIER",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 10,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DONA PREMIER PARA GANCHO BESTIA",
+  "estatus_o_uso": "PARA GANCHO BESTIA",
+  "proveedores": [
+   "EL BENJA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 11,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "TORNILLO 5/8X5 GADO 8",
+  "estatus_o_uso": "TORNILLERIA DE DONA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 12,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "TUERCA GRIPCO 5/8",
+  "estatus_o_uso": "TORNILLERIA DE DONA",
+  "proveedores": [
+   "EL BENJA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 13,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "12",
+  "cantidad": 12,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 5/8",
+  "estatus_o_uso": "TORNILLERIA DE DONA",
+  "proveedores": [
+   "EL BENJA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 14,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DISCO LAMINADO 7",
+  "estatus_o_uso": "ARMADO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 15,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DISCO DE CORTE 7",
+  "estatus_o_uso": "ARMADO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 16,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DISCO DE DESBASTE 9",
+  "estatus_o_uso": "ARMADO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 17,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "0.25",
+  "cantidad": 0.25,
+  "unidad": null,
+  "producto": "CONSUMIBLE 65",
+  "estatus_o_uso": "ARMADO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 18,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "ROLLO DE MICRO ALAMBRE",
+  "estatus_o_uso": "ARMADO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 19,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CO2",
+  "estatus_o_uso": "ARMADO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 20,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "0.25",
+  "cantidad": 0.25,
+  "unidad": null,
+  "producto": "OXIGENO",
+  "estatus_o_uso": "ARMADO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 21,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 22,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 23,
+  "proceso": "PASO 1",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "1 PZA",
+  "cantidad": 1,
+  "unidad": "PZA",
+  "producto": "TIPO DE SISTEMA RETRACTIL",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 24,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "SISTEMA RETRACTIL GRANDE",
+  "estatus_o_uso": "SUSPENSION ALTA",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR",
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 25,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "SISTEMA RETRACTIL CHICO",
+  "estatus_o_uso": "SUSPENSION NORMAL",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR",
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 27,
+  "proceso": "PASO 1",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "2 PARES",
+  "cantidad": 2,
+  "unidad": "PARES",
+  "producto": "TIPO DE SUSPENSION",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 28,
+  "proceso": "PASO 1",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION HENDRICKSON HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION HENDRICKSON HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "producto": "1 SUSPENSION HENDRICKSON HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 29,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 30,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 31,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR HENDRICKSON 23743",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 32,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR MONRROE 65512",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 33,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION HENDRICKSON C-25319 O R14-152",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 34,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 35,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 36,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL CON TORNILLO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 37,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 38,
+  "proceso": "PASO 1",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION HENDRICKSON HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION HENDRICKSON HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "producto": "1 SUSPENSION HENDRICKSON HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 39,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 40,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 41,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR HENDRICKSON 20126",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 42,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION HENDRICKSON R14-083-38",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 43,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 44,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 45,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL CON TORNILLO 7/8",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 46,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 47,
+  "proceso": "PASO 1",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION FLET MASTER HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION FLET MASTER HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "producto": "1 SUSPENSION FLET MASTER HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 48,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 49,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 50,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION FLET MASTER 8050",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 51,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION AMPRO 1R14-039",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 52,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION FCR 1R14-039",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 53,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR FLET MASTER 323",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 54,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR FCR",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 55,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR GABRIEL",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 56,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS FLET MASTER",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 57,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS HENDRICKSON",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 58,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS HENDRICKSON",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 59,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL HENDRICKSON 7/8",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 60,
+  "proceso": "PASO 1",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION AMPRO HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION AMPRO HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "producto": "1 SUSPENSION AMPRO HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 61,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 62,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 63,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION AMPRO 8050",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 64,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR GABRIEL",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 65,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS AMPRO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 66,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 67,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 68,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 69,
+  "proceso": "PASO 1",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION FCR HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION FCR HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "producto": "1 SUSPENSION FCR HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 70,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 71,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 72,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION AMPRO 8050",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 73,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR GABRIEL",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 74,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS AMPRO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 75,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 76,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 77,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 78,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "TORNILLO ALLEN 1/2X1 1/2",
+  "estatus_o_uso": "CAJA DE HERRAMIENTA Y PORTA LLANTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 79,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 1/2 GRADO 5",
+  "estatus_o_uso": "CAJA DE HERRAMIENTA Y PORTA LLANTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 80,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "44",
+  "cantidad": 44,
+  "unidad": null,
+  "producto": "TORNILLO 5/8X1 1/2 GRADO 5",
+  "estatus_o_uso": "2 PARES DE PATINES",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 81,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "44",
+  "cantidad": 44,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 5/8 GRADO 5",
+  "estatus_o_uso": "2 PARES DE PATINES",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 82,
+  "proceso": "PASO 1",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "2 PZA",
+  "cantidad": 2,
+  "unidad": "PZA",
+  "producto": "TIPO DE EJE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 83,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE FLET MASTER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 84,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE AMPRO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 85,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE FCR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 86,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE PRAT MAX",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 87,
+  "proceso": "PASO 1",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE HJ",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 89,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "LIJA #80",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 90,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CARDA 5/8 DE 3\"",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 91,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DISCO LAMINADO 4 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 92,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "1 L",
+  "cantidad": 1,
+  "unidad": "L",
+  "producto": "FOSFATO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 93,
+  "proceso": "PINTURA",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE PINTURA",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 94,
+  "proceso": "PINTURA",
+  "tipo": "opcion_pintura",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "PINTURA SHERVI",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 95,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "PINTURA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 96,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "THINER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 97,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TRANSPARENTE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 98,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "0.125",
+  "cantidad": 0.125,
+  "unidad": null,
+  "producto": "CATALIZADOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 99,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PRAIMER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 100,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "THINER O REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 101,
+  "proceso": "PINTURA",
+  "tipo": "opcion_pintura",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "PINTURA PPG",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 102,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "PINTURA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 103,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "1.75",
+  "cantidad": 1.75,
+  "unidad": null,
+  "producto": "REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 104,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TRANSPARENTE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 105,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "0.75",
+  "cantidad": 0.75,
+  "unidad": null,
+  "producto": "CATALIZADOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 106,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PRAIMER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 107,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "THINER O REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 108,
+  "proceso": "PINTURA",
+  "tipo": "opcion_pintura",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "PINTURA AXALTA",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 109,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "PINTURA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 110,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 111,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "150ML",
+  "cantidad": 150,
+  "unidad": "ML",
+  "producto": "CATALIZADOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 112,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "PRAIMER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 113,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "KIT ABS",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 114,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "REDUCCION 3/4 * 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 115,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "REDUCCION 3/8 * 1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 116,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "NIPLE 1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 117,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "NIPLE 1/2 +1 POR EL TANQUE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 118,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TE GALVANIZADA 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 119,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "TAPON 1/4 SUSPENSION FM + 4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 120,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TAPON 1/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 121,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TE LATERAL 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 122,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "TE CENTRO L 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 123,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TE UNION 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 124,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "RECTA 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 125,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "12",
+  "cantidad": 12,
+  "unidad": null,
+  "producto": "RECTA ½",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 126,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CODO 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 127,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CODO 3/8*1/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 128,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CODO 1/2 X 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 129,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "ADAPTADOR 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 130,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "MACHO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 131,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "HEMBRA 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 132,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "KIT DE ABS 2 EJES BENDIX",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 133,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VALVULA PROTECTORA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 134,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VALVULA NIVELADORA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 135,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VALVULA PALANQUETA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 136,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VARILLA NIVELADORA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 137,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VALVULA RETRACTIL SEALCO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 138,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 3/8 X 1 1/4 GRADO 8",
+  "estatus_o_uso": "KIT DE TANQUE DE AIRE",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 139,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIRAD 3/8",
+  "estatus_o_uso": "KIT DE TANQUE DE AIRE",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 140,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "RONDANA PLANA 3/8",
+  "estatus_o_uso": "KIT DE TANQUE DE AIRE",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 141,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 5/16 X5 GRADO 8",
+  "estatus_o_uso": "KIT DE TORNILLOS DE ABS",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 142,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANA PLANA 5/16",
+  "estatus_o_uso": "KIT DE TORNILLOS DE ABS",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 143,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 5/16",
+  "estatus_o_uso": "KIT DE TORNILLOS DE ABS",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 144,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "38",
+  "cantidad": 38,
+  "unidad": null,
+  "producto": "MANITA AZUL S/LLAVE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 145,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "MANITA ROJA S/LLAVE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 146,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "30",
+  "cantidad": 30,
+  "unidad": null,
+  "producto": "LLAVE DE PASO 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 147,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "13",
+  "cantidad": 13,
+  "unidad": null,
+  "producto": "LLAVE DE PASO 1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 148,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "ESPARRAGO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 149,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TEFLON DE 13 METROS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 150,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "INCERTO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 151,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "INCERTO 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 152,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "20",
+  "cantidad": 20,
+  "unidad": null,
+  "producto": "MANGUERA ROJA 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 153,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "MANGUERA CHAMBER 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 154,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "JUEGO DE MANGUERA ESPIRAL AZUL Y ROJA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 159,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 160,
+  "proceso": "AIRE",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE BOLSA RETRACTIL",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 161,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "BOLSA RETRACTIL GRANDE",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL GRANDE",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 162,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TUERCAS DE SEGURIDAD 1/2",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL GRANDE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 163,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "BOLSA RETRACTIL CHICA UBL",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 164,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TORNILLO 3/8 X 3/4 GRADO 8",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 165,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "RONDANAS PLANAS 3/8",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 166,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA ROSCA MILIMETRICA 3/4",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 168,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "HEMBRA 7 POLOS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 169,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "MACHO SOLO 7 POLOS",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 170,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TORNILLO 1/4X1 GALVANIZADO",
+  "estatus_o_uso": "HEMBRAS Y PLAFON ABS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 171,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "RONDANA PLANA 5/16",
+  "estatus_o_uso": "HEMBRAS Y PLAFON ABS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 172,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 1/4",
+  "estatus_o_uso": "HEMBRAS Y PLAFON ABS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 173,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "2,5 M",
+  "cantidad": 2.5,
+  "unidad": "M",
+  "producto": "CABLE 7 POLOS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ",
+   "PJ"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 174,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "6.6",
+  "cantidad": 6.6,
+  "unidad": null,
+  "producto": "CABLE ROJO CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 175,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "5",
+  "cantidad": 5,
+  "unidad": null,
+  "producto": "CABLE AMARILLO CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 176,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "4.2",
+  "cantidad": 4.2,
+  "unidad": null,
+  "producto": "CABLE VERDE CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 177,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "6.6",
+  "cantidad": 6.6,
+  "unidad": null,
+  "producto": "CABLE CAFE CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 178,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "7.5",
+  "cantidad": 7.5,
+  "unidad": null,
+  "producto": "CORRUGADO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 179,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "TERMINAL 3/16",
+  "estatus_o_uso": "PLAFONES PRINCIPALES",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 180,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "36",
+  "cantidad": 36,
+  "unidad": null,
+  "producto": "TERMINAL 3/16",
+  "estatus_o_uso": "SI LLEVA LATERALES Y ESTRIBO",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 181,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "21",
+  "cantidad": 21,
+  "unidad": null,
+  "producto": "REMACHE 3/16 X 5/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "WURTH",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 182,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CINTA DE AISLAR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "PJ"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 183,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "PLAFON ROJO 4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "TROGRIM"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 184,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "LODERA BLANCA O NEGRA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PUEBLA LODERAS",
+   "PJ",
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 185,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "FLEJE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "JAIRO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 186,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TORNILLO 1/4X1 ACERO INOXIDABLE",
+  "estatus_o_uso": "TORNILLERIA DE LODERA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 187,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 1/4",
+  "estatus_o_uso": "TORNILLERIA DE LODERA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 188,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "QUINTA HOLLAND",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 189,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "QUINTA FONTAINE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 190,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "10",
+  "cantidad": 10,
+  "unidad": null,
+  "producto": "TORNILLO 5/8X 2 1/2 GRADO 8",
+  "estatus_o_uso": "TORNILLERIA DE QUINTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 191,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "10",
+  "cantidad": 10,
+  "unidad": null,
+  "producto": "TUERCA GRIPCO 5/8",
+  "estatus_o_uso": "TORNILLERIA DE QUINTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 192,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "20",
+  "cantidad": 20,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 5/8",
+  "estatus_o_uso": "TORNILLERIA DE QUINTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 193,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "KIT DE ROTULACION",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PUEBLA LODERAS",
+   "PJ",
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 194,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CINTA REFLEJANTE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PUEBLA LODERAS",
+   "PJ",
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 195,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "PLACA DE NIP",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 196,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "3 M",
+  "cantidad": 3,
+  "unidad": "M",
+  "producto": "CADENA 1/2",
+  "estatus_o_uso": "CADENA DE ARRASTE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 197,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "GANCHO AMARILLO",
+  "estatus_o_uso": "CADENA DE ARRASTE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 198,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 5/8X 2 1/2 GRADO 8",
+  "estatus_o_uso": "CADENA DE ARRASTE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 199,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 5/8X 3 GRADO 8",
+  "estatus_o_uso": "CADENA DE ARRASTE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 200,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "TUERCA GRIPCO 5/8",
+  "estatus_o_uso": "CADENA DE ARRASTE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 201,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 5/8",
+  "estatus_o_uso": "CADENA DE ARRASTE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 202,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TORNILLO 1/2X 1 3/4",
+  "estatus_o_uso": "PORTA LODERA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 203,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 1/2",
+  "estatus_o_uso": "PORTA LODERA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 207,
+  "proceso": "TERMINADO",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE RINES 24,5 Y 22,5",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 208,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE ACERO FLET MASTER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 209,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE ACERO ACURRAI",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "RADIAL LLANTAS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 210,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE ACERO AMPRO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 211,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE AUMINIO FLET MASTER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 212,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE AUMINIO FLET MASTER TRAPEZOIDAL",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 213,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE AUMINIO AMPRO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 214,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RIN DE AUMINIO AMPRO MASTER TRAPEZOIDAL",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 215,
+  "proceso": "TERMINADO",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE LLANTAS 24,5 Y 22,5",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 216,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "LLANTA K PATOS LINEAL",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 217,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "LLANTA K PATOS TRACCION",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 218,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "LLANTA FIRESTON LINEAL",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "RADIAL LLANTAS",
+   "EL POTRERO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 219,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "LLANTA GODSHIELD LINEAL",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "RADIAL LLANTAS",
+   "EL POTRERO"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 220,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 221,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "20",
+  "cantidad": 20,
+  "unidad": null,
+  "producto": "ESLABONES DE CADENA 1/2",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 222,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 5/8*3 GRADO 8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 223,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 5/8*5 GRADO 8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 224,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 3/4*6 GRADO 8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 225,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 3/4",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 226,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 3/4",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 227,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 5/8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 228,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 5/8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 229,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 3/4 X 6 GRADO 8",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 230,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 3/4",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 231,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 3/4 X 3 1/2 GRADO 8",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "DOLLY",
+  "fila": 232,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 3/4",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 3,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CONSUMIBLE 65",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 4,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "DISCO DE DESBASTE 9",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 5,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CO2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 6,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "ROLLO DE MICRO ALAMBRE",
+  "estatus_o_uso": "CHASIS",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 7,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ROLLO DE SOLIDO",
+  "estatus_o_uso": "TINA",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 8,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "5",
+  "cantidad": 5,
+  "unidad": null,
+  "producto": "DISCO DE CORTE 7",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 9,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "PERNO REY 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 10,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "7",
+  "cantidad": 7,
+  "unidad": null,
+  "producto": "CO2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 11,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "7",
+  "cantidad": 7,
+  "unidad": null,
+  "producto": "OXIGENO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 12,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "5",
+  "cantidad": 5,
+  "unidad": null,
+  "producto": "DISCO LAMINADO 7",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 13,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "DISCO DE CORTE 14",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 14,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "ESPARRAGO DE 1\"",
+  "estatus_o_uso": "PUERTA DE LA GONDOLA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 15,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 1\"",
+  "estatus_o_uso": "PUERTA DE LA GONDOLA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 16,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 1X2 1/2 GRADO 8",
+  "estatus_o_uso": "PUERTA DE LA GONDOLA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 17,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 1\"",
+  "estatus_o_uso": "PUERTA DE LA GONDOLA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 20,
+  "proceso": "",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "1 PZA",
+  "cantidad": 1,
+  "unidad": "PZA",
+  "producto": "TIPO DE SISTEMA RETRACTIL",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 21,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "SISTEMA RETRACTIL GRANDE",
+  "estatus_o_uso": "SUSPENSION ALTA",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR",
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 22,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "SISTEMA RETRACTIL CHICO",
+  "estatus_o_uso": "SUSPENSION NORMAL",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR",
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 24,
+  "proceso": "",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "2 PARES",
+  "cantidad": 2,
+  "unidad": "PARES",
+  "producto": "TIPO DE SUSPENSION",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 25,
+  "proceso": "",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION HENDRICKSON HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION HENDRICKSON HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "producto": "1 SUSPENSION HENDRICKSON HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 26,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 27,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 28,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR HENDRICKSON 23743",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 29,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR MONRROE 65512",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 30,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION HENDRICKSON C-25319 O R14-152",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 31,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 32,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 33,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL CON TORNILLO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 34,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS HENDRICKSON",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 35,
+  "proceso": "",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION HJ TIPO LOW HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION HJ TIPO LOW HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "producto": "1 SUSPENSION HJ TIPO LOW HT300US ( SUSPENSION ALTA) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 36,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 37,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 38,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR GRC85938",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 39,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR MONRROE 65512",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 40,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION GOOD YEAR R14-232",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 41,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS HENDRICKSON",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 42,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS HENDRICKSON",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 43,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL CON TORNILLO",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 44,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS HJ",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "PROMARE",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 45,
+  "proceso": "",
+  "tipo": "opcion_suspension",
+  "cantidad_raw": "1 SUSPENSION FLET MASTER HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "cantidad": 1,
+  "unidad": "SUSPENSION FLET MASTER HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "producto": "1 SUSPENSION FLET MASTER HT300 ( SUSPENSION NORMAL) COMPONENTE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 46,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PIERNAS IZQUIERDA Y DERECHA",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 47,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PLATOS IZQUIERDO Y DERECHO",
+  "estatus_o_uso": "COMPONENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 48,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION FLET MASTER 8050",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 49,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION AMPRO 1R14-039",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 50,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CAMARA DE SUSPENSION FCR 1R14-039",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 51,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR FLET MASTER 323",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 52,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR FCR",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 53,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "AMORTIGUADOR GABRIEL",
+  "estatus_o_uso": "SUSTITUTO",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 54,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "ABRAZADERAS FLET MASTER",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 55,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS CENTRICAS HENDRICKSON",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 56,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANAS EXCENTRICAS HENDRICKSON",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 57,
+  "proceso": "",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "BUJE TRIFUNCIONAL HENDRICKSON 7/8",
+  "estatus_o_uso": "INDEPENDIENTE",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 58,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO ALLEN 1/2X1 1/2",
+  "estatus_o_uso": "PORTA LLANTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 59,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 1/2 GRADO 5",
+  "estatus_o_uso": "PORTA LLANTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 60,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "44",
+  "cantidad": 44,
+  "unidad": null,
+  "producto": "TORNILLO 5/8X1 1/2 GRADO 5",
+  "estatus_o_uso": "2 PARES DE PATINES",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 61,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "44",
+  "cantidad": 44,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 5/8 GRADO 5",
+  "estatus_o_uso": "2 PARES DE PATINES",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 62,
+  "proceso": "PASO 6",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "2 PARES",
+  "cantidad": 2,
+  "unidad": "PARES",
+  "producto": "TIPO DE PATIN",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 63,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PATIN AMPRO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 64,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PATIN HOLAND MARK V",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 65,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PATIN HJ",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 66,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "PATIN FLET MASTER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 67,
+  "proceso": "PASO 6",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "2 PZA",
+  "cantidad": 2,
+  "unidad": "PZA",
+  "producto": "TIPO DE EJE",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 68,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE FLET MASTER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 69,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE AMPRO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 70,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE FCR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "CADECO"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 71,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE PRAT MAX",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 72,
+  "proceso": "PASO 6",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "EJE HJ",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 74,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "LIJA #80",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 75,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CARDA 5/8 DE 3\"",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 76,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "DISCO LAMINADO 4 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 77,
+  "proceso": "LIMPIEZA",
+  "tipo": "linea",
+  "cantidad_raw": "1 L",
+  "cantidad": 1,
+  "unidad": "L",
+  "producto": "FOSFATO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 78,
+  "proceso": "PINTURA",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE PINTURA",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 79,
+  "proceso": "PINTURA",
+  "tipo": "opcion_pintura",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "PINTURA SHERVI",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 80,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "19",
+  "cantidad": 19,
+  "unidad": null,
+  "producto": "PINTURA TINA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 81,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "10",
+  "cantidad": 10,
+  "unidad": null,
+  "producto": "PINTURA CHASIS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 82,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "35",
+  "cantidad": 35,
+  "unidad": null,
+  "producto": "THINER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 83,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TRANSPARENTE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 84,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "1.5",
+  "cantidad": 1.5,
+  "unidad": null,
+  "producto": "CATALIZADOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 85,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "12",
+  "cantidad": 12,
+  "unidad": null,
+  "producto": "PRAIMER",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "LA NUEVA ESTRELLA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 86,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "12",
+  "cantidad": 12,
+  "unidad": null,
+  "producto": "THINER O REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 87,
+  "proceso": "PINTURA",
+  "tipo": "opcion_pintura",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "PINTURA PPG",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 88,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "19",
+  "cantidad": 19,
+  "unidad": null,
+  "producto": "PINTURA TINA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 89,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "10",
+  "cantidad": 10,
+  "unidad": null,
+  "producto": "PINTURA CHASIS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 90,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "21",
+  "cantidad": 21,
+  "unidad": null,
+  "producto": "REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 91,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TRANSPARENTE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 92,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "3.5",
+  "cantidad": 3.5,
+  "unidad": null,
+  "producto": "CATALIZADOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PINTURAS DAYMAN"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 93,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "12",
+  "cantidad": 12,
+  "unidad": null,
+  "producto": "PRAIMER",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 94,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "12",
+  "cantidad": 12,
+  "unidad": null,
+  "producto": "THINER O REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 95,
+  "proceso": "PINTURA",
+  "tipo": "opcion_pintura",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "PINTURA AXALTA A METAL",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 96,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "29",
+  "cantidad": 29,
+  "unidad": null,
+  "producto": "PINTURA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 97,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "7.5",
+  "cantidad": 7.5,
+  "unidad": null,
+  "producto": "REDUCTOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 98,
+  "proceso": "PINTURA",
+  "tipo": "linea",
+  "cantidad_raw": "7.5",
+  "cantidad": 7.5,
+  "unidad": null,
+  "producto": "CATALIZADOR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "AXALTA"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 100,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "KIT ABS",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 101,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "REDUCCION 3/4 * 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 102,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "REDUCCION 3/8 * 1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 103,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "NIPLE 1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 104,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TAPON 3/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 105,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TAPON 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 106,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "TAPON 1/4 SUSPENSION FM + 4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 107,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TAPON 1/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 108,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TE UNIO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 109,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TE LATERAL 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 110,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TE CENTRO O LATERAL 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 111,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "RECTA 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 112,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "14",
+  "cantidad": 14,
+  "unidad": null,
+  "producto": "CODO 3/8*1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 113,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "CODO 3/8*1/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 114,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CODO 3/8 +1 (SI LLEVA GANCHO)",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 115,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "CODO 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PRAT MAX",
+   "TSM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 116,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "ADAPTADOR 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 117,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "MACHO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 118,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "HEMBRA 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 119,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "KIT DE ABS 2 EJES BENDIX",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 120,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VALVULA PROTECTORA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 121,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VALVULA NIVELADORA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 122,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "VALVULA PALANQUETA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 123,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VARILLA NIVELADORA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 124,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "VALVULA RETRACTIL SEALCO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 125,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "MANITA AZUL C/LLAVE SI TIENE GANCHO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 126,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "MANITA ROJA C/LLAVE SI TIENE GANCHO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 127,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "MANITA AZUL S/LLAVE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 128,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "MANITA ROJA S/LLAVE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 129,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "ESPARRAGO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 130,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TEFLON DE 13 METROS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 131,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "20",
+  "cantidad": 20,
+  "unidad": null,
+  "producto": "INCERTO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 132,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "INCERTO 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 133,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "38",
+  "cantidad": 38,
+  "unidad": null,
+  "producto": "MANGUERA AZUL 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 134,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "13",
+  "cantidad": 13,
+  "unidad": null,
+  "producto": "MANGUERA ROJA 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 135,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "9",
+  "cantidad": 9,
+  "unidad": null,
+  "producto": "MANGUERA CHAMBER 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 136,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TORNILLO 3/8 X 1 1/4 GRADO 8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 137,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIRAD 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 138,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "RONDANA PLANA 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 139,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 5/16 X5 GRADO 8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 140,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "RONDANA PLANA 5/16",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 141,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 5/16",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 142,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TANQUE DE AIRE DE PLANA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "PRAT MAX"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 143,
+  "proceso": "AIRE",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE GANCHO",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 144,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "GANCHO HOLLAND 10 BARRENOS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 145,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "GANCHO PREMIER 10 BARRENOS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 146,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "GANCHO PREMIER BESTIA 6 BARRENOS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 147,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 3/4X3 1/2 GRADO 8",
+  "estatus_o_uso": "KIT DE GANCHO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 148,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "TORNILLO 3/4X 2 1/2 GRADO 8",
+  "estatus_o_uso": "KIT DE GANCHO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 149,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TUERCA GRIPCO 3/4",
+  "estatus_o_uso": "KIT DE GANCHO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 150,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 3/4",
+  "estatus_o_uso": "KIT DE GANCHO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 151,
+  "proceso": "AIRE",
+  "tipo": "grupo_opcion",
+  "cantidad_raw": "",
+  "cantidad": null,
+  "unidad": null,
+  "producto": "TIPO DE BOLSA RETRACTIL",
+  "estatus_o_uso": "",
+  "proveedores": []
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 152,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "BOLSA RETRACTIL GRANDE",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL GRANDE",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 153,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TUERCAS DE SEGURIDAD 1/2",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL GRANDE",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 154,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "BOLSA RETRACTIL CHICA UBL",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 155,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TORNILLO 3/8 X 3/4 GRADO 8",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 156,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "RONDANAS PLANAS 3/8",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 157,
+  "proceso": "AIRE",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA ROSCA MILIMETRICA 3/4",
+  "estatus_o_uso": "PARA SISTEMA RETRACTIL CHICO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 159,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "HEMBRA 7 POLOS",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 160,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 1/4X1 GALVANIZADO",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 161,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANA PLANA 5/16",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 162,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA ESTANDAR 1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 163,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "15.9",
+  "cantidad": 15.9,
+  "unidad": null,
+  "producto": "CABLE AZUL CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 164,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "17.3",
+  "cantidad": 17.3,
+  "unidad": null,
+  "producto": "CABLE ROJO CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 165,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "22",
+  "cantidad": 22,
+  "unidad": null,
+  "producto": "CABLE AMARILLO CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 166,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "22",
+  "cantidad": 22,
+  "unidad": null,
+  "producto": "CABLE VERDE CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 167,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "28.5",
+  "cantidad": 28.5,
+  "unidad": null,
+  "producto": "CABLE CAFE CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 168,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "15.9",
+  "cantidad": 15.9,
+  "unidad": null,
+  "producto": "CABLE NEGRO CAL,12",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 169,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "14.5",
+  "cantidad": 14.5,
+  "unidad": null,
+  "producto": "CORRUGADO 1/2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 170,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "2.8",
+  "cantidad": 2.8,
+  "unidad": null,
+  "producto": "CORRUGADO 3/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 171,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "21.8",
+  "cantidad": 21.8,
+  "unidad": null,
+  "producto": "CORRUGADO 1/4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 172,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "19",
+  "cantidad": 19,
+  "unidad": null,
+  "producto": "TERMINAL 3/16",
+  "estatus_o_uso": "PLAFONES PRINCIPALES",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 173,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TERMINAL 1/4",
+  "estatus_o_uso": "HEMBRAS",
+  "proveedores": [
+   "ELECTROMOTRIZ GONZALEZ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 174,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "51",
+  "cantidad": 51,
+  "unidad": null,
+  "producto": "REMACHE 3/16 X 5/8",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "WURTH",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 175,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CINTA DE AISLAR",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "EL BENJA",
+   "PJ"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 176,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "6",
+  "cantidad": 6,
+  "unidad": null,
+  "producto": "PLAFON ROJO 4",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "TROGRIM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 177,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "3",
+  "cantidad": 3,
+  "unidad": null,
+  "producto": "PLAFON ROJO 2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "TROGRIM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 178,
+  "proceso": "LUZ",
+  "tipo": "linea",
+  "cantidad_raw": "10",
+  "cantidad": 10,
+  "unidad": null,
+  "producto": "PLAFON AMBAR 2",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "TROGRIM"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 179,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "LODERA BLANCA O NEGRA",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PUEBLA LODERAS",
+   "PJ",
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 180,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "FLEJE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "JAIRO"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 181,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TORNILLO 1/4X1 ACERO INOXIDABLE",
+  "estatus_o_uso": "TORNILLERIA DE LODERA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 182,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "8",
+  "cantidad": 8,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 1/4",
+  "estatus_o_uso": "TORNILLERIA DE LODERA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 183,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "WINCHES",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PJ",
+   "AZNOR",
+   "PROMARE"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 184,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "KIT DE ROTULACION",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PUEBLA LODERAS",
+   "PJ",
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 185,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "CINTA REFLEJANTE",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "PUEBLA LODERAS",
+   "PJ",
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 186,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "PLACA DE NIP",
+  "estatus_o_uso": "",
+  "proveedores": [
+   "GUILLERMO"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 187,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TORNILLO 1/4X1 ACERO INOXIDABLE",
+  "estatus_o_uso": "TORNILLERIA DE PORTA PLACA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 188,
+  "proceso": "TERMINADO",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 1/4",
+  "estatus_o_uso": "TORNILLERIA DE PORTA PLACA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 190,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "20",
+  "cantidad": 20,
+  "unidad": null,
+  "producto": "ESLABONES DE CADENA 1/2",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 191,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 5/8*3 GRADO 8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 192,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 5/8*5 GRADO 8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 193,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TORNILLO 3/4*6 GRADO 8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 194,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "1",
+  "cantidad": 1,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 3/4",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 195,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 3/4",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 196,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 5/8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 197,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 5/8",
+  "estatus_o_uso": "RETRACTIL GRANDE HECHIZO",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 198,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 3/4 X 6 GRADO 8",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 199,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TUERCA DE SEGURIDAD 3/4",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 200,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "2",
+  "cantidad": 2,
+  "unidad": null,
+  "producto": "TORNILLO 3/4 X 3 1/2 GRADO 8",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 201,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "RONDANA AUTOMOTRIZ 3/4",
+  "estatus_o_uso": "AMORTIGUADOR DE ALTA",
+  "proveedores": [
+   "EL BENJA",
+   "FERREPRECIOS"
+  ]
+ },
+ {
+  "hoja": "GONDOLA",
+  "fila": 202,
+  "proceso": "EXTRAS",
+  "tipo": "linea",
+  "cantidad_raw": "4",
+  "cantidad": 4,
+  "unidad": null,
+  "producto": "TE PIPA 3/8 CON MACHO A UN LADO",
+  "estatus_o_uso": "SI ES 3 EJES",
+  "proveedores": [
+   "PRAT MAX"
+  ]
+ }
+]

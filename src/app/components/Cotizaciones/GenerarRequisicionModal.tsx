@@ -44,7 +44,7 @@ export function GenerarRequisicionModal({
     try {
       
       const orgId = (await supa.auth.getUser()).data.user?.user_metadata?.organizacion_id || localStorage.getItem('org_id');
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_API_URL}/cotizaciones/${cotizacion.id}/requisicion`, {
+      const res = await fetch(`${BASE_URL}/cotizaciones/${cotizacion.id}/requisicion`, {
         headers: { 'Authorization': `Bearer ${(await supa.auth.getSession()).data.session?.access_token}`, 'x-org-id': orgId }
       });
       if (res.ok) {

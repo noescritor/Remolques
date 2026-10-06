@@ -3,7 +3,7 @@ import { supabase } from '../utils/supabase/client';
 import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente, NotaSimple, Proveedor, CompraProveedor, CotizacionEvento, OrdenTrabajo, Presupuesto } from '../types';
 import { toast } from 'sonner';
 // Remueve la barra final para evitar URLs duplicadas como //clientes
-const BASE_URL = `https://remolques-remolques-api.gehkp3.easypanel.host`;
+import { BASE_URL } from '../utils/api';
 
 const getHeaders = (token?: string) => ({
   'Content-Type': 'application/json',

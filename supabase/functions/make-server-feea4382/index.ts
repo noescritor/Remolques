@@ -8,9 +8,10 @@ import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajuste
 
 async function calcularRequisicion(supabase, cotizacionId, orgId) {
   // 2R-0: Leer items desde la tabla correcta y verificar configuración
-  const { data: items } = await supabase.from('items_cotizacion')
+  const { data: items, error } = await supabase.from('items_cotizacion')
     .select('producto_id, cantidad, descripcion, metadata, producto:productos(tipo_item)')
     .eq('cotizacion_id', cotizacionId);
+    if (error) throw error;
     
   if (!items || items.length === 0) return [];
 
@@ -24,7 +25,8 @@ async function calcularRequisicion(supabase, cotizacionId, orgId) {
     // Si falta configuración en algún equipo, fallamos a la vista
     return faltanConfiguracion.map(item => ({
       estado: 'sin_receta',
-      mensaje: `Falta configurar el equipo: ${item.descripcion}`
+      mensaje: `Falta configurar el equipo: ${item.descripcion}`,
+        faltante: 0
     }));
   }
 
@@ -1884,12 +1886,13 @@ app.put("/compras-proveedor/:id", async (c) => {
          }
        }
        
-       // Tras recibir: recalcular requisición
-       if (prevCompra.cotizacion_id) {
-         const faltantes = await calcularRequisicion(supabase, prevCompra.cotizacion_id, orgId);
-         const totalFaltante = faltantes.reduce((sum, f) => sum + f.faltante, 0);
-         
-         if (totalFaltante === 0) {
+       // Tras recibir: recalcular requisicion
+         if (prevCompra.cotizacion_id) {
+           const faltantes = await calcularRequisicion(supabase, prevCompra.cotizacion_id, orgId);
+           const unconfigured = faltantes.some((f) => f.estado === 'sin_receta');
+           if (!unconfigured) {
+             const totalFaltante = faltantes.reduce((sum, f) => sum + (f.faltante || 0), 0);
+             if (totalFaltante === 0) {
            const { data: cot } = await supabase.from("cotizaciones").select("estado_produccion").eq("id", prevCompra.cotizacion_id).single();
            if (cot && (cot.estado_produccion === 'Requisición: falta material' || cot.estado_produccion === 'Compra en curso')) {
              await supabase.from("cotizaciones").update({ estado_produccion: 'Listo para producción' }).eq("id", prevCompra.cotizacion_id);
@@ -1898,11 +1901,12 @@ app.put("/compras-proveedor/:id", async (c) => {
                organizacion_id: orgId,
                evento: `Compra ${compra.folio} recibida. No hay faltantes. Estado: Listo para producción`,
                usuario_id: userId
-             });
+               });
+             }
            }
          }
-       }
-    }
+         }
+      }
     
     return c.json(compra);
   } catch (err: any) {
@@ -2177,9 +2181,19 @@ app.post("/cotizaciones/:id/generar-ordenes", async (c) => {
     
     // Check missing materials unless forced
     if (!force) {
-      const faltantes = await calcularRequisicion(supabase, cotizacionId, orgId);
-      const totalFaltante = faltantes.reduce((sum, f) => sum + f.faltante, 0);
-      if (totalFaltante > 0) {
+        const faltantes = await calcularRequisicion(supabase, cotizacionId, orgId);
+        
+        const unconfigured = faltantes.filter((f) => f.estado === 'sin_receta');
+        if (unconfigured.length > 0) {
+          return c.json({ 
+            error: "Aun faltan materiales para esta cotizacion (hay equipos sin configurar)", 
+            requiresForce: true,
+            faltantes: unconfigured
+          }, 409);
+        }
+
+        const totalFaltante = faltantes.reduce((sum, f) => sum + (f.faltante || 0), 0);
+        if (totalFaltante > 0) {
         return c.json({ 
           error: "Aún faltan materiales para esta cotización", 
           requiresForce: true,

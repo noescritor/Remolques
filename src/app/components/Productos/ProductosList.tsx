@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../ui/alert-dialog';
 import { Badge } from '../ui/badge';
+import { BASE_URL } from '../../utils/api';
 import { Plus, Search, Edit, Trash2, Package, Calculator, FolderPlus, Tag } from 'lucide-react';
 import { Producto, ProductoTipo, ServicioModo, PeriodoCobro, CategoriaProducto } from '../../types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -143,7 +144,7 @@ export function ProductosList({
            const { supabase: supa } = await import('../../utils/supabase/client');
            const orgId = (await supa.auth.getUser()).data.user?.user_metadata?.organizacion_id || localStorage.getItem('org_id');
            const token = (await supa.auth.getSession()).data.session?.access_token;
-           await fetch(`${import.meta.env.VITE_SUPABASE_API_URL}/productos/${targetId}/materiales`, {
+           await fetch(`${BASE_URL}/productos/${targetId}/materiales`, {
              method: 'PUT',
              headers: { 'Authorization': `Bearer ${token}`, 'x-org-id': orgId, 'Content-Type': 'application/json' },
              body: JSON.stringify(materialesBOM.map(m => ({ material_id: m.material_id, cantidad: m.cantidad })))

@@ -47,6 +47,52 @@ El dueño debe correr manualmente `docs/remediacion/01_diagnostico_recetas.sql` 
 
 ---
 
+## 2026-10-06 (6) — ¿Hay recetas de Cama Baja 18ft, Cuello de Ganso 24ft y Ganadero 14ft? Hallazgo de `Factura Leolca.xlsx`
+**Herramienta:** Claude Code
+**Tipo:** hallazgo
+**Archivos tocados:** solo este changelog. Sin cambios de código.
+**Respuesta verificada:** **no existe receta** de esos tres modelos en `MANUAL.xlsx`, en el cotizador `.xlsm`, en el CSV de Antigravity ni en los libros de `Formatos/`. En la base vienen de `seed_remolques.sql` (9-sep, datos de demostración: organización "Empresa de Remolques", clientes inventados, descripciones "2 ejes de 3500 lbs", precios 85,000 / 65,000 / 130,000). El dueño indica que sí son productos reales: se necesitan sus recetas y especificaciones reales; los precios y descripciones actuales **no son confiables**.
+**Archivo nuevo no revisado antes:** `C:\Users\luisa\Downloads\Factura Leolca.xlsx` (2-oct, el más reciente junto con `MANUAL.xlsx`; el cotizador `.xlsm` es del 1-oct). Es un libro de costeo con hojas `Productos`, `Complementos`, `Plataforma`, `Dolly`, `Gondola` (A-36 **y Hardox 450**, con despiece de chasis y tina con precios), `REPARACIONES` y hojas **vacías** `Traila`, `Multimodal`, `Cama Baja`, `Porta Contenedor`, `Caja Seca`, `Caja de Volteo`. Su catálogo `Productos` lista: Plataforma 40 ft 2 y 3 ejes, 42 ft 3 ejes, 45 ft 3 ejes, Dolly, Góndola con cuello 45 m³ 2 y 3 ejes, Multimodal 40 ft 2 ejes, **Cama Baja 53 ft**, Porta Contenedor 40 ft 2 ejes y Caja Seca. Incluye "combinación de ensamble" (opciones con cantidad 0/1/2), despiece de acero con precio por pieza y **costo hora-hombre por proceso**. El CSV de Antigravity es una exportación de la hoja `Gondola` de este libro (mismos precios: Hendrickson alta 46,783.62; ejes 19,905.6 y 21,692).
+**Consecuencias:** (1) los precios de este libro son **más recientes** que los del TARIFARIO que el catálogo unificado usó como principal; hay que reconsiderar la fuente de precios; (2) las hojas vacías confirman qué recetas faltan: Cama Baja, Caja Seca, Caja de Volteo, Traila (y Jaula, que solo aparece en pintura); (3) Multimodal y Porta Contenedor podrían ser **plataforma 40 ft + opción "multimodal"** (el manual ya trae esa condición: 12 candados + 8 cargadores), por confirmar; (4) este libro contiene nombres y tarifas de colaboradores: no copiarlos a documentos del repo.
+**Pendiente:** analizar `Factura Leolca.xlsx` a fondo (aún no se hizo) antes de cerrar la fuente de precios y el diseño de mano de obra del 2R-4.
+
+## 2026-10-06 (5) — Limpieza ejecutada y revisión del commit 24a70e2 (Bloque 2R-0)
+**Herramienta:** Claude Code
+**Tipo:** verificación / revisión
+**Archivos tocados:** solo este changelog. Sin cambios de código.
+**Limpieza ejecutada por el dueño:** `02b_correccion_recetas_1oct.sql` corrió bien; la verificación posterior muestra **0 líneas de receta** en las 10 `PLATAFORMA n FT`. Copia disponible en `_bak_20261006_producto_materiales` (RLS activado). Queda sin confirmar un `pg_dump` completo.
+**Revisión de `24a70e2` (rama `bloque-2r-0`, sin push — correcto):**
+- ✔ `ModeloConfiguratorModal` ya no lee `producto_materiales` ni consulta Supabase para la receta.
+- ✔ `calcularRequisicion` ahora lee `items_cotizacion` (la relación `producto:productos(tipo_item)` sí existe por la FK) y quitó el respaldo a la receta plana.
+- 🔴 **El aviso `sin_receta` no llega a ningún lado.** La función devuelve objetos `{estado, mensaje}` sin `faltante`; los consumidores calculan `reduce((s,f) => s + f.faltante)` ⇒ `NaN`. En `POST /cotizaciones/:id/generar-ordenes` (≈ línea 2180) `NaN > 0` es falso: **se generan las órdenes de trabajo como si no faltara nada**. En la recepción de compras (≈ 1889) `NaN === 0` es falso: no pasa a "Listo para producción". El modal de requisición filtra `f.faltante > 0` y muestra **lista vacía sin mensaje**. El objetivo de "fallar a la vista" no se cumple.
+- 🟠 `const { data: items } = …` **ignora el `error`**: si la consulta falla, devuelve `[]` en silencio (el mismo patrón que se quiere eliminar).
+- 🟠 `GenerarRequisicionModal` y `ProductosList` siguen usando `VITE_SUPABASE_API_URL`, que **no está definida en ningún `.env*`** (hallazgo P0-4 del Bloque 1-FIX, aún abierto): la URL queda `undefined/…`, el `fetch` falla y el modal queda vacío por otra razón.
+- 🟠 Proceso: quedaron scripts de parche sin versionar (`scripts/patch_requisicion_2r0.cjs`, `scripts/append_changelog_2r0.cjs`); `AGENTS.md` prohíbe parchear por script. "Deno check se probó estáticamente" no es evidencia: indicar el comando y su salida. Los dos SQL de `docs/remediacion` (`01`, `02`) se reescribieron como versiones más simples; los vigentes son `01b`, `01c` y `02b`.
+**Ajustes pedidos a Antigravity antes de pasar al 2R-1:** (1) que los tres llamadores traten `estado: 'sin_receta'` de forma explícita (409 con la lista en `generar-ordenes`; no avanzar de estado en compras; el modal muestra el mensaje); (2) revisar `error` de la consulta y lanzar; (3) usar la URL de la API de `useSupabaseData` (`BASE_URL` compartido) en vez de `VITE_SUPABASE_API_URL`; (4) borrar los scripts de parche; (5) adjuntar la salida real de `deno check` y `tsc --noEmit`.
+**Verificado:** lectura del diff `24a70e2`, de los tres llamadores y del modal; búsqueda de la variable de entorno. No se ejecutó nada.
+
+## 2026-10-06 (4) — Resultado de `01c` y corrección exacta de las recetas del 1-oct
+**Herramienta:** Claude Code
+**Tipo:** hallazgo / corrección
+**Archivos tocados:** `docs/remediacion/02b_correccion_recetas_1oct.sql` (nuevo; **no corrido**); correcciones en `PROMPT_ANTY_BLOQUE2R_…` (§2). Sin cambios de código.
+**Resultado en producción (`01c`, corrido por el dueño):**
+- 10 `PLATAFORMA n FT` con recetas: 3 de 68 líneas y 7 de 65 (**659 líneas** en total); **6 líneas de piso sumadas** en cada una; **0 líneas de mano de obra**; cantidad máxima 52 (buchacas, legítima) salvo `PLATAFORMA 2 35 FT` con **5450**.
+- 13 "productos terminados" **sin receta** que no son modelos: 9 piezas mal clasificadas (eje, gato, 2 llantas, rin, placa, tirón, varilla niveladora, 2 vigas, algunas con sufijo de prueba `20260917195452`) y 3 remolques que parecen de demostración (`Cama Baja 18ft`, `Cuello de Ganso 24ft`, `Ganadero 14ft`).
+**Corrige mi mensaje anterior:** dije que la mano de obra quedó "cargada como 3,000 unidades". Eso es lo que dice el **archivo**, pero en producción **no llegó** (se omitió porque el material no existe). Lo que sí llegó: 6 pisos sumados y un precio (5450) como cantidad en la plataforma de 35 ft.
+**Acción pendiente (dueño):** correr `02b_correccion_recetas_1oct.sql` (borra solo las 659 líneas; falla sin borrar si el conteo no coincide; deja copia en `_bak_20261006_producto_materiales` con RLS activado). Un `pg_dump` completo sigue recomendado y no se ha confirmado.
+**Pregunta abierta:** ¿`Cama Baja 18ft`, `Cuello de Ganso 24ft` y `Ganadero 14ft` son productos reales de Leolca o datos de prueba?
+**Nota:** el borrador anterior `02_correccion_recetas_PENDIENTE.sql` creaba la copia de respaldo **sin RLS** (en `public` quedaría legible por la API); `02b` lo corrige.
+
+## 2026-10-06 (3) — Diagnóstico de producción: la migración del 5-oct NO se aplicó; las recetas malas son las del 1-oct
+**Herramienta:** Claude Code
+**Tipo:** hallazgo / corrección
+**Archivos tocados:** `docs/remediacion/01c_productos_terminados.sql` (nuevo, solo lectura); correcciones en `PROMPT_ANTY_BLOQUE2R_CONFIGURADOR_Y_RECETA.md` (§2) y `ANALISIS_MANUAL_Y_COTIZADOR_2026-10-06.md` (§4.1). Sin cambios de código.
+**Resultado del diagnóstico (`01b`, corrido por el dueño en Supabase):** 144 `materia_prima` y 23 `producto_terminado`, todos en la organización `00000000-0000-0000-0000-000000000001` (la única; las 11 cotizaciones reales también); `productos` solo tiene `productos_pkey` (sin índice único por nombre+organización); la receta "PLANA 40 FT 2 EJES CON RETRACTIL" no existe; 6 cotizaciones y 0 compras desde el 1-oct.
+**Conclusión:** `20261005_01_recetas_nuevas.sql` **falló y se deshizo** (su `ON CONFLICT (nombre, organizacion_id)` exige un índice que no existe). **No volver a correrlo.** Lo que está en producción es `20261001_03_migracion_bom.sql` (commit `c668f22`), con defectos verificados en el archivo: 8 pisos sumados; precio cargado como cantidad (`MANO DE OBRA PISO` = 3000, `MONTADA DE LLANTAS` = 50); valores de 2 ejes en variantes de 3 ejes; 16–22 líneas por producto omitidas en silencio (65 de 81–87 líneas).
+**Corrige:** mi premisa del turno anterior ("el SQL del 5-oct ya se corrió y dejó 56 rines"). La preocupación por la organización equivocada (`LIMIT 1`) **se descarta**: hay una sola organización.
+**Pendiente (dueño):** correr `01c_productos_terminados.sql` y pasar las filas; respaldo de la base antes de cualquier `DELETE`.
+**Verificado:** lectura de `20261001_03_migracion_bom.sql` (12,456 líneas) y capturas del dueño. No se ejecutó ningún SQL.
+
 ## 2026-10-06 (2) — Decisiones del dueño, catálogo unificado, remediación y prompt del Bloque 2R
 **Herramienta:** Claude Code
 **Tipo:** decisión / hallazgo
