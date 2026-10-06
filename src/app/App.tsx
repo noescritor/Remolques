@@ -5,6 +5,8 @@ import { CotizacionesList } from './components/Cotizaciones/CotizacionesList';
 import { CotizacionEditor } from './components/Cotizaciones/CotizacionEditor';
 import { CotizacionDetalle } from './components/Cotizaciones/CotizacionDetalle';
 import { PDFFullPageLeolca } from './components/Cotizaciones/PDFFullPageLeolca';
+import { PDFFullPageMoodboard } from './components/Cotizaciones/PDFFullPageMoodboard';
+import { Pago, CotizacionEvento } from './types';
 import { PortalCliente } from './components/Portal/PortalCliente';
 import { PortalPDF } from './components/Portal/PortalPDF';
 
@@ -208,7 +210,7 @@ export default function App() {
         await crearCotizacionEvento({
           cotizacion_id: nuevaCotizacion.id,
           evento: esNuevaVersion ? `Nueva versión (v${nuevaCotizacion.version}) creada` : `Cotización ${nuevaCotizacion.folio} creada`
-        });
+        , organizacion_id: localStorage.getItem('org_id') || '' });
         toast.success(
           esNuevaVersion 
             ? `Nueva versión (v${nuevaCotizacion.version}) creada exitosamente` 
@@ -220,7 +222,7 @@ export default function App() {
         await crearCotizacionEvento({
           cotizacion_id: currentId,
           evento: 'Cotización actualizada'
-        });
+        , organizacion_id: localStorage.getItem('org_id') || '' });
         toast.success('Cotización actualizada');
         navigate(`/cotizaciones/${currentId}`);
       }
@@ -238,7 +240,7 @@ export default function App() {
       await crearCotizacionEvento({
         cotizacion_id: id,
         evento: `Estado cambiado a: ${estado}`
-      });
+      , organizacion_id: localStorage.getItem('org_id') || '' });
       toast.success(`Estado cambiado a ${estado}`);
     } catch (error) {
       toast.error('Error al cambiar estado', {
@@ -370,7 +372,7 @@ export default function App() {
         await crearCotizacionEvento({
           cotizacion_id: pagoData.cotizacion_id,
           evento: `Pago registrado por $${pagoData.monto} (${pagoData.metodo_pago})`
-        });
+        , organizacion_id: localStorage.getItem('org_id') || '' });
       }
       toast.success('Pago registrado');
     } catch (error) {

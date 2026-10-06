@@ -47,6 +47,23 @@ El dueño debe correr manualmente `docs/remediacion/01_diagnostico_recetas.sql` 
 
 ---
 
+## 2026-10-06 (7) — Revisión del commit 0d4f3b2 (ajustes del 2R-0): SIN luz verde para el 2R-1
+**Herramienta:** Claude Code
+**Tipo:** revisión
+**Archivos tocados:** solo este changelog. Sin cambios de código.
+**Lo que sí quedó bien:** `calcularRequisicion` ahora lanza el error de la consulta; `generar-ordenes` responde 409 con la lista de equipos sin configurar; la recepción de compras no avanza de estado con `sin_receta`; `BASE_URL` unificado en `src/app/utils/api.ts`; borró 16 scripts de parche de `scripts/`; agregó `typescript` y corrió `tsc`/`deno check` (me los mostró).
+**Hallazgos que bloquean el 2R-1 (verificados en el código y corriendo `tsc` y el build):**
+- 🔴 **El Fix del Bloque 1 nunca se aplicó.** En `index.ts` (rama `bloque-2r-0`): `registrarEvento` (5 usos) y `aplicarAprobacion` (1 uso) **no están definidas en ningún commit** ⇒ `ReferenceError` (portal aprobar/rechazar/solicitar cambios, crear y recibir compra, generar órdenes; fallan **después** de escribir en la base). Las rutas `/presupuestos` (4), `/produccion/lineas` y `/produccion/fases` **no existen** (se borraron en `d5b5a05`; están en `0953ef3`). Las rutas `/productos/:id/materiales`, `/cotizaciones/:id/historial` y `/cotizaciones/:id/requisicion` siguen declaradas **antes** de `authMiddleware` (líneas 55–137 vs. 507) ⇒ siempre 500.
+- 🔴 **`deno check` sí mostraba los nombres sin definir** (`TS2304 Cannot find name 'registrarEvento'` ×5, `'aplicarAprobacion'` ×1; salida guardada en `deno_output.txt`), pero el reporte los llamó "errores propios de Hono preexistentes". Los 101 `TS2769` sí son ruido de tipado; los `TS2304` son errores reales.
+- 🔴 **Regresión nueva:** `GenerarRequisicionModal.tsx:47` usa `BASE_URL` **sin importarlo** ⇒ `ReferenceError`, atrapado por el `try/catch` ⇒ lista vacía sin aviso (el build pasa porque Vite no revisa tipos).
+- 🟠 El modal sigue enviando el encabezado `x-org-id`, que el backend **no permite en CORS** (`allowHeaders: Content-Type, Authorization`): el navegador bloquea la petición. El backend no lo necesita (la organización sale del token).
+- 🟠 El modal **no maneja `sin_receta`**: filtra `f.faltante > 0` y muestra lista vacía. Lo que el reporte dice ("el UI muestra el objeto") no está implementado.
+- 🟠 `App.tsx:761` usa `<PDFFullPageMoodboard>` y su import **ya no existe** (se quitó en `c668f22`, 1-oct): esa ruta de PDF lanza `ReferenceError`. `App.tsx:366` usa el tipo `Pago` sin importarlo (solo tipo; sin efecto en ejecución).
+- 🟠 Higiene del commit: mezcló 40 archivos ajenos (documentos de análisis, `artifacts/`, **`20261005_01_recetas_nuevas.sql` en la raíz** —la migración fallida que no debe correrse—, `deno_output.txt` de 155 KB, `tsc_output.txt`). Salidas de herramientas no se versionan; los documentos van en commits aparte. Cambió `tsconfig.json` (quitó `baseUrl`): aceptable, el build pasa, pero debió anotarse.
+**Decisión:** no se autoriza el 2R-1 hasta cerrar el apartado "2R-0b" (aplicar los P0 del Bloque 1-FIX + estos hallazgos). Mensaje enviado al dueño para Antigravity. **No hacer Rebuild del backend desde esta rama.**
+**Pregunta abierta (dueño):** ¿se hizo Rebuild del servicio de la API en EasyPanel desde el 1-oct? Si sí, hoy el portal y las compras fallan después de guardar.
+**Verificado:** `git show` del commit, lectura de `index.ts`, `tsc --noEmit` propio (77 errores; 3 identificadores inexistentes en app + los de la carpeta legada), `npm run build` (pasa), `deno_output.txt` (UTF-16) leído. No tengo `deno` en esta sesión.
+
 ## 2026-10-06 (6) — ¿Hay recetas de Cama Baja 18ft, Cuello de Ganso 24ft y Ganadero 14ft? Hallazgo de `Factura Leolca.xlsx`
 **Herramienta:** Claude Code
 **Tipo:** hallazgo
