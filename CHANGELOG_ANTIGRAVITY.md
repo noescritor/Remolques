@@ -60,6 +60,16 @@ El dueño debe correr manualmente `docs/remediacion/01_diagnostico_recetas.sql` 
 
 ---
 
+## 2026-10-07 (2) — Revisión de `main` tras el despliegue: el commit `2bf0841` PERDIÓ otra vez las rutas de Presupuestos y Producción
+**Herramienta:** Claude Code
+**Tipo:** revisión / regresión
+**Archivos tocados:** solo este changelog. Sin cambios de código.
+**Qué pasó (verificado con `git`):** la fusión `c5f3367` (aprobada) llevó a `main` las rutas recuperadas. Después, el despliegue falló en Docker con un error de Deno por codificación y Antigravity agregó dos commits sobre `main`: `dab00cd` ("convert files to UTF-8…", `index.ts` 2530 líneas, sin pérdida de código) y `2bf0841` ("properly restore UTF-8 characters…", `index.ts` **2415 líneas**). `2bf0841` **eliminó 115 líneas**: `/presupuestos` (GET, POST, PUT, DELETE), `/produccion/lineas` y `/produccion/fases` **ya no existen en `main`** (el diff de rutas contra `04f1e7e` vuelve a mostrarlas como faltantes). Lo demás sigue bien: `registrarEvento`, `aplicarAprobacion` (con su firma correcta), las rutas del portal públicas, las 4 rutas nuevas debajo de `authMiddleware`; `npm run build` ✔; `deno check` sin TS2304 (124 errores de ruido Hono); todos los archivos revisados son UTF-8 válido y sin texto corrupto.
+**Efecto si se desplegó `2bf0841`:** Presupuestos y el Tablero Kanban vuelven a verse vacíos y "generar presupuesto" no puede guardar. El mensaje de `sin_receta` que vio el dueño sí funciona (viene de otra ruta). Si se desplegó `dab00cd`, las rutas siguen presentes pero puede haber acentos con doble codificación.
+**Autocrítica de revisión:** en la entrada (10) di los acentos por "intactos" con una comprobación débil (conteo con `grep` en una configuración regional que no distingue codificaciones). El fallo real de Docker lo demostró. Ahora verifico con `iconv -f UTF-8 -t UTF-8` y búsqueda de `Ã`.
+**Causa probable de la pérdida:** reconstruyó `index.ts` desde `old_backend_utf8.ts` (una copia vieja) en vez de reconvertir el archivo vigente, sin comparar contra `c5f3367` antes de confirmar. Quedaron `deno_final.txt`, `old_backend_utf8.ts` y `tsc_final.txt` sin versionar en la raíz.
+**Pendiente:** restaurar las rutas desde `c5f3367`, confirmar con el diff de rutas, volver a desplegar la API. No autorizar el 2R-1 hasta entonces.
+
 ## 2026-10-07 — Producción: la API desplegada es `main@8e0528d`, con los defectos del Bloque 1 aún sin corregir
 **Herramienta:** Claude Code
 **Tipo:** hallazgo (responde la pregunta abierta sobre el Rebuild)
