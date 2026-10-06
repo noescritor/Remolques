@@ -20,7 +20,7 @@ export function CompraPDFTemplate({ compra, proveedor, productosLookup }: Compra
         <div className="text-right">
           <h2 className="text-xl font-bold text-slate-800">Tu Empresa de Remolques</h2>
           <p className="text-slate-600 text-sm mt-1">Av. Industrial 123</p>
-          <p className="text-slate-600 text-sm">Monterrey, N.L., México</p>
+          <p className="text-slate-600 text-sm">Monterrey, N.L., MÃ©xico</p>
         </div>
       </div>
 
@@ -31,7 +31,7 @@ export function CompraPDFTemplate({ compra, proveedor, productosLookup }: Compra
         {proveedor && (
           <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-slate-600">
             {proveedor.telefono && <p><span className="font-semibold">Tel:</span> {proveedor.telefono}</p>}
-            {proveedor.dias_credito > 0 && <p><span className="font-semibold">Términos:</span> {proveedor.dias_credito} días de crédito</p>}
+            {proveedor.dias_credito > 0 && <p><span className="font-semibold">TÃ©rminos:</span> {proveedor.dias_credito} dÃ­as de crÃ©dito</p>}
           </div>
         )}
       </div>
@@ -42,7 +42,7 @@ export function CompraPDFTemplate({ compra, proveedor, productosLookup }: Compra
           <thead>
             <tr className="border-b-2 border-slate-800 text-slate-800">
               <th className="py-3 px-2 font-bold w-16 text-center">Cant.</th>
-              <th className="py-3 px-2 font-bold">Descripción / Material</th>
+              <th className="py-3 px-2 font-bold">DescripciÃ³n / Material</th>
               <th className="py-3 px-2 font-bold text-right w-32">Precio Unit.</th>
               <th className="py-3 px-2 font-bold text-right w-32">Importe</th>
             </tr>
@@ -79,8 +79,8 @@ export function CompraPDFTemplate({ compra, proveedor, productosLookup }: Compra
       {/* Footer / Condiciones */}
       <div className="absolute bottom-12 left-8 right-8 text-sm text-slate-500 border-t border-slate-200 pt-4">
         <p className="font-bold text-slate-700 mb-1">Condiciones e Instrucciones</p>
-        <p>1. Favor de incluir el número de folio de esta orden en su factura.</p>
-        <p>2. El material debe entregarse en las instalaciones indicadas arriba en horario hábil.</p>
+        <p>1. Favor de incluir el nÃºmero de folio de esta orden en su factura.</p>
+        <p>2. El material debe entregarse en las instalaciones indicadas arriba en horario hÃ¡bil.</p>
       </div>
     </div>
   );
