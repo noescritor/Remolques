@@ -502,7 +502,8 @@
     "producto": "TIPO DE SISTEMA RETRACTIL",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de grupo válido"
   },
   {
     "hoja": "PLANA",
@@ -561,7 +562,8 @@
     "producto": "TIPO DE SUSPENSION",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de grupo válido"
   },
   {
     "hoja": "PLANA",
@@ -574,7 +576,8 @@
     "producto": "1 SUSPENSION HENDRICKSON HT300US ( SUSPENSION ALTA) COMPONENTE",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de opción válida"
   },
   {
     "hoja": "PLANA",
@@ -785,7 +788,8 @@
     "producto": "1 SUSPENSION HENDRICKSON HT300 ( SUSPENSION NORMAL) COMPONENTE",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de opción válida"
   },
   {
     "hoja": "PLANA",
@@ -974,7 +978,8 @@
     "producto": "1 SUSPENSION FLET MASTER HT300 ( SUSPENSION NORMAL) COMPONENTE",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de opción válida"
   },
   {
     "hoja": "PLANA",
@@ -1240,7 +1245,8 @@
     "producto": "1 SUSPENSION AMPRO HT300 ( SUSPENSION NORMAL) COMPONENTE",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de opción válida"
   },
   {
     "hoja": "PLANA",
@@ -1413,7 +1419,8 @@
     "producto": "1 SUSPENSION FCR HT300 ( SUSPENSION NORMAL) COMPONENTE",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de opción válida"
   },
   {
     "hoja": "PLANA",
@@ -1670,7 +1677,8 @@
     "producto": "TIPO DE PATIN",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de grupo válido"
   },
   {
     "hoja": "PLANA",
@@ -1767,7 +1775,8 @@
     "producto": "TIPO DE EJE",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de grupo válido"
   },
   {
     "hoja": "PLANA",
@@ -2053,7 +2062,8 @@
     "producto": "TIPO DE PINTURA",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de grupo válido"
   },
   {
     "hoja": "PLANA",
@@ -2066,7 +2076,8 @@
     "producto": "PINTURA SHERVI",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de opción válida"
   },
   {
     "hoja": "PLANA",
@@ -2199,7 +2210,8 @@
     "producto": "PINTURA PPG",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de opción válida"
   },
   {
     "hoja": "PLANA",
@@ -2312,7 +2324,8 @@
     "producto": "PINTURA AXALTA",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de opción válida"
   },
   {
     "hoja": "PLANA",
@@ -3306,7 +3319,8 @@
     "producto": "TIPO DE GANCHO",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de grupo válido"
   },
   {
     "hoja": "PLANA",
@@ -3461,7 +3475,8 @@
     "producto": "TIPO DE BOLSA RETRACTIL",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de grupo válido"
   },
   {
     "hoja": "PLANA",
@@ -4771,7 +4786,8 @@
     "producto": "TIPO DE RINES 24,5 Y 22,5",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de grupo válido"
   },
   {
     "hoja": "PLANA",
@@ -4917,7 +4933,8 @@
     "producto": "TIPO DE LLANTAS 24,5 Y 22,5",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Encabezado de grupo válido"
   },
   {
     "hoja": "PLANA",
@@ -5015,10 +5032,8 @@
       "RADIAL LLANTAS",
       "EL POTRERO"
     ],
-    "destino": "receta_base",
-    "escala": "por_eje",
-    "cantidad_calculada": 4,
-    "uso": null
+    "destino": "ignorar",
+    "razon": "Fila informativa con solo cantidad"
   },
   {
     "hoja": "PLANA",
@@ -5034,10 +5049,8 @@
       "RADIAL LLANTAS",
       "EL POTRERO"
     ],
-    "destino": "receta_base",
-    "escala": "por_eje",
-    "cantidad_calculada": 4,
-    "uso": null
+    "destino": "ignorar",
+    "razon": "Fila informativa con solo cantidad"
   },
   {
     "hoja": "PLANA",
@@ -5050,6 +5063,7 @@
     "producto": "8",
     "estatus_o_uso": "",
     "proveedores": [],
-    "destino": "ignorar"
+    "destino": "ignorar",
+    "razon": "Fila informativa con solo cantidad"
   }
 ]

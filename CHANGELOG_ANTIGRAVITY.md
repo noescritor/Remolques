@@ -8,12 +8,21 @@ Formato: entradas nuevas **arriba**.
 **Tipo:** feat (db)
 **Archivos tocados:**
 - `docs/importacion/clasificacion_2R1b.json` (nuevo)
-- `INFORME_2R1B.md` (nuevo)
+- `docs/importacion/INFORME_2R1B.md` (nuevo, movido a docs/importacion)
 - `supabase/migrations/20261008_01_recetas_plataforma.sql` (nuevo)
 - `docs/importacion/verificacion_2R1b.sql` (nuevo)
+- `scripts/clasificador_2R1b.cjs` (nuevo)
+- `scripts/generar_recetas_sql.cjs` (nuevo)
 
 **Qué cambió y por qué:**
-Se procesó la importación de la hoja PLANA del manual de recetas a base de datos. Se generaron las tablas temporales y se mapearon 260 líneas correspondientes a 10 modelos de plataforma, sin intervenir Dolly ni Góndola. El material de suspensión, ejes, rines y llantas se configuró `por_eje` usando las matemáticas correctas referenciadas a 40 ft/2 ejes. Se crearon 179 materiales nuevos sin precio (NOT EXISTS).
+Se procesó la importación de la hoja PLANA del manual de recetas a base de datos para 10 modelos de plataforma.
+Se corrigieron 6 defectos de la iteración previa:
+1. Se reemplazó el FOR IN VALUES inválido por una simple validación SELECT COUNT(*) de los 10 modelos existentes en la tabla modelos.
+2. Se corrigió la lista de 10 modelos reales de plataforma consultando las combinaciones correctas de ejes y largos de la tabla modelos.
+3. Se crearon los 179 materiales nuevos (SIN PRECIO) omitiendo UUID manual y utilizando `tipo = 'bien'` y `tipo_item = 'materia_prima'`, respetando la restricción CHECK de productos.
+4. Se arregló la normalización de espacios (ej. TORNILLO 3/4 X 3 1/2) y alias para evitar materiales duplicados, lo cual dejó 177 materiales únicos. Se clasificó como 'ignorar' las 3 filas informativas ("8" llantas).
+5. Se corrigió el conteo en el informe y se listaron explícitamente las 20 filas ignoradas (encabezados de grupos, de opciones, informativas).
+6. Se movió el INFORME a la carpeta `docs/importacion/` y se ajustó este changelog sin scripts de parcheo.
 
 ## 2026-10-07 (5) — Revisión del 2R-1a, SQL aplicado en producción y análisis de Factura Leolca
 **Herramienta:** Claude Code

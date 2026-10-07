@@ -12,6 +12,7 @@ const informe = {
     asignadas_opcion: 0,
     asignadas_condicionada: 0,
     sin_asignar: [],
+    ignoradas: [],
     condiciones_no_mapeadas: [],
     materiales_nuevos: new Set(),
     materiales_existentes: new Set(),
@@ -24,13 +25,15 @@ let currentOption = null;
 function normalize(str) {
     if(!str) return '';
     let s = str.toString().toUpperCase().trim().replace(/\s+/g, ' ');
-    s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/-/g, ' '); // remove accents and hyphens
+    s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove accents
     s = s.replace(/FLET/g, 'FLEET')
          .replace(/HOLAND/g, 'HOLLAND')
          .replace(/SEGURIRAD/g, 'SEGURIDAD')
          .replace(/MICRO ALAMBRE/g, 'MICROALAMBRE')
-         .replace(/SHERVI/g, 'SHERWIN');
-    return s;
+         .replace(/SHERVI/g, 'SHERWIN-WILLIAMS');
+    // Normalize X spacing in dimensions, e.g., 3/4X3 -> 3/4 X 3
+    s = s.replace(/([0-9\/]+)\s*X\s*([0-9\/]+)/g, '$1 X $2');
+    return s.trim().replace(/\s+/g, ' ');
 }
 
 function findOption(groupKey, manualName) {
@@ -80,6 +83,12 @@ for (const row of planas) {
     const normProd = normalize(rawProd);
     const uso = normalize(row.estatus_o_uso);
 
+    if (/^\d+$/.test(normProd)) {
+        clasificacion.push({ ...row, destino: 'ignorar', razon: 'Fila informativa con solo cantidad' });
+        informe.ignoradas.push({ ...row, razon: 'Fila informativa con solo cantidad' });
+        continue;
+    }
+
     if (row.tipo === 'grupo_opcion') {
         currentGroup = GROUP_MAP[normProd] || null;
         currentOption = null;
@@ -87,7 +96,8 @@ for (const row of planas) {
             clasificacion.push({ ...row, destino: 'sin_asignar', razon: 'Grupo no mapeado: ' + normProd });
             informe.sin_asignar.push(row);
         } else {
-            clasificacion.push({ ...row, destino: 'ignorar' });
+            clasificacion.push({ ...row, destino: 'ignorar', razon: 'Encabezado de grupo válido' });
+            informe.ignoradas.push({ ...row, razon: 'Encabezado de grupo válido' });
         }
         continue;
     }
@@ -100,7 +110,8 @@ for (const row of planas) {
         const opt = findOption(currentGroup, normProd);
         if (opt) {
             currentOption = opt.opcion;
-            clasificacion.push({ ...row, destino: 'ignorar' });
+            clasificacion.push({ ...row, destino: 'ignorar', razon: 'Encabezado de opción válida' });
+            informe.ignoradas.push({ ...row, razon: 'Encabezado de opción válida' });
         } else {
             clasificacion.push({ ...row, destino: 'sin_asignar', razon: 'Opción no mapeada: ' + normProd });
             informe.sin_asignar.push(row);
@@ -110,7 +121,8 @@ for (const row of planas) {
     }
     
     if (row.tipo === 'encabezado') {
-        clasificacion.push({ ...row, destino: 'ignorar' });
+        clasificacion.push({ ...row, destino: 'ignorar', razon: 'Encabezado de sección' });
+        informe.ignoradas.push({ ...row, razon: 'Encabezado de sección' });
         continue;
     }
 
@@ -224,6 +236,9 @@ const md = `# Informe de Importación 2R-1b (Plataformas)
 ## Filas sin asignar
 ${informe.sin_asignar.map(x => '- Fila ' + x.fila + ' [' + x.producto + ']: ' + x.razon).join('\n') || '*Ninguna*'}
 
+## Filas ignoradas (${informe.ignoradas.length})
+${informe.ignoradas.map(x => '- Fila ' + x.fila + ' [' + x.producto + ']: ' + x.razon).join('\n') || '*Ninguna*'}
+
 ## Condiciones no mapeadas (Se conservó el texto original en \`uso\`)
 ${informe.condiciones_no_mapeadas.map(x => '- ' + x.producto + ': ' + x.uso).join('\n') || '*Ninguna*'}
 
@@ -234,5 +249,5 @@ ${Array.from(informe.materiales_nuevos).map(x => '- ' + x).join('\n')}
 ${informe.faltan_en_receta.map(x => '- ' + x).join('\n')}
 `;
 
-fs.writeFileSync('INFORME_2R1B.md', md, 'utf8');
+fs.writeFileSync('docs/importacion/INFORME_2R1B.md', md, 'utf8');
 console.log('Clasificación generada.');
