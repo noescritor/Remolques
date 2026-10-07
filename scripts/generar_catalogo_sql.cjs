@@ -107,7 +107,13 @@ RETURNING id INTO v_grupo_id;
         for (const opcion of grupo.opciones) {
             const descEscaped = opcion.nombre.replace(/'/g, "''");
             const claveOpcion = (opcion.clave || opcion.nombre).replace(/'/g, "''");
-            const price = opcion.precio === "sin_precio" || opcion.precio === null ? 'NULL' : parseFloat(opcion.precio) || 'NULL';
+            let price = 'NULL';
+            if (opcion.precio !== "sin_precio" && opcion.precio !== null && opcion.precio !== undefined) {
+                const parsed = parseFloat(opcion.precio);
+                if (Number.isFinite(parsed)) {
+                    price = parsed;
+                }
+            }
             
             let aliasesArray = 'NULL';
             if (opcion.aliases && opcion.aliases.length > 0) {

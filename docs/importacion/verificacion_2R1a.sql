@@ -27,6 +27,9 @@ SELECT jsonb_build_object(
         FROM opciones_configuracion
         WHERE precio_venta IS NULL AND (medidas IS NULL OR medidas = '{}'::jsonb)
     ),
+    'opciones_precio_cero', (
+        SELECT count(*) FROM opciones_configuracion WHERE precio_venta = 0
+    ),
     'modelos', (SELECT count(*) FROM modelos WHERE tipo = 'plataforma'),
     'modelos_con_largo_y_ejes', (
         SELECT count(*) FROM modelos WHERE tipo = 'plataforma' AND largo_ft IS NOT NULL AND num_ejes IS NOT NULL

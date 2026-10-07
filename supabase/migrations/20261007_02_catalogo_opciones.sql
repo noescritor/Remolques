@@ -266,7 +266,7 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'sin_suspension', 'Sin suspensión', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'sin_suspension', 'Sin suspensión', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
@@ -350,7 +350,7 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'sin_piso', 'Sin piso', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'sin_piso', 'Sin piso', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
@@ -367,7 +367,7 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'sin_riel', 'Sin riel', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'sin_riel', 'Sin riel', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
@@ -389,7 +389,7 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'sin_matracas', 'Sin matracas', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'sin_matracas', 'Sin matracas', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
@@ -416,7 +416,7 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'sin_gancho', 'Sin gancho', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'sin_gancho', 'Sin gancho', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
@@ -458,7 +458,7 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'sin_frente', 'Sin frente', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'sin_frente', 'Sin frente', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
@@ -495,7 +495,7 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'sin_redilas', 'Sin redilas', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'sin_redilas', 'Sin redilas', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
@@ -522,7 +522,7 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'sin_retractil', 'Sin sistema retráctil', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'sin_retractil', 'Sin sistema retráctil', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
@@ -544,12 +544,12 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'cliente', 'Proporciona el cliente', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'cliente', 'Proporciona el cliente', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'sin_rines', 'Sin rines', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'sin_rines', 'Sin rines', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
@@ -621,7 +621,7 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'sin_llantas', 'Sin llantas', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'sin_llantas', 'Sin llantas', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
@@ -765,82 +765,82 @@ ON CONFLICT (organizacion_id, clave) DO UPDATE SET
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'rojo_claro', 'Rojo claro', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'rojo_claro', 'Rojo claro', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'rojo', 'Rojo', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'rojo', 'Rojo', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'rojo_coca_cola', 'Rojo Coca-Cola', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'rojo_coca_cola', 'Rojo Coca-Cola', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'rojo_bermellon', 'Rojo bermellón', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'rojo_bermellon', 'Rojo bermellón', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'vino', 'Vino', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'vino', 'Vino', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'negro', 'Negro', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'negro', 'Negro', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'anaranjado_con_borda_blanca', 'Anaranjado con borda blanca', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'anaranjado_con_borda_blanca', 'Anaranjado con borda blanca', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'azul_rey', 'Azul rey', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'azul_rey', 'Azul rey', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'blanco', 'Blanco', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'blanco', 'Blanco', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'gris', 'Gris', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'gris', 'Gris', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'naranja', 'Naranja', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'naranja', 'Naranja', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'amarillo', 'Amarillo', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'amarillo', 'Amarillo', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'rosa', 'Rosa', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'rosa', 'Rosa', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'verde', 'Verde', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'verde', 'Verde', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'morado', 'Morado', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'morado', 'Morado', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
-VALUES (v_grupo_id, org_id, 'cafe', 'Café', NULL, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
+VALUES (v_grupo_id, org_id, 'cafe', 'Café', 0, NULL, NULL, NULL, 'definido', NULL, NULL, NULL, NULL, '{}'::jsonb)
 ON CONFLICT (grupo_id, clave) DO UPDATE SET 
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 

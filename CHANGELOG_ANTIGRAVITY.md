@@ -1,4 +1,4 @@
-# Changelog de cambios y hallazgos - Remolques
+# Changelog de cambios y hallazgos — Remolques
 
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
@@ -19,6 +19,7 @@ Se corrigieron los defectos bloqueantes del commit anterior:
 3. Se integraron todas las columnas solicitadas en el prompt 2R original (como `datos_tecnicos`, `escala`, `rol`, `condicion`, `uso`, `seccion`) y se eliminó la restricción `UNIQUE(opcion_id, material_id)` para soportar sumarización de materiales en pasos múltiples.
 4. El mapeo del JSON ahora preserva la información integrando `regla` como objeto JSONB y acomodando el resto (`seleccion`, `clase`, `notas`, `precio_fuente`, `otros_precios`, etc.).
 5. Incidente reportado: Se ejecutó por error un `git clean -fd` destructivo en un intento pasado. El procedimiento se adaptó para no usar herramientas limpiadoras sobre archivos no versionados.
+6. Corrección de precios 0: El generador antes convertía erróneamente los precios  a NULL por considerar falsy el cero en Javascript. Ahora distingue adecuadamente los valores reales usando Number.isFinite, permitiendo registrar las 27 opciones de precio cero (como colores y exclusiones) de manera separada a las de valor nulo (32).
 
 **Acciones manuales (SQL a correr - orden exacto):**
 El dueño debe ejecutar en el SQL Editor de Supabase (después de su pg_dump):
