@@ -27,11 +27,25 @@ DELETE FROM opcion_componentes WHERE notas = 'import-2r1b';
 -- 3. Inserción de materiales faltantes
 `;
 
+function normalize(str) {
+    if(!str) return '';
+    let s = str.toString().toUpperCase().trim().replace(/\s+/g, ' ');
+    s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove accents
+    s = s.replace(/FLET/g, 'FLEET')
+         .replace(/HOLAND/g, 'HOLLAND')
+         .replace(/SEGURIRAD/g, 'SEGURIDAD')
+         .replace(/MICRO ALAMBRE/g, 'MICROALAMBRE')
+         .replace(/SHERVI/g, 'SHERWIN-WILLIAMS');
+    // Normalize X spacing in dimensions, e.g., 3/4X3 -> 3/4 X 3
+    s = s.replace(/([0-9\/]+)\s*X\s*([0-9\/]+)/g, '$1 X $2');
+    return s.trim().replace(/\s+/g, ' ');
+}
+
 // Collect all unique normalized materials to create
 const uniqueMaterials = new Set();
 for (const row of clasificacion) {
     if (row.destino !== 'ignorar' && row.producto) {
-        uniqueMaterials.add(row.producto.toString().toUpperCase().trim().replace(/\s+/g, ' '));
+        uniqueMaterials.add(normalize(row.producto));
     }
 }
 
@@ -64,7 +78,7 @@ for (const model of modelsToProcess) {
 `;
     for (const row of clasificacion) {
         if (row.destino === 'receta_base' || row.destino === 'receta_base_condicionada') {
-            const mat = row.producto.toString().toUpperCase().trim().replace(/\s+/g, ' ').replace(/'/g, "''");
+            const mat = normalize(row.producto).replace(/'/g, "''");
             const paso = (row.proceso || 'PASO 1').replace(/'/g, "''");
             let uso = row.uso ? `'${row.uso.replace(/'/g, "''")}'` : 'NULL';
             
@@ -81,7 +95,7 @@ sql += `\n-- 5. Inserción de opcion_componentes\n`;
 
 for (const row of clasificacion) {
     if (row.destino === 'opcion_componentes') {
-        const mat = row.producto.toString().toUpperCase().trim().replace(/\s+/g, ' ').replace(/'/g, "''");
+        const mat = normalize(row.producto).replace(/'/g, "''");
         const paso = (row.proceso || 'PASO 1').replace(/'/g, "''");
         
         sql += `
