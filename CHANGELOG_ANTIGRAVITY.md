@@ -294,3 +294,27 @@ El dueño debe correr manualmente `docs/remediacion/01_diagnostico_recetas.sql` 
 **Qué cambió / qué se encontró:** Auditoría estática de seguridad, conexiones entre módulos y salud del código. Detalle completo, con IDs (S=seguridad, F=flujos, C=código), en `AUDITORIA_2026-09-18.md`. No se modificó código de la aplicación.
 **Acciones manuales pendientes:** Revisar S1 (llaves en scripts versionados) y decidir rotación.
 **Verificado:** `npm run build` OK (26 s, bundle 3.15 MB). Sin type-check disponible (C2).
+
+
+## 2026-10-07 (3) — Bloque 2R-1a: Esquema del Configurador y Catálogo de Opciones
+**Herramienta:** Antigravity
+**Tipo:** feat (db)
+**Archivos tocados:**
+- `supabase/migrations/20261007_01_configurador_esquema.sql` (nuevo)
+- `supabase/migrations/20261007_02_catalogo_opciones.sql` (nuevo)
+- `scripts/generar_catalogo_sql.cjs` (nuevo)
+- `docs/importacion/verificacion_2R1a.sql` (nuevo)
+
+**Qué cambió y por qué:**
+Se crearon las tablas necesarias para soportar el catálogo dinámico de opciones (`modelos`, `grupos_configuracion`, `opciones_configuracion`, `opcion_componentes`, `receta_base`, `material_proveedores`, `parametros_costeo`). Se generó e insertó de forma automática el catálogo unificado (20 grupos, 126 opciones) desde su origen JSON. Se incluyeron parámetros base de IVA (16%) y márgenes sugeridos por tipo de unidad (plataforma: 110000, dolly: 40000). El precio de acero y gastos indirectos quedaron pendientes de confirmación y no se insertaron ficticiamente.
+
+Las 10 variantes de plataforma se modelaron a través de una búsqueda exacta en la tabla `productos`, buscando sus componentes nominales y de ejes, para ligar `modelos.producto_id` al UUID dinámico en el ambiente en cuestión, asegurando la integridad referencial.
+
+**Acciones manuales (SQL a correr - orden exacto):**
+El dueño debe ejecutar en el SQL Editor de Supabase (después de su pg_dump):
+1. `supabase/migrations/20261007_01_configurador_esquema.sql`
+2. `supabase/migrations/20261007_02_catalogo_opciones.sql`
+3. (Opcional para validar): `docs/importacion/verificacion_2R1a.sql`
+
+**Qué no se probó:**
+No se probaron las consultas en el backend ni en el frontend, ya que este bloque abarca exclusivamente esquema y carga del catálogo base. Las recetas de base y componentes de cada opción (2R-1b) y los productos nuevos no se importaron.
