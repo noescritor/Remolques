@@ -1,0 +1,430 @@
+const fs = require('fs');
+
+const manualData = require('../docs/manual-recetas/lineas_parseadas.json');
+const catData = require('../docs/catalogo-opciones/catalogo_opciones_unificado.json');
+
+const planas = manualData.filter(d => d.hoja === 'PLANA');
+
+const clasificacion = [];
+const informe = {
+    leidas: planas.length,
+    asignadas_fija: 0,
+    asignadas_opcion: 0,
+    asignadas_condicionada: 0,
+    sin_asignar: [],
+    ignoradas: [],
+    condiciones_no_mapeadas: [],
+    materiales_nuevos: new Set(),
+    materiales_existentes: new Set(),
+    faltan_en_receta: []
+};
+
+let currentGroup = null;
+let currentOption = null;
+
+function normalize(str) {
+    if(!str) return '';
+    let s = str.toString().toUpperCase().trim().replace(/\s+/g, ' ');
+    s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove accents
+    s = s.replace(/FLET/g, 'FLEET')
+         .replace(/AUMINIO/g, 'ALUMINIO')
+         .replace(/HOLAND/g, 'HOLLAND')
+         .replace(/SEGURIRAD/g, 'SEGURIDAD')
+         .replace(/MICRO ALAMBRE/g, 'MICROALAMBRE')
+         .replace(/SHERVI/g, 'SHERWIN-WILLIAMS');
+    // Normalize X spacing in dimensions, e.g., 3/4X3 -> 3/4 X 3
+    s = s.replace(/([0-9\/]+)\s*X\s*([0-9\/]+)/g, '$1 X $2');
+    return s.trim().replace(/\s+/g, ' ');
+}
+
+function findOption(groupKey, manualName) {
+    const norm = normalize(manualName);
+    const g = catData.grupos.find(x => x.clave === groupKey || normalize(x.nombre) === groupKey);
+    if (!g) return null;
+    
+    // Explicit mappings to fix errors
+    if (groupKey === 'suspension') {
+        if (norm.includes('ALTA')) {
+            if (norm.includes('HENDRICKSON')) return { grupo: g.clave, opcion: 'alta_hendrickson' };
+            if (norm.includes('FLEET MASTER') || norm.includes('FLEET')) return { grupo: g.clave, opcion: 'alta_fleet_master' };
+            if (norm.includes('HJ')) return { grupo: g.clave, opcion: 'hj_alta' };
+        } else if (norm.includes('NORMAL')) {
+            if (norm.includes('HENDRICKSON')) return { grupo: g.clave, opcion: 'hendrickson' };
+            if (norm.includes('FLEET MASTER') || norm.includes('FLEET')) return { grupo: g.clave, opcion: 'fleet_master' };
+            if (norm.includes('AMPRO')) return { grupo: g.clave, opcion: 'ampro' };
+            if (norm.includes('FCR')) return { grupo: g.clave, opcion: 'fcr' };
+        }
+    }
+
+    if (groupKey === 'retractil') {
+        if (norm.includes('CHICA') || norm.includes('CHICO')) return { grupo: g.clave, opcion: 'chico' };
+        if (norm.includes('GRANDE')) return { grupo: g.clave, opcion: 'grande' };
+        if (norm.includes('PREP')) return { grupo: g.clave, opcion: 'preparacion' };
+    }
+
+    if (groupKey === 'rines') {
+        if (norm.includes('ALUMINIO')) return { grupo: g.clave, opcion: 'aluminio' };
+        if (norm.includes('ACERO')) return { grupo: g.clave, opcion: 'acero' };
+    }
+
+    // Exact name match or alias match
+    for (const opt of g.opciones) {
+        if (normalize(opt.nombre) === norm || normalize(opt.clave) === norm) return { grupo: g.clave, opcion: opt.clave };
+        if (opt.aliases) {
+            for (const alias of opt.aliases) {
+                if (normalize(alias) === norm) return { grupo: g.clave, opcion: opt.clave };
+            }
+        }
+    }
+    
+    // Fuzzy matching
+    for (const opt of g.opciones) {
+        if (norm.includes(normalize(opt.nombre))) return { grupo: g.clave, opcion: opt.clave };
+        if (norm.includes(normalize(opt.clave))) return { grupo: g.clave, opcion: opt.clave };
+        if (opt.aliases) {
+            for (const alias of opt.aliases) {
+                if (norm.includes(normalize(alias))) return { grupo: g.clave, opcion: opt.clave };
+            }
+        }
+    }
+    return null;
+}
+
+const GROUP_MAP = {
+    'TIPO DE SUSPENSION': 'suspension',
+    'TIPO DE PATIN': 'patin',
+    'TIPO DE EJE': 'eje',
+    'TIPO DE GANCHO': 'gancho',
+    'TIPO DE BOLSA RETRACTIL': 'retractil',
+    'TIPO DE RINES 24,5 Y 22,5': 'rines',
+    'TIPO DE LLANTAS 24,5 Y 22,5': 'llantas',
+    'TIPO DE SISTEMA RETRACTIL': 'retractil',
+    'TIPO DE PINTURA': 'pintura'
+};
+
+
+
+let lastProceso = null;
+let lastFila = null;
+
+for (const row of planas) {
+    const rawProd = row.producto || '';
+    const normProd = normalize(rawProd);
+    const uso = normalize(row.estatus_o_uso);
+
+    if (row.proceso !== lastProceso && lastProceso !== null) {
+        currentGroup = null;
+        currentOption = null;
+    }
+    lastProceso = row.proceso;
+
+    // Detect empty rows that were skipped by the parser
+    if (lastFila !== null && row.fila > lastFila + 1) {
+        currentGroup = null;
+        currentOption = null;
+    }
+    lastFila = row.fila;
+
+    if (!rawProd || row.tipo === 'blanco' || rawProd.trim() === '') {
+        currentGroup = null;
+        currentOption = null;
+        clasificacion.push({ ...row, destino: 'ignorar', razon: 'Fila en blanco' });
+        informe.ignoradas.push({ ...row, razon: 'Fila en blanco' });
+        continue;
+    }
+
+    if (/^\d+$/.test(normProd)) {
+        clasificacion.push({ ...row, destino: 'ignorar', razon: 'Fila informativa con solo cantidad' });
+        informe.ignoradas.push({ ...row, razon: 'Fila informativa con solo cantidad' });
+        continue;
+    }
+
+    if (row.tipo === 'grupo_opcion') {
+        currentGroup = GROUP_MAP[normProd] || null;
+        currentOption = null;
+        if (!currentGroup) {
+            clasificacion.push({ ...row, destino: 'sin_asignar', razon: 'Grupo no mapeado: ' + normProd });
+            informe.sin_asignar.push(row);
+        } else {
+            clasificacion.push({ ...row, destino: 'ignorar', razon: 'Encabezado de grupo válido' });
+            informe.ignoradas.push({ ...row, razon: 'Encabezado de grupo válido' });
+        }
+        continue;
+    }
+
+    if (row.tipo === 'opcion_suspension' || row.tipo === 'opcion_pintura') {
+        if (!currentGroup) {
+            if (row.tipo === 'opcion_suspension') currentGroup = 'suspension';
+            if (row.tipo === 'opcion_pintura') currentGroup = 'pintura_chasis';
+        }
+        const opt = findOption(currentGroup, normProd);
+        if (opt) {
+            currentOption = opt.opcion;
+            clasificacion.push({ ...row, destino: 'ignorar', razon: 'Encabezado de opción válida' });
+            informe.ignoradas.push({ ...row, razon: 'Encabezado de opción válida' });
+        } else {
+            clasificacion.push({ ...row, destino: 'sin_asignar', razon: 'Opción no mapeada: ' + normProd });
+            informe.sin_asignar.push(row);
+            currentOption = null;
+        }
+        continue;
+    }
+    
+    if (row.tipo === 'encabezado') {
+        clasificacion.push({ ...row, destino: 'ignorar', razon: 'Encabezado de sección' });
+        informe.ignoradas.push({ ...row, razon: 'Encabezado de sección' });
+        continue;
+    }
+
+    if (row.tipo === 'linea') {
+        let escala = 'fija';
+        if (currentGroup === 'suspension' || currentGroup === 'eje' || currentGroup === 'rines' || currentGroup === 'llantas' || currentGroup === 'abs') {
+            escala = 'por_eje';
+        } else if (normProd.includes('CONSUMIBLE') || uso.includes('CONSUMIBLE')) {
+            escala = 'por_largo';
+        }
+
+        let qty = parseFloat(row.cantidad) || 0;
+        if (escala === 'por_eje' && qty > 0) {
+            qty = qty / 2;
+        }
+
+        let dest = null;
+        let finalOpt = null;
+        let finalGroup = null;
+
+        // Route specific 'uso' directly to their option components
+        if (uso.includes('RETRACTIL CHICO') || uso.includes('RETRACTIL CHICA')) {
+            dest = 'opcion_componentes';
+            finalGroup = 'retractil';
+            finalOpt = 'chico';
+        } else if (uso.includes('RETRACTIL GRANDE') || uso.includes('RETRACTIL G')) {
+            dest = 'opcion_componentes';
+            finalGroup = 'retractil';
+            finalOpt = 'grande';
+        }
+
+        if (!dest && currentGroup !== null) {
+            let opt = currentOption;
+            if (!opt) {
+                const found = findOption(currentGroup, normProd);
+                if (found) opt = found.opcion;
+            }
+            if (opt) {
+                dest = 'opcion_componentes';
+                finalGroup = currentGroup;
+                finalOpt = opt;
+            }
+        }
+
+        if (dest === 'opcion_componentes') {
+            clasificacion.push({
+                ...row,
+                destino: dest,
+                grupo_id: finalGroup,
+                opcion_id: finalOpt,
+                escala: escala,
+                cantidad_calculada: qty,
+                rol: uso === 'COMPONENTE' || uso === 'SUSTITUTO' || uso === 'INDEPENDIENTE' ? uso.toLowerCase() : 'componente',
+                unidad_sugerida: null
+            });
+            informe.asignadas_opcion++;
+            informe.materiales_nuevos.add(normProd);
+        } else {
+            // receta_base
+            dest = 'receta_base';
+            let condicionObj = null;
+            
+            if (uso.includes('SI LLEVA LATERALES') || uso.includes('SI ES MULTIMODAL') || uso.includes('KIT DE GANCHO') || uso.includes('JUEGO DE REDILAS') || uso.includes('AMORTIGUADOR DE ALTA') || uso === 'LATERALES' || uso === 'ESTRIBO') {
+                dest = 'receta_base_condicionada';
+                
+                if (uso.includes('KIT DE GANCHO')) {
+                    condicionObj = {"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]};
+                } else if (uso.includes('JUEGO DE REDILAS')) {
+                    condicionObj = {"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]};
+                } else if (uso.includes('AMORTIGUADOR DE ALTA')) {
+                    condicionObj = {"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]};
+                } else {
+                    condicionObj = {"sin_mapear": uso};
+                    informe.condiciones_no_mapeadas.push({ producto: normProd, uso: uso });
+                }
+            }
+
+            if (uso.includes('TORNILLERIA DE') || normProd.includes('BICICLETERO') || normProd.includes('CAJA AUXILIAR') || normProd.includes('MANIVELA') || normProd.includes('TAPA DE CHAMBER') || normProd.includes('KIT C/TORNILLO')) {
+                informe.faltan_en_receta.push(normProd);
+            }
+
+            clasificacion.push({
+                ...row,
+                destino: dest,
+                escala: escala,
+                cantidad_calculada: qty,
+                uso: uso || null,
+                condicion: condicionObj,
+                unidad_sugerida: null
+            });
+            if (dest === 'receta_base') informe.asignadas_fija++;
+            else informe.asignadas_condicionada++;
+            informe.materiales_nuevos.add(normProd);
+        }
+    }
+}
+
+// Fill suggested units
+function getUnidad(normName, rawUnidad) {
+    let explicit = null;
+    if (rawUnidad) {
+        const u = rawUnidad.toString().toUpperCase().trim();
+        if (u === 'L' || u.includes('LITRO') || u.endsWith(' L')) explicit = 'L';
+        else if (u === 'ML' || u.includes('ML')) explicit = 'L'; // Treat ML as L for mapping? Or PZA? Actually the standard says "L", "M", "PZA"
+        else if (u === 'M' || u.includes('METRO') || u.endsWith(' M')) explicit = 'M';
+        else if (u === 'PZA' || u.includes('PZA')) explicit = 'PZA';
+    }
+
+    const litros = ['PINTURA', 'THINER', 'THINER O REDUCTOR', 'REDUCTOR', 'TRANSPARENTE', 'CATALIZADOR', 'PRAIMER', 'FOSFATO'];
+    if (litros.includes(normName)) {
+        if (explicit && explicit !== 'L') console.warn(`Advertencia: ${normName} es Litros en la tabla, pero el manual dice ${rawUnidad}`);
+        return { unidad: 'L', supuesta: false };
+    }
+    if (normName.startsWith('CABLE ') || normName.startsWith('CORRUGADO ') || normName.startsWith('MANGUERA ') || normName === 'TEFLON') {
+        if (explicit && explicit !== 'M') console.warn(`Advertencia: ${normName} es Metros en la tabla, pero el manual dice ${rawUnidad}`);
+        return { unidad: 'M', supuesta: false };
+    }
+    
+    if (explicit) {
+        // Map ML to PZA or L? Let's use PZA for ML unless it's in the L list.
+        // Wait, the prompt says Litros ("L"), Metros ("M"), El resto "PZA".
+        // If the manual says "150ML", we can assume it's "PZA" of a 150ML bottle, or "L" if it's a liquid.
+        // Actually let's just output explicit if it is exactly L, M, PZA.
+        if (explicit === 'L' || explicit === 'M' || explicit === 'PZA') return { unidad: explicit, supuesta: false };
+    }
+
+    return { unidad: 'PZA', supuesta: true };
+}
+
+const unidades_asumidas = new Set();
+for (const row of clasificacion) {
+    if (row.destino !== 'ignorar' && row.producto) {
+        const norm = normalize(row.producto);
+        const u = getUnidad(norm, row.unidad);
+        row.unidad_sugerida = u.unidad;
+        if (u.supuesta) unidades_asumidas.add(norm);
+    }
+}
+
+// Write the classification JSON
+fs.writeFileSync('docs/importacion/clasificacion_2R1b.json', JSON.stringify(clasificacion, null, 2), 'utf8');
+
+// Autocontrol: Check mixed processes in options
+const optionProcesses = {};
+let autocontrolFailed = false;
+for (const row of clasificacion) {
+    if (row.destino === 'opcion_componentes') {
+        const key = `${row.grupo_id}/${row.opcion_id}`;
+        if (!optionProcesses[key]) optionProcesses[key] = new Set();
+        optionProcesses[key].add(row.proceso);
+    }
+}
+for (const [key, procesos] of Object.entries(optionProcesses)) {
+    if (procesos.size > 1) {
+        if (!key.startsWith('suspension/') && !key.startsWith('retractil/')) {
+            console.error(`AUTOCONTROL FALLÓ: La opción ${key} mezcla procesos: ${Array.from(procesos).join(', ')}`);
+            autocontrolFailed = true;
+        }
+    }
+}
+if (autocontrolFailed) {
+    process.exit(1);
+}
+
+// Build Receta por destino section
+let recetaDestinoMd = '## Receta por destino\n\n';
+
+// Group receta_base by paso
+const recetaBaseByPaso = {};
+for (const row of clasificacion) {
+    if (row.destino === 'receta_base' || row.destino === 'receta_base_condicionada') {
+        const paso = row.proceso || 'PASO 1';
+        if (!recetaBaseByPaso[paso]) recetaBaseByPaso[paso] = [];
+        recetaBaseByPaso[paso].push(row);
+    }
+}
+recetaDestinoMd += `### Receta Base Fija\n`;
+for (const paso of Object.keys(recetaBaseByPaso).sort()) {
+    recetaDestinoMd += `\n**${paso}**\n`;
+    for (const row of recetaBaseByPaso[paso]) {
+        recetaDestinoMd += `- Fila ${row.fila}: ${row.producto} (Cant: ${row.cantidad_calculada}, Escala: ${row.escala})\n`;
+    }
+}
+
+// Group opcion_componentes by option
+const opcionComponentesByOpt = {};
+for (const row of clasificacion) {
+    if (row.destino === 'opcion_componentes') {
+        const key = `${row.grupo_id}/${row.opcion_id}`;
+        if (!opcionComponentesByOpt[key]) opcionComponentesByOpt[key] = [];
+        opcionComponentesByOpt[key].push(row);
+    }
+}
+recetaDestinoMd += `\n### Opciones\n`;
+for (const key of Object.keys(opcionComponentesByOpt).sort()) {
+    recetaDestinoMd += `\n**${key}**\n`;
+    for (const row of opcionComponentesByOpt[key]) {
+        recetaDestinoMd += `- Fila ${row.fila}: ${row.producto} (Cant: ${row.cantidad_calculada}, Escala: ${row.escala}, Rol: ${row.rol})\n`;
+    }
+}
+
+// Build mapped conditions strings
+const mappedConditions = [];
+for (const row of clasificacion) {
+    if (row.condicion && !row.condicion.sin_mapear) {
+        mappedConditions.push(`- Fila ${row.fila} [${row.producto}]: ${JSON.stringify(row.condicion)}`);
+    }
+}
+
+// Build unmapped conditions
+const unmappedConditions = [];
+for (const row of clasificacion) {
+    if (row.condicion && row.condicion.sin_mapear) {
+        unmappedConditions.push(`- Fila ${row.fila} [${row.producto}]: ${row.condicion.sin_mapear}`);
+    }
+}
+
+// Write the INFORME_2R1B.md
+const md = `# Informe de Importación 2R-1b (Plataformas)
+
+## Resumen de Filas Leídas
+- **Filas procesadas**: ${informe.leidas}
+- **Receta Base Fija**: ${informe.asignadas_fija}
+- **Receta Base Condicionada**: ${informe.asignadas_condicionada}
+- **Componentes de Opciones**: ${informe.asignadas_opcion}
+- **Sin asignar**: ${informe.sin_asignar.length}
+
+${recetaDestinoMd}
+
+## Filas sin asignar
+${informe.sin_asignar.map(x => '- Fila ' + x.fila + ' [' + x.producto + ']: ' + x.razon).join('\n') || '*Ninguna*'}
+
+## Filas ignoradas (${informe.ignoradas.length})
+${informe.ignoradas.map(x => '- Fila ' + x.fila + ' [' + x.producto + ']: ' + x.razon).join('\n') || '*Ninguna*'}
+
+## Condiciones mapeadas a sintaxis JSONB
+${mappedConditions.join('\n') || '*Ninguna*'}
+
+## Condicionales sin mapear (excluidas hasta decisión del dueño)
+${unmappedConditions.join('\n') || '*Ninguna*'}
+
+## Materiales Nuevos a Crear (${informe.materiales_nuevos.size})
+*Nota: 4 de estos materiales ya existían en la base de datos y fueron reutilizados por la cláusula NOT EXISTS (CO2, PATIN AMPRO, GANCHO PREMIER BESTIA 6 BARRENOS, CINTA REFLEJANTE).*
+${Array.from(informe.materiales_nuevos).map(x => '- ' + x).join('\n')}
+
+## Unidades Supuestas (Por confirmar por el dueño)
+Los siguientes materiales no tenían unidad específica en el manual, ni cayeron en las reglas de Litros o Metros, por lo que se asume \`PZA\`:
+${Array.from(unidades_asumidas).map(x => '- ' + x).join('\n')}
+
+## Elementos que faltan en la receta original
+${informe.faltan_en_receta.map(x => '- ' + x).join('\n')}
+`;
+
+fs.writeFileSync('docs/importacion/INFORME_2R1B.md', md, 'utf8');
+console.log('Clasificación generada.');

@@ -3,6 +3,76 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-07 (9) - Bloque 2R-1b: Recetas de Plataforma - Ronda 6 (Restauración de costo y precio)
+**Herramienta:** Antigravity
+**Tipo:** fix (db)
+**Archivos tocados:**
+- `scripts/generar_recetas_sql.cjs`
+- `supabase/migrations/20261008_01_recetas_plataforma.sql`
+
+**Qué cambió y por qué:**
+Se corrigió un error introducido en la actualización anterior, donde al agregar la columna obligatoria `unidad` en la inserción de nuevos materiales a la tabla `productos`, se removieron accidentalmente las columnas que el prompt original requería explícitamente (`costo`, `precio_unitario` y `descripcion`).
+Esto dejaba a los 173 materiales nuevos con sus precios en NULL, imposibilitando los cálculos de costeo y rompiendo el script de verificación `verificacion_2R1b.sql` (que cuenta los materiales insertados usando la etiqueta `descripcion = 'SIN PRECIO'`).
+Se restauraron estas columnas a su instrucción inicial (`costo = 0`, `precio_unitario = 0`, `descripcion = 'SIN PRECIO'`) junto a la inclusión de la unidad resuelta.
+
+## 2026-10-07 (8) - Bloque 2R-1b: Recetas de Plataforma - Ronda 5 (Corrección de constraint unidad)
+**Herramienta:** Antigravity
+**Tipo:** fix (db)
+**Archivos tocados:**
+- scripts/clasificador_2R1b.cjs
+- scripts/generar_recetas_sql.cjs
+- docs/importacion/INFORME_2R1B.md
+- supabase/migrations/20261008_01_recetas_plataforma.sql
+
+**Qué cambió y por qué:**
+Se corrigió un error que rompía la inserción en producción por violación de constraint NOT NULL en la columna unidad de la tabla productos. La inserción inicial omitía la columna, y no tenía un DEFAULT.
+Se implementó un mapeo de unidades donde los materiales listados bajo líquidos reciben L (Litros), aquellos que son cableado o mangueras reciben M (Metros), y el resto se clasifica por convención como PZA (Piezas). Los materiales que fueron asignados como PZA por falta de certeza quedaron reportados en INFORME_2R1B.md bajo la sección Unidades Supuestas para validación del dueño.
+El SQL de importación fue actualizado para inyectar esta unidad de forma explícita en el INSERT.
+
+## 2026-10-07 (7) - Bloque 2R-1b: Recetas de Plataforma - Ronda 4 (Condicionales JSONB)
+**Herramienta:** Antigravity
+**Tipo:** fix (db)
+**Archivos tocados:**
+- docs/importacion/clasificacion_2R1b.json
+- docs/importacion/INFORME_2R1B.md
+- supabase/migrations/20261008_01_recetas_plataforma.sql
+- scripts/clasificador_2R1b.cjs
+- scripts/generar_recetas_sql.cjs
+
+**Qué cambió y por qué:**
+Se solucionó la omisión de las reglas condicionales para filas de receta_base.
+Anteriormente las reglas condicionales se perdían al insertarlas con condicion = NULL, dejando que un hipotético motor de CPQ sumara componentes (como tornillería de gancho o juego de redilas) a configuraciones que explícitamente no los llevaban (sin_gancho, sin_redilas).
+Ahora se mapearon las reglas al lenguaje cerrado de condiciones JSONB:
+- KIT DE GANCHO: {todas:[{campo:gancho,op:!=,valor:sin_gancho}]}
+- JUEGO DE REDILAS: {todas:[{campo:redilas,op:!=,valor:sin_redilas}]}
+- AMORTIGUADOR DE ALTA: {todas:[{campo:suspension,op:in,valor:[alta_hendrickson,alta_fleet_master,hj_alta]}]}
+Adicionalmente, se añadió el operador in al esquema de opciones de manera informal, documentado para ser recogido por el motor posteriormente.
+Para condiciones no mapeables como SI LLEVA LATERALES Y ESTRIBO o SI ES MULTIMODAL, se codificó como {sin_mapear: texto...} para ser omitido de las evaluaciones hasta que el dueño decida.
+
+**Pendientes Anotados para futuras fases:**
+- Escalado de consumibles por largo: actualmente solo CONSUMIBLE 65 escala por largo; la base de datos de Planas filas 69-82 menciona otros consumibles (CO2, microtubular, discos, carda, lijas, tornillos) que también deben escalar. Se ajustará la propiedad de la base de datos después (es idempotente).
+
+## 2026-10-07 (6) — Bloque 2R-1b: Recetas de Plataforma (Sin Precios)
+**Herramienta:** Antigravity
+**Tipo:** feat (db)
+**Archivos tocados:**
+- `docs/importacion/clasificacion_2R1b.json` (nuevo)
+- `docs/importacion/INFORME_2R1B.md` (nuevo, movido a docs/importacion)
+- `supabase/migrations/20261008_01_recetas_plataforma.sql` (nuevo)
+- `docs/importacion/verificacion_2R1b.sql` (nuevo)
+- `scripts/clasificador_2R1b.cjs` (nuevo)
+- `scripts/generar_recetas_sql.cjs` (nuevo)
+
+**Qué cambió y por qué:**
+Se procesó la importación de la hoja PLANA del manual de recetas a base de datos para 10 modelos de plataforma.
+Se corrigieron 6 defectos de la iteración previa:
+1. Se reemplazó el FOR IN VALUES inválido por una simple validación SELECT COUNT(*) de los 10 modelos existentes en la tabla modelos.
+2. Se corrigió la lista de 10 modelos reales de plataforma consultando las combinaciones correctas de ejes y largos de la tabla modelos.
+3. Se crearon los 179 materiales nuevos (SIN PRECIO) omitiendo UUID manual y utilizando `tipo = 'bien'` y `tipo_item = 'materia_prima'`, respetando la restricción CHECK de productos.
+4. Se arregló la normalización de espacios (ej. TORNILLO 3/4 X 3 1/2) y alias para evitar materiales duplicados, lo cual dejó 177 materiales únicos. Se clasificó como 'ignorar' las 3 filas informativas ("8" llantas).
+5. Se corrigió el conteo en el informe y se listaron explícitamente las 20 filas ignoradas (encabezados de grupos, de opciones, informativas).
+6. Se movió el INFORME a la carpeta `docs/importacion/` y se ajustó este changelog sin scripts de parcheo.
+
 ## 2026-10-07 (5) — Revisión del 2R-1a, SQL aplicado en producción y análisis de Factura Leolca
 **Herramienta:** Claude Code
 **Tipo:** docs / revisión
