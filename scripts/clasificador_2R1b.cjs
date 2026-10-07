@@ -232,10 +232,21 @@ for (const row of planas) {
         } else {
             // receta_base
             dest = 'receta_base';
+            let condicionObj = null;
             
-            if (uso.includes('SI LLEVA') || uso.includes('PARA') || uso.includes('HECHIZO') || uso.includes('KIT DE') || uso === 'JUEGO DE REDILAS') {
+            if (uso.includes('SI LLEVA') || uso.includes('SI ES MULTIMODAL') || uso.includes('PARA') || uso.includes('HECHIZO') || uso.includes('KIT DE') || uso.includes('JUEGO DE REDILAS') || uso.includes('AMORTIGUADOR DE ALTA') || uso === 'LATERALES' || uso === 'ESTRIBO') {
                 dest = 'receta_base_condicionada';
-                informe.condiciones_no_mapeadas.push({ producto: normProd, uso: uso });
+                
+                if (uso.includes('KIT DE GANCHO')) {
+                    condicionObj = {"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]};
+                } else if (uso.includes('JUEGO DE REDILAS')) {
+                    condicionObj = {"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]};
+                } else if (uso.includes('AMORTIGUADOR DE ALTA')) {
+                    condicionObj = {"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]};
+                } else {
+                    condicionObj = {"sin_mapear": uso};
+                    informe.condiciones_no_mapeadas.push({ producto: normProd, uso: uso });
+                }
             }
 
             if (uso.includes('TORNILLERIA DE') || normProd.includes('BICICLETERO') || normProd.includes('CAJA AUXILIAR') || normProd.includes('MANIVELA') || normProd.includes('TAPA DE CHAMBER') || normProd.includes('KIT C/TORNILLO')) {
@@ -247,7 +258,8 @@ for (const row of planas) {
                 destino: dest,
                 escala: escala,
                 cantidad_calculada: qty,
-                uso: uso || null
+                uso: uso || null,
+                condicion: condicionObj
             });
             if (dest === 'receta_base') informe.asignadas_fija++;
             else informe.asignadas_condicionada++;
@@ -318,6 +330,22 @@ for (const key of Object.keys(opcionComponentesByOpt).sort()) {
     }
 }
 
+// Build mapped conditions strings
+const mappedConditions = [];
+for (const row of clasificacion) {
+    if (row.condicion && !row.condicion.sin_mapear) {
+        mappedConditions.push(`- Fila ${row.fila} [${row.producto}]: ${JSON.stringify(row.condicion)}`);
+    }
+}
+
+// Build unmapped conditions
+const unmappedConditions = [];
+for (const row of clasificacion) {
+    if (row.condicion && row.condicion.sin_mapear) {
+        unmappedConditions.push(`- Fila ${row.fila} [${row.producto}]: ${row.condicion.sin_mapear}`);
+    }
+}
+
 // Write the INFORME_2R1B.md
 const md = `# Informe de Importación 2R-1b (Plataformas)
 
@@ -336,10 +364,14 @@ ${informe.sin_asignar.map(x => '- Fila ' + x.fila + ' [' + x.producto + ']: ' + 
 ## Filas ignoradas (${informe.ignoradas.length})
 ${informe.ignoradas.map(x => '- Fila ' + x.fila + ' [' + x.producto + ']: ' + x.razon).join('\n') || '*Ninguna*'}
 
-## Condiciones no mapeadas (Se conservó el texto original en \`uso\`)
-${informe.condiciones_no_mapeadas.map(x => '- ' + x.producto + ': ' + x.uso).join('\n') || '*Ninguna*'}
+## Condiciones mapeadas a sintaxis JSONB
+${mappedConditions.join('\n') || '*Ninguna*'}
+
+## Condicionales sin mapear (excluidas hasta decisión del dueño)
+${unmappedConditions.join('\n') || '*Ninguna*'}
 
 ## Materiales Nuevos a Crear (${informe.materiales_nuevos.size})
+*Nota: 4 de estos materiales ya existían en la base de datos y fueron reutilizados por la cláusula NOT EXISTS (CO2, PATIN AMPRO, GANCHO PREMIER BESTIA 6 BARRENOS, CINTA REFLEJANTE).*
 ${Array.from(informe.materiales_nuevos).map(x => '- ' + x).join('\n')}
 
 ## Elementos que faltan en la receta original

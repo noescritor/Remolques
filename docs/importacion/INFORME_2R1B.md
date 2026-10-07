@@ -2,8 +2,8 @@
 
 ## Resumen de Filas Leídas
 - **Filas procesadas**: 260
-- **Receta Base Fija**: 121
-- **Receta Base Condicionada**: 20
+- **Receta Base Fija**: 113
+- **Receta Base Condicionada**: 28
 - **Componentes de Opciones**: 99
 - **Sin asignar**: 0
 
@@ -357,29 +357,40 @@
 - Fila 266 [8]: Fila informativa con solo cantidad
 - Fila 267 [8]: Fila informativa con solo cantidad
 
-## Condiciones no mapeadas (Se conservó el texto original en `uso`)
-- TORNILLO 3/8 X 1 GRADO 8: KIT DE TANQUE DE AIRE
-- RONDANA PLANA 3/8: KIT DE TANQUE DE AIRE
-- TUERCA DE SEGURIDAD 3/8: KIT DE TANQUE DE AIRE
-- TORNILLO 5/16 X 5 GRADO 8: KIT DE TORNILLOS DE ABS
-- RONDANA PLANA 5/16: KIT DE TORNILLOS DE ABS
-- TUERCA DE SEGURIDAD 5/16: KIT DE TORNILLOS DE ABS
-- TORNILLO 3/4 X 3 1/2 GRADO 8: KIT DE GANCHO
-- TORNILLO 3/4 X 2 1/2 GRADO 8: KIT DE GANCHO
-- TUERCA GRIPCO 3/4: KIT DE GANCHO
-- RONDANA AUTOMOTRIZ 3/4: KIT DE GANCHO
-- CABLE NEGRO CAL,12: SI LLEVA LATERALES Y ESTRIBO
-- CORRUGADO 3/8: SI LLEVA LATERALES Y ESTRIBO
-- CORRUGADO 1/4: SI LLEVA LATERALES Y ESTRIBO
-- TERMINAL 3/16: SI LLEVA LATERALES Y ESTRIBO
-- TORNILLO 1/8 X 1 1/4: SI LLEVA LATERALES Y ESTRIBO
-- TUERCA ESTANDAR 1/8: SI LLEVA LATERALES Y ESTRIBO
-- TORNILLO CABEZA DE COCHE 1/4 X 1 1/2: JUEGO DE REDILAS
-- TUERCA ESTANDAR 1/4: JUEGO DE REDILAS
-- RONDANA PLANA 5/16: JUEGO DE REDILAS
-- CHAVETAS 3/16*2: JUEGO DE REDILAS
+## Condiciones mapeadas a sintaxis JSONB
+- Fila 176 [TORNILLO 3/4X3 1/2 GRADO 8]: {"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}
+- Fila 177 [TORNILLO 3/4X 2 1/2 GRADO 8]: {"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}
+- Fila 178 [TUERCA GRIPCO 3/4]: {"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}
+- Fila 179 [RONDANA AUTOMOTRIZ 3/4]: {"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}
+- Fila 234 [TORNILLO CABEZA DE COCHE 1/4 X 1 1/2]: {"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}
+- Fila 235 [TUERCA ESTANDAR 1/4]: {"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}
+- Fila 236 [RONDANA PLANA 5/16]: {"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}
+- Fila 237 [CHAVETAS 3/16*2]: {"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}
+- Fila 246 [TORNILLO 3/4 X 6 GRADO 8]: {"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}
+- Fila 247 [TUERCA DE SEGURIDAD 3/4]: {"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}
+- Fila 248 [TORNILLO 3/4 X 3 1/2 GRADO 8]: {"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}
+- Fila 249 [RONDANA AUTOMOTRIZ 3/4]: {"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}
+
+## Condicionales sin mapear (excluidas hasta decisión del dueño)
+- Fila 165 [TORNILLO 3/8 X 1 GRADO 8]: KIT DE TANQUE DE AIRE
+- Fila 166 [RONDANA PLANA 3/8]: KIT DE TANQUE DE AIRE
+- Fila 167 [TUERCA DE SEGURIDAD 3/8]: KIT DE TANQUE DE AIRE
+- Fila 168 [TORNILLO 5/16 X 5 GRADO 8]: KIT DE TORNILLOS DE ABS
+- Fila 169 [RONDANA PLANA 5/16]: KIT DE TORNILLOS DE ABS
+- Fila 170 [TUERCA DE SEGURIDAD 5/16]: KIT DE TORNILLOS DE ABS
+- Fila 198 [CABLE NEGRO CAL,12]: SI LLEVA LATERALES Y ESTRIBO
+- Fila 202 [CORRUGADO 3/8]: SI LLEVA LATERALES Y ESTRIBO
+- Fila 203 [CORRUGADO 1/4]: SI LLEVA LATERALES Y ESTRIBO
+- Fila 206 [TERMINAL 3/16]: SI LLEVA LATERALES Y ESTRIBO
+- Fila 213 [PLAFON DE CARRITO AMBAR]: LATERALES
+- Fila 214 [PLAFON DE CARRITO ROJO]: ESTRIBO
+- Fila 215 [TORNILLO 1/8X 1 1/4]: SI LLEVA LATERALES Y ESTRIBO
+- Fila 216 [TUERCA ESTANDAR 1/8]: SI LLEVA LATERALES Y ESTRIBO
+- Fila 250 [CANDADO PARA PLANA]: SI ES MULTIMODAL O PORTA CONTENEDOR
+- Fila 251 [CARGADO 3X102 IN]: SI ES MULTIMODAL O PORTA CONTENEDOR
 
 ## Materiales Nuevos a Crear (177)
+*Nota: 4 de estos materiales ya existían en la base de datos y fueron reutilizados por la cláusula NOT EXISTS (CO2, PATIN AMPRO, GANCHO PREMIER BESTIA 6 BARRENOS, CINTA REFLEJANTE).*
 - CONSUMIBLE 65
 - DISCO DE DESBASTE 9
 - CO2

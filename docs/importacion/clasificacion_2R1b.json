@@ -16,7 +16,8 @@
     "destino": "receta_base",
     "escala": "por_largo",
     "cantidad_calculada": 0.5,
-    "uso": "CORTE DE PLACA"
+    "uso": "CORTE DE PLACA",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -35,7 +36,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": "ESMERILAR PLACAS"
+    "uso": "ESMERILAR PLACAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -53,7 +55,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": "UNION DE SOLERAS"
+    "uso": "UNION DE SOLERAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -72,7 +75,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": "UNION DE SOLERAS"
+    "uso": "UNION DE SOLERAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -91,7 +95,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": "UNION DE SOLERAS"
+    "uso": "UNION DE SOLERAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -109,7 +114,8 @@
     "destino": "receta_base",
     "escala": "por_largo",
     "cantidad_calculada": 0.25,
-    "uso": "UNION DE SOLERAS"
+    "uso": "UNION DE SOLERAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -129,7 +135,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": "PLANCHA"
+    "uso": "PLANCHA",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -147,7 +154,8 @@
     "destino": "receta_base",
     "escala": "por_largo",
     "cantidad_calculada": 0.25,
-    "uso": "PUENTES Y BORDAS"
+    "uso": "PUENTES Y BORDAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -166,7 +174,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.25,
-    "uso": "PUENTES Y BORDAS"
+    "uso": "PUENTES Y BORDAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -184,7 +193,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.25,
-    "uso": "PUENTES Y BORDAS"
+    "uso": "PUENTES Y BORDAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -202,7 +212,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.25,
-    "uso": "PUENTES Y BORDAS"
+    "uso": "PUENTES Y BORDAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -221,7 +232,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.25,
-    "uso": "PUENTES Y BORDAS"
+    "uso": "PUENTES Y BORDAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -240,7 +252,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.25,
-    "uso": "PUENTES Y BORDAS"
+    "uso": "PUENTES Y BORDAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -259,7 +272,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": "PUENTES Y BORDAS"
+    "uso": "PUENTES Y BORDAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -280,7 +294,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 38,
-    "uso": "CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS"
+    "uso": "CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -299,7 +314,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -318,7 +334,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -337,7 +354,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -356,7 +374,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.25,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -375,7 +394,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -394,7 +414,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.25,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -413,7 +434,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": "RESOLDE, RETRACTIL Y SUSPENSION"
+    "uso": "RESOLDE, RETRACTIL Y SUSPENSION",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -432,7 +454,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": "RESOLDE, RETRACTIL Y SUSPENSION"
+    "uso": "RESOLDE, RETRACTIL Y SUSPENSION",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -451,7 +474,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": "RESOLDE, RETRACTIL Y SUSPENSION"
+    "uso": "RESOLDE, RETRACTIL Y SUSPENSION",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -470,7 +494,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": "RESOLDE, RETRACTIL Y SUSPENSION"
+    "uso": "RESOLDE, RETRACTIL Y SUSPENSION",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -489,7 +514,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": "RESOLDE, RETRACTIL Y SUSPENSION"
+    "uso": "RESOLDE, RETRACTIL Y SUSPENSION",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -1599,7 +1625,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 3,
-    "uso": "CAJA DE HERRAMIENTA Y PORTA LLANTA"
+    "uso": "CAJA DE HERRAMIENTA Y PORTA LLANTA",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -1618,7 +1645,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 3,
-    "uso": "CAJA DE HERRAMIENTA Y PORTA LLANTA"
+    "uso": "CAJA DE HERRAMIENTA Y PORTA LLANTA",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -1637,7 +1665,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 44,
-    "uso": "2 PARES DE PATINES"
+    "uso": "2 PARES DE PATINES",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -1656,7 +1685,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 44,
-    "uso": "2 PARES DE PATINES"
+    "uso": "2 PARES DE PATINES",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -1890,7 +1920,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -1909,7 +1940,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -1928,7 +1960,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -1947,7 +1980,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -1966,7 +2000,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 0.5,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -1985,7 +2020,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2004,7 +2040,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2023,7 +2060,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2041,7 +2079,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2413,7 +2452,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2432,7 +2472,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2451,7 +2492,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 3,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2470,7 +2512,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2489,7 +2532,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2508,7 +2552,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2527,7 +2572,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 3,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2546,7 +2592,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2565,7 +2612,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2584,7 +2632,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2603,7 +2652,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2622,7 +2672,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2641,7 +2692,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 12,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2660,7 +2712,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2679,7 +2732,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2698,7 +2752,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2717,7 +2772,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2736,7 +2792,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2755,7 +2812,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2775,7 +2833,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2794,7 +2853,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2813,7 +2873,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2832,7 +2893,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2851,7 +2913,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2870,7 +2933,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2889,7 +2953,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2908,7 +2973,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2927,7 +2993,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2946,7 +3013,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2965,7 +3033,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -2984,7 +3053,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3003,7 +3073,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 38,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3022,7 +3093,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3041,7 +3113,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 30,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3060,7 +3133,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 13,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3079,7 +3153,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3098,7 +3173,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "uso": "KIT DE TANQUE DE AIRE"
+    "uso": "KIT DE TANQUE DE AIRE",
+    "condicion": {
+      "sin_mapear": "KIT DE TANQUE DE AIRE"
+    }
   },
   {
     "hoja": "PLANA",
@@ -3117,7 +3195,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "uso": "KIT DE TANQUE DE AIRE"
+    "uso": "KIT DE TANQUE DE AIRE",
+    "condicion": {
+      "sin_mapear": "KIT DE TANQUE DE AIRE"
+    }
   },
   {
     "hoja": "PLANA",
@@ -3136,7 +3217,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "uso": "KIT DE TANQUE DE AIRE"
+    "uso": "KIT DE TANQUE DE AIRE",
+    "condicion": {
+      "sin_mapear": "KIT DE TANQUE DE AIRE"
+    }
   },
   {
     "hoja": "PLANA",
@@ -3155,7 +3239,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": "KIT DE TORNILLOS DE ABS"
+    "uso": "KIT DE TORNILLOS DE ABS",
+    "condicion": {
+      "sin_mapear": "KIT DE TORNILLOS DE ABS"
+    }
   },
   {
     "hoja": "PLANA",
@@ -3174,7 +3261,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 4,
-    "uso": "KIT DE TORNILLOS DE ABS"
+    "uso": "KIT DE TORNILLOS DE ABS",
+    "condicion": {
+      "sin_mapear": "KIT DE TORNILLOS DE ABS"
+    }
   },
   {
     "hoja": "PLANA",
@@ -3193,7 +3283,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": "KIT DE TORNILLOS DE ABS"
+    "uso": "KIT DE TORNILLOS DE ABS",
+    "condicion": {
+      "sin_mapear": "KIT DE TORNILLOS DE ABS"
+    }
   },
   {
     "hoja": "PLANA",
@@ -3212,7 +3305,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3311,7 +3405,16 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": "KIT DE GANCHO"
+    "uso": "KIT DE GANCHO",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "gancho",
+          "op": "!=",
+          "valor": "sin_gancho"
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -3330,7 +3433,16 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "uso": "KIT DE GANCHO"
+    "uso": "KIT DE GANCHO",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "gancho",
+          "op": "!=",
+          "valor": "sin_gancho"
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -3349,7 +3461,16 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "uso": "KIT DE GANCHO"
+    "uso": "KIT DE GANCHO",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "gancho",
+          "op": "!=",
+          "valor": "sin_gancho"
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -3368,7 +3489,16 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": "KIT DE GANCHO"
+    "uso": "KIT DE GANCHO",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "gancho",
+          "op": "!=",
+          "valor": "sin_gancho"
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -3530,7 +3660,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3549,7 +3680,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "uso": "HEMBRAS Y PLAFON ABS"
+    "uso": "HEMBRAS Y PLAFON ABS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3568,7 +3700,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "uso": "HEMBRAS Y PLAFON ABS"
+    "uso": "HEMBRAS Y PLAFON ABS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3587,7 +3720,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "uso": "HEMBRAS Y PLAFON ABS"
+    "uso": "HEMBRAS Y PLAFON ABS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3605,7 +3739,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 15.9,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3623,7 +3758,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 17.3,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3641,7 +3777,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 22,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3659,7 +3796,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 22,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3677,7 +3815,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 28.5,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3695,7 +3834,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 15.9,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3713,7 +3853,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 25.8,
-    "uso": "SI LLEVA LATERALES Y ESTRIBO"
+    "uso": "SI LLEVA LATERALES Y ESTRIBO",
+    "condicion": {
+      "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
+    }
   },
   {
     "hoja": "PLANA",
@@ -3731,7 +3874,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 14.5,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3749,7 +3893,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2.8,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3767,7 +3912,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 21.8,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3785,7 +3931,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 3,
-    "uso": "SI LLEVA LATERALES Y ESTRIBO"
+    "uso": "SI LLEVA LATERALES Y ESTRIBO",
+    "condicion": {
+      "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
+    }
   },
   {
     "hoja": "PLANA",
@@ -3803,7 +3952,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 22.8,
-    "uso": "SI LLEVA LATERALES Y ESTRIBO"
+    "uso": "SI LLEVA LATERALES Y ESTRIBO",
+    "condicion": {
+      "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
+    }
   },
   {
     "hoja": "PLANA",
@@ -3821,7 +3973,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 18,
-    "uso": "PLAFONES PRINCIPALES"
+    "uso": "PLAFONES PRINCIPALES",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3839,7 +3992,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": "HEMBRAS"
+    "uso": "HEMBRAS",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3857,7 +4011,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 36,
-    "uso": "SI LLEVA LATERALES Y ESTRIBO"
+    "uso": "SI LLEVA LATERALES Y ESTRIBO",
+    "condicion": {
+      "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
+    }
   },
   {
     "hoja": "PLANA",
@@ -3877,7 +4034,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 51,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3896,7 +4054,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3914,7 +4073,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3932,7 +4092,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 5,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3950,7 +4111,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3968,7 +4130,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 4,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3983,10 +4146,13 @@
     "proveedores": [
       "TROGRIM"
     ],
-    "destino": "receta_base",
+    "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 20,
-    "uso": "LATERALES"
+    "uso": "LATERALES",
+    "condicion": {
+      "sin_mapear": "LATERALES"
+    }
   },
   {
     "hoja": "PLANA",
@@ -4001,10 +4167,13 @@
     "proveedores": [
       "TROGRIM"
     ],
-    "destino": "receta_base",
+    "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 16,
-    "uso": "ESTRIBO"
+    "uso": "ESTRIBO",
+    "condicion": {
+      "sin_mapear": "ESTRIBO"
+    }
   },
   {
     "hoja": "PLANA",
@@ -4023,7 +4192,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 72,
-    "uso": "SI LLEVA LATERALES Y ESTRIBO"
+    "uso": "SI LLEVA LATERALES Y ESTRIBO",
+    "condicion": {
+      "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
+    }
   },
   {
     "hoja": "PLANA",
@@ -4042,7 +4214,10 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 72,
-    "uso": "SI LLEVA LATERALES Y ESTRIBO"
+    "uso": "SI LLEVA LATERALES Y ESTRIBO",
+    "condicion": {
+      "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
+    }
   },
   {
     "hoja": "PLANA",
@@ -4062,7 +4237,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4080,7 +4256,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4099,7 +4276,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "uso": "TORNILLERIA DE LODERA"
+    "uso": "TORNILLERIA DE LODERA",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4118,7 +4296,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "uso": "TORNILLERIA DE LODERA"
+    "uso": "TORNILLERIA DE LODERA",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4136,7 +4315,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4155,7 +4335,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "uso": "TORNILLERIA DE TOPE"
+    "uso": "TORNILLERIA DE TOPE",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4174,7 +4355,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "uso": "TORNILLERIA DE TOPE"
+    "uso": "TORNILLERIA DE TOPE",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4193,7 +4375,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "uso": "TORNILLERIA DE TOPE"
+    "uso": "TORNILLERIA DE TOPE",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4213,7 +4396,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 20,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4232,7 +4416,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": "TORNILLERIA DE RIEL"
+    "uso": "TORNILLERIA DE RIEL",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4251,7 +4436,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": "TORNILLERIA DE RIEL"
+    "uso": "TORNILLERIA DE RIEL",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4271,7 +4457,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4291,7 +4478,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4309,7 +4497,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4328,7 +4517,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 4,
-    "uso": "TORNILLERIA DE PORTA PLACA"
+    "uso": "TORNILLERIA DE PORTA PLACA",
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4347,7 +4537,8 @@
     "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 4,
-    "uso": null
+    "uso": null,
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -4366,7 +4557,16 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 444,
-    "uso": "JUEGO DE REDILAS"
+    "uso": "JUEGO DE REDILAS",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "redilas",
+          "op": "!=",
+          "valor": "sin_redilas"
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -4385,7 +4585,16 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 444,
-    "uso": "JUEGO DE REDILAS"
+    "uso": "JUEGO DE REDILAS",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "redilas",
+          "op": "!=",
+          "valor": "sin_redilas"
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -4404,7 +4613,16 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 444,
-    "uso": "JUEGO DE REDILAS"
+    "uso": "JUEGO DE REDILAS",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "redilas",
+          "op": "!=",
+          "valor": "sin_redilas"
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -4423,7 +4641,16 @@
     "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 48,
-    "uso": "JUEGO DE REDILAS"
+    "uso": "JUEGO DE REDILAS",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "redilas",
+          "op": "!=",
+          "valor": "sin_redilas"
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -4607,10 +4834,23 @@
       "EL BENJA",
       "FERREPRECIOS"
     ],
-    "destino": "receta_base",
+    "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": "AMORTIGUADOR DE ALTA"
+    "uso": "AMORTIGUADOR DE ALTA",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "suspension",
+          "op": "in",
+          "valor": [
+            "alta_hendrickson",
+            "alta_fleet_master",
+            "hj_alta"
+          ]
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -4626,10 +4866,23 @@
       "EL BENJA",
       "FERREPRECIOS"
     ],
-    "destino": "receta_base",
+    "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 4,
-    "uso": "AMORTIGUADOR DE ALTA"
+    "uso": "AMORTIGUADOR DE ALTA",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "suspension",
+          "op": "in",
+          "valor": [
+            "alta_hendrickson",
+            "alta_fleet_master",
+            "hj_alta"
+          ]
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -4645,10 +4898,23 @@
       "EL BENJA",
       "FERREPRECIOS"
     ],
-    "destino": "receta_base",
+    "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "uso": "AMORTIGUADOR DE ALTA"
+    "uso": "AMORTIGUADOR DE ALTA",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "suspension",
+          "op": "in",
+          "valor": [
+            "alta_hendrickson",
+            "alta_fleet_master",
+            "hj_alta"
+          ]
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -4664,10 +4930,23 @@
       "EL BENJA",
       "FERREPRECIOS"
     ],
-    "destino": "receta_base",
+    "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 4,
-    "uso": "AMORTIGUADOR DE ALTA"
+    "uso": "AMORTIGUADOR DE ALTA",
+    "condicion": {
+      "todas": [
+        {
+          "campo": "suspension",
+          "op": "in",
+          "valor": [
+            "alta_hendrickson",
+            "alta_fleet_master",
+            "hj_alta"
+          ]
+        }
+      ]
+    }
   },
   {
     "hoja": "PLANA",
@@ -4683,10 +4962,13 @@
       "PJ",
       "PROMARE"
     ],
-    "destino": "receta_base",
+    "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 12,
-    "uso": "SI ES MULTIMODAL O PORTA CONTENEDOR"
+    "uso": "SI ES MULTIMODAL O PORTA CONTENEDOR",
+    "condicion": {
+      "sin_mapear": "SI ES MULTIMODAL O PORTA CONTENEDOR"
+    }
   },
   {
     "hoja": "PLANA",
@@ -4702,10 +4984,13 @@
       "PJ",
       "PROMARE"
     ],
-    "destino": "receta_base",
+    "destino": "receta_base_condicionada",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "uso": "SI ES MULTIMODAL O PORTA CONTENEDOR"
+    "uso": "SI ES MULTIMODAL O PORTA CONTENEDOR",
+    "condicion": {
+      "sin_mapear": "SI ES MULTIMODAL O PORTA CONTENEDOR"
+    }
   },
   {
     "hoja": "PLANA",

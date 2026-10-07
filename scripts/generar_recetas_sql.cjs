@@ -82,12 +82,13 @@ for (const model of modelsToProcess) {
             const mat = normalize(row.producto).replace(/'/g, "''");
             const paso = (row.proceso || 'PASO 1').replace(/'/g, "''");
             let uso = row.uso ? `'${row.uso.replace(/'/g, "''")}'` : 'NULL';
+            let condicion = row.condicion ? `'${JSON.stringify(row.condicion).replace(/'/g, "''")}'::jsonb` : 'NULL';
             
             sql += `
     SELECT id INTO v_mat_id FROM productos WHERE nombre = '${mat}' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ${mat}'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, ${row.cantidad_calculada || row.cantidad}, '${row.escala}', '${paso}', ${uso}, 'import-2r1b');\n`;
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, ${row.cantidad_calculada || row.cantidad}, '${row.escala}', '${paso}', ${uso}, ${condicion}, 'import-2r1b');\n`;
         }
     }
 }

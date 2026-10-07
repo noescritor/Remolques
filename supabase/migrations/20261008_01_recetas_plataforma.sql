@@ -561,7080 +561,7080 @@ INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripc
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PERNO REY 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PERNO REY 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADORES 4 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADORES 4 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO ALLEN 1/2 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO ALLEN 1/2 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/8 X 1 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/8 X 1 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 5/8 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 5/8 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LIJA #80' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LIJA #80'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARDA 5/8 DE 3"' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARDA 5/8 DE 3"'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 4 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 4 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FOSFATO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FOSFATO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT ABS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT ABS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/4 * 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/4 * 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/8 * 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/8 * 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'NIPLE 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: NIPLE 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/4 SUSPENSION FM + 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/4 SUSPENSION FM + 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE UNIO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE UNIO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE LATERAL 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE LATERAL 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE CENTRO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE CENTRO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RECTA 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RECTA 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ADAPTADOR 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ADAPTADOR 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MACHO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MACHO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ABS 2 EJES BENDIX' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ABS 2 EJES BENDIX'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PROTECTORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PROTECTORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PALANQUETA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PALANQUETA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VARILLA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VARILLA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA RETRACTIL SEALCO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA RETRACTIL SEALCO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ESPARRAGO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ESPARRAGO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TEFLON DE 13 METROS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TEFLON DE 13 METROS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA AZUL 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA AZUL 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA ROJA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA ROJA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA CHAMBER 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA CHAMBER 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 2 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 2 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA GRIPCO 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA GRIPCO 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 7 POLOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 7 POLOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AZUL CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AZUL CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE ROJO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE ROJO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AMARILLO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AMARILLO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE VERDE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE VERDE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE CAFE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE CAFE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REMACHE 3/16 X 5/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REMACHE 3/16 X 5/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA DE AISLAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA DE AISLAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AMBAR 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AMBAR 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AVALADO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AVALADO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', '{"sin_mapear":"LATERALES"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO ROJO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO ROJO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', '{"sin_mapear":"ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/8 X 1 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/8 X 1 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LODERA BLANCA O NEGRA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LODERA BLANCA O NEGRA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FLEJE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FLEJE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TOPE DE HULE 3 BARRENOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TOPE DE HULE 3 BARRENOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 2 1/2 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 2 1/2 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GALVANIZADA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GALVANIZADA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'WINCHES' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: WINCHES'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 1 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 1 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ROTULACION' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ROTULACION'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA REFLEJANTE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA REFLEJANTE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLACA DE NIP' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLACA DE NIP'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO CABEZA DE COCHE 1/4 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CHAVETAS 3/16*2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CHAVETAS 3/16*2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 6 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 6 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CANDADO PARA PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CANDADO PARA PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADO 3 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADO 3 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND num_ejes = 2 AND largo_ft = 40 LIMIT 1;
     IF v_model_id IS NULL THEN RAISE EXCEPTION 'Modelo PLATAFORMA % % FT no encontrado', 2, 40; END IF;
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PERNO REY 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PERNO REY 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADORES 4 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADORES 4 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO ALLEN 1/2 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO ALLEN 1/2 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/8 X 1 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/8 X 1 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 5/8 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 5/8 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LIJA #80' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LIJA #80'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARDA 5/8 DE 3"' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARDA 5/8 DE 3"'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 4 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 4 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FOSFATO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FOSFATO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT ABS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT ABS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/4 * 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/4 * 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/8 * 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/8 * 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'NIPLE 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: NIPLE 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/4 SUSPENSION FM + 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/4 SUSPENSION FM + 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE UNIO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE UNIO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE LATERAL 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE LATERAL 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE CENTRO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE CENTRO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RECTA 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RECTA 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ADAPTADOR 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ADAPTADOR 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MACHO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MACHO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ABS 2 EJES BENDIX' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ABS 2 EJES BENDIX'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PROTECTORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PROTECTORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PALANQUETA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PALANQUETA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VARILLA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VARILLA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA RETRACTIL SEALCO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA RETRACTIL SEALCO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ESPARRAGO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ESPARRAGO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TEFLON DE 13 METROS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TEFLON DE 13 METROS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA AZUL 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA AZUL 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA ROJA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA ROJA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA CHAMBER 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA CHAMBER 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 2 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 2 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA GRIPCO 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA GRIPCO 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 7 POLOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 7 POLOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AZUL CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AZUL CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE ROJO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE ROJO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AMARILLO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AMARILLO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE VERDE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE VERDE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE CAFE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE CAFE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REMACHE 3/16 X 5/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REMACHE 3/16 X 5/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA DE AISLAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA DE AISLAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AMBAR 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AMBAR 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AVALADO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AVALADO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', '{"sin_mapear":"LATERALES"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO ROJO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO ROJO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', '{"sin_mapear":"ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/8 X 1 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/8 X 1 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LODERA BLANCA O NEGRA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LODERA BLANCA O NEGRA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FLEJE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FLEJE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TOPE DE HULE 3 BARRENOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TOPE DE HULE 3 BARRENOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 2 1/2 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 2 1/2 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GALVANIZADA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GALVANIZADA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'WINCHES' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: WINCHES'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 1 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 1 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ROTULACION' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ROTULACION'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA REFLEJANTE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA REFLEJANTE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLACA DE NIP' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLACA DE NIP'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO CABEZA DE COCHE 1/4 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CHAVETAS 3/16*2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CHAVETAS 3/16*2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 6 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 6 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CANDADO PARA PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CANDADO PARA PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADO 3 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADO 3 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND num_ejes = 3 AND largo_ft = 40 LIMIT 1;
     IF v_model_id IS NULL THEN RAISE EXCEPTION 'Modelo PLATAFORMA % % FT no encontrado', 3, 40; END IF;
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PERNO REY 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PERNO REY 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADORES 4 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADORES 4 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO ALLEN 1/2 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO ALLEN 1/2 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/8 X 1 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/8 X 1 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 5/8 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 5/8 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LIJA #80' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LIJA #80'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARDA 5/8 DE 3"' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARDA 5/8 DE 3"'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 4 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 4 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FOSFATO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FOSFATO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT ABS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT ABS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/4 * 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/4 * 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/8 * 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/8 * 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'NIPLE 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: NIPLE 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/4 SUSPENSION FM + 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/4 SUSPENSION FM + 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE UNIO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE UNIO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE LATERAL 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE LATERAL 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE CENTRO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE CENTRO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RECTA 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RECTA 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ADAPTADOR 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ADAPTADOR 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MACHO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MACHO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ABS 2 EJES BENDIX' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ABS 2 EJES BENDIX'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PROTECTORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PROTECTORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PALANQUETA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PALANQUETA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VARILLA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VARILLA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA RETRACTIL SEALCO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA RETRACTIL SEALCO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ESPARRAGO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ESPARRAGO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TEFLON DE 13 METROS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TEFLON DE 13 METROS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA AZUL 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA AZUL 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA ROJA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA ROJA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA CHAMBER 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA CHAMBER 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 2 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 2 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA GRIPCO 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA GRIPCO 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 7 POLOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 7 POLOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AZUL CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AZUL CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE ROJO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE ROJO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AMARILLO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AMARILLO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE VERDE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE VERDE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE CAFE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE CAFE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REMACHE 3/16 X 5/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REMACHE 3/16 X 5/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA DE AISLAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA DE AISLAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AMBAR 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AMBAR 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AVALADO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AVALADO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', '{"sin_mapear":"LATERALES"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO ROJO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO ROJO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', '{"sin_mapear":"ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/8 X 1 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/8 X 1 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LODERA BLANCA O NEGRA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LODERA BLANCA O NEGRA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FLEJE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FLEJE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TOPE DE HULE 3 BARRENOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TOPE DE HULE 3 BARRENOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 2 1/2 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 2 1/2 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GALVANIZADA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GALVANIZADA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'WINCHES' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: WINCHES'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 1 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 1 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ROTULACION' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ROTULACION'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA REFLEJANTE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA REFLEJANTE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLACA DE NIP' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLACA DE NIP'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO CABEZA DE COCHE 1/4 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CHAVETAS 3/16*2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CHAVETAS 3/16*2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 6 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 6 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CANDADO PARA PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CANDADO PARA PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADO 3 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADO 3 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND num_ejes = 2 AND largo_ft = 42 LIMIT 1;
     IF v_model_id IS NULL THEN RAISE EXCEPTION 'Modelo PLATAFORMA % % FT no encontrado', 2, 42; END IF;
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PERNO REY 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PERNO REY 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADORES 4 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADORES 4 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO ALLEN 1/2 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO ALLEN 1/2 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/8 X 1 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/8 X 1 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 5/8 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 5/8 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LIJA #80' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LIJA #80'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARDA 5/8 DE 3"' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARDA 5/8 DE 3"'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 4 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 4 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FOSFATO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FOSFATO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT ABS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT ABS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/4 * 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/4 * 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/8 * 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/8 * 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'NIPLE 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: NIPLE 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/4 SUSPENSION FM + 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/4 SUSPENSION FM + 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE UNIO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE UNIO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE LATERAL 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE LATERAL 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE CENTRO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE CENTRO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RECTA 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RECTA 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ADAPTADOR 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ADAPTADOR 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MACHO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MACHO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ABS 2 EJES BENDIX' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ABS 2 EJES BENDIX'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PROTECTORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PROTECTORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PALANQUETA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PALANQUETA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VARILLA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VARILLA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA RETRACTIL SEALCO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA RETRACTIL SEALCO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ESPARRAGO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ESPARRAGO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TEFLON DE 13 METROS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TEFLON DE 13 METROS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA AZUL 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA AZUL 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA ROJA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA ROJA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA CHAMBER 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA CHAMBER 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 2 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 2 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA GRIPCO 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA GRIPCO 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 7 POLOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 7 POLOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AZUL CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AZUL CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE ROJO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE ROJO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AMARILLO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AMARILLO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE VERDE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE VERDE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE CAFE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE CAFE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REMACHE 3/16 X 5/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REMACHE 3/16 X 5/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA DE AISLAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA DE AISLAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AMBAR 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AMBAR 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AVALADO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AVALADO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', '{"sin_mapear":"LATERALES"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO ROJO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO ROJO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', '{"sin_mapear":"ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/8 X 1 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/8 X 1 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LODERA BLANCA O NEGRA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LODERA BLANCA O NEGRA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FLEJE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FLEJE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TOPE DE HULE 3 BARRENOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TOPE DE HULE 3 BARRENOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 2 1/2 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 2 1/2 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GALVANIZADA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GALVANIZADA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'WINCHES' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: WINCHES'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 1 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 1 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ROTULACION' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ROTULACION'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA REFLEJANTE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA REFLEJANTE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLACA DE NIP' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLACA DE NIP'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO CABEZA DE COCHE 1/4 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CHAVETAS 3/16*2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CHAVETAS 3/16*2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 6 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 6 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CANDADO PARA PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CANDADO PARA PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADO 3 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADO 3 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND num_ejes = 3 AND largo_ft = 42 LIMIT 1;
     IF v_model_id IS NULL THEN RAISE EXCEPTION 'Modelo PLATAFORMA % % FT no encontrado', 3, 42; END IF;
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PERNO REY 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PERNO REY 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADORES 4 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADORES 4 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO ALLEN 1/2 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO ALLEN 1/2 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/8 X 1 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/8 X 1 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 5/8 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 5/8 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LIJA #80' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LIJA #80'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARDA 5/8 DE 3"' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARDA 5/8 DE 3"'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 4 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 4 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FOSFATO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FOSFATO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT ABS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT ABS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/4 * 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/4 * 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/8 * 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/8 * 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'NIPLE 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: NIPLE 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/4 SUSPENSION FM + 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/4 SUSPENSION FM + 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE UNIO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE UNIO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE LATERAL 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE LATERAL 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE CENTRO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE CENTRO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RECTA 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RECTA 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ADAPTADOR 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ADAPTADOR 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MACHO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MACHO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ABS 2 EJES BENDIX' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ABS 2 EJES BENDIX'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PROTECTORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PROTECTORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PALANQUETA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PALANQUETA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VARILLA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VARILLA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA RETRACTIL SEALCO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA RETRACTIL SEALCO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ESPARRAGO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ESPARRAGO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TEFLON DE 13 METROS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TEFLON DE 13 METROS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA AZUL 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA AZUL 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA ROJA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA ROJA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA CHAMBER 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA CHAMBER 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 2 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 2 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA GRIPCO 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA GRIPCO 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 7 POLOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 7 POLOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AZUL CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AZUL CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE ROJO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE ROJO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AMARILLO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AMARILLO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE VERDE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE VERDE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE CAFE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE CAFE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REMACHE 3/16 X 5/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REMACHE 3/16 X 5/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA DE AISLAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA DE AISLAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AMBAR 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AMBAR 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AVALADO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AVALADO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', '{"sin_mapear":"LATERALES"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO ROJO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO ROJO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', '{"sin_mapear":"ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/8 X 1 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/8 X 1 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LODERA BLANCA O NEGRA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LODERA BLANCA O NEGRA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FLEJE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FLEJE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TOPE DE HULE 3 BARRENOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TOPE DE HULE 3 BARRENOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 2 1/2 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 2 1/2 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GALVANIZADA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GALVANIZADA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'WINCHES' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: WINCHES'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 1 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 1 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ROTULACION' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ROTULACION'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA REFLEJANTE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA REFLEJANTE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLACA DE NIP' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLACA DE NIP'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO CABEZA DE COCHE 1/4 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CHAVETAS 3/16*2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CHAVETAS 3/16*2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 6 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 6 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CANDADO PARA PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CANDADO PARA PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADO 3 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADO 3 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND num_ejes = 3 AND largo_ft = 43 LIMIT 1;
     IF v_model_id IS NULL THEN RAISE EXCEPTION 'Modelo PLATAFORMA % % FT no encontrado', 3, 43; END IF;
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PERNO REY 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PERNO REY 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADORES 4 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADORES 4 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO ALLEN 1/2 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO ALLEN 1/2 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/8 X 1 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/8 X 1 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 5/8 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 5/8 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LIJA #80' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LIJA #80'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARDA 5/8 DE 3"' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARDA 5/8 DE 3"'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 4 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 4 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FOSFATO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FOSFATO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT ABS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT ABS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/4 * 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/4 * 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/8 * 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/8 * 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'NIPLE 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: NIPLE 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/4 SUSPENSION FM + 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/4 SUSPENSION FM + 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE UNIO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE UNIO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE LATERAL 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE LATERAL 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE CENTRO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE CENTRO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RECTA 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RECTA 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ADAPTADOR 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ADAPTADOR 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MACHO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MACHO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ABS 2 EJES BENDIX' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ABS 2 EJES BENDIX'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PROTECTORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PROTECTORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PALANQUETA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PALANQUETA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VARILLA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VARILLA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA RETRACTIL SEALCO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA RETRACTIL SEALCO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ESPARRAGO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ESPARRAGO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TEFLON DE 13 METROS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TEFLON DE 13 METROS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA AZUL 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA AZUL 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA ROJA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA ROJA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA CHAMBER 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA CHAMBER 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 2 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 2 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA GRIPCO 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA GRIPCO 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 7 POLOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 7 POLOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AZUL CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AZUL CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE ROJO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE ROJO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AMARILLO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AMARILLO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE VERDE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE VERDE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE CAFE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE CAFE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REMACHE 3/16 X 5/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REMACHE 3/16 X 5/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA DE AISLAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA DE AISLAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AMBAR 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AMBAR 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AVALADO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AVALADO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', '{"sin_mapear":"LATERALES"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO ROJO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO ROJO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', '{"sin_mapear":"ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/8 X 1 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/8 X 1 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LODERA BLANCA O NEGRA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LODERA BLANCA O NEGRA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FLEJE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FLEJE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TOPE DE HULE 3 BARRENOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TOPE DE HULE 3 BARRENOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 2 1/2 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 2 1/2 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GALVANIZADA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GALVANIZADA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'WINCHES' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: WINCHES'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 1 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 1 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ROTULACION' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ROTULACION'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA REFLEJANTE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA REFLEJANTE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLACA DE NIP' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLACA DE NIP'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO CABEZA DE COCHE 1/4 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CHAVETAS 3/16*2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CHAVETAS 3/16*2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 6 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 6 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CANDADO PARA PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CANDADO PARA PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADO 3 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADO 3 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND num_ejes = 2 AND largo_ft = 45 LIMIT 1;
     IF v_model_id IS NULL THEN RAISE EXCEPTION 'Modelo PLATAFORMA % % FT no encontrado', 2, 45; END IF;
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PERNO REY 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PERNO REY 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADORES 4 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADORES 4 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO ALLEN 1/2 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO ALLEN 1/2 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/8 X 1 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/8 X 1 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 5/8 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 5/8 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LIJA #80' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LIJA #80'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARDA 5/8 DE 3"' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARDA 5/8 DE 3"'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 4 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 4 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FOSFATO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FOSFATO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT ABS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT ABS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/4 * 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/4 * 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/8 * 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/8 * 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'NIPLE 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: NIPLE 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/4 SUSPENSION FM + 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/4 SUSPENSION FM + 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE UNIO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE UNIO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE LATERAL 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE LATERAL 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE CENTRO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE CENTRO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RECTA 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RECTA 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ADAPTADOR 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ADAPTADOR 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MACHO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MACHO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ABS 2 EJES BENDIX' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ABS 2 EJES BENDIX'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PROTECTORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PROTECTORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PALANQUETA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PALANQUETA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VARILLA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VARILLA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA RETRACTIL SEALCO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA RETRACTIL SEALCO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ESPARRAGO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ESPARRAGO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TEFLON DE 13 METROS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TEFLON DE 13 METROS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA AZUL 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA AZUL 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA ROJA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA ROJA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA CHAMBER 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA CHAMBER 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 2 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 2 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA GRIPCO 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA GRIPCO 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 7 POLOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 7 POLOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AZUL CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AZUL CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE ROJO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE ROJO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AMARILLO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AMARILLO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE VERDE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE VERDE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE CAFE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE CAFE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REMACHE 3/16 X 5/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REMACHE 3/16 X 5/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA DE AISLAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA DE AISLAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AMBAR 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AMBAR 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AVALADO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AVALADO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', '{"sin_mapear":"LATERALES"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO ROJO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO ROJO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', '{"sin_mapear":"ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/8 X 1 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/8 X 1 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LODERA BLANCA O NEGRA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LODERA BLANCA O NEGRA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FLEJE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FLEJE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TOPE DE HULE 3 BARRENOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TOPE DE HULE 3 BARRENOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 2 1/2 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 2 1/2 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GALVANIZADA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GALVANIZADA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'WINCHES' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: WINCHES'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 1 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 1 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ROTULACION' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ROTULACION'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA REFLEJANTE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA REFLEJANTE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLACA DE NIP' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLACA DE NIP'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO CABEZA DE COCHE 1/4 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CHAVETAS 3/16*2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CHAVETAS 3/16*2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 6 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 6 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CANDADO PARA PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CANDADO PARA PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADO 3 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADO 3 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND num_ejes = 3 AND largo_ft = 45 LIMIT 1;
     IF v_model_id IS NULL THEN RAISE EXCEPTION 'Modelo PLATAFORMA % % FT no encontrado', 3, 45; END IF;
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PERNO REY 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PERNO REY 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADORES 4 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADORES 4 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO ALLEN 1/2 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO ALLEN 1/2 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/8 X 1 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/8 X 1 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 5/8 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 5/8 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LIJA #80' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LIJA #80'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARDA 5/8 DE 3"' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARDA 5/8 DE 3"'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 4 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 4 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FOSFATO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FOSFATO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT ABS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT ABS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/4 * 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/4 * 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/8 * 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/8 * 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'NIPLE 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: NIPLE 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/4 SUSPENSION FM + 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/4 SUSPENSION FM + 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE UNIO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE UNIO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE LATERAL 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE LATERAL 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE CENTRO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE CENTRO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RECTA 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RECTA 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ADAPTADOR 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ADAPTADOR 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MACHO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MACHO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ABS 2 EJES BENDIX' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ABS 2 EJES BENDIX'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PROTECTORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PROTECTORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PALANQUETA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PALANQUETA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VARILLA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VARILLA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA RETRACTIL SEALCO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA RETRACTIL SEALCO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ESPARRAGO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ESPARRAGO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TEFLON DE 13 METROS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TEFLON DE 13 METROS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA AZUL 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA AZUL 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA ROJA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA ROJA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA CHAMBER 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA CHAMBER 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 2 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 2 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA GRIPCO 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA GRIPCO 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 7 POLOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 7 POLOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AZUL CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AZUL CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE ROJO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE ROJO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AMARILLO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AMARILLO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE VERDE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE VERDE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE CAFE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE CAFE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REMACHE 3/16 X 5/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REMACHE 3/16 X 5/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA DE AISLAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA DE AISLAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AMBAR 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AMBAR 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AVALADO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AVALADO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', '{"sin_mapear":"LATERALES"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO ROJO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO ROJO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', '{"sin_mapear":"ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/8 X 1 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/8 X 1 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LODERA BLANCA O NEGRA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LODERA BLANCA O NEGRA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FLEJE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FLEJE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TOPE DE HULE 3 BARRENOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TOPE DE HULE 3 BARRENOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 2 1/2 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 2 1/2 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GALVANIZADA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GALVANIZADA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'WINCHES' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: WINCHES'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 1 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 1 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ROTULACION' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ROTULACION'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA REFLEJANTE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA REFLEJANTE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLACA DE NIP' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLACA DE NIP'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO CABEZA DE COCHE 1/4 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CHAVETAS 3/16*2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CHAVETAS 3/16*2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 6 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 6 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CANDADO PARA PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CANDADO PARA PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADO 3 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADO 3 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND num_ejes = 2 AND largo_ft = 48 LIMIT 1;
     IF v_model_id IS NULL THEN RAISE EXCEPTION 'Modelo PLATAFORMA % % FT no encontrado', 2, 48; END IF;
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PERNO REY 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PERNO REY 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADORES 4 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADORES 4 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO ALLEN 1/2 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO ALLEN 1/2 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/8 X 1 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/8 X 1 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 5/8 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 5/8 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LIJA #80' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LIJA #80'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARDA 5/8 DE 3"' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARDA 5/8 DE 3"'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 4 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 4 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FOSFATO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FOSFATO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT ABS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT ABS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/4 * 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/4 * 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/8 * 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/8 * 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'NIPLE 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: NIPLE 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/4 SUSPENSION FM + 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/4 SUSPENSION FM + 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE UNIO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE UNIO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE LATERAL 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE LATERAL 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE CENTRO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE CENTRO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RECTA 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RECTA 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ADAPTADOR 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ADAPTADOR 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MACHO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MACHO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ABS 2 EJES BENDIX' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ABS 2 EJES BENDIX'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PROTECTORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PROTECTORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PALANQUETA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PALANQUETA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VARILLA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VARILLA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA RETRACTIL SEALCO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA RETRACTIL SEALCO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ESPARRAGO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ESPARRAGO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TEFLON DE 13 METROS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TEFLON DE 13 METROS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA AZUL 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA AZUL 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA ROJA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA ROJA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA CHAMBER 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA CHAMBER 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 2 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 2 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA GRIPCO 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA GRIPCO 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 7 POLOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 7 POLOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AZUL CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AZUL CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE ROJO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE ROJO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AMARILLO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AMARILLO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE VERDE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE VERDE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE CAFE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE CAFE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REMACHE 3/16 X 5/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REMACHE 3/16 X 5/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA DE AISLAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA DE AISLAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AMBAR 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AMBAR 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AVALADO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AVALADO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', '{"sin_mapear":"LATERALES"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO ROJO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO ROJO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', '{"sin_mapear":"ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/8 X 1 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/8 X 1 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LODERA BLANCA O NEGRA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LODERA BLANCA O NEGRA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FLEJE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FLEJE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TOPE DE HULE 3 BARRENOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TOPE DE HULE 3 BARRENOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 2 1/2 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 2 1/2 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GALVANIZADA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GALVANIZADA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'WINCHES' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: WINCHES'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 1 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 1 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ROTULACION' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ROTULACION'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA REFLEJANTE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA REFLEJANTE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLACA DE NIP' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLACA DE NIP'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO CABEZA DE COCHE 1/4 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CHAVETAS 3/16*2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CHAVETAS 3/16*2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 6 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 6 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CANDADO PARA PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CANDADO PARA PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADO 3 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADO 3 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND num_ejes = 3 AND largo_ft = 48 LIMIT 1;
     IF v_model_id IS NULL THEN RAISE EXCEPTION 'Modelo PLATAFORMA % % FT no encontrado', 3, 48; END IF;
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'por_largo', 'PASO 1', 'CORTE DE PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 1', 'ESMERILAR PLACAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 2', 'UNION DE SOLERAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PERNO REY 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PERNO REY 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 3', 'PLANCHA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CONSUMIBLE 65' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CONSUMIBLE 65'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'por_largo', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 3', 'PUENTES Y BORDAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADORES 4 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADORES 4 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'PASO 4', 'CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'OXIGENO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: OXIGENO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.25, 'fija', 'PASO 4', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 5', 'RESOLDE, RETRACTIL Y SUSPENSION', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO ALLEN 1/2 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO ALLEN 1/2 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'PASO 6', 'CAJA DE HERRAMIENTA Y PORTA LLANTA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/8 X 1 1/2 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/8 X 1 1/2 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 5/8 GRADO 5' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 5/8 GRADO 5'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 44, 'fija', 'PASO 6', '2 PARES DE PATINES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE CORTE 7'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO DE DESBASTE 9'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CO2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CO2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ROLLO DE MICROALAMBRE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 0.5, 'fija', 'PASO 6', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LIJA #80' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LIJA #80'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARDA 5/8 DE 3"' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARDA 5/8 DE 3"'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'DISCO LAMINADO 4 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: DISCO LAMINADO 4 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FOSFATO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FOSFATO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LIMPIEZA', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT ABS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT ABS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/4 * 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/4 * 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REDUCCION 3/8 * 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REDUCCION 3/8 * 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'NIPLE 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: NIPLE 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/4 SUSPENSION FM + 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/4 SUSPENSION FM + 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TAPON 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TAPON 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE UNIO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE UNIO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE LATERAL 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE LATERAL 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TE CENTRO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TE CENTRO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RECTA 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RECTA 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8*1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8*1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CODO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CODO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ADAPTADOR 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ADAPTADOR 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MACHO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MACHO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ABS 2 EJES BENDIX' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ABS 2 EJES BENDIX'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PROTECTORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PROTECTORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA PALANQUETA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA PALANQUETA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VARILLA NIVELADORA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VARILLA NIVELADORA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'VALVULA RETRACTIL SEALCO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: VALVULA RETRACTIL SEALCO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA C/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA C/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA AZUL S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA AZUL S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANITA ROJA S/LLAVE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANITA ROJA S/LLAVE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'ESPARRAGO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: ESPARRAGO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TEFLON DE 13 METROS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TEFLON DE 13 METROS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 38, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'INCERTO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: INCERTO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA AZUL 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA AZUL 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 30, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA ROJA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA ROJA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 13, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'MANGUERA CHAMBER 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: MANGUERA CHAMBER 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 2 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 2 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA GRIPCO 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA GRIPCO 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE GANCHO', '{"todas":[{"campo":"gancho","op":"!=","valor":"sin_gancho"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'HEMBRA 7 POLOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: HEMBRA 7 POLOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', 'HEMBRAS Y PLAFON ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AZUL CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AZUL CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE ROJO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE ROJO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 17.3, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE AMARILLO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE AMARILLO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE VERDE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE VERDE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE CAFE CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE CAFE CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 28.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 15.9, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CABLE NEGRO CAL,12'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 25.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 14.5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 21.8, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 3/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 3, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CORRUGADO 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CORRUGADO 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 22.8, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 18, 'fija', 'LUZ', 'PLAFONES PRINCIPALES', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', 'HEMBRAS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TERMINAL 3/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TERMINAL 3/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 36, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'REMACHE 3/16 X 5/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: REMACHE 3/16 X 5/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 51, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA DE AISLAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA DE AISLAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON ROJO 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON ROJO 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 5, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AMBAR 2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AMBAR 2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON AVALADO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON AVALADO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'LUZ', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO AMBAR' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO AMBAR'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'LUZ', 'LATERALES', '{"sin_mapear":"LATERALES"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLAFON DE CARRITO ROJO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLAFON DE CARRITO ROJO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 16, 'fija', 'LUZ', 'ESTRIBO', '{"sin_mapear":"ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/8 X 1 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/8 X 1 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 72, 'fija', 'LUZ', 'SI LLEVA LATERALES Y ESTRIBO', '{"sin_mapear":"SI LLEVA LATERALES Y ESTRIBO"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'LODERA BLANCA O NEGRA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: LODERA BLANCA O NEGRA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'FLEJE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: FLEJE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'TERMINADO', 'TORNILLERIA DE LODERA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TOPE DE HULE 3 BARRENOS' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TOPE DE HULE 3 BARRENOS'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 2 1/2 GALVANIZADO' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 2 1/2 GALVANIZADO'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GALVANIZADA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/2 GALVANIZADA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 6, 'fija', 'TERMINADO', 'TORNILLERIA DE TOPE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'WINCHES' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: WINCHES'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 20, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/2 X 1 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/2 X 1 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'TERMINADO', 'TORNILLERIA DE RIEL', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'KIT DE ROTULACION' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: KIT DE ROTULACION'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CINTA REFLEJANTE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CINTA REFLEJANTE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'PLACA DE NIP' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: PLACA DE NIP'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 1, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 1/4 X 1 ACERO INOXIDABLE'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', 'TORNILLERIA DE PORTA PLACA', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'TERMINADO', NULL, NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO CABEZA DE COCHE 1/4 X 1 1/2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA ESTANDAR 1/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 444, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CHAVETAS 3/16*2' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CHAVETAS 3/16*2'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 48, 'fija', 'EXTRAS', 'JUEGO DE REDILAS', '{"todas":[{"campo":"redilas","op":"!=","valor":"sin_redilas"}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 6 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 6 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/4 X 3 1/2 GRADO 8'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA AUTOMOTRIZ 3/4'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'EXTRAS', 'AMORTIGUADOR DE ALTA', '{"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CANDADO PARA PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CANDADO PARA PLANA'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 12, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'CARGADO 3 X 102 IN' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: CARGADO 3 X 102 IN'; END IF;
-    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', 'import-2r1b');
+    INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'EXTRAS', 'SI ES MULTIMODAL O PORTA CONTENEDOR', '{"sin_mapear":"SI ES MULTIMODAL O PORTA CONTENEDOR"}'::jsonb, 'import-2r1b');
 
 -- 5. Inserción de opcion_componentes
 
