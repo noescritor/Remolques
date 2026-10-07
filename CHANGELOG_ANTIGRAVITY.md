@@ -3,6 +3,29 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-07 (7) - Bloque 2R-1b: Recetas de Plataforma - Ronda 4 (Condicionales JSONB)
+**Herramienta:** Antigravity
+**Tipo:** fix (db)
+**Archivos tocados:**
+- docs/importacion/clasificacion_2R1b.json
+- docs/importacion/INFORME_2R1B.md
+- supabase/migrations/20261008_01_recetas_plataforma.sql
+- scripts/clasificador_2R1b.cjs
+- scripts/generar_recetas_sql.cjs
+
+**Qué cambió y por qué:**
+Se solucionó la omisión de las reglas condicionales para filas de receta_base.
+Anteriormente las reglas condicionales se perdían al insertarlas con condicion = NULL, dejando que un hipotético motor de CPQ sumara componentes (como tornillería de gancho o juego de redilas) a configuraciones que explícitamente no los llevaban (sin_gancho, sin_redilas).
+Ahora se mapearon las reglas al lenguaje cerrado de condiciones JSONB:
+- KIT DE GANCHO: {todas:[{campo:gancho,op:!=,valor:sin_gancho}]}
+- JUEGO DE REDILAS: {todas:[{campo:redilas,op:!=,valor:sin_redilas}]}
+- AMORTIGUADOR DE ALTA: {todas:[{campo:suspension,op:in,valor:[alta_hendrickson,alta_fleet_master,hj_alta]}]}
+Adicionalmente, se añadió el operador in al esquema de opciones de manera informal, documentado para ser recogido por el motor posteriormente.
+Para condiciones no mapeables como SI LLEVA LATERALES Y ESTRIBO o SI ES MULTIMODAL, se codificó como {sin_mapear: texto...} para ser omitido de las evaluaciones hasta que el dueño decida.
+
+**Pendientes Anotados para futuras fases:**
+- Escalado de consumibles por largo: actualmente solo CONSUMIBLE 65 escala por largo; la base de datos de Planas filas 69-82 menciona otros consumibles (CO2, microtubular, discos, carda, lijas, tornillos) que también deben escalar. Se ajustará la propiedad de la base de datos después (es idempotente).
+
 ## 2026-10-07 (6) — Bloque 2R-1b: Recetas de Plataforma (Sin Precios)
 **Herramienta:** Antigravity
 **Tipo:** feat (db)

@@ -937,32 +937,32 @@ INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripc
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
@@ -1645,32 +1645,32 @@ INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripc
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
@@ -2353,32 +2353,32 @@ INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripc
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
@@ -3061,32 +3061,32 @@ INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripc
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
@@ -3769,32 +3769,32 @@ INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripc
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
@@ -4477,32 +4477,32 @@ INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripc
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
@@ -5185,32 +5185,32 @@ INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripc
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
@@ -5893,32 +5893,32 @@ INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripc
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
@@ -6601,32 +6601,32 @@ INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripc
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;
@@ -7309,32 +7309,32 @@ INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripc
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 3/8 X 1 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 3/8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', '{"sin_mapear":"KIT DE TANQUE DE AIRE"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 8, 'fija', 'AIRE', 'KIT DE TANQUE DE AIRE', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TORNILLO 5/16 X 5 GRADO 8'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: RONDANA PLANA 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 4, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TUERCA DE SEGURIDAD 5/16'; END IF;
     INSERT INTO receta_base (modelo_id, material_id, cantidad, escala, paso, uso, condicion, notas)
-    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', '{"sin_mapear":"KIT DE TORNILLOS DE ABS"}'::jsonb, 'import-2r1b');
+    VALUES (v_model_id, v_mat_id, 2, 'fija', 'AIRE', 'KIT DE TORNILLOS DE ABS', NULL, 'import-2r1b');
 
     SELECT id INTO v_mat_id FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND tipo_item = 'materia_prima' LIMIT 1;
     IF v_mat_id IS NULL THEN RAISE EXCEPTION 'Material no encontrado: TANQUE DE AIRE DE PLANA'; END IF;

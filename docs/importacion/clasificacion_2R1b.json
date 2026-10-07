@@ -3170,13 +3170,11 @@
       "EL BENJA",
       "FERREPRECIOS"
     ],
-    "destino": "receta_base_condicionada",
+    "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": "KIT DE TANQUE DE AIRE",
-    "condicion": {
-      "sin_mapear": "KIT DE TANQUE DE AIRE"
-    }
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3192,13 +3190,11 @@
       "EL BENJA",
       "FERREPRECIOS"
     ],
-    "destino": "receta_base_condicionada",
+    "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": "KIT DE TANQUE DE AIRE",
-    "condicion": {
-      "sin_mapear": "KIT DE TANQUE DE AIRE"
-    }
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3214,13 +3210,11 @@
       "EL BENJA",
       "FERREPRECIOS"
     ],
-    "destino": "receta_base_condicionada",
+    "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": "KIT DE TANQUE DE AIRE",
-    "condicion": {
-      "sin_mapear": "KIT DE TANQUE DE AIRE"
-    }
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3236,13 +3230,11 @@
       "EL BENJA",
       "FERREPRECIOS"
     ],
-    "destino": "receta_base_condicionada",
+    "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": "KIT DE TORNILLOS DE ABS",
-    "condicion": {
-      "sin_mapear": "KIT DE TORNILLOS DE ABS"
-    }
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3258,13 +3250,11 @@
       "EL BENJA",
       "FERREPRECIOS"
     ],
-    "destino": "receta_base_condicionada",
+    "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 4,
     "uso": "KIT DE TORNILLOS DE ABS",
-    "condicion": {
-      "sin_mapear": "KIT DE TORNILLOS DE ABS"
-    }
+    "condicion": null
   },
   {
     "hoja": "PLANA",
@@ -3280,13 +3270,11 @@
       "EL BENJA",
       "FERREPRECIOS"
     ],
-    "destino": "receta_base_condicionada",
+    "destino": "receta_base",
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": "KIT DE TORNILLOS DE ABS",
-    "condicion": {
-      "sin_mapear": "KIT DE TORNILLOS DE ABS"
-    }
+    "condicion": null
   },
   {
     "hoja": "PLANA",

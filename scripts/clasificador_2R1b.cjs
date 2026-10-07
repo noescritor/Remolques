@@ -234,7 +234,7 @@ for (const row of planas) {
             dest = 'receta_base';
             let condicionObj = null;
             
-            if (uso.includes('SI LLEVA') || uso.includes('SI ES MULTIMODAL') || uso.includes('PARA') || uso.includes('HECHIZO') || uso.includes('KIT DE') || uso.includes('JUEGO DE REDILAS') || uso.includes('AMORTIGUADOR DE ALTA') || uso === 'LATERALES' || uso === 'ESTRIBO') {
+            if (uso.includes('SI LLEVA LATERALES') || uso.includes('SI ES MULTIMODAL') || uso.includes('KIT DE GANCHO') || uso.includes('JUEGO DE REDILAS') || uso.includes('AMORTIGUADOR DE ALTA') || uso === 'LATERALES' || uso === 'ESTRIBO') {
                 dest = 'receta_base_condicionada';
                 
                 if (uso.includes('KIT DE GANCHO')) {

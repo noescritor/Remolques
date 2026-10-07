@@ -2,8 +2,8 @@
 
 ## Resumen de Filas Leídas
 - **Filas procesadas**: 260
-- **Receta Base Fija**: 113
-- **Receta Base Condicionada**: 28
+- **Receta Base Fija**: 119
+- **Receta Base Condicionada**: 22
 - **Componentes de Opciones**: 99
 - **Sin asignar**: 0
 
@@ -372,12 +372,6 @@
 - Fila 249 [RONDANA AUTOMOTRIZ 3/4]: {"todas":[{"campo":"suspension","op":"in","valor":["alta_hendrickson","alta_fleet_master","hj_alta"]}]}
 
 ## Condicionales sin mapear (excluidas hasta decisión del dueño)
-- Fila 165 [TORNILLO 3/8 X 1 GRADO 8]: KIT DE TANQUE DE AIRE
-- Fila 166 [RONDANA PLANA 3/8]: KIT DE TANQUE DE AIRE
-- Fila 167 [TUERCA DE SEGURIDAD 3/8]: KIT DE TANQUE DE AIRE
-- Fila 168 [TORNILLO 5/16 X 5 GRADO 8]: KIT DE TORNILLOS DE ABS
-- Fila 169 [RONDANA PLANA 5/16]: KIT DE TORNILLOS DE ABS
-- Fila 170 [TUERCA DE SEGURIDAD 5/16]: KIT DE TORNILLOS DE ABS
 - Fila 198 [CABLE NEGRO CAL,12]: SI LLEVA LATERALES Y ESTRIBO
 - Fila 202 [CORRUGADO 3/8]: SI LLEVA LATERALES Y ESTRIBO
 - Fila 203 [CORRUGADO 1/4]: SI LLEVA LATERALES Y ESTRIBO
