@@ -17,7 +17,8 @@
     "escala": "por_largo",
     "cantidad_calculada": 0.5,
     "uso": "CORTE DE PLACA",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -37,7 +38,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": "ESMERILAR PLACAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -56,7 +58,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": "UNION DE SOLERAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -76,7 +79,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": "UNION DE SOLERAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -96,7 +100,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": "UNION DE SOLERAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -115,7 +120,8 @@
     "escala": "por_largo",
     "cantidad_calculada": 0.25,
     "uso": "UNION DE SOLERAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -136,7 +142,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": "PLANCHA",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -155,7 +162,8 @@
     "escala": "por_largo",
     "cantidad_calculada": 0.25,
     "uso": "PUENTES Y BORDAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -175,7 +183,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.25,
     "uso": "PUENTES Y BORDAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -194,7 +203,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.25,
     "uso": "PUENTES Y BORDAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -213,7 +223,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.25,
     "uso": "PUENTES Y BORDAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -233,7 +244,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.25,
     "uso": "PUENTES Y BORDAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -253,7 +265,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.25,
     "uso": "PUENTES Y BORDAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -273,7 +286,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": "PUENTES Y BORDAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -295,7 +309,8 @@
     "escala": "fija",
     "cantidad_calculada": 38,
     "uso": "CARGADOR, BORDAD LATERALES, BUCHACAS, GANCHO, TUBO, ALETAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -315,7 +330,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -335,7 +351,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -355,7 +372,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -375,7 +393,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.25,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -395,7 +414,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -415,7 +435,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.25,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -435,7 +456,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": "RESOLDE, RETRACTIL Y SUSPENSION",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -455,7 +477,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": "RESOLDE, RETRACTIL Y SUSPENSION",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -475,7 +498,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": "RESOLDE, RETRACTIL Y SUSPENSION",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -495,7 +519,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": "RESOLDE, RETRACTIL Y SUSPENSION",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -515,7 +540,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": "RESOLDE, RETRACTIL Y SUSPENSION",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -552,7 +578,8 @@
     "opcion_id": "grande",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -575,7 +602,8 @@
     "opcion_id": "chico",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -625,7 +653,8 @@
     "opcion_id": "alta_hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -647,7 +676,8 @@
     "opcion_id": "alta_hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -669,7 +699,8 @@
     "opcion_id": "alta_hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -691,7 +722,8 @@
     "opcion_id": "alta_hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "sustituto"
+    "rol": "sustituto",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -713,7 +745,8 @@
     "opcion_id": "alta_hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -735,7 +768,8 @@
     "opcion_id": "alta_hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -757,7 +791,8 @@
     "opcion_id": "alta_hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -779,7 +814,8 @@
     "opcion_id": "alta_hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -801,7 +837,8 @@
     "opcion_id": "alta_hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -837,7 +874,8 @@
     "opcion_id": "hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -859,7 +897,8 @@
     "opcion_id": "hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -881,7 +920,8 @@
     "opcion_id": "hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -903,7 +943,8 @@
     "opcion_id": "hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -925,7 +966,8 @@
     "opcion_id": "hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -947,7 +989,8 @@
     "opcion_id": "hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -969,7 +1012,8 @@
     "opcion_id": "hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -991,7 +1035,8 @@
     "opcion_id": "hendrickson",
     "escala": "por_eje",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1026,7 +1071,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1047,7 +1093,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1068,7 +1115,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "independiente"
+    "rol": "independiente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1089,7 +1137,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "sustituto"
+    "rol": "sustituto",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1110,7 +1159,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "sustituto"
+    "rol": "sustituto",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1131,7 +1181,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "independiente"
+    "rol": "independiente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1153,7 +1204,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "sustituto"
+    "rol": "sustituto",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1174,7 +1226,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "sustituto"
+    "rol": "sustituto",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1195,7 +1248,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 2,
-    "rol": "independiente"
+    "rol": "independiente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1216,7 +1270,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "independiente"
+    "rol": "independiente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1237,7 +1292,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "independiente"
+    "rol": "independiente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1258,7 +1314,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 2,
-    "rol": "independiente"
+    "rol": "independiente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1292,7 +1349,8 @@
     "opcion_id": "ampro",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1312,7 +1370,8 @@
     "opcion_id": "ampro",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1332,7 +1391,8 @@
     "opcion_id": "ampro",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1352,7 +1412,8 @@
     "opcion_id": "ampro",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1372,7 +1433,8 @@
     "opcion_id": "ampro",
     "escala": "por_eje",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1392,7 +1454,8 @@
     "opcion_id": "ampro",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1412,7 +1475,8 @@
     "opcion_id": "ampro",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1432,7 +1496,8 @@
     "opcion_id": "ampro",
     "escala": "por_eje",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1466,7 +1531,8 @@
     "opcion_id": "fcr",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1486,7 +1552,8 @@
     "opcion_id": "fcr",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1506,7 +1573,8 @@
     "opcion_id": "fcr",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1526,7 +1594,8 @@
     "opcion_id": "fcr",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1546,7 +1615,8 @@
     "opcion_id": "fcr",
     "escala": "por_eje",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1566,7 +1636,8 @@
     "opcion_id": "fcr",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1586,7 +1657,8 @@
     "opcion_id": "fcr",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1606,7 +1678,8 @@
     "opcion_id": "fcr",
     "escala": "por_eje",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1626,7 +1699,8 @@
     "escala": "fija",
     "cantidad_calculada": 3,
     "uso": "CAJA DE HERRAMIENTA Y PORTA LLANTA",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1646,7 +1720,8 @@
     "escala": "fija",
     "cantidad_calculada": 3,
     "uso": "CAJA DE HERRAMIENTA Y PORTA LLANTA",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1666,7 +1741,8 @@
     "escala": "fija",
     "cantidad_calculada": 44,
     "uso": "2 PARES DE PATINES",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1686,7 +1762,8 @@
     "escala": "fija",
     "cantidad_calculada": 44,
     "uso": "2 PARES DE PATINES",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1720,7 +1797,8 @@
     "opcion_id": "ampro",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1742,7 +1820,8 @@
     "opcion_id": "holland",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1763,7 +1842,8 @@
     "opcion_id": "hj",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1784,7 +1864,8 @@
     "opcion_id": "flet_master",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1819,7 +1900,8 @@
     "opcion_id": "fleet_master",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1840,7 +1922,8 @@
     "opcion_id": "ampro",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1860,7 +1943,8 @@
     "opcion_id": "fcr",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1880,7 +1964,8 @@
     "opcion_id": "prat_max",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1901,7 +1986,8 @@
     "opcion_id": "hj",
     "escala": "por_eje",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1921,7 +2007,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1941,7 +2028,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1961,7 +2049,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -1981,7 +2070,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2001,7 +2091,8 @@
     "escala": "fija",
     "cantidad_calculada": 0.5,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2021,7 +2112,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2041,7 +2133,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2061,7 +2154,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2080,7 +2174,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2128,7 +2223,8 @@
     "opcion_id": "sherwin_williams",
     "escala": "fija",
     "cantidad_calculada": 19,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2148,7 +2244,8 @@
     "opcion_id": "sherwin_williams",
     "escala": "fija",
     "cantidad_calculada": 20,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2168,7 +2265,8 @@
     "opcion_id": "sherwin_williams",
     "escala": "fija",
     "cantidad_calculada": 4.5,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2188,7 +2286,8 @@
     "opcion_id": "sherwin_williams",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2208,7 +2307,8 @@
     "opcion_id": "sherwin_williams",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2228,7 +2328,8 @@
     "opcion_id": "sherwin_williams",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2262,7 +2363,8 @@
     "opcion_id": "ppg",
     "escala": "fija",
     "cantidad_calculada": 16,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2282,7 +2384,8 @@
     "opcion_id": "ppg",
     "escala": "fija",
     "cantidad_calculada": 15,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2302,7 +2405,8 @@
     "opcion_id": "ppg",
     "escala": "fija",
     "cantidad_calculada": 2.5,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2322,7 +2426,8 @@
     "opcion_id": "ppg",
     "escala": "fija",
     "cantidad_calculada": 7,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2342,7 +2447,8 @@
     "opcion_id": "ppg",
     "escala": "fija",
     "cantidad_calculada": 5,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2376,7 +2482,8 @@
     "opcion_id": "axalta",
     "escala": "fija",
     "cantidad_calculada": 20,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2396,7 +2503,8 @@
     "opcion_id": "axalta",
     "escala": "fija",
     "cantidad_calculada": 15,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2416,7 +2524,8 @@
     "opcion_id": "axalta",
     "escala": "fija",
     "cantidad_calculada": 2.5,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2436,7 +2545,8 @@
     "opcion_id": "axalta",
     "escala": "fija",
     "cantidad_calculada": 6,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "L"
   },
   {
     "hoja": "PLANA",
@@ -2453,7 +2563,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2473,7 +2584,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2493,7 +2605,8 @@
     "escala": "fija",
     "cantidad_calculada": 3,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2513,7 +2626,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2533,7 +2647,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2553,7 +2668,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2573,7 +2689,8 @@
     "escala": "fija",
     "cantidad_calculada": 3,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2593,7 +2710,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2613,7 +2731,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2633,7 +2752,8 @@
     "escala": "fija",
     "cantidad_calculada": 6,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2653,7 +2773,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2673,7 +2794,8 @@
     "escala": "fija",
     "cantidad_calculada": 6,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2693,7 +2815,8 @@
     "escala": "fija",
     "cantidad_calculada": 12,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2713,7 +2836,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2733,7 +2857,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2753,7 +2878,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2773,7 +2899,8 @@
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2793,7 +2920,8 @@
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2813,7 +2941,8 @@
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2834,7 +2963,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2854,7 +2984,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2874,7 +3005,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2894,7 +3026,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2914,7 +3047,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2934,7 +3068,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2954,7 +3089,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2974,7 +3110,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -2994,7 +3131,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3014,7 +3152,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3034,7 +3173,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3054,7 +3194,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3074,7 +3215,8 @@
     "escala": "fija",
     "cantidad_calculada": 38,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3094,7 +3236,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3114,7 +3257,8 @@
     "escala": "fija",
     "cantidad_calculada": 30,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3134,7 +3278,8 @@
     "escala": "fija",
     "cantidad_calculada": 13,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3154,7 +3299,8 @@
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3174,7 +3320,8 @@
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": "KIT DE TANQUE DE AIRE",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3194,7 +3341,8 @@
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": "KIT DE TANQUE DE AIRE",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3214,7 +3362,8 @@
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": "KIT DE TANQUE DE AIRE",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3234,7 +3383,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": "KIT DE TORNILLOS DE ABS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3254,7 +3404,8 @@
     "escala": "fija",
     "cantidad_calculada": 4,
     "uso": "KIT DE TORNILLOS DE ABS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3274,7 +3425,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": "KIT DE TORNILLOS DE ABS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3294,7 +3446,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3330,7 +3483,8 @@
     "opcion_id": "holland_8_10",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3352,7 +3506,8 @@
     "opcion_id": "premier_8",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3374,7 +3529,8 @@
     "opcion_id": "premier_bestia_6",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3402,7 +3558,8 @@
           "valor": "sin_gancho"
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3430,7 +3587,8 @@
           "valor": "sin_gancho"
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3458,7 +3616,8 @@
           "valor": "sin_gancho"
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3486,7 +3645,8 @@
           "valor": "sin_gancho"
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3522,7 +3682,8 @@
     "opcion_id": "grande",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3543,7 +3704,8 @@
     "opcion_id": "grande",
     "escala": "fija",
     "cantidad_calculada": 8,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3565,7 +3727,8 @@
     "opcion_id": "chico",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3586,7 +3749,8 @@
     "opcion_id": "chico",
     "escala": "fija",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3607,7 +3771,8 @@
     "opcion_id": "chico",
     "escala": "fija",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3628,7 +3793,8 @@
     "opcion_id": "chico",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3649,7 +3815,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3669,7 +3836,8 @@
     "escala": "fija",
     "cantidad_calculada": 6,
     "uso": "HEMBRAS Y PLAFON ABS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3689,7 +3857,8 @@
     "escala": "fija",
     "cantidad_calculada": 6,
     "uso": "HEMBRAS Y PLAFON ABS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3709,7 +3878,8 @@
     "escala": "fija",
     "cantidad_calculada": 6,
     "uso": "HEMBRAS Y PLAFON ABS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3728,7 +3898,8 @@
     "escala": "fija",
     "cantidad_calculada": 15.9,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3747,7 +3918,8 @@
     "escala": "fija",
     "cantidad_calculada": 17.3,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3766,7 +3938,8 @@
     "escala": "fija",
     "cantidad_calculada": 22,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3785,7 +3958,8 @@
     "escala": "fija",
     "cantidad_calculada": 22,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3804,7 +3978,8 @@
     "escala": "fija",
     "cantidad_calculada": 28.5,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3823,7 +3998,8 @@
     "escala": "fija",
     "cantidad_calculada": 15.9,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3844,7 +4020,8 @@
     "uso": "SI LLEVA LATERALES Y ESTRIBO",
     "condicion": {
       "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
-    }
+    },
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3863,7 +4040,8 @@
     "escala": "fija",
     "cantidad_calculada": 14.5,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3882,7 +4060,8 @@
     "escala": "fija",
     "cantidad_calculada": 2.8,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3901,7 +4080,8 @@
     "escala": "fija",
     "cantidad_calculada": 21.8,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3922,7 +4102,8 @@
     "uso": "SI LLEVA LATERALES Y ESTRIBO",
     "condicion": {
       "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
-    }
+    },
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3943,7 +4124,8 @@
     "uso": "SI LLEVA LATERALES Y ESTRIBO",
     "condicion": {
       "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
-    }
+    },
+    "unidad_sugerida": "M"
   },
   {
     "hoja": "PLANA",
@@ -3962,7 +4144,8 @@
     "escala": "fija",
     "cantidad_calculada": 18,
     "uso": "PLAFONES PRINCIPALES",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -3981,7 +4164,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": "HEMBRAS",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4002,7 +4186,8 @@
     "uso": "SI LLEVA LATERALES Y ESTRIBO",
     "condicion": {
       "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4023,7 +4208,8 @@
     "escala": "fija",
     "cantidad_calculada": 51,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4043,7 +4229,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4062,7 +4249,8 @@
     "escala": "fija",
     "cantidad_calculada": 6,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4081,7 +4269,8 @@
     "escala": "fija",
     "cantidad_calculada": 5,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4100,7 +4289,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4119,7 +4309,8 @@
     "escala": "fija",
     "cantidad_calculada": 4,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4140,7 +4331,8 @@
     "uso": "LATERALES",
     "condicion": {
       "sin_mapear": "LATERALES"
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4161,7 +4353,8 @@
     "uso": "ESTRIBO",
     "condicion": {
       "sin_mapear": "ESTRIBO"
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4183,7 +4376,8 @@
     "uso": "SI LLEVA LATERALES Y ESTRIBO",
     "condicion": {
       "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4205,7 +4399,8 @@
     "uso": "SI LLEVA LATERALES Y ESTRIBO",
     "condicion": {
       "sin_mapear": "SI LLEVA LATERALES Y ESTRIBO"
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4226,7 +4421,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4245,7 +4441,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4265,7 +4462,8 @@
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": "TORNILLERIA DE LODERA",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4285,7 +4483,8 @@
     "escala": "fija",
     "cantidad_calculada": 8,
     "uso": "TORNILLERIA DE LODERA",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4304,7 +4503,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4324,7 +4524,8 @@
     "escala": "fija",
     "cantidad_calculada": 6,
     "uso": "TORNILLERIA DE TOPE",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4344,7 +4545,8 @@
     "escala": "fija",
     "cantidad_calculada": 6,
     "uso": "TORNILLERIA DE TOPE",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4364,7 +4566,8 @@
     "escala": "fija",
     "cantidad_calculada": 6,
     "uso": "TORNILLERIA DE TOPE",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4385,7 +4588,8 @@
     "escala": "fija",
     "cantidad_calculada": 20,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4405,7 +4609,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": "TORNILLERIA DE RIEL",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4425,7 +4630,8 @@
     "escala": "fija",
     "cantidad_calculada": 2,
     "uso": "TORNILLERIA DE RIEL",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4446,7 +4652,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4467,7 +4674,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4486,7 +4694,8 @@
     "escala": "fija",
     "cantidad_calculada": 1,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4506,7 +4715,8 @@
     "escala": "fija",
     "cantidad_calculada": 4,
     "uso": "TORNILLERIA DE PORTA PLACA",
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4526,7 +4736,8 @@
     "escala": "fija",
     "cantidad_calculada": 4,
     "uso": null,
-    "condicion": null
+    "condicion": null,
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4554,7 +4765,8 @@
           "valor": "sin_redilas"
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4582,7 +4794,8 @@
           "valor": "sin_redilas"
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4610,7 +4823,8 @@
           "valor": "sin_redilas"
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4638,7 +4852,8 @@
           "valor": "sin_redilas"
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4659,7 +4874,8 @@
     "opcion_id": "grande",
     "escala": "fija",
     "cantidad_calculada": 20,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4680,7 +4896,8 @@
     "opcion_id": "grande",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4701,7 +4918,8 @@
     "opcion_id": "grande",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4722,7 +4940,8 @@
     "opcion_id": "grande",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4743,7 +4962,8 @@
     "opcion_id": "grande",
     "escala": "fija",
     "cantidad_calculada": 1,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4764,7 +4984,8 @@
     "opcion_id": "grande",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4785,7 +5006,8 @@
     "opcion_id": "grande",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4806,7 +5028,8 @@
     "opcion_id": "grande",
     "escala": "fija",
     "cantidad_calculada": 2,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4838,7 +5061,8 @@
           ]
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4870,7 +5094,8 @@
           ]
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4902,7 +5127,8 @@
           ]
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4934,7 +5160,8 @@
           ]
         }
       ]
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4956,7 +5183,8 @@
     "uso": "SI ES MULTIMODAL O PORTA CONTENEDOR",
     "condicion": {
       "sin_mapear": "SI ES MULTIMODAL O PORTA CONTENEDOR"
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -4978,7 +5206,8 @@
     "uso": "SI ES MULTIMODAL O PORTA CONTENEDOR",
     "condicion": {
       "sin_mapear": "SI ES MULTIMODAL O PORTA CONTENEDOR"
-    }
+    },
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -5013,7 +5242,8 @@
     "opcion_id": "acero",
     "escala": "por_eje",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -5031,7 +5261,8 @@
     "opcion_id": "acero",
     "escala": "por_eje",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -5051,7 +5282,8 @@
     "opcion_id": "acero",
     "escala": "por_eje",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -5072,7 +5304,8 @@
     "opcion_id": "aluminio",
     "escala": "por_eje",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -5093,7 +5326,8 @@
     "opcion_id": "aluminio",
     "escala": "por_eje",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -5113,7 +5347,8 @@
     "opcion_id": "aluminio",
     "escala": "por_eje",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -5133,7 +5368,8 @@
     "opcion_id": "aluminio",
     "escala": "por_eje",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -5167,7 +5403,8 @@
     "opcion_id": "kpatos_lineal",
     "escala": "por_eje",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -5187,7 +5424,8 @@
     "opcion_id": "kpatos_traccion",
     "escala": "por_eje",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -5208,7 +5446,8 @@
     "opcion_id": "firestone",
     "escala": "por_eje",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",
@@ -5229,7 +5468,8 @@
     "opcion_id": "godshield_lineal",
     "escala": "por_eje",
     "cantidad_calculada": 4,
-    "rol": "componente"
+    "rol": "componente",
+    "unidad_sugerida": "PZA"
   },
   {
     "hoja": "PLANA",

@@ -42,18 +42,22 @@ function normalize(str) {
     return s.trim().replace(/\s+/g, ' ');
 }
 
-// Collect all unique normalized materials to create
-const uniqueMaterials = new Set();
+// Collect all unique normalized materials to create, keeping track of their units
+const uniqueMaterials = new Map();
+
 for (const row of clasificacion) {
     if (row.destino !== 'ignorar' && row.producto) {
-        uniqueMaterials.add(normalize(row.producto));
+        const norm = normalize(row.producto);
+        if (!uniqueMaterials.has(norm)) {
+            uniqueMaterials.set(norm, row.unidad_sugerida || 'PZA');
+        }
     }
 }
 
-for (const mat of uniqueMaterials) {
+for (const [mat, unidad] of uniqueMaterials.entries()) {
     const safeMat = mat.replace(/'/g, "''");
-    sql += `INSERT INTO productos (nombre, tipo, tipo_item, costo, precio_unitario, descripcion, organizacion_id)
-            SELECT '${safeMat}', 'bien', 'materia_prima', 0, 0, 'SIN PRECIO', v_org_id
+    sql += `INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
+            SELECT '${safeMat}', 'bien', 'materia_prima', '${unidad}', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = '${safeMat}' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');\n`;
 }
 

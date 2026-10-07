@@ -225,7 +225,8 @@ for (const row of planas) {
                 opcion_id: finalOpt,
                 escala: escala,
                 cantidad_calculada: qty,
-                rol: uso === 'COMPONENTE' || uso === 'SUSTITUTO' || uso === 'INDEPENDIENTE' ? uso.toLowerCase() : 'componente'
+                rol: uso === 'COMPONENTE' || uso === 'SUSTITUTO' || uso === 'INDEPENDIENTE' ? uso.toLowerCase() : 'componente',
+                unidad_sugerida: null
             });
             informe.asignadas_opcion++;
             informe.materiales_nuevos.add(normProd);
@@ -259,12 +260,55 @@ for (const row of planas) {
                 escala: escala,
                 cantidad_calculada: qty,
                 uso: uso || null,
-                condicion: condicionObj
+                condicion: condicionObj,
+                unidad_sugerida: null
             });
             if (dest === 'receta_base') informe.asignadas_fija++;
             else informe.asignadas_condicionada++;
             informe.materiales_nuevos.add(normProd);
         }
+    }
+}
+
+// Fill suggested units
+function getUnidad(normName, rawUnidad) {
+    let explicit = null;
+    if (rawUnidad) {
+        const u = rawUnidad.toString().toUpperCase().trim();
+        if (u === 'L' || u.includes('LITRO') || u.endsWith(' L')) explicit = 'L';
+        else if (u === 'ML' || u.includes('ML')) explicit = 'L'; // Treat ML as L for mapping? Or PZA? Actually the standard says "L", "M", "PZA"
+        else if (u === 'M' || u.includes('METRO') || u.endsWith(' M')) explicit = 'M';
+        else if (u === 'PZA' || u.includes('PZA')) explicit = 'PZA';
+    }
+
+    const litros = ['PINTURA', 'THINER', 'THINER O REDUCTOR', 'REDUCTOR', 'TRANSPARENTE', 'CATALIZADOR', 'PRAIMER', 'FOSFATO'];
+    if (litros.includes(normName)) {
+        if (explicit && explicit !== 'L') console.warn(`Advertencia: ${normName} es Litros en la tabla, pero el manual dice ${rawUnidad}`);
+        return { unidad: 'L', supuesta: false };
+    }
+    if (normName.startsWith('CABLE ') || normName.startsWith('CORRUGADO ') || normName.startsWith('MANGUERA ') || normName === 'TEFLON') {
+        if (explicit && explicit !== 'M') console.warn(`Advertencia: ${normName} es Metros en la tabla, pero el manual dice ${rawUnidad}`);
+        return { unidad: 'M', supuesta: false };
+    }
+    
+    if (explicit) {
+        // Map ML to PZA or L? Let's use PZA for ML unless it's in the L list.
+        // Wait, the prompt says Litros ("L"), Metros ("M"), El resto "PZA".
+        // If the manual says "150ML", we can assume it's "PZA" of a 150ML bottle, or "L" if it's a liquid.
+        // Actually let's just output explicit if it is exactly L, M, PZA.
+        if (explicit === 'L' || explicit === 'M' || explicit === 'PZA') return { unidad: explicit, supuesta: false };
+    }
+
+    return { unidad: 'PZA', supuesta: true };
+}
+
+const unidades_asumidas = new Set();
+for (const row of clasificacion) {
+    if (row.destino !== 'ignorar' && row.producto) {
+        const norm = normalize(row.producto);
+        const u = getUnidad(norm, row.unidad);
+        row.unidad_sugerida = u.unidad;
+        if (u.supuesta) unidades_asumidas.add(norm);
     }
 }
 
@@ -373,6 +417,10 @@ ${unmappedConditions.join('\n') || '*Ninguna*'}
 ## Materiales Nuevos a Crear (${informe.materiales_nuevos.size})
 *Nota: 4 de estos materiales ya existían en la base de datos y fueron reutilizados por la cláusula NOT EXISTS (CO2, PATIN AMPRO, GANCHO PREMIER BESTIA 6 BARRENOS, CINTA REFLEJANTE).*
 ${Array.from(informe.materiales_nuevos).map(x => '- ' + x).join('\n')}
+
+## Unidades Supuestas (Por confirmar por el dueño)
+Los siguientes materiales no tenían unidad específica en el manual, ni cayeron en las reglas de Litros o Metros, por lo que se asume \`PZA\`:
+${Array.from(unidades_asumidas).map(x => '- ' + x).join('\n')}
 
 ## Elementos que faltan en la receta original
 ${informe.faltan_en_receta.map(x => '- ' + x).join('\n')}

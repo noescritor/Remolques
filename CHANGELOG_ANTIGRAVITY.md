@@ -3,6 +3,20 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-07 (8) - Bloque 2R-1b: Recetas de Plataforma - Ronda 5 (Corrección de constraint unidad)
+**Herramienta:** Antigravity
+**Tipo:** fix (db)
+**Archivos tocados:**
+- scripts/clasificador_2R1b.cjs
+- scripts/generar_recetas_sql.cjs
+- docs/importacion/INFORME_2R1B.md
+- supabase/migrations/20261008_01_recetas_plataforma.sql
+
+**Qué cambió y por qué:**
+Se corrigió un error que rompía la inserción en producción por violación de constraint NOT NULL en la columna unidad de la tabla productos. La inserción inicial omitía la columna, y no tenía un DEFAULT.
+Se implementó un mapeo de unidades donde los materiales listados bajo líquidos reciben L (Litros), aquellos que son cableado o mangueras reciben M (Metros), y el resto se clasifica por convención como PZA (Piezas). Los materiales que fueron asignados como PZA por falta de certeza quedaron reportados en INFORME_2R1B.md bajo la sección Unidades Supuestas para validación del dueño.
+El SQL de importación fue actualizado para inyectar esta unidad de forma explícita en el INSERT.
+
 ## 2026-10-07 (7) - Bloque 2R-1b: Recetas de Plataforma - Ronda 4 (Condicionales JSONB)
 **Herramienta:** Antigravity
 **Tipo:** fix (db)
