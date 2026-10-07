@@ -88,7 +88,7 @@ export interface LineaResultado {
 export interface Resultado {
   lineas: LineaResultado[];
   omitidas: { descripcion: string; texto: string }[];
-  alternativas: { original: string; sustituto: string; grupo: string }[];
+  alternativas: { reemplaza: string | null; posibles_reemplazos: string[]; sustituto: string; grupo: string }[];
   advertencias: string[];
   errores: string[];
   sin_precio: string[];

@@ -32,13 +32,8 @@ Deno.test("2. por_eje (3 ejes)", () => {
 });
 
 Deno.test("3. unica_con_cantidad", () => {
-  // Replace with a real group that has 'unica_con_cantidad' if possible, or test the logic
-  const mockDatos = JSON.parse(JSON.stringify(datos));
-  const grupoRines = mockDatos.grupos.find((g: any) => g.clave === "rines");
-  grupoRines.seleccion = "unica_con_cantidad";
-  
   const config: Configuracion = { grupos: { rines: { opcion: "acero", marca: "ampro", cantidad: 6 }, suspension: "alta_hendrickson", retractil: "grande", eje: "hendrickson", patin: "hj" } };
-  const res2 = resolverReceta(mockDatos, config);
+  const res2 = resolverReceta(datos, config);
   assertEquals(res2.lineas.find(l => l.nombre === "RIN DE ACERO AMPRO")?.cantidad, 6);
 });
 
@@ -70,15 +65,10 @@ Deno.test("6. Escala por largo", () => {
     const mock = JSON.parse(JSON.stringify(datos)) as DatosModelo;
     mock.modelo.largo_ft = largos[i];
     
-    // We mock consumible 65 to have base quantity 1, escala = por_largo
     const res = resolverReceta(mock, { grupos: { suspension: "alta_hendrickson", retractil: "grande", eje: "hendrickson", patin: "hj" } });
     const consumible = res.lineas.find(l => l.nombre === "CONSUMIBLE 65");
-    // Ensure scaling logic is mathematically correct (if the base was 1 in manual). Let's check proportionality.
-    if (consumible) {
-       // Just check it exists and is scaled properly. 
-       // In fixture it's 1. So it should match `esperados[i]`.
-       assertEquals(consumible.cantidad, esperados[i]);
-    }
+    assert(consumible);
+    assertEquals(consumible.cantidad, esperados[i]);
   }
 });
 
@@ -90,17 +80,16 @@ Deno.test("7. Incompatibilidad", () => {
   const config2: Configuracion = { grupos: { suspension: "hendrickson", retractil: "grande", eje: "hendrickson", patin: "hj" } };
   const res2 = resolverReceta(datos, config2);
   assert(res2.errores.some(e => e.includes("Incompatibilidad")));
+  
+  // Regla dona vs gancho
+  const config3: Configuracion = { grupos: { dona: "holland", gancho: "premier_8" } };
+  const res3 = resolverReceta(datos, config3);
+  assert(res3.errores.some(e => e.includes("corresponde al gancho")));
 });
 
 Deno.test("8. Suma de repetidos", () => {
-  const mockDatos = JSON.parse(JSON.stringify(datos)) as DatosModelo;
-  // Mock CONSUMIBLE 65 with 3 different pasos
-  mockDatos.receta_base.push({ material_id: "65", nombre: "CONSUMIBLE 65 TEST", cantidad: 0.5, escala: "fija", paso: "PASO 1", uso: null, condicion: null, unidad: "L", costo: 1, descripcion: "" });
-  mockDatos.receta_base.push({ material_id: "65", nombre: "CONSUMIBLE 65 TEST", cantidad: 0.25, escala: "fija", paso: "PASO 2", uso: null, condicion: null, unidad: "L", costo: 1, descripcion: "" });
-  mockDatos.receta_base.push({ material_id: "65", nombre: "CONSUMIBLE 65 TEST", cantidad: 0.25, escala: "fija", paso: "PASO 3", uso: null, condicion: null, unidad: "L", costo: 1, descripcion: "" });
-
-  const res = resolverReceta(mockDatos, { grupos: { suspension: "alta_hendrickson", retractil: "grande", eje: "hendrickson", patin: "hj" } });
-  const consumible = res.lineas.find(l => l.nombre === "CONSUMIBLE 65 TEST");
+  const res = resolverReceta(datos, { grupos: { suspension: "alta_hendrickson", retractil: "grande", eje: "hendrickson", patin: "hj" } });
+  const consumible = res.lineas.find(l => l.nombre === "CONSUMIBLE 65");
   assertEquals(consumible?.cantidad, 1.0);
   assertEquals(consumible?.paso.length, 3);
 });
@@ -128,19 +117,24 @@ Deno.test("10. Operadores de condicion", () => {
 Deno.test("11. Sustitutos", () => {
   const res = resolverReceta(datos, { grupos: { suspension: "alta_hendrickson", retractil: "grande", eje: "hendrickson", patin: "hj" } });
   assert(res.alternativas.length > 0);
-  assert(res.alternativas[0].original !== "Original"); // Now contains the base component's name
+  assert(res.alternativas[0].reemplaza === null);
+  assert(res.alternativas[0].posibles_reemplazos.length > 0);
 });
 
 Deno.test("12. Marca de rines", () => {
-  const configFM: Configuracion = { grupos: { rines: { opcion: "aluminio", marca: "fleet master" }, suspension: "alta_hendrickson", retractil: "grande", eje: "hendrickson", patin: "hj" } };
-  const resFM = resolverReceta(datos, configFM);
-  assert(resFM.lineas.some(l => l.nombre === "RIN DE ALUMINIO FLEET MASTER"));
-  assert(!resFM.lineas.some(l => l.nombre === "RIN DE ALUMINIO FLEET MASTER TRAPEZOIDAL"));
-  
-  const configFMT: Configuracion = { grupos: { rines: { opcion: "aluminio", marca: "fleet master trapezoidal" }, suspension: "alta_hendrickson", retractil: "grande", eje: "hendrickson", patin: "hj" } };
-  const resFMT = resolverReceta(datos, configFMT);
-  assert(!resFMT.lineas.some(l => l.nombre === "RIN DE ALUMINIO FLEET MASTER"));
-  assert(resFMT.lineas.some(l => l.nombre === "RIN DE ALUMINIO FLEET MASTER TRAPEZOIDAL"));
+  // 4 aluminum brands, steel acurrai
+  const configs = [
+    { config: { grupos: { rines: { opcion: "aluminio", marca: "ampro" } } }, expected: "RIN DE ALUMINIO AMPRO" },
+    { config: { grupos: { rines: { opcion: "aluminio", marca: "ampro trapezoidal" } } }, expected: "RIN DE ALUMINIO AMPRO MASTER TRAPEZOIDAL" },
+    { config: { grupos: { rines: { opcion: "aluminio", marca: "fleet master" } } }, expected: "RIN DE ALUMINIO FLEET MASTER" },
+    { config: { grupos: { rines: { opcion: "aluminio", marca: "fleet master trapezoidal" } } }, expected: "RIN DE ALUMINIO FLEET MASTER TRAPEZOIDAL" },
+    { config: { grupos: { rines: { opcion: "acero", marca: "acurrai" } } }, expected: "RIN DE ACERO ACURRAI" }
+  ];
+
+  for (const c of configs) {
+    const res = resolverReceta(datos, c.config as Configuracion);
+    assert(res.lineas.some(l => l.nombre === c.expected), `Missing ${c.expected}`);
+  }
 });
 
 Deno.test("13. Opción sin receta", () => {

@@ -36,11 +36,14 @@ export function validarCompatibilidad(
   const gancho = selectedOptions.get("gancho");
 
   if (dona && gancho && dona.clave !== "sin_dona" && gancho.clave !== "sin_gancho") {
-    // Both dona and gancho have 'clase' based on their bolt count (e.g. '8', '6_bestia')
-    // Wait, let's just check if they are related. If their clases don't match or similar.
-    // The prompt says "dona debe corresponder al gancho".
-    if (dona.clase !== gancho.clase && dona.clase !== "universal") {
-        errores.push(`Incompatibilidad: La dona (clase ${dona.clase || dona.clave}) no corresponde al gancho (clase ${gancho.clase || gancho.clave}).`);
+    const mapaDonaGancho: Record<string, string> = {
+      "holland": "holland_8_10",
+      "premier": "premier_8",
+      "bestia": "premier_bestia_6"
+    };
+    
+    if (mapaDonaGancho[dona.clave] !== gancho.clave) {
+        errores.push(`Incompatibilidad: La dona ${dona.nombre} no corresponde al gancho ${gancho.nombre}.`);
     }
   }
 }

@@ -4,7 +4,7 @@ import { validarCompatibilidad } from "./reglas_compatibilidad.ts";
 export function resolverReceta(datos: DatosModelo, configuracion: Configuracion): Resultado {
   const lineasMap = new Map<string, LineaResultado>();
   const omitidas: { descripcion: string; texto: string }[] = [];
-  const alternativas: { original: string; sustituto: string; grupo: string }[] = [];
+  const alternativas: { reemplaza: string | null; posibles_reemplazos: string[]; sustituto: string; grupo: string }[] = [];
   const advertencias: string[] = [];
   const errores: string[] = [];
   const sin_precio: string[] = [];
@@ -151,13 +151,26 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
 
       const requiereMarca = grupo.clave === 'rines' || confMarca !== undefined;
       let marcaNormalizada = confMarca ? confMarca.toUpperCase().trim() : null;
-      if (marcaNormalizada === 'FLET MASTER') marcaNormalizada = 'FLEET MASTER';
+      
+      // Mapeo de alias para marcas
+      if (marcaNormalizada) {
+        if (marcaNormalizada === 'FLET MASTER') marcaNormalizada = 'FLEET MASTER';
+        if (marcaNormalizada === 'AMPRO TRAPEZOIDAL') marcaNormalizada = 'AMPRO MASTER TRAPEZOIDAL';
+      }
 
       let matchedRims = 0;
 
       for (const comp of componentes) {
         if (comp.rol === 'sustituto') {
-          alternativas.push({ original: comp.nombre, sustituto: comp.nombre, grupo: grupo.clave });
+          // Compute posibles_reemplazos
+          const primerasPalabras = comp.nombre.split(' ')[0];
+          const posibles = componentes.filter(c => c.rol !== 'sustituto' && c.nombre.startsWith(primerasPalabras)).map(c => c.nombre);
+          alternativas.push({ 
+            reemplaza: null, 
+            posibles_reemplazos: posibles, 
+            sustituto: comp.nombre, 
+            grupo: grupo.clave 
+          });
           continue; 
         }
 
@@ -171,13 +184,18 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
             // Evaluated later
           } else {
             const posiblesMarcas = (opcion.marcas || []).map((m: string) => m.toUpperCase().trim());
-            const marcaValida = posiblesMarcas.includes(marcaNormalizada);
-            if (!marcaValida) {
+            const aliasesMarcas = (opcion.aliases || []).map((m: string) => m.toUpperCase().trim());
+            
+            // Revertimos el alias "AMPRO TRAPEZOIDAL" al checar validez si es que opcion.marcas tiene AMPRO TRAPEZOIDAL
+            const esMarcaValida = posiblesMarcas.includes(marcaNormalizada) || aliasesMarcas.includes(marcaNormalizada) || (marcaNormalizada === 'AMPRO MASTER TRAPEZOIDAL' && posiblesMarcas.includes('AMPRO TRAPEZOIDAL')); 
+            
+            if (!esMarcaValida) {
                 // Not a valid brand for this option
             } else {
-                const posiblesSorted = [...posiblesMarcas].sort((a,b) => b.length - a.length);
-                const matchedBrand = posiblesSorted.find(m => comp.nombre.includes(m));
-                if (matchedBrand === marcaNormalizada) {
+                // Exact string matching for rims: "RIN DE <MATERIAL> <MARCA>"
+                const nombreEsperado = `RIN DE ${opcion.clave.toUpperCase()} ${marcaNormalizada}`;
+                
+                if (comp.nombre === nombreEsperado) {
                   agregarLinea(comp.material_id, comp.nombre, comp.unidad, qty, comp.paso, comp.uso, `opcion:${grupo.clave}/${opcion.clave}`, comp.costo, comp.descripcion);
                   matchedRims++;
                 }
