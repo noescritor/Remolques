@@ -3,6 +3,21 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-07 (5) — Revisión del 2R-1a, SQL aplicado en producción y análisis de Factura Leolca
+**Herramienta:** Claude Code
+**Tipo:** docs / revisión
+**Archivos tocados:** `ANALISIS_FACTURA_LEOLCA_2026-10-07.md` (nuevo), `PROMPT_ANTY_2R1A_CORRECCIONES.md` y `PROMPT_ANTY_2R1A_CORRECCIONES_2.md` (nuevos, prompts de corrección).
+
+**Revisión del 2R-1a (3 rondas):** la ronda 1 encontró que `20261007_01` redefinía `get_current_org_id()` (habría roto la RLS de todas las tablas) y que el esquema perdía columnas del diseño. La ronda 2 encontró que el regex de `modelos` no coincidía con los nombres reales (`PLATAFORMA <ejes> <largo> FT`) y que `regla` se descartaba. La ronda 3 encontró que un precio `0` se guardaba como NULL (27 opciones). Las migraciones se probaron dos veces en un Postgres 17 local con los 167 productos reales del respaldo antes de autorizar. Merge `a16cc10` en `main`.
+
+**SQL aplicado en producción por el dueño (después del `pg_dump` del 2026-10-07):** `20261007_01` y `20261007_02`. Verificación devuelta por producción: 20 grupos, 126 opciones, 10 modelos, 7 tablas con RLS, `funcion_org_intacta = true`, 32 opciones sin precio, 27 con precio cero, 5 grupos con regla, 0 filas en `receta_base`.
+
+**Respaldo:** `pg_dump` de producción hecho y verificado (30 tablas con datos, 659 líneas de receta guardadas en `_bak_20261006_producto_materiales`). Pendiente del dueño: cambiar la contraseña de la base y rotar la `service_role` key.
+
+**Hallazgos de `Factura Leolca.xlsx`:** ver `ANALISIS_FACTURA_LEOLCA_2026-10-07.md`. Los principales: utilidad del dolly 65,000 (Factura) vs 40,000 (cotizador, ya cargado en `parametros_costeo`); el precio del dolly suma la combinación de opciones de la plataforma; IVA de la góndola solo sobre chasis y tina; la suspensión se cobra ×2 en una plataforma de 2 ejes; los kits son importes fijos distintos por hoja; seis hojas del libro están vacías.
+
+**Qué no se probó:** nada de esto toca código de la aplicación. El 2R-1b (recetas) no se ha iniciado.
+
 ## 2026-10-07 (4) — Bloque 2R-1a: Esquema del Configurador y Catálogo de Opciones (Correcciones)
 **Herramienta:** Antigravity
 **Tipo:** fix (db)
