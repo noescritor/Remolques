@@ -32,6 +32,7 @@ function normalize(str) {
     let s = str.toString().toUpperCase().trim().replace(/\s+/g, ' ');
     s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove accents
     s = s.replace(/FLET/g, 'FLEET')
+         .replace(/AUMINIO/g, 'ALUMINIO')
          .replace(/HOLAND/g, 'HOLLAND')
          .replace(/SEGURIRAD/g, 'SEGURIDAD')
          .replace(/MICRO ALAMBRE/g, 'MICROALAMBRE')
