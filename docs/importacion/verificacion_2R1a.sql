@@ -15,6 +15,7 @@ SELECT jsonb_build_object(
         AND schemaname = 'public' AND rowsecurity = true
     ),
     'grupos', (SELECT count(*) FROM grupos_configuracion),
+    'grupos_con_regla', (SELECT count(*) FROM grupos_configuracion WHERE regla IS NOT NULL),
     'opciones', (SELECT count(*) FROM opciones_configuracion),
     'opciones_sin_precio_total', (
         SELECT count(*) 
@@ -27,6 +28,9 @@ SELECT jsonb_build_object(
         WHERE precio_venta IS NULL AND (medidas IS NULL OR medidas = '{}'::jsonb)
     ),
     'modelos', (SELECT count(*) FROM modelos WHERE tipo = 'plataforma'),
+    'modelos_con_largo_y_ejes', (
+        SELECT count(*) FROM modelos WHERE tipo = 'plataforma' AND largo_ft IS NOT NULL AND num_ejes IS NOT NULL
+    ),
     'filas_receta_base', (SELECT count(*) FROM receta_base),
     'funcion_org_intacta', (
         SELECT position('perfiles_organizacion' in pg_get_functiondef(oid)) > 0 

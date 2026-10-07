@@ -21,160 +21,160 @@ ON CONFLICT (organizacion_id, clave) DO UPDATE SET
 -- 2. MODELOS PLATAFORMA (10 Variantes)
 
 SELECT count(*) INTO v_count FROM productos 
-WHERE nombre ~* '\\m35\\s*FT\\M.*\\m2\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
+WHERE nombre ~* '^PLATAFORMA +2 +35 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
 
 IF v_count <> 1 THEN
-    RAISE EXCEPTION 'La variante "35 ft x2" (regex: % ) devolvió % productos en lugar de 1', '\\m35\\s*FT\\M.*\\m2\\s*EJE', v_count;
+    RAISE EXCEPTION 'La variante "35 ft x2" (regex: %) devolvió % productos en lugar de 1', '^PLATAFORMA +2 +35 *FT *$', v_count;
 END IF;
 
 INSERT INTO modelos (organizacion_id, producto_id, tipo, largo_ft, num_ejes)
 SELECT org_id, id, 'plataforma', 35, 2
 FROM productos 
-WHERE nombre ~* '\\m35\\s*FT\\M.*\\m2\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
+WHERE nombre ~* '^PLATAFORMA +2 +35 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
 ON CONFLICT (organizacion_id, producto_id) DO UPDATE SET 
     tipo = EXCLUDED.tipo, largo_ft = EXCLUDED.largo_ft, num_ejes = EXCLUDED.num_ejes;
 
 v_total_modelos := v_total_modelos + 1;
 
 SELECT count(*) INTO v_count FROM productos 
-WHERE nombre ~* '\\m40\\s*FT\\M.*\\m2\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
+WHERE nombre ~* '^PLATAFORMA +2 +40 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
 
 IF v_count <> 1 THEN
-    RAISE EXCEPTION 'La variante "40 ft x2" (regex: % ) devolvió % productos en lugar de 1', '\\m40\\s*FT\\M.*\\m2\\s*EJE', v_count;
+    RAISE EXCEPTION 'La variante "40 ft x2" (regex: %) devolvió % productos en lugar de 1', '^PLATAFORMA +2 +40 *FT *$', v_count;
 END IF;
 
 INSERT INTO modelos (organizacion_id, producto_id, tipo, largo_ft, num_ejes)
 SELECT org_id, id, 'plataforma', 40, 2
 FROM productos 
-WHERE nombre ~* '\\m40\\s*FT\\M.*\\m2\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
+WHERE nombre ~* '^PLATAFORMA +2 +40 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
 ON CONFLICT (organizacion_id, producto_id) DO UPDATE SET 
     tipo = EXCLUDED.tipo, largo_ft = EXCLUDED.largo_ft, num_ejes = EXCLUDED.num_ejes;
 
 v_total_modelos := v_total_modelos + 1;
 
 SELECT count(*) INTO v_count FROM productos 
-WHERE nombre ~* '\\m40\\s*FT\\M.*\\m3\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
+WHERE nombre ~* '^PLATAFORMA +3 +40 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
 
 IF v_count <> 1 THEN
-    RAISE EXCEPTION 'La variante "40 ft x3" (regex: % ) devolvió % productos en lugar de 1', '\\m40\\s*FT\\M.*\\m3\\s*EJE', v_count;
+    RAISE EXCEPTION 'La variante "40 ft x3" (regex: %) devolvió % productos en lugar de 1', '^PLATAFORMA +3 +40 *FT *$', v_count;
 END IF;
 
 INSERT INTO modelos (organizacion_id, producto_id, tipo, largo_ft, num_ejes)
 SELECT org_id, id, 'plataforma', 40, 3
 FROM productos 
-WHERE nombre ~* '\\m40\\s*FT\\M.*\\m3\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
+WHERE nombre ~* '^PLATAFORMA +3 +40 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
 ON CONFLICT (organizacion_id, producto_id) DO UPDATE SET 
     tipo = EXCLUDED.tipo, largo_ft = EXCLUDED.largo_ft, num_ejes = EXCLUDED.num_ejes;
 
 v_total_modelos := v_total_modelos + 1;
 
 SELECT count(*) INTO v_count FROM productos 
-WHERE nombre ~* '\\m42\\s*FT\\M.*\\m2\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
+WHERE nombre ~* '^PLATAFORMA +2 +42 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
 
 IF v_count <> 1 THEN
-    RAISE EXCEPTION 'La variante "42 ft x2" (regex: % ) devolvió % productos en lugar de 1', '\\m42\\s*FT\\M.*\\m2\\s*EJE', v_count;
+    RAISE EXCEPTION 'La variante "42 ft x2" (regex: %) devolvió % productos en lugar de 1', '^PLATAFORMA +2 +42 *FT *$', v_count;
 END IF;
 
 INSERT INTO modelos (organizacion_id, producto_id, tipo, largo_ft, num_ejes)
 SELECT org_id, id, 'plataforma', 42, 2
 FROM productos 
-WHERE nombre ~* '\\m42\\s*FT\\M.*\\m2\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
+WHERE nombre ~* '^PLATAFORMA +2 +42 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
 ON CONFLICT (organizacion_id, producto_id) DO UPDATE SET 
     tipo = EXCLUDED.tipo, largo_ft = EXCLUDED.largo_ft, num_ejes = EXCLUDED.num_ejes;
 
 v_total_modelos := v_total_modelos + 1;
 
 SELECT count(*) INTO v_count FROM productos 
-WHERE nombre ~* '\\m42\\s*FT\\M.*\\m3\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
+WHERE nombre ~* '^PLATAFORMA +3 +42 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
 
 IF v_count <> 1 THEN
-    RAISE EXCEPTION 'La variante "42 ft x3" (regex: % ) devolvió % productos en lugar de 1', '\\m42\\s*FT\\M.*\\m3\\s*EJE', v_count;
+    RAISE EXCEPTION 'La variante "42 ft x3" (regex: %) devolvió % productos en lugar de 1', '^PLATAFORMA +3 +42 *FT *$', v_count;
 END IF;
 
 INSERT INTO modelos (organizacion_id, producto_id, tipo, largo_ft, num_ejes)
 SELECT org_id, id, 'plataforma', 42, 3
 FROM productos 
-WHERE nombre ~* '\\m42\\s*FT\\M.*\\m3\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
+WHERE nombre ~* '^PLATAFORMA +3 +42 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
 ON CONFLICT (organizacion_id, producto_id) DO UPDATE SET 
     tipo = EXCLUDED.tipo, largo_ft = EXCLUDED.largo_ft, num_ejes = EXCLUDED.num_ejes;
 
 v_total_modelos := v_total_modelos + 1;
 
 SELECT count(*) INTO v_count FROM productos 
-WHERE nombre ~* '\\m43\\s*FT\\M.*\\m3\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
+WHERE nombre ~* '^PLATAFORMA +3 +43 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
 
 IF v_count <> 1 THEN
-    RAISE EXCEPTION 'La variante "43 ft x3" (regex: % ) devolvió % productos en lugar de 1', '\\m43\\s*FT\\M.*\\m3\\s*EJE', v_count;
+    RAISE EXCEPTION 'La variante "43 ft x3" (regex: %) devolvió % productos en lugar de 1', '^PLATAFORMA +3 +43 *FT *$', v_count;
 END IF;
 
 INSERT INTO modelos (organizacion_id, producto_id, tipo, largo_ft, num_ejes)
 SELECT org_id, id, 'plataforma', 43, 3
 FROM productos 
-WHERE nombre ~* '\\m43\\s*FT\\M.*\\m3\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
+WHERE nombre ~* '^PLATAFORMA +3 +43 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
 ON CONFLICT (organizacion_id, producto_id) DO UPDATE SET 
     tipo = EXCLUDED.tipo, largo_ft = EXCLUDED.largo_ft, num_ejes = EXCLUDED.num_ejes;
 
 v_total_modelos := v_total_modelos + 1;
 
 SELECT count(*) INTO v_count FROM productos 
-WHERE nombre ~* '\\m45\\s*FT\\M.*\\m2\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
+WHERE nombre ~* '^PLATAFORMA +2 +45 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
 
 IF v_count <> 1 THEN
-    RAISE EXCEPTION 'La variante "45 ft x2" (regex: % ) devolvió % productos en lugar de 1', '\\m45\\s*FT\\M.*\\m2\\s*EJE', v_count;
+    RAISE EXCEPTION 'La variante "45 ft x2" (regex: %) devolvió % productos en lugar de 1', '^PLATAFORMA +2 +45 *FT *$', v_count;
 END IF;
 
 INSERT INTO modelos (organizacion_id, producto_id, tipo, largo_ft, num_ejes)
 SELECT org_id, id, 'plataforma', 45, 2
 FROM productos 
-WHERE nombre ~* '\\m45\\s*FT\\M.*\\m2\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
+WHERE nombre ~* '^PLATAFORMA +2 +45 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
 ON CONFLICT (organizacion_id, producto_id) DO UPDATE SET 
     tipo = EXCLUDED.tipo, largo_ft = EXCLUDED.largo_ft, num_ejes = EXCLUDED.num_ejes;
 
 v_total_modelos := v_total_modelos + 1;
 
 SELECT count(*) INTO v_count FROM productos 
-WHERE nombre ~* '\\m45\\s*FT\\M.*\\m3\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
+WHERE nombre ~* '^PLATAFORMA +3 +45 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
 
 IF v_count <> 1 THEN
-    RAISE EXCEPTION 'La variante "45 ft x3" (regex: % ) devolvió % productos en lugar de 1', '\\m45\\s*FT\\M.*\\m3\\s*EJE', v_count;
+    RAISE EXCEPTION 'La variante "45 ft x3" (regex: %) devolvió % productos en lugar de 1', '^PLATAFORMA +3 +45 *FT *$', v_count;
 END IF;
 
 INSERT INTO modelos (organizacion_id, producto_id, tipo, largo_ft, num_ejes)
 SELECT org_id, id, 'plataforma', 45, 3
 FROM productos 
-WHERE nombre ~* '\\m45\\s*FT\\M.*\\m3\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
+WHERE nombre ~* '^PLATAFORMA +3 +45 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
 ON CONFLICT (organizacion_id, producto_id) DO UPDATE SET 
     tipo = EXCLUDED.tipo, largo_ft = EXCLUDED.largo_ft, num_ejes = EXCLUDED.num_ejes;
 
 v_total_modelos := v_total_modelos + 1;
 
 SELECT count(*) INTO v_count FROM productos 
-WHERE nombre ~* '\\m48\\s*FT\\M.*\\m2\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
+WHERE nombre ~* '^PLATAFORMA +2 +48 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
 
 IF v_count <> 1 THEN
-    RAISE EXCEPTION 'La variante "48 ft x2" (regex: % ) devolvió % productos en lugar de 1', '\\m48\\s*FT\\M.*\\m2\\s*EJE', v_count;
+    RAISE EXCEPTION 'La variante "48 ft x2" (regex: %) devolvió % productos en lugar de 1', '^PLATAFORMA +2 +48 *FT *$', v_count;
 END IF;
 
 INSERT INTO modelos (organizacion_id, producto_id, tipo, largo_ft, num_ejes)
 SELECT org_id, id, 'plataforma', 48, 2
 FROM productos 
-WHERE nombre ~* '\\m48\\s*FT\\M.*\\m2\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
+WHERE nombre ~* '^PLATAFORMA +2 +48 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
 ON CONFLICT (organizacion_id, producto_id) DO UPDATE SET 
     tipo = EXCLUDED.tipo, largo_ft = EXCLUDED.largo_ft, num_ejes = EXCLUDED.num_ejes;
 
 v_total_modelos := v_total_modelos + 1;
 
 SELECT count(*) INTO v_count FROM productos 
-WHERE nombre ~* '\\m48\\s*FT\\M.*\\m3\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
+WHERE nombre ~* '^PLATAFORMA +3 +48 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
 
 IF v_count <> 1 THEN
-    RAISE EXCEPTION 'La variante "48 ft x3" (regex: % ) devolvió % productos en lugar de 1', '\\m48\\s*FT\\M.*\\m3\\s*EJE', v_count;
+    RAISE EXCEPTION 'La variante "48 ft x3" (regex: %) devolvió % productos en lugar de 1', '^PLATAFORMA +3 +48 *FT *$', v_count;
 END IF;
 
 INSERT INTO modelos (organizacion_id, producto_id, tipo, largo_ft, num_ejes)
 SELECT org_id, id, 'plataforma', 48, 3
 FROM productos 
-WHERE nombre ~* '\\m48\\s*FT\\M.*\\m3\\s*EJE' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
+WHERE nombre ~* '^PLATAFORMA +3 +48 *FT *$' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id
 ON CONFLICT (organizacion_id, producto_id) DO UPDATE SET 
     tipo = EXCLUDED.tipo, largo_ft = EXCLUDED.largo_ft, num_ejes = EXCLUDED.num_ejes;
 
@@ -187,10 +187,10 @@ END IF;
 -- 3. GRUPOS Y OPCIONES
 
 -- Grupo: Marca de ejes
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'eje', 'Marca de ejes', 'unica', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, 'pieza', '= nº de ejes', NULL, 10)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'eje', 'Marca de ejes', 'unica', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, NULL, 'pieza', '= nº de ejes', NULL, 10)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -219,10 +219,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Suspensión
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'suspension', 'Suspensión', 'unica', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, 'kit por eje', '= nº de ejes', NULL, 20)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'suspension', 'Suspensión', 'unica', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], '{"texto": "clase alta implica retráctil grande; clase normal implica retráctil chico"}'::jsonb, NULL, 'kit por eje', '= nº de ejes', NULL, 20)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -271,10 +271,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Patines
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'patin', 'Patines', 'unica', ARRAY['plataforma','gondola','jaula','caja_seca']::text[], NULL, 'por confirmar (pieza o par)', '1 o 2 juegos', NULL, 30)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'patin', 'Patines', 'unica', ARRAY['plataforma','gondola','jaula','caja_seca']::text[], NULL, NULL, 'por confirmar (pieza o par)', '1 o 2 juegos', NULL, 30)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -298,10 +298,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Piso
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'piso', 'Piso', 'unica', ARRAY['plataforma']::text[], 'En DATOS DE EQUIPAMIENTO casi todos los pisos valen 35,000 (provisional); se usa TARIFARIO.', NULL, NULL, NULL, 40)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'piso', 'Piso', 'unica', ARRAY['plataforma']::text[], NULL, 'En DATOS DE EQUIPAMIENTO casi todos los pisos valen 35,000 (provisional); se usa TARIFARIO.', NULL, NULL, NULL, 40)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -355,10 +355,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Riel
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'riel', 'Riel', 'unica', ARRAY['plataforma']::text[], NULL, NULL, NULL, NULL, 50)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'riel', 'Riel', 'unica', ARRAY['plataforma']::text[], NULL, NULL, NULL, NULL, NULL, 50)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -372,10 +372,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Matracas / winches
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'matracas', 'Matracas / winches', 'unica', ARRAY['plataforma']::text[], NULL, NULL, 'típico 10', NULL, 60)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'matracas', 'Matracas / winches', 'unica', ARRAY['plataforma']::text[], NULL, NULL, NULL, 'típico 10', NULL, 60)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -394,10 +394,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Gancho de arrastre
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'gancho', 'Gancho de arrastre', 'unica', ARRAY['plataforma','gondola']::text[], NULL, NULL, NULL, NULL, 70)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'gancho', 'Gancho de arrastre', 'unica', ARRAY['plataforma','gondola']::text[], '{"texto": "sin gancho: el jalón de arrastre pasa a 0"}'::jsonb, NULL, NULL, NULL, NULL, 70)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -421,10 +421,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Frente
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'frente', 'Frente', 'unica_con_medida', ARRAY['plataforma']::text[], 'El cotizador separa tipo y medida; el tarifario las junta. Aquí quedan como tipo por medida. ''CONCHA A 2.35 M'' estaba duplicada.', NULL, NULL, NULL, 80)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'frente', 'Frente', 'unica_con_medida', ARRAY['plataforma']::text[], NULL, 'El cotizador separa tipo y medida; el tarifario las junta. Aquí quedan como tipo por medida. ''CONCHA A 2.35 M'' estaba duplicada.', NULL, NULL, NULL, 80)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -463,10 +463,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Redilas
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'redilas', 'Redilas', 'unica', ARRAY['plataforma']::text[], NULL, NULL, NULL, NULL, 90)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'redilas', 'Redilas', 'unica', ARRAY['plataforma']::text[], '{"texto": "con redilas: suma 444 tornillos con tuerca y rondana, 48 chavetas y 6 L de pintura"}'::jsonb, NULL, NULL, NULL, NULL, 90)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -500,10 +500,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Sistema retráctil
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'retractil', 'Sistema retráctil', 'unica', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, NULL, '0 a 2', NULL, 100)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'retractil', 'Sistema retráctil', 'unica', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, NULL, NULL, '0 a 2', NULL, 100)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -527,10 +527,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Rines
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'rines', 'Rines', 'unica_con_cantidad', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, 'pieza', '0 a 12', '["24.5","22.5"]'::jsonb, 110)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'rines', 'Rines', 'unica_con_cantidad', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, NULL, 'pieza', '0 a 12', '["24.5","22.5"]'::jsonb, 110)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -554,10 +554,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Llantas
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'llantas', 'Llantas', 'unica_con_cantidad', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, 'pieza', '0 a 12', '["24.5","22.5"]'::jsonb, 120)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'llantas', 'Llantas', 'unica_con_cantidad', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, NULL, 'pieza', '0 a 12', '["24.5","22.5"]'::jsonb, 120)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -626,10 +626,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Plafones de carrito
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'plafones', 'Plafones de carrito', 'cantidad', ARRAY['plataforma']::text[], 'El cotizador trae además plafón ámbar y rojo a 400 (formato anterior).', NULL, NULL, NULL, 130)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'plafones', 'Plafones de carrito', 'cantidad', ARRAY['plataforma']::text[], NULL, 'El cotizador trae además plafón ámbar y rojo a 400 (formato anterior).', NULL, NULL, NULL, 130)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -653,10 +653,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Kit de aire / ABS
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'abs', 'Kit de aire / ABS', 'derivada', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, NULL, NULL, NULL, 140)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'abs', 'Kit de aire / ABS', 'derivada', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], '{"texto": "se deriva del nº de ejes y retráctiles; el tarifario solo distingue 2 y 3 ejes (23,000 / 27,000)"}'::jsonb, NULL, NULL, NULL, NULL, 140)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -680,10 +680,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Quinta
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'quinta', 'Quinta', 'unica', ARRAY['dolly']::text[], NULL, NULL, NULL, NULL, 150)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'quinta', 'Quinta', 'unica', ARRAY['dolly']::text[], NULL, NULL, NULL, NULL, NULL, 150)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -697,10 +697,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Dona (dolly)
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'dona', 'Dona (dolly)', 'unica', ARRAY['dolly']::text[], NULL, NULL, NULL, NULL, 160)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'dona', 'Dona (dolly)', 'unica', ARRAY['dolly']::text[], '{"texto": "debe corresponder al tipo de gancho de la plana"}'::jsonb, NULL, NULL, NULL, NULL, 160)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -719,10 +719,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Material de la tina
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'tina_material', 'Material de la tina', 'unica', ARRAY['gondola']::text[], 'En el costeo de góndola las vueltas y cuellos son placa Hardox; el resto A-36.', NULL, NULL, NULL, 170)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'tina_material', 'Material de la tina', 'unica', ARRAY['gondola']::text[], NULL, 'En el costeo de góndola las vueltas y cuellos son placa Hardox; el resto A-36.', NULL, NULL, NULL, 170)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -736,10 +736,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Marca de pintura
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'pintura', 'Marca de pintura', 'unica', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], 'Los litros dependen del modelo y del largo (hoja PINTURA).', NULL, NULL, NULL, 180)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'pintura', 'Marca de pintura', 'unica', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, 'Los litros dependen del modelo y del largo (hoja PINTURA).', NULL, NULL, NULL, 180)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -758,10 +758,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Color
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'color', 'Color', 'unica', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, NULL, 'hasta 2 colores', NULL, 190)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'color', 'Color', 'unica', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, NULL, NULL, 'hasta 2 colores', NULL, 190)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)
@@ -845,10 +845,10 @@ ON CONFLICT (grupo_id, clave) DO UPDATE SET
     nombre = EXCLUDED.nombre, precio_venta = EXCLUDED.precio_venta, medidas = EXCLUDED.medidas, clase = EXCLUDED.clase, notas = EXCLUDED.notas, precio_fuente = EXCLUDED.precio_fuente, otros_precios = EXCLUDED.otros_precios, marcas = EXCLUDED.marcas, proveedor = EXCLUDED.proveedor, aliases = EXCLUDED.aliases, datos = EXCLUDED.datos;
 
 -- Grupo: Adicionales
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, 'adicionales', 'Adicionales', 'multiple_con_cantidad', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, NULL, NULL, NULL, 200)
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, 'adicionales', 'Adicionales', 'multiple_con_cantidad', ARRAY['plataforma','dolly','gondola','jaula','caja_seca']::text[], NULL, NULL, NULL, NULL, NULL, 200)
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 
 INSERT INTO opciones_configuracion (grupo_id, organizacion_id, clave, nombre, precio_venta, medidas, clase, notas, precio_fuente, otros_precios, marcas, proveedor, aliases, datos)

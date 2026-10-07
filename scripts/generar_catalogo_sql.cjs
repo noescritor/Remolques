@@ -31,7 +31,7 @@ ON CONFLICT (organizacion_id, clave) DO UPDATE SET
 const plataforma = data.modelos.find(m => m.tipo === 'plataforma');
 if (plataforma && plataforma.variantes) {
     plataforma.variantes.forEach((v) => {
-        // match exact with bounds. e.g., '40 ft x2' -> \m40\s*FT\M.*\m2\s*EJES\M
+        // Parse variant string: e.g. "35 ft x2" -> 35, 2
         const matchLargo = v.match(/(\d+)\s*ft/i);
         const matchEjes = v.match(/x(\d)/i);
         
@@ -40,14 +40,11 @@ if (plataforma && plataforma.variantes) {
         let numEjes = "NULL";
 
         if (matchLargo && matchEjes) {
-            regex = `\\\\m${matchLargo[1]}\\\\s*FT\\\\M.*\\\\m${matchEjes[1]}\\\\s*EJE`;
             largoFt = matchLargo[1];
             numEjes = matchEjes[1];
-        } else if (matchLargo) {
-            regex = `\\\\m${matchLargo[1]}\\\\s*FT\\\\M`;
-            largoFt = matchLargo[1];
+            regex = `^PLATAFORMA +${numEjes} +${largoFt} *FT *$`;
         } else {
-            regex = `\\\\m${v.toUpperCase()}\\\\M`;
+            regex = `^${v.toUpperCase()} *$`;
         }
 
         sql += `
@@ -55,7 +52,7 @@ SELECT count(*) INTO v_count FROM productos
 WHERE nombre ~* '${regex}' AND tipo_item = 'producto_terminado' AND organizacion_id = org_id;
 
 IF v_count <> 1 THEN
-    RAISE EXCEPTION 'La variante "${v}" (regex: % ) devolvió % productos en lugar de 1', '${regex}', v_count;
+    RAISE EXCEPTION 'La variante "${v}" (regex: %) devolvió % productos en lugar de 1', '${regex}', v_count;
 END IF;
 
 INSERT INTO modelos (organizacion_id, producto_id, tipo, largo_ft, num_ejes)
@@ -83,8 +80,6 @@ for (const grupo of data.grupos) {
     const seleccion = grupo.seleccion ? `'${grupo.seleccion}'` : "'unica'";
     const groupNameEscaped = grupo.nombre.replace(/'/g, "''");
     const claveGrupo = grupo.clave.replace(/'/g, "''");
-    const req = seleccion === "'unica'" || seleccion === "'unica_con_medida'" ? 'true' : 'false';
-    const mult = seleccion === "'multiple'" || seleccion === "'multiple_con_cantidad'" ? 'true' : 'false';
     
     // Group fields mapping
     let aplica_a = 'NULL';
@@ -96,15 +91,15 @@ for (const grupo of data.grupos) {
     const notasGrupo = grupo.notas ? `'${grupo.notas.replace(/'/g, "''")}'` : 'NULL';
     const unidadPrecio = grupo.unidad_precio ? `'${grupo.unidad_precio.replace(/'/g, "''")}'` : 'NULL';
     const cantidadStr = grupo.cantidad ? `'${grupo.cantidad.replace(/'/g, "''")}'` : 'NULL';
-    const reglaJson = 'NULL'; // from JSON usually nothing called 'regla' explicitly, but if there was, we'd map it.
+    const reglaJson = grupo.regla ? `'{"texto": "${grupo.regla.replace(/"/g, '\\\\\"').replace(/'/g, "''")}"}'::jsonb` : 'NULL';
     const medidasGrupo = grupo.medidas ? `'${JSON.stringify(grupo.medidas).replace(/'/g, "''")}'::jsonb` : 'NULL';
 
     sql += `
 -- Grupo: ${groupNameEscaped}
-INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, notas, unidad_precio, cantidad, medidas, orden)
-VALUES (org_id, '${claveGrupo}', '${groupNameEscaped}', ${seleccion}, ${aplica_a}, ${notasGrupo}, ${unidadPrecio}, ${cantidadStr}, ${medidasGrupo}, ${order})
+INSERT INTO grupos_configuracion (organizacion_id, clave, nombre, seleccion, aplica_a, regla, notas, unidad_precio, cantidad, medidas, orden)
+VALUES (org_id, '${claveGrupo}', '${groupNameEscaped}', ${seleccion}, ${aplica_a}, ${reglaJson}, ${notasGrupo}, ${unidadPrecio}, ${cantidadStr}, ${medidasGrupo}, ${order})
 ON CONFLICT (organizacion_id, clave) DO UPDATE SET 
-    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
+    nombre = EXCLUDED.nombre, seleccion = EXCLUDED.seleccion, aplica_a = EXCLUDED.aplica_a, regla = EXCLUDED.regla, notas = EXCLUDED.notas, unidad_precio = EXCLUDED.unidad_precio, cantidad = EXCLUDED.cantidad, medidas = EXCLUDED.medidas, orden = EXCLUDED.orden
 RETURNING id INTO v_grupo_id;
 `;
 
