@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "test:motor": "deno test --allow-read supabase/functions/make-server-feea4382/motor/"
   },
   "dependencies": {
     "@fontsource/dm-mono": "^5.2.7",

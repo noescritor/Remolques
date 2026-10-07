@@ -3,6 +3,9 @@ import { createClient, SupabaseClient } from "npm:@supabase/supabase-js";
 import { cors } from "npm:hono/cors";
 import { logger } from "npm:hono/logger";
 
+import { cargarDatosModelo } from "./motor/cargar_datos.ts";
+import { resolverReceta } from "./motor/resolver_receta.ts";
+
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
 
@@ -426,6 +429,101 @@ const authMiddleware = async (c: any, next: any) => {
 };
 
 app.use("/*", authMiddleware);
+
+// --- CONFIGURADOR (CPQ) ---
+
+app.get("/modelos", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const { data, error } = await supabase
+      .from("modelos")
+      .select("id, tipo, largo_ft, num_ejes, productos(nombre)");
+    
+    if (error) throw error;
+    
+    // Map the result to include `nombre` as a top-level property for the frontend
+    const mappedData = (data || []).map((m: any) => ({
+      ...m,
+      nombre: m.productos?.nombre || ""
+    }));
+
+    return c.json(mappedData);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.get("/modelos/:id/configuracion", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const modeloId = c.req.param("id");
+
+    const { data: modelo, error: modErr } = await supabase
+      .from("modelos")
+      .select("tipo")
+      .eq("id", modeloId)
+      .single();
+    if (modErr || !modelo) return c.json({ error: "Modelo no encontrado" }, 404);
+
+    const { data: grupos, error: grpErr } = await supabase
+      .from("grupos_configuracion")
+      .select("id, clave, nombre, seleccion, regla, aplica_a, depende_de, cantidad, unidad_precio, medidas");
+    if (grpErr) throw grpErr;
+
+    const { data: opciones, error: optErr } = await supabase
+      .from("opciones_configuracion")
+      .select("id, grupo_id, clave, nombre, marcas, medidas, activo, aliases, precio_venta, clase");
+    if (optErr) throw optErr;
+
+    const { data: componentes, error: compErr } = await supabase
+      .from("opcion_componentes")
+      .select("opcion_id");
+    if (compErr) throw compErr;
+
+    const opcionesConReceta = new Set(componentes.map((c: any) => c.opcion_id));
+
+    const config = grupos
+      .filter((g: any) => !g.aplica_a || g.aplica_a.includes(modelo.tipo))
+      .map((g: any) => ({
+        ...g,
+        opciones: opciones
+          .filter((o: any) => o.grupo_id === g.id)
+          .map((o: any) => ({
+            clave: o.clave,
+            nombre: o.nombre,
+            seleccion: o.seleccion,
+            precio_venta: o.precio_venta,
+            clase: o.clase,
+            tiene_receta: opcionesConReceta.has(o.id)
+          }))
+      }));
+
+    return c.json(config);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.post("/configuracion/resolver", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const body = await c.req.json();
+    if (!body.modelo_id || !body.configuracion) {
+      return c.json({ error: "Parámetros inválidos (modelo_id, configuracion requeridos)" }, 400);
+    }
+
+    try {
+      const datos = await cargarDatosModelo(supabase, body.modelo_id);
+      const resultado = resolverReceta(datos, body.configuracion);
+      return c.json(resultado);
+    } catch (e: any) {
+      if (e.message === "Modelo no encontrado") return c.json({ error: e.message }, 404);
+      throw e;
+    }
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
 
 // --- PRESUPUESTOS ---
 
