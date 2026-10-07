@@ -3,6 +3,18 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-07 (6) — Bloque 2R-1b: Recetas de Plataforma (Sin Precios)
+**Herramienta:** Antigravity
+**Tipo:** feat (db)
+**Archivos tocados:**
+- `docs/importacion/clasificacion_2R1b.json` (nuevo)
+- `INFORME_2R1B.md` (nuevo)
+- `supabase/migrations/20261008_01_recetas_plataforma.sql` (nuevo)
+- `docs/importacion/verificacion_2R1b.sql` (nuevo)
+
+**Qué cambió y por qué:**
+Se procesó la importación de la hoja PLANA del manual de recetas a base de datos. Se generaron las tablas temporales y se mapearon 260 líneas correspondientes a 10 modelos de plataforma, sin intervenir Dolly ni Góndola. El material de suspensión, ejes, rines y llantas se configuró `por_eje` usando las matemáticas correctas referenciadas a 40 ft/2 ejes. Se crearon 179 materiales nuevos sin precio (NOT EXISTS).
+
 ## 2026-10-07 (5) — Revisión del 2R-1a, SQL aplicado en producción y análisis de Factura Leolca
 **Herramienta:** Claude Code
 **Tipo:** docs / revisión
