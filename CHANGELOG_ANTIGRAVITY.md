@@ -2,6 +2,49 @@
 
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
+
+## 2026-10-07 (4) — Bloque 2R-1a: Esquema del Configurador y Catálogo de Opciones (Correcciones)
+**Herramienta:** Antigravity
+**Tipo:** fix (db)
+**Archivos tocados:**
+- `supabase/migrations/20261007_01_configurador_esquema.sql` (rehecho)
+- `supabase/migrations/20261007_02_catalogo_opciones.sql` (rehecho)
+- `scripts/generar_catalogo_sql.cjs` (rehecho)
+- `docs/importacion/verificacion_2R1a.sql` (rehecho)
+
+**Qué cambió y por qué:**
+Se corrigieron los defectos bloqueantes del commit anterior:
+1. Se borró la redefinición destructiva de `get_current_org_id()` para mantener intacta la RLS real basada en `perfiles_organizacion`.
+2. El script generador ahora utiliza regex estricto y anclado (`^PLATAFORMA +<ejes> +<largo> *FT *$`) para coincidir con el nombre exacto de la base de datos, evitando dobles barras en el SQL generado, y arroja una excepción explícita (`RAISE EXCEPTION`) si la base de datos no cuadra perfectamente con las 10 variantes requeridas.
+3. Se integraron todas las columnas solicitadas en el prompt 2R original (como `datos_tecnicos`, `escala`, `rol`, `condicion`, `uso`, `seccion`) y se eliminó la restricción `UNIQUE(opcion_id, material_id)` para soportar sumarización de materiales en pasos múltiples.
+4. El mapeo del JSON ahora preserva la información integrando `regla` como objeto JSONB y acomodando el resto (`seleccion`, `clase`, `notas`, `precio_fuente`, `otros_precios`, etc.).
+5. Incidente reportado: Se ejecutó por error un `git clean -fd` destructivo en un intento pasado. El procedimiento se adaptó para no usar herramientas limpiadoras sobre archivos no versionados.
+6. Corrección de precios 0: El generador antes convertía erróneamente los precios  a NULL por considerar falsy el cero en Javascript. Ahora distingue adecuadamente los valores reales usando Number.isFinite, permitiendo registrar las 27 opciones de precio cero (como colores y exclusiones) de manera separada a las de valor nulo (32).
+
+**Acciones manuales (SQL a correr - orden exacto):**
+El dueño debe ejecutar en el SQL Editor de Supabase (después de su pg_dump):
+1. `supabase/migrations/20261007_01_configurador_esquema.sql`
+2. `supabase/migrations/20261007_02_catalogo_opciones.sql`
+3. (Opcional para validar): `docs/importacion/verificacion_2R1a.sql`
+
+**Qué no se probó:**
+No se cuenta con Postgres local para ejecutar la migración y certificar el match regex contra datos vivos; el script ha sido revisado sintácticamente.
+
+## 2026-10-07 (3) — Bloque 2R-1a: Esquema del Configurador y Catálogo de Opciones
+**SUPERADA por (4)**
+**Herramienta:** Antigravity
+**Tipo:** feat (db)
+**Archivos tocados:**
+- `supabase/migrations/20261007_01_configurador_esquema.sql` (nuevo)
+- `supabase/migrations/20261007_02_catalogo_opciones.sql` (nuevo)
+- `scripts/generar_catalogo_sql.cjs` (nuevo)
+- `docs/importacion/verificacion_2R1a.sql` (nuevo)
+
+**Qué cambió y por qué:**
+Se crearon las tablas necesarias para soportar el catálogo dinámico de opciones. Se generó e insertó de forma automática el catálogo unificado (20 grupos, 126 opciones) desde su origen JSON. Se incluyeron parámetros base de IVA (16%) y márgenes sugeridos por tipo de unidad (plataforma: 110000, dolly: 40000). El precio de acero y gastos indirectos quedaron pendientes de confirmación y no se insertaron ficticiamente.
+
+Las 10 variantes de plataforma se modelaron a través de una búsqueda difusa en la tabla `productos`, lo que provocó colisiones cruzadas. Hubo pérdida de columnas del prompt y atributos de opciones. Se redefinió destructivamente la función RLS en la BD.
+
 ### 2026-10-06 (9) - Correcciones finales a 2R-0b
 - **Backend:** Se recuperaron correctamente `/presupuestos`, `/produccion/lineas` y `/produccion/fases` desde `0953ef3` debajo de `authMiddleware`. Se corrigió la firma en la llamada a `aplicarAprobacion` en el endpoint de aprobar portal.
 - **Frontend:** Se quitaron explícitamente `rfc` y `correo` de `CompraPDFTemplate.tsx`.
