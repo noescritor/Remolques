@@ -1,4 +1,25 @@
 # Changelog de cambios y hallazgos â€” Remolques
+**Verificado:** `npm run build` OK (26 s, bundle 3.15 MB). Sin type-check disponible (C2).
+**Acciones manuales pendientes:** Revisar S1 (llaves en scripts versionados) y decidir rotaciÃ³n.
+## 2026-10-07 (11) - Bloque 2R-2: Correcciones Motor CPQ (Validaciones y Contrato)
+**Herramienta:** Antigravity
+**Tipo:** fix (motor, tests)
+**Archivos tocados:**
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.ts`
+- `supabase/functions/make-server-feea4382/motor/reglas_compatibilidad.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.test.ts`
+- `supabase/functions/make-server-feea4382/motor/verificacion_esquema.test.ts`
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+
+**Qué cambió y por qué:**
+Se refino la logica del motor para igualar nombres exactos de marca normalizada en rines (ej. AMPRO MASTER TRAPEZOIDAL), se construyo explicitamente el mapa de compatibilidad Dona-Gancho en codigo duro y se cambio el retorno de sustitutos a buscar posibles_reemplazos. Ademas se creo un script Deno nativo para extraer los selects de las rutas y contrastarlos contra las columnas reales en las migraciones SQL (Prueba de Contrato).
+
+**Acciones manuales / Despliegue:**
+- Ninguna. Las pruebas corren en Deno (deno test).
+
+
+**Verificado:** `npm run build` OK (26 s, bundle 3.15 MB). Sin type-check disponible (C2).
+# Changelog de cambios y hallazgos â€” Remolques
 
 BitÃ¡cora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
