@@ -56,8 +56,8 @@ for (const row of clasificacion) {
 
 for (const [mat, unidad] of uniqueMaterials.entries()) {
     const safeMat = mat.replace(/'/g, "''");
-    sql += `INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT '${safeMat}', 'bien', 'materia_prima', '${unidad}', v_org_id
+    sql += `INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT '${safeMat}', 'bien', 'materia_prima', '${unidad}', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = '${safeMat}' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');\n`;
 }
 

@@ -3,6 +3,18 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-07 (9) - Bloque 2R-1b: Recetas de Plataforma - Ronda 6 (Restauración de costo y precio)
+**Herramienta:** Antigravity
+**Tipo:** fix (db)
+**Archivos tocados:**
+- `scripts/generar_recetas_sql.cjs`
+- `supabase/migrations/20261008_01_recetas_plataforma.sql`
+
+**Qué cambió y por qué:**
+Se corrigió un error introducido en la actualización anterior, donde al agregar la columna obligatoria `unidad` en la inserción de nuevos materiales a la tabla `productos`, se removieron accidentalmente las columnas que el prompt original requería explícitamente (`costo`, `precio_unitario` y `descripcion`).
+Esto dejaba a los 173 materiales nuevos con sus precios en NULL, imposibilitando los cálculos de costeo y rompiendo el script de verificación `verificacion_2R1b.sql` (que cuenta los materiales insertados usando la etiqueta `descripcion = 'SIN PRECIO'`).
+Se restauraron estas columnas a su instrucción inicial (`costo = 0`, `precio_unitario = 0`, `descripcion = 'SIN PRECIO'`) junto a la inclusión de la unidad resuelta.
+
 ## 2026-10-07 (8) - Bloque 2R-1b: Recetas de Plataforma - Ronda 5 (Corrección de constraint unidad)
 **Herramienta:** Antigravity
 **Tipo:** fix (db)

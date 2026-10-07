@@ -22,536 +22,536 @@ DELETE FROM receta_base WHERE notas = 'import-2r1b';
 DELETE FROM opcion_componentes WHERE notas = 'import-2r1b';
 
 -- 3. Inserción de materiales faltantes
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CONSUMIBLE 65', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CONSUMIBLE 65', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CONSUMIBLE 65' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'DISCO DE DESBASTE 9', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'DISCO DE DESBASTE 9', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'DISCO DE DESBASTE 9' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CO2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CO2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CO2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'ROLLO DE MICROALAMBRE', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'ROLLO DE MICROALAMBRE', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'ROLLO DE MICROALAMBRE' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'DISCO DE CORTE 7', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'DISCO DE CORTE 7', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'DISCO DE CORTE 7' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PERNO REY 3/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PERNO REY 3/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PERNO REY 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'OXIGENO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'OXIGENO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'OXIGENO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'DISCO LAMINADO 7', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'DISCO LAMINADO 7', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'DISCO LAMINADO 7' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CARGADORES 4 X 102 IN', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CARGADORES 4 X 102 IN', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CARGADORES 4 X 102 IN' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'SISTEMA RETRACTIL GRANDE', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'SISTEMA RETRACTIL GRANDE', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'SISTEMA RETRACTIL GRANDE' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'SISTEMA RETRACTIL CHICO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'SISTEMA RETRACTIL CHICO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'SISTEMA RETRACTIL CHICO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PIERNAS IZQUIERDA Y DERECHA', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PIERNAS IZQUIERDA Y DERECHA', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PIERNAS IZQUIERDA Y DERECHA' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PLATOS IZQUIERDO Y DERECHO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PLATOS IZQUIERDO Y DERECHO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PLATOS IZQUIERDO Y DERECHO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'AMORTIGUADOR HENDRICKSON 23743', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'AMORTIGUADOR HENDRICKSON 23743', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'AMORTIGUADOR HENDRICKSON 23743' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'AMORTIGUADOR MONRROE 65512', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'AMORTIGUADOR MONRROE 65512', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'AMORTIGUADOR MONRROE 65512' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CAMARA DE SUSPENSION HENDRICKSON C-25319 O R14-152', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CAMARA DE SUSPENSION HENDRICKSON C-25319 O R14-152', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CAMARA DE SUSPENSION HENDRICKSON C-25319 O R14-152' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RONDANAS CENTRICAS HENDRICKSON', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RONDANAS CENTRICAS HENDRICKSON', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RONDANAS CENTRICAS HENDRICKSON' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RONDANAS EXCENTRICAS HENDRICKSON', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RONDANAS EXCENTRICAS HENDRICKSON', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RONDANAS EXCENTRICAS HENDRICKSON' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'BUJE TRIFUNCIONAL CON TORNILLO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'BUJE TRIFUNCIONAL CON TORNILLO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'BUJE TRIFUNCIONAL CON TORNILLO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'ABRAZADERAS HENDRICKSON', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'ABRAZADERAS HENDRICKSON', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'ABRAZADERAS HENDRICKSON' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'AMORTIGUADOR HENDRICKSON 20126', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'AMORTIGUADOR HENDRICKSON 20126', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'AMORTIGUADOR HENDRICKSON 20126' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CAMARA DE SUSPENSION HENDRICKSON R14-083-38', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CAMARA DE SUSPENSION HENDRICKSON R14-083-38', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CAMARA DE SUSPENSION HENDRICKSON R14-083-38' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'BUJE TRIFUNCIONAL CON TORNILLO 7/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'BUJE TRIFUNCIONAL CON TORNILLO 7/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'BUJE TRIFUNCIONAL CON TORNILLO 7/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CAMARA DE SUSPENSION FLEET MASTER 8050', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CAMARA DE SUSPENSION FLEET MASTER 8050', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CAMARA DE SUSPENSION FLEET MASTER 8050' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CAMARA DE SUSPENSION AMPRO 1R14-039', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CAMARA DE SUSPENSION AMPRO 1R14-039', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CAMARA DE SUSPENSION AMPRO 1R14-039' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CAMARA DE SUSPENSION FCR 1R14-039', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CAMARA DE SUSPENSION FCR 1R14-039', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CAMARA DE SUSPENSION FCR 1R14-039' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'AMORTIGUADOR FLEET MASTER 323', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'AMORTIGUADOR FLEET MASTER 323', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'AMORTIGUADOR FLEET MASTER 323' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'AMORTIGUADOR FCR', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'AMORTIGUADOR FCR', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'AMORTIGUADOR FCR' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'AMORTIGUADOR GABRIEL', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'AMORTIGUADOR GABRIEL', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'AMORTIGUADOR GABRIEL' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'ABRAZADERAS FLEET MASTER', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'ABRAZADERAS FLEET MASTER', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'ABRAZADERAS FLEET MASTER' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'BUJE TRIFUNCIONAL HENDRICKSON 7/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'BUJE TRIFUNCIONAL HENDRICKSON 7/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'BUJE TRIFUNCIONAL HENDRICKSON 7/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CAMARA DE SUSPENSION AMPRO 8050', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CAMARA DE SUSPENSION AMPRO 8050', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CAMARA DE SUSPENSION AMPRO 8050' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'ABRAZADERAS AMPRO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'ABRAZADERAS AMPRO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'ABRAZADERAS AMPRO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RONDANAS CENTRICAS', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RONDANAS CENTRICAS', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RONDANAS CENTRICAS' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RONDANAS EXCENTRICAS', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RONDANAS EXCENTRICAS', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RONDANAS EXCENTRICAS' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'BUJE TRIFUNCIONAL', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'BUJE TRIFUNCIONAL', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'BUJE TRIFUNCIONAL' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO ALLEN 1/2 X 1 1/2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO ALLEN 1/2 X 1 1/2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO ALLEN 1/2 X 1 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA ESTANDAR 1/2 GRADO 5', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA ESTANDAR 1/2 GRADO 5', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GRADO 5' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 5/8 X 1 1/2 GRADO 5', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 5/8 X 1 1/2 GRADO 5', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 5/8 X 1 1/2 GRADO 5' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA ESTANDAR 5/8 GRADO 5', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA ESTANDAR 5/8 GRADO 5', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA ESTANDAR 5/8 GRADO 5' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PATIN AMPRO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PATIN AMPRO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PATIN AMPRO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PATIN HOLLAND MARK V', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PATIN HOLLAND MARK V', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PATIN HOLLAND MARK V' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PATIN HJ', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PATIN HJ', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PATIN HJ' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PATIN FLEET MASTER', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PATIN FLEET MASTER', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PATIN FLEET MASTER' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'EJE FLEET MASTER', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'EJE FLEET MASTER', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'EJE FLEET MASTER' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'EJE AMPRO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'EJE AMPRO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'EJE AMPRO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'EJE FCR', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'EJE FCR', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'EJE FCR' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'EJE PRAT MAX', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'EJE PRAT MAX', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'EJE PRAT MAX' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'EJE HJ', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'EJE HJ', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'EJE HJ' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'LIJA #80', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'LIJA #80', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'LIJA #80' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CARDA 5/8 DE 3"', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CARDA 5/8 DE 3"', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CARDA 5/8 DE 3"' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'DISCO LAMINADO 4 1/2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'DISCO LAMINADO 4 1/2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'DISCO LAMINADO 4 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'FOSFATO', 'bien', 'materia_prima', 'L', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'FOSFATO', 'bien', 'materia_prima', 'L', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'FOSFATO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PINTURA', 'bien', 'materia_prima', 'L', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PINTURA', 'bien', 'materia_prima', 'L', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PINTURA' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'THINER', 'bien', 'materia_prima', 'L', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'THINER', 'bien', 'materia_prima', 'L', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'THINER' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TRANSPARENTE', 'bien', 'materia_prima', 'L', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TRANSPARENTE', 'bien', 'materia_prima', 'L', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TRANSPARENTE' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CATALIZADOR', 'bien', 'materia_prima', 'L', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CATALIZADOR', 'bien', 'materia_prima', 'L', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CATALIZADOR' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PRAIMER', 'bien', 'materia_prima', 'L', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PRAIMER', 'bien', 'materia_prima', 'L', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PRAIMER' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'THINER O REDUCTOR', 'bien', 'materia_prima', 'L', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'THINER O REDUCTOR', 'bien', 'materia_prima', 'L', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'THINER O REDUCTOR' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'REDUCTOR', 'bien', 'materia_prima', 'L', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'REDUCTOR', 'bien', 'materia_prima', 'L', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'REDUCTOR' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'KIT ABS', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'KIT ABS', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'KIT ABS' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'REDUCCION 3/4 * 1/2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'REDUCCION 3/4 * 1/2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'REDUCCION 3/4 * 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'REDUCCION 3/8 * 1/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'REDUCCION 3/8 * 1/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'REDUCCION 3/8 * 1/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'NIPLE 1/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'NIPLE 1/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'NIPLE 1/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TAPON 3/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TAPON 3/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TAPON 3/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TAPON 1/2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TAPON 1/2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TAPON 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TAPON 1/4 SUSPENSION FM + 4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TAPON 1/4 SUSPENSION FM + 4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TAPON 1/4 SUSPENSION FM + 4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TAPON 1/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TAPON 1/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TAPON 1/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TE UNIO 3/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TE UNIO 3/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TE UNIO 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TE LATERAL 3/8*1/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TE LATERAL 3/8*1/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TE LATERAL 3/8*1/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TE CENTRO 3/8*1/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TE CENTRO 3/8*1/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TE CENTRO 3/8*1/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RECTA 3/8*1/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RECTA 3/8*1/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RECTA 3/8*1/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CODO 3/8*1/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CODO 3/8*1/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CODO 3/8*1/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CODO 3/8*1/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CODO 3/8*1/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CODO 3/8*1/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CODO 3/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CODO 3/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CODO 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CODO 1/2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CODO 1/2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CODO 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'ADAPTADOR 3/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'ADAPTADOR 3/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'ADAPTADOR 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'MACHO 3/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'MACHO 3/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'MACHO 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'HEMBRA 3/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'HEMBRA 3/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'HEMBRA 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'KIT DE ABS 2 EJES BENDIX', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'KIT DE ABS 2 EJES BENDIX', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'KIT DE ABS 2 EJES BENDIX' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'VALVULA PROTECTORA', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'VALVULA PROTECTORA', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'VALVULA PROTECTORA' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'VALVULA NIVELADORA', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'VALVULA NIVELADORA', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'VALVULA NIVELADORA' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'VALVULA PALANQUETA', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'VALVULA PALANQUETA', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'VALVULA PALANQUETA' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'VARILLA NIVELADORA', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'VARILLA NIVELADORA', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'VARILLA NIVELADORA' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'VALVULA RETRACTIL SEALCO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'VALVULA RETRACTIL SEALCO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'VALVULA RETRACTIL SEALCO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'MANITA AZUL C/LLAVE', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'MANITA AZUL C/LLAVE', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'MANITA AZUL C/LLAVE' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'MANITA ROJA C/LLAVE', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'MANITA ROJA C/LLAVE', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'MANITA ROJA C/LLAVE' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'MANITA AZUL S/LLAVE', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'MANITA AZUL S/LLAVE', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'MANITA AZUL S/LLAVE' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'MANITA ROJA S/LLAVE', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'MANITA ROJA S/LLAVE', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'MANITA ROJA S/LLAVE' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'ESPARRAGO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'ESPARRAGO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'ESPARRAGO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TEFLON DE 13 METROS', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TEFLON DE 13 METROS', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TEFLON DE 13 METROS' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'INCERTO 3/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'INCERTO 3/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'INCERTO 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'INCERTO 1/2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'INCERTO 1/2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'INCERTO 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'MANGUERA AZUL 3/8', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'MANGUERA AZUL 3/8', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'MANGUERA AZUL 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'MANGUERA ROJA 3/8', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'MANGUERA ROJA 3/8', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'MANGUERA ROJA 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'MANGUERA CHAMBER 3/8', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'MANGUERA CHAMBER 3/8', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'MANGUERA CHAMBER 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 3/8 X 1 GRADO 8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 3/8 X 1 GRADO 8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 3/8 X 1 GRADO 8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RONDANA PLANA 3/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RONDANA PLANA 3/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RONDANA PLANA 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA DE SEGURIDAD 3/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA DE SEGURIDAD 3/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 5/16 X 5 GRADO 8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 5/16 X 5 GRADO 8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 5/16 X 5 GRADO 8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RONDANA PLANA 5/16', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RONDANA PLANA 5/16', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RONDANA PLANA 5/16' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA DE SEGURIDAD 5/16', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA DE SEGURIDAD 5/16', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/16' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TANQUE DE AIRE DE PLANA', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TANQUE DE AIRE DE PLANA', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TANQUE DE AIRE DE PLANA' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'GANCHO HOLLAND 10 BARRENOS', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'GANCHO HOLLAND 10 BARRENOS', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'GANCHO HOLLAND 10 BARRENOS' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'GANCHO PREMIER 10 BARRENOS', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'GANCHO PREMIER 10 BARRENOS', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'GANCHO PREMIER 10 BARRENOS' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'GANCHO PREMIER BESTIA 6 BARRENOS', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'GANCHO PREMIER BESTIA 6 BARRENOS', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'GANCHO PREMIER BESTIA 6 BARRENOS' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 3/4 X 3 1/2 GRADO 8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 3/4 X 3 1/2 GRADO 8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 3/4 X 3 1/2 GRADO 8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 3/4 X 2 1/2 GRADO 8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 3/4 X 2 1/2 GRADO 8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 3/4 X 2 1/2 GRADO 8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA GRIPCO 3/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA GRIPCO 3/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA GRIPCO 3/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RONDANA AUTOMOTRIZ 3/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RONDANA AUTOMOTRIZ 3/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 3/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'BOLSA RETRACTIL GRANDE', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'BOLSA RETRACTIL GRANDE', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'BOLSA RETRACTIL GRANDE' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCAS DE SEGURIDAD 1/2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCAS DE SEGURIDAD 1/2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCAS DE SEGURIDAD 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'BOLSA RETRACTIL CHICA UBL', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'BOLSA RETRACTIL CHICA UBL', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'BOLSA RETRACTIL CHICA UBL' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 3/8 X 3/4 GRADO 8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 3/8 X 3/4 GRADO 8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 3/8 X 3/4 GRADO 8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RONDANAS PLANAS 3/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RONDANAS PLANAS 3/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RONDANAS PLANAS 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA ROSCA MILIMETRICA 3/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA ROSCA MILIMETRICA 3/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA ROSCA MILIMETRICA 3/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'HEMBRA 7 POLOS', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'HEMBRA 7 POLOS', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'HEMBRA 7 POLOS' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 1/4 X 1 GALVANIZADO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 1/4 X 1 GALVANIZADO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 GALVANIZADO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA ESTANDAR 1/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA ESTANDAR 1/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CABLE AZUL CAL,12', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CABLE AZUL CAL,12', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CABLE AZUL CAL,12' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CABLE ROJO CAL,12', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CABLE ROJO CAL,12', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CABLE ROJO CAL,12' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CABLE AMARILLO CAL,12', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CABLE AMARILLO CAL,12', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CABLE AMARILLO CAL,12' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CABLE VERDE CAL,12', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CABLE VERDE CAL,12', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CABLE VERDE CAL,12' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CABLE CAFE CAL,12', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CABLE CAFE CAL,12', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CABLE CAFE CAL,12' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CABLE NEGRO CAL,12', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CABLE NEGRO CAL,12', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CABLE NEGRO CAL,12' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CORRUGADO 1/2', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CORRUGADO 1/2', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CORRUGADO 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CORRUGADO 3/8', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CORRUGADO 3/8', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CORRUGADO 3/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CORRUGADO 1/4', 'bien', 'materia_prima', 'M', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CORRUGADO 1/4', 'bien', 'materia_prima', 'M', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CORRUGADO 1/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TERMINAL 3/16', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TERMINAL 3/16', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TERMINAL 3/16' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TERMINAL 1/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TERMINAL 1/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TERMINAL 1/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'REMACHE 3/16 X 5/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'REMACHE 3/16 X 5/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'REMACHE 3/16 X 5/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CINTA DE AISLAR', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CINTA DE AISLAR', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CINTA DE AISLAR' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PLAFON ROJO 4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PLAFON ROJO 4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PLAFON ROJO 4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PLAFON ROJO 2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PLAFON ROJO 2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PLAFON ROJO 2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PLAFON AMBAR 2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PLAFON AMBAR 2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PLAFON AMBAR 2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PLAFON AVALADO AMBAR', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PLAFON AVALADO AMBAR', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PLAFON AVALADO AMBAR' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PLAFON DE CARRITO AMBAR', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PLAFON DE CARRITO AMBAR', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PLAFON DE CARRITO AMBAR' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PLAFON DE CARRITO ROJO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PLAFON DE CARRITO ROJO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PLAFON DE CARRITO ROJO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 1/8 X 1 1/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 1/8 X 1 1/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 1/8 X 1 1/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA ESTANDAR 1/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA ESTANDAR 1/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'LODERA BLANCA O NEGRA', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'LODERA BLANCA O NEGRA', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'LODERA BLANCA O NEGRA' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'FLEJE', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'FLEJE', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'FLEJE' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 1/4 X 1 ACERO INOXIDABLE', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 1/4 X 1 ACERO INOXIDABLE', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 1/4 X 1 ACERO INOXIDABLE' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA DE SEGURIDAD 1/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA DE SEGURIDAD 1/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TOPE DE HULE 3 BARRENOS', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TOPE DE HULE 3 BARRENOS', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TOPE DE HULE 3 BARRENOS' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 1/2 X 2 1/2 GALVANIZADO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 1/2 X 2 1/2 GALVANIZADO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 1/2 X 2 1/2 GALVANIZADO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA ESTANDAR 1/2 GALVANIZADA', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA ESTANDAR 1/2 GALVANIZADA', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA ESTANDAR 1/2 GALVANIZADA' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RONDANA PLANA 1/2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RONDANA PLANA 1/2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RONDANA PLANA 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'WINCHES', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'WINCHES', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'WINCHES' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 1/2 X 1 3/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 1/2 X 1 3/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 1/2 X 1 3/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA DE SEGURIDAD 1/2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA DE SEGURIDAD 1/2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'KIT DE ROTULACION', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'KIT DE ROTULACION', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'KIT DE ROTULACION' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CINTA REFLEJANTE', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CINTA REFLEJANTE', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CINTA REFLEJANTE' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'PLACA DE NIP', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'PLACA DE NIP', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'PLACA DE NIP' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO CABEZA DE COCHE 1/4 X 1 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CHAVETAS 3/16*2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CHAVETAS 3/16*2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CHAVETAS 3/16*2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'ESLABONES DE CADENA 1/2', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'ESLABONES DE CADENA 1/2', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'ESLABONES DE CADENA 1/2' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 5/8*3 GRADO 8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 5/8*3 GRADO 8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 5/8*3 GRADO 8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 5/8*5 GRADO 8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 5/8*5 GRADO 8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 5/8*5 GRADO 8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 3/4*6 GRADO 8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 3/4*6 GRADO 8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 3/4*6 GRADO 8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA DE SEGURIDAD 3/4', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA DE SEGURIDAD 3/4', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 3/4' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TUERCA DE SEGURIDAD 5/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TUERCA DE SEGURIDAD 5/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TUERCA DE SEGURIDAD 5/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RONDANA AUTOMOTRIZ 5/8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RONDANA AUTOMOTRIZ 5/8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RONDANA AUTOMOTRIZ 5/8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'TORNILLO 3/4 X 6 GRADO 8', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'TORNILLO 3/4 X 6 GRADO 8', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'TORNILLO 3/4 X 6 GRADO 8' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CANDADO PARA PLANA', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CANDADO PARA PLANA', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CANDADO PARA PLANA' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'CARGADO 3 X 102 IN', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'CARGADO 3 X 102 IN', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'CARGADO 3 X 102 IN' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RIN DE ACERO FLEET MASTER', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RIN DE ACERO FLEET MASTER', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RIN DE ACERO FLEET MASTER' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RIN DE ACERO ACURRAI', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RIN DE ACERO ACURRAI', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RIN DE ACERO ACURRAI' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RIN DE ACERO AMPRO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RIN DE ACERO AMPRO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RIN DE ACERO AMPRO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RIN DE ALUMINIO FLEET MASTER', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RIN DE ALUMINIO FLEET MASTER', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RIN DE ALUMINIO FLEET MASTER' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RIN DE ALUMINIO FLEET MASTER TRAPEZOIDAL', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RIN DE ALUMINIO FLEET MASTER TRAPEZOIDAL', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RIN DE ALUMINIO FLEET MASTER TRAPEZOIDAL' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RIN DE ALUMINIO AMPRO', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RIN DE ALUMINIO AMPRO', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RIN DE ALUMINIO AMPRO' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'RIN DE ALUMINIO AMPRO MASTER TRAPEZOIDAL', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'RIN DE ALUMINIO AMPRO MASTER TRAPEZOIDAL', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'RIN DE ALUMINIO AMPRO MASTER TRAPEZOIDAL' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'LLANTA K PATOS LINEAL', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'LLANTA K PATOS LINEAL', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'LLANTA K PATOS LINEAL' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'LLANTA K PATOS TRACCION', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'LLANTA K PATOS TRACCION', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'LLANTA K PATOS TRACCION' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'LLANTA FIRESTON LINEAL', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'LLANTA FIRESTON LINEAL', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'LLANTA FIRESTON LINEAL' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
-INSERT INTO productos (nombre, tipo, tipo_item, unidad, organizacion_id)
-            SELECT 'LLANTA GODSHIELD LINEAL', 'bien', 'materia_prima', 'PZA', v_org_id
+INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
+            SELECT 'LLANTA GODSHIELD LINEAL', 'bien', 'materia_prima', 'PZA', 0, 0, 'SIN PRECIO', v_org_id
             WHERE NOT EXISTS (SELECT 1 FROM productos WHERE nombre = 'LLANTA GODSHIELD LINEAL' AND organizacion_id = v_org_id AND tipo_item = 'materia_prima');
 
 -- 4. Inserción de receta_base
