@@ -47,7 +47,7 @@ function findOption(groupKey, manualName) {
         if (norm.includes('ALTA')) {
             if (norm.includes('HENDRICKSON')) return { grupo: g.clave, opcion: 'alta_hendrickson' };
             if (norm.includes('FLEET MASTER') || norm.includes('FLEET')) return { grupo: g.clave, opcion: 'alta_fleet_master' };
-            if (norm.includes('HJ')) return { grupo: g.clave, opcion: 'alta_hj' };
+            if (norm.includes('HJ')) return { grupo: g.clave, opcion: 'hj_alta' };
         } else if (norm.includes('NORMAL')) {
             if (norm.includes('HENDRICKSON')) return { grupo: g.clave, opcion: 'hendrickson' };
             if (norm.includes('FLEET MASTER') || norm.includes('FLEET')) return { grupo: g.clave, opcion: 'fleet_master' };
