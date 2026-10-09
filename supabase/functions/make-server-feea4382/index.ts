@@ -121,8 +121,6 @@ const getServiceClient = () => {
   return createClient(url, key);
 };
 
-import { construirMetadata, desenvolverMetadata } from './motor/item_metadata.ts';
-
 const toItemCotizacionRow = (item: any, cotizacionId: string, orgId?: string) => construirMetadata(item, cotizacionId, orgId);
 
 const toLegacyItemCotizacionRow = (item: any, cotizacionId: string, orgId?: string) => {
