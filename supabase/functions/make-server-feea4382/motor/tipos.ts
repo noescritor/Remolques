@@ -70,7 +70,7 @@ export interface DatosModelo {
 }
 
 export interface Configuracion {
-  grupos: Record<string, string | { opcion: string; marca?: string; cantidad?: number }>;
+  grupos: Record<string, string | { opcion: string; marca?: string; cantidad?: number } | (string | { opcion: string; marca?: string; cantidad?: number })[]>;
   adicionales?: string[];
 }
 

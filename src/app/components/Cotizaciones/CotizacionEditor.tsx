@@ -16,8 +16,9 @@ import { supabase } from '../../utils/supabase/client';
 import { calcularItemCotizacion, calcularTotalesCotizacion, formatearMoneda, calcularAnalisisCompleto, calcularUtilidadItem, calcularTotalesCotizacionServiciosAware, totalItemServicio } from '../../utils/calculations';
 import { ClienteModal } from '../Clientes/ClienteModal';
 import { AnalisisUtilidad } from './AnalisisUtilidad';
+import { ConfiguradorEquipo } from './ConfiguradorEquipo';
+import { BASE_URL } from '../../utils/api';
 import { CostosIndirectos as CostosIndirectosComponent } from './CostosIndirectos';
-
 
 
 interface CotizacionEditorProps {
@@ -81,6 +82,10 @@ export function CotizacionEditor({
   const [showClienteDropdown, setShowClienteDropdown] = useState(false);
   const [busquedaProducto, setBusquedaProducto] = useState('');
   const [showProductoDropdown, setShowProductoDropdown] = useState(false);
+  const [modelos, setModelos] = useState<any[]>([]);
+  const [productoSeleccionadoParaCPQ, setProductoSeleccionadoParaCPQ] = useState<Producto | null>(null);
+  const [modeloParaCPQ, setModeloParaCPQ] = useState<any>(null);
+  const [itemEditandoCPQ, setItemEditandoCPQ] = useState<ItemCotizacion | null>(null);
   const [showVersionDialog, setShowVersionDialog] = useState(false);
   const [showPlantillasModal, setShowPlantillasModal] = useState(false);
   const [showGuardarPlantillaModal, setShowGuardarPlantillaModal] = useState(false);
@@ -90,6 +95,24 @@ export function CotizacionEditor({
   const [showExcelModal, setShowExcelModal] = useState(false);
   const [iaLoadingItemId, setIaLoadingItemId] = useState<string | null>(null);
   const [iaLoadingNota, setIaLoadingNota] = useState(false);
+
+  useEffect(() => {
+    const fetchModelos = async () => {
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        const response = await fetch(`${BASE_URL}/modelos`, {
+          headers: { Authorization: `Bearer ${session.session?.access_token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setModelos(data);
+        }
+      } catch (error) {
+        console.error('Error fetching modelos:', error);
+      }
+    };
+    fetchModelos();
+  }, []);
 
   useEffect(() => {
     if (cotizacion) {
@@ -176,6 +199,16 @@ export function CotizacionEditor({
   };
 
     const agregarItemDesdeProducto = (producto: Producto) => {
+      const modeloAsociado = modelos.find(m => m.producto_id === producto.id);
+      if (modeloAsociado) {
+        setProductoSeleccionadoParaCPQ(producto);
+        setModeloParaCPQ(modeloAsociado);
+        setItemEditandoCPQ(null);
+        setBusquedaProducto('');
+        setShowProductoDropdown(false);
+        return;
+      }
+
       let nuevoItem: ItemCotizacion;
       let sub_items = undefined;
   
@@ -217,6 +250,41 @@ export function CotizacionEditor({
       setBusquedaProducto('');
       setShowProductoDropdown(false);
     };
+
+  const handleCPQConfirm = (configuracion: any, texto: string, completado: boolean, costoParcial: number) => {
+    if (itemEditandoCPQ) {
+      setFormData(prev => ({
+        ...prev,
+        items: prev.items.map(item => item.id === itemEditandoCPQ.id ? {
+          ...item,
+          descripcion: texto,
+          configuracion,
+          costo_unitario: completado ? costoParcial : undefined
+        } : item)
+      }));
+    } else {
+      const nuevoItem: ItemCotizacion = {
+        id: Date.now().toString(),
+        producto_id: productoSeleccionadoParaCPQ!.id,
+        posicion: formData.items.length + 1,
+        cantidad: 1,
+        unidad: productoSeleccionadoParaCPQ!.unidad || 'pz',
+        descripcion: texto,
+        precio_unitario: 0,
+        costo_unitario: completado ? costoParcial : undefined,
+        iva_item: 0,
+        total_item: 0,
+        configuracion
+      };
+      setFormData(prev => ({
+        ...prev,
+        items: [...prev.items, nuevoItem]
+      }));
+    }
+    setProductoSeleccionadoParaCPQ(null);
+    setModeloParaCPQ(null);
+    setItemEditandoCPQ(null);
+  };
 
   const actualizarItem = (itemId: string, cambios: Partial<ItemCotizacion>) => {
     setFormData(prev => ({
@@ -1031,7 +1099,7 @@ export function CotizacionEditor({
                           type="number"
                           value={item.precio_unitario || 0}
                           onChange={(e) => actualizarItem(item.id, { precio_unitario: parseFloat(e.target.value) || 0 })}
-                          className="w-full"
+                          className={`w-full ${item.configuracion && (item.precio_unitario || 0) === 0 ? 'border-yellow-500 bg-yellow-50' : ''}`}
                           min="0"
                           step="0.01"
                         />
@@ -1080,7 +1148,22 @@ export function CotizacionEditor({
                     </TableCell>
                     <TableCell>{formatearMoneda(totalCalculado.total)}</TableCell>
                     <TableCell>
-                      <div className="flex gap-1">
+                      <div className="flex gap-1 flex-wrap">
+                        {item.configuracion && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs"
+                            onClick={() => {
+                              setProductoSeleccionadoParaCPQ(productos.find(p => p.id === item.producto_id) || null);
+                              setModeloParaCPQ(modelos.find(m => m.producto_id === item.producto_id) || null);
+                              setItemEditandoCPQ(item);
+                            }}
+                          >
+                            <Settings className="h-4 w-4 mr-1" />
+                            Configurar
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="sm"
@@ -1247,6 +1330,20 @@ export function CotizacionEditor({
         </DialogContent>
       </Dialog>
 
+      <ConfiguradorEquipo
+        open={!!modeloParaCPQ}
+        onOpenChange={(open) => {
+          if (!open) {
+            setProductoSeleccionadoParaCPQ(null);
+            setModeloParaCPQ(null);
+            setItemEditandoCPQ(null);
+          }
+        }}
+        producto={productoSeleccionadoParaCPQ}
+        modeloId={modeloParaCPQ?.id}
+        itemInicial={itemEditandoCPQ}
+        onConfirm={handleCPQConfirm}
+      />
     </div>
   );
 }

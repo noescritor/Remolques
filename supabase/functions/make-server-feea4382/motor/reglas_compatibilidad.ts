@@ -8,7 +8,8 @@ export function validarCompatibilidad(
   // Extract selected options with their metadata
   const selectedOptions = new Map<string, any>();
   for (const [gClave, val] of Object.entries(config.grupos || {})) {
-    const oClave = typeof val === "string" ? val : val.opcion;
+    if (Array.isArray(val)) continue; // Las reglas condicionales actuales no operan sobre grupos múltiples
+    const oClave = typeof val === "string" ? val : (val as any).opcion;
     const grupo = datos.grupos.find((g) => g.clave === gClave);
     if (!grupo) continue;
     const opcion = datos.opciones.find((o) => o.grupo_id === grupo.id && o.clave === oClave);
