@@ -8,10 +8,10 @@ import {
   totalItemServicio,
 } from '../../utils/calculations';
 
-// â”€â”€â”€ Design tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Design tokens ────────────────────────────────────────────────────────────
 const PURPLE = '#6351D3';
 
-/** DM Mono â€” labels, numbers, codes */
+/** DM Mono — labels, numbers, codes */
 const m = (sz: number, op?: number): CSSProperties => ({
   fontFamily: "'DM Mono', 'Courier New', monospace",
   fontSize: sz,
@@ -21,7 +21,7 @@ const m = (sz: number, op?: number): CSSProperties => ({
   ...(op !== undefined ? { color: `rgba(0,0,0,${op})` } : {}),
 });
 
-/** DM Sans â€” headings, body text */
+/** DM Sans — headings, body text */
 const s = (sz: number, w: 400 | 500 | 700 = 400, op?: number): CSSProperties => ({
   fontFamily: "'DM Sans', 'Helvetica Neue', Arial, sans-serif",
   fontSize: sz,
@@ -30,7 +30,7 @@ const s = (sz: number, w: 400 | 500 | 700 = 400, op?: number): CSSProperties => 
   ...(op !== undefined ? { color: `rgba(0,0,0,${op})` } : {}),
 });
 
-// â”€â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function Divider({ opacity = 0.1, height = 1 }: { opacity?: number; height?: number }) {
   return <div style={{ height, background: `rgba(0,0,0,${opacity})`, flexShrink: 0 }} />;
@@ -72,7 +72,7 @@ function PageHeader({
           <span style={{ ...s(15, 700), color: '#fff' }}>{empresa}</span>
         </div>
         <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.4)' }}>
-          CotizaciÃ³n {folio}
+          Cotización {folio}
         </span>
       </header>
     );
@@ -152,7 +152,7 @@ function PageFooter({
   );
 }
 
-// â”€â”€â”€ Badge de estado â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Badge de estado ──────────────────────────────────────────────────────────
 const estadoBadgeMap: Record<string, { bg: string; color: string }> = {
   Borrador: { bg: 'rgba(0,0,0,0.06)', color: 'rgba(0,0,0,0.5)' },
   Enviada:  { bg: '#dbeafe', color: '#1d4ed8' },
@@ -161,7 +161,7 @@ const estadoBadgeMap: Record<string, { bg: string; color: string }> = {
   Pagada:   { bg: '#dcfce7', color: '#166534' },
 };
 
-// â”€â”€â”€ Props â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Props ────────────────────────────────────────────────────────────────────
 interface PDFTemplateMoodboardProps {
   cotizacion: Cotizacion;
   cliente?: Cliente | null;
@@ -169,7 +169,7 @@ interface PDFTemplateMoodboardProps {
   ajustes: Ajustes;
 }
 
-// â”€â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main component ───────────────────────────────────────────────────────────
 export function PDFTemplateMoodboard({
   cotizacion,
   cliente,
@@ -190,7 +190,7 @@ export function PDFTemplateMoodboard({
   );
 
   const empresa = ajustes.nombre_empresa || 'ideally.';
-  const tagline = ajustes.tagline || 'Arte Â· DiseÃ±o Â· IngenierÃ­a';
+  const tagline = ajustes.tagline || 'Arte · Diseño · Ingeniería';
   const hoy = formatearFecha(new Date().toISOString());
   const badge = estadoBadgeMap[cotizacion.estado] ?? estadoBadgeMap.Borrador;
 
@@ -229,7 +229,7 @@ export function PDFTemplateMoodboard({
 
   const srvItems = items.filter((_, i) => itemTotals[i].esServicio);
 
-  // â”€â”€â”€ PAGE 1 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── PAGE 1 ────────────────────────────────────────────────────────────────
   const page1: CSSProperties = {
     width: 794,
     minHeight: 1123,
@@ -239,7 +239,7 @@ export function PDFTemplateMoodboard({
     boxSizing: 'border-box',
   };
 
-  // â”€â”€â”€ PAGE 2 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── PAGE 2 ────────────────────────────────────────────────────────────────
   const page2: CSSProperties = {
     ...page1,
     breakBefore: 'page',
@@ -249,7 +249,7 @@ export function PDFTemplateMoodboard({
   return (
     <div id="pdf-content" style={{ fontFamily: "'DM Sans', sans-serif", color: '#000', background: '#fff' }}>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• PAGE 1 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ══════════════════════ PAGE 1 ══════════════════════ */}
       <div style={page1}>
         <PageHeader empresa={empresa} tagline={tagline} ajustes={ajustes} />
         <AccentLine />
@@ -257,7 +257,7 @@ export function PDFTemplateMoodboard({
         {/* Content */}
         <div style={{ flex: 1, padding: '36px 40px 28px', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
-          {/* â”€â”€ CLIENT INFO + QUOTE META â”€â”€ */}
+          {/* ── CLIENT INFO + QUOTE META ── */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 24 }}>
 
             {/* Bill To */}
@@ -265,7 +265,7 @@ export function PDFTemplateMoodboard({
               <span style={{ ...m(9, 0.4), textTransform: 'uppercase' }}>Facturar a</span>
               <span style={{ ...s(15, 700) }}>{cliente?.nombre_razon_social || 'Cliente'}</span>
               {cliente?.nombre_contacto && (
-                <span style={{ ...s(10, 400, 0.6) }}>AtenciÃ³n: {cliente.nombre_contacto}</span>
+                <span style={{ ...s(10, 400, 0.6) }}>Atención: {cliente.nombre_contacto}</span>
               )}
               {(cliente?.ciudad || cliente?.estado) && (
                 <span style={{ ...s(10, 400, 0.6) }}>
@@ -282,11 +282,11 @@ export function PDFTemplateMoodboard({
 
             {/* Quote Meta */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-end' }}>
-              <span style={{ ...m(9, 0.4), textTransform: 'uppercase' }}>CotizaciÃ³n</span>
+              <span style={{ ...m(9, 0.4), textTransform: 'uppercase' }}>Cotización</span>
               <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
-                {/* NÃºmero */}
+                {/* Número */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
-                  <span style={{ ...s(9, 400, 0.45) }}>NÃºmero</span>
+                  <span style={{ ...s(9, 400, 0.45) }}>Número</span>
                   <span style={{ ...m(12, 1), color: PURPLE }}>{cotizacion.folio}</span>
                 </div>
                 {/* Fecha */}
@@ -297,7 +297,7 @@ export function PDFTemplateMoodboard({
                 {/* Vigencia */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   <span style={{ ...s(9, 400, 0.45) }}>Vigencia</span>
-                  <span style={{ ...s(12, 500) }}>{cotizacion.validez_dias} dÃ­as</span>
+                  <span style={{ ...s(12, 500) }}>{cotizacion.validez_dias} días</span>
                 </div>
                 {/* Estado */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -319,7 +319,7 @@ export function PDFTemplateMoodboard({
             </div>
           </div>
 
-          {/* DescripciÃ³n del proyecto (si existe) */}
+          {/* Descripción del proyecto (si existe) */}
           {cotizacion.descripcion && (
             <div
               style={{
@@ -336,7 +336,7 @@ export function PDFTemplateMoodboard({
 
           <Divider />
 
-          {/* â”€â”€ SERVICES TABLE â”€â”€ */}
+          {/* ── SERVICES TABLE ── */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
 
             {/* Table header row */}
@@ -350,7 +350,7 @@ export function PDFTemplateMoodboard({
             >
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
                 <span style={{ ...s(14, 700) }}>Servicios / Productos</span>
-                <span style={{ ...m(8, 0.35), textTransform: 'uppercase' }}>DescripciÃ³n</span>
+                <span style={{ ...m(8, 0.35), textTransform: 'uppercase' }}>Descripción</span>
               </div>
               <div style={{ display: 'flex', gap: 16 }}>
                 {['Cant.', 'Precio Unit.', 'Total'].map((col) => (
@@ -397,9 +397,9 @@ export function PDFTemplateMoodboard({
                       )}
                       {esServicio && (
                         <span style={{ ...s(9, 400, 0.4) }}>
-                          {item.meses_cobrados ? `â€¢ ${item.meses_cobrados} mes(es)` : ''}
-                          {item.incluir_setup ? ' â€¢ Setup incluido' : ''}
-                          {item.asientos_extra ? ` â€¢ ${item.asientos_extra} asientos extra` : ''}
+                          {item.meses_cobrados ? `• ${item.meses_cobrados} mes(es)` : ''}
+                          {item.incluir_setup ? ' • Setup incluido' : ''}
+                          {item.asientos_extra ? ` • ${item.asientos_extra} asientos extra` : ''}
                         </span>
                       )}
                       {(() => {
@@ -438,7 +438,7 @@ export function PDFTemplateMoodboard({
             })}
           </div>
 
-          {/* â”€â”€ RESUMEN DE SERVICIOS â”€â”€ */}
+          {/* ── RESUMEN DE SERVICIOS ── */}
           {srvItems.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {/* Purple separator + label */}
@@ -470,26 +470,26 @@ export function PDFTemplateMoodboard({
 
                       {srv.modo === 'unico' && (
                         <>
-                          <span style={{ ...s(9, 400, 0.55) }}>â€¢ Pago Ãºnico</span>
-                          <span style={{ ...s(9, 400, 0.55) }}>â€¢ Incluye setup completo</span>
+                          <span style={{ ...s(9, 400, 0.55) }}>• Pago único</span>
+                          <span style={{ ...s(9, 400, 0.55) }}>• Incluye setup completo</span>
                         </>
                       )}
                       {srv.modo === 'suscripcion' && (
                         <>
-                          <span style={{ ...s(9, 400, 0.55) }}>â€¢ Servicio de suscripciÃ³n</span>
-                          <span style={{ ...s(9, 400, 0.55) }}>â€¢ Periodo: {srv.periodo}</span>
-                          <span style={{ ...s(9, 400, 0.55) }}>â€¢ Meses contratados: {item.meses_cobrados || 1}</span>
+                          <span style={{ ...s(9, 400, 0.55) }}>• Servicio de suscripción</span>
+                          <span style={{ ...s(9, 400, 0.55) }}>• Periodo: {srv.periodo}</span>
+                          <span style={{ ...s(9, 400, 0.55) }}>• Meses contratados: {item.meses_cobrados || 1}</span>
                           {(srv.min_meses ?? 0) > 1 && (
-                            <span style={{ ...s(9, 400, 0.55) }}>â€¢ Permanencia mÃ­nima: {srv.min_meses} meses</span>
+                            <span style={{ ...s(9, 400, 0.55) }}>• Permanencia mínima: {srv.min_meses} meses</span>
                           )}
                         </>
                       )}
                       {srv.modo === 'hibrido' && (
                         <>
-                          <span style={{ ...s(9, 400, 0.55) }}>â€¢ Servicio hÃ­brido</span>
-                          {item.incluir_setup && <span style={{ ...s(9, 400, 0.55) }}>â€¢ Incluye setup inicial</span>}
-                          <span style={{ ...s(9, 400, 0.55) }}>â€¢ SuscripciÃ³n {srv.periodo}</span>
-                          <span style={{ ...s(9, 400, 0.55) }}>â€¢ Meses: {item.meses_cobrados || 1}</span>
+                          <span style={{ ...s(9, 400, 0.55) }}>• Servicio híbrido</span>
+                          {item.incluir_setup && <span style={{ ...s(9, 400, 0.55) }}>• Incluye setup inicial</span>}
+                          <span style={{ ...s(9, 400, 0.55) }}>• Suscripción {srv.periodo}</span>
+                          <span style={{ ...s(9, 400, 0.55) }}>• Meses: {item.meses_cobrados || 1}</span>
                         </>
                       )}
                     </div>
@@ -509,7 +509,7 @@ export function PDFTemplateMoodboard({
         />
       </div>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• PAGE 2 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ══════════════════════ PAGE 2 ══════════════════════ */}
       <div style={page2}>
         <PageHeader
           empresa={empresa}
@@ -520,7 +520,7 @@ export function PDFTemplateMoodboard({
         />
         <AccentLine />
 
-        {/* HERO â€” Total display */}
+        {/* HERO — Total display */}
         <div
           style={{
             background: '#000',
@@ -532,7 +532,7 @@ export function PDFTemplateMoodboard({
           }}
         >
           <span style={{ ...m(11, 1), color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>
-            Total de la CotizaciÃ³n
+            Total de la Cotización
           </span>
           <span
             style={{
@@ -547,14 +547,14 @@ export function PDFTemplateMoodboard({
             {formatearMoneda(totales.total)}
           </span>
           <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.35)', textTransform: 'none' }}>
-            MXN Â· {cotizacion.con_factura !== false ? 'IVA incluido' : 'IVA no incluido'}
+            MXN · {cotizacion.con_factura !== false ? 'IVA incluido' : 'IVA no incluido'}
           </span>
         </div>
 
         {/* Content page 2 */}
         <div style={{ flex: 1, padding: '32px 40px', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
-          {/* â”€â”€ DESGLOSE â”€â”€ */}
+          {/* ── DESGLOSE ── */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ ...s(14, 700), marginBottom: 10 }}>Desglose</span>
             <Divider />
@@ -604,9 +604,9 @@ export function PDFTemplateMoodboard({
 
           <Divider />
 
-          {/* â”€â”€ TÃ‰RMINOS â”€â”€ */}
+          {/* ── TÉRMINOS ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ ...s(13, 700) }}>TÃ©rminos y Condiciones</span>
+            <span style={{ ...s(13, 700) }}>Términos y Condiciones</span>
             {cotizacion.nota ? (
               cotizacion.nota.split('\n').map((line, i) => (
                 <span key={i} style={{ ...s(9, 400, 0.55) }}>{line}</span>
@@ -614,17 +614,17 @@ export function PDFTemplateMoodboard({
             ) : (
               <>
                 <span style={{ ...s(9, 400, 0.55) }}>
-                  â€¢ Vigencia de la cotizaciÃ³n: {cotizacion.validez_dias} dÃ­as naturales a partir de la fecha de emisiÃ³n.
+                  • Vigencia de la cotización: {cotizacion.validez_dias} días naturales a partir de la fecha de emisión.
                 </span>
                 <span style={{ ...s(9, 400, 0.55) }}>
-                  â€¢ Los precios estÃ¡n expresados en pesos mexicanos (MXN)
+                  • Los precios están expresados en pesos mexicanos (MXN)
                   {cotizacion.con_factura !== false ? ' e IVA incluido.' : ' e IVA no incluido.'}
                 </span>
                 <span style={{ ...s(9, 400, 0.55) }}>
-                  â€¢ El inicio del proyecto estÃ¡ sujeto a la confirmaciÃ³n de pago del anticipo del 50%.
+                  • El inicio del proyecto está sujeto a la confirmación de pago del anticipo del 50%.
                 </span>
                 <span style={{ ...s(9, 400, 0.55) }}>
-                  â€¢ Cualquier trabajo fuera del alcance descrito serÃ¡ cotizado por separado.
+                  • Cualquier trabajo fuera del alcance descrito será cotizado por separado.
                 </span>
               </>
             )}
@@ -632,19 +632,19 @@ export function PDFTemplateMoodboard({
 
           <Divider />
 
-          {/* â”€â”€ MÃ‰TODOS DE PAGO â”€â”€ */}
+          {/* ── MÉTODOS DE PAGO ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <span style={{ ...s(13, 700) }}>MÃ©todos de Pago</span>
+            <span style={{ ...s(13, 700) }}>Métodos de Pago</span>
             <div style={{ display: 'flex', gap: 16 }}>
               {[
                 {
                   title: 'Transferencia Bancaria',
                   lines: ajustes.cuenta_bancaria
-                    ? ['BBVA MÃ©xico', ajustes.cuenta_bancaria]
-                    : ['BBVA MÃ©xico', 'Solicitar datos al equipo'],
+                    ? ['BBVA México', ajustes.cuenta_bancaria]
+                    : ['BBVA México', 'Solicitar datos al equipo'],
                 },
                 {
-                  title: 'Tarjeta de CrÃ©dito/DÃ©bito',
+                  title: 'Tarjeta de Crédito/Débito',
                   lines: ['Visa / Mastercard', 'Link de pago por email'],
                 },
                 {
@@ -673,7 +673,7 @@ export function PDFTemplateMoodboard({
             </div>
           </div>
 
-          {/* â”€â”€ THANK YOU â”€â”€ */}
+          {/* ── THANK YOU ── */}
           <div
             style={{
               background: 'rgba(0,0,0,0.03)',
@@ -685,9 +685,9 @@ export function PDFTemplateMoodboard({
             }}
           >
             <div style={{ height: 3, background: PURPLE, borderRadius: 2 }} />
-            <span style={{ ...s(14, 700) }}>Â¡Gracias por la confianza!</span>
+            <span style={{ ...s(14, 700) }}>¡Gracias por la confianza!</span>
             <span style={{ ...s(10, 400, 0.6) }}>
-              Estamos listos para arrancar. Para confirmar, escrÃ­benos a{' '}
+              Estamos listos para arrancar. Para confirmar, escríbenos a{' '}
               <span style={{ color: PURPLE }}>{ajustes.email || 'ventas@ideally.com.mx'}</span>
             </span>
           </div>
@@ -704,4 +704,3 @@ export function PDFTemplateMoodboard({
     </div>
   );
 }
-
