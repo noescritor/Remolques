@@ -5,6 +5,9 @@ import { logger } from "npm:hono/logger";
 
 import { cargarDatosModelo } from "./motor/cargar_datos.ts";
 import { resolverReceta } from "./motor/resolver_receta.ts";
+import { armarConfiguracionModelo } from "./motor/armar_configuracion.ts";
+import { construirMetadata, desenvolverMetadata } from "./motor/item_metadata.ts";
+import { generarEspecificacion } from "./motor/texto_especificacion.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -118,25 +121,9 @@ const getServiceClient = () => {
   return createClient(url, key);
 };
 
-const toItemCotizacionRow = (item: any, cotizacionId: string, orgId?: string) => ({
-  cotizacion_id: cotizacionId,
-  ...(orgId ? { organizacion_id: orgId } : {}),
-  producto_id: item.producto_id || null,
-  posicion: item.posicion,
-  cantidad: item.cantidad,
-  unidad: item.unidad,
-  descripcion: item.descripcion,
-  precio_unitario: item.precio_unitario ?? null,
-  costo_unitario: item.costo_unitario ?? null,
-  iva_item: item.iva_item ?? 0,
-  total_item: item.total_item ?? 0,
-  metadata: {
-    numero_proyecto: item.numero_proyecto || null,
-    incluir_setup: item.incluir_setup ?? null,
-    meses_cobrados: item.meses_cobrados ?? null,
-    asientos_extra: item.asientos_extra ?? null,
-  },
-});
+import { construirMetadata, desenvolverMetadata } from './motor/item_metadata.ts';
+
+const toItemCotizacionRow = (item: any, cotizacionId: string, orgId?: string) => construirMetadata(item, cotizacionId, orgId);
 
 const toLegacyItemCotizacionRow = (item: any, cotizacionId: string, orgId?: string) => {
   const { metadata, ...row } = toItemCotizacionRow(item, cotizacionId, orgId);
@@ -437,7 +424,7 @@ app.get("/modelos", async (c) => {
     const supabase = c.get("supabase") as any;
     const { data, error } = await supabase
       .from("modelos")
-      .select("id, tipo, largo_ft, num_ejes, productos(nombre)");
+      .select("id, tipo, largo_ft, num_ejes, producto_id, productos(nombre)");
     
     if (error) throw error;
     
@@ -460,14 +447,14 @@ app.get("/modelos/:id/configuracion", async (c) => {
 
     const { data: modelo, error: modErr } = await supabase
       .from("modelos")
-      .select("tipo")
+      .select("id, tipo, largo_ft, num_ejes, producto_id, productos(nombre)")
       .eq("id", modeloId)
       .single();
     if (modErr || !modelo) return c.json({ error: "Modelo no encontrado" }, 404);
 
     const { data: grupos, error: grpErr } = await supabase
       .from("grupos_configuracion")
-      .select("id, clave, nombre, seleccion, regla, aplica_a, depende_de, cantidad, unidad_precio, medidas");
+      .select("id, clave, nombre, seleccion, regla, aplica_a, depende_de, cantidad, unidad_precio, medidas, orden");
     if (grpErr) throw grpErr;
 
     const { data: opciones, error: optErr } = await supabase
@@ -480,24 +467,7 @@ app.get("/modelos/:id/configuracion", async (c) => {
       .select("opcion_id");
     if (compErr) throw compErr;
 
-    const opcionesConReceta = new Set(componentes.map((c: any) => c.opcion_id));
-
-    const config = grupos
-      .filter((g: any) => !g.aplica_a || g.aplica_a.includes(modelo.tipo))
-      .map((g: any) => ({
-        ...g,
-        opciones: opciones
-          .filter((o: any) => o.grupo_id === g.id)
-          .map((o: any) => ({
-            clave: o.clave,
-            nombre: o.nombre,
-            seleccion: o.seleccion,
-            precio_venta: o.precio_venta,
-            clase: o.clase,
-            tiene_receta: opcionesConReceta.has(o.id)
-          }))
-      }));
-
+    const config = armarConfiguracionModelo(modelo, grupos, opciones, componentes);
     return c.json(config);
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
@@ -515,7 +485,14 @@ app.post("/configuracion/resolver", async (c) => {
     try {
       const datos = await cargarDatosModelo(supabase, body.modelo_id);
       const resultado = resolverReceta(datos, body.configuracion);
-      return c.json(resultado);
+      
+      const { texto, resumen_lineas } = generarEspecificacion(datos.modelo, body.configuracion, datos.grupos, datos.opciones);
+
+      return c.json({
+        ...resultado,
+        texto_especificacion: texto,
+        resumen_lineas
+      });
     } catch (e: any) {
       if (e.message === "Modelo no encontrado") return c.json({ error: e.message }, 404);
       throw e;
@@ -856,16 +833,7 @@ app.delete("/productos/:id", async (c) => {
 });
 
 // Unwrap metadata fields stored in JSONB back to root-level item properties
-const unwrapItemMetadata = (item: any) => {
-  const meta = item.metadata || {};
-  return {
-    ...item,
-    numero_proyecto: item.numero_proyecto ?? meta.numero_proyecto ?? null,
-    incluir_setup: item.incluir_setup ?? meta.incluir_setup ?? null,
-    meses_cobrados: item.meses_cobrados ?? meta.meses_cobrados ?? null,
-    asientos_extra: item.asientos_extra ?? meta.asientos_extra ?? null,
-  };
-};
+const unwrapItemMetadata = (item: any) => desenvolverMetadata(item);
 
 // Get the highest sequential folio number across all non-version cotizaciones
 const getUltimaFolioNumber = async (supabase: SupabaseClient): Promise<number> => {

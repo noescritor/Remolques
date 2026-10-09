@@ -3,6 +3,24 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-09 (12) - Bloque 2R-3a: Configurador de equipo en la cotización
+**Herramienta:** Antigravity
+**Tipo:** feat (frontend, cpq, ui)
+**Archivos tocados:**
+- `supabase/functions/make-server-feea4382/index.ts`
+- `supabase/functions/make-server-feea4382/motor/item_metadata.ts`
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.ts`
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`
+- `src/app/components/Cotizaciones/CotizacionEditor.tsx`
+- `src/app/types/index.ts`
+- Eliminado: `src/app/components/Presupuestos/ModeloConfiguratorModal.tsx`
+
+**Qué cambió y por qué:**
+Se extrajo la lógica de persistencia de metadatos a `motor/item_metadata.ts` para guardar `configuracion` íntegra. Se agregó `generarEspecificacion` (`texto_especificacion.ts`) que mapea la configuración elegida al texto objetivo de las facturas (ordenado y formateado). El backend ahora devuelve este texto y la lista de materiales sugerida en `/configuracion/resolver`, y `producto_id` en `/modelos`. En el frontend, se integró el componente `ConfiguradorEquipo` dentro del Editor de Cotizaciones; intercepta productos que sean modelos y muestra una UI en vivo validando compatibilidades y la suficiencia de la receta. Se removieron todos los rastros de `pending_cpq` y código muerto previo.
+
+**Acciones manuales / Despliegue:**
+- Ninguna. Pruebas Deno en verde, build de Vite en verde. Rebuild requerido en EasyPanel si se decide desplegar.
+
 ## 2026-10-07 (11) - Bloque 2R-2: Correcciones Motor CPQ (Validaciones y Contrato)
 **Herramienta:** Antigravity
 **Tipo:** fix (motor, tests)

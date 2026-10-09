@@ -59,7 +59,7 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
           valConfig = datos.modelo.largo_ft;
         } else {
           const valConfigRaw = configuracion.grupos[cond.campo];
-          valConfig = typeof valConfigRaw === 'string' ? valConfigRaw : (valConfigRaw?.opcion || '');
+          valConfig = typeof valConfigRaw === 'string' ? valConfigRaw : ((valConfigRaw as any)?.opcion || '');
         }
         
         if (cond.op === '!=') {
@@ -113,7 +113,7 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
     
     if (grupo.depende_de) {
       const parentValRaw = configuracion.grupos[grupo.depende_de.grupo];
-      const parentVal = typeof parentValRaw === 'string' ? parentValRaw : (parentValRaw?.opcion || '');
+      const parentVal = typeof parentValRaw === 'string' ? parentValRaw : ((parentValRaw as any)?.opcion || '');
       if (parentVal !== grupo.depende_de.opcion) continue;
     }
 
@@ -125,92 +125,87 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
       continue;
     }
 
-    const oClave = typeof valConfigRaw === 'string' ? valConfigRaw : valConfigRaw.opcion;
-    const opcion = datos.opciones.find(o => o.grupo_id === grupo.id && o.clave === oClave);
-    
-    if (!opcion) {
-      errores.push(`Opción no válida para el grupo ${grupo.nombre}: ${oClave}`);
-      continue;
-    }
-    if (opcion.activo === false) {
-      errores.push(`La opción ${opcion.nombre} del grupo ${grupo.nombre} está inactiva.`);
-      continue;
-    }
+    const configVals = Array.isArray(valConfigRaw) ? valConfigRaw : [valConfigRaw];
 
-    // Process options components
-    const componentes = datos.opcion_componentes.filter(c => c.opcion_id === opcion.id);
-    
-    if (componentes.length === 0) {
-      if (!opcion.clave.startsWith('sin_') && opcion.clave !== 'paleta') {
-        advertencias.push(`La opción ${opcion.nombre} no tiene receta configurada.`);
-        completo = false;
-      }
-    } else {
-      let confMarca = typeof valConfigRaw === 'object' ? valConfigRaw.marca : undefined;
-      let confCant = typeof valConfigRaw === 'object' ? valConfigRaw.cantidad : undefined;
-
-      const requiereMarca = grupo.clave === 'rines' || confMarca !== undefined;
-      let marcaNormalizada = confMarca ? confMarca.toUpperCase().trim() : null;
+    for (const valConfig of configVals) {
+      const oClave = typeof valConfig === 'string' ? valConfig : valConfig.opcion;
+      const opcion = datos.opciones.find(o => o.grupo_id === grupo.id && o.clave === oClave);
       
-      // Mapeo de alias para marcas
-      if (marcaNormalizada) {
-        if (marcaNormalizada === 'FLET MASTER') marcaNormalizada = 'FLEET MASTER';
-        if (marcaNormalizada === 'AMPRO TRAPEZOIDAL') marcaNormalizada = 'AMPRO MASTER TRAPEZOIDAL';
+      if (!opcion) {
+        errores.push(`Opción no válida para el grupo ${grupo.nombre}: ${oClave}`);
+        continue;
+      }
+      if (opcion.activo === false) {
+        errores.push(`La opción ${opcion.nombre} del grupo ${grupo.nombre} está inactiva.`);
+        continue;
       }
 
-      let matchedRims = 0;
+      const componentes = datos.opcion_componentes.filter(c => c.opcion_id === opcion.id);
+      
+      if (componentes.length === 0) {
+        if (!opcion.clave.startsWith('sin_') && opcion.clave !== 'paleta') {
+          advertencias.push(`La opción ${opcion.nombre} no tiene receta configurada.`);
+          completo = false;
+        }
+      } else {
+        let confMarca = typeof valConfig === 'object' ? valConfig.marca : undefined;
+        let confCant = typeof valConfig === 'object' ? valConfig.cantidad : undefined;
 
-      for (const comp of componentes) {
-        if (comp.rol === 'sustituto') {
-          // Compute posibles_reemplazos
-          const primerasPalabras = comp.nombre.split(' ')[0];
-          const posibles = componentes.filter(c => c.rol !== 'sustituto' && c.nombre.startsWith(primerasPalabras)).map(c => c.nombre);
-          alternativas.push({ 
-            reemplaza: null, 
-            posibles_reemplazos: posibles, 
-            sustituto: comp.nombre, 
-            grupo: grupo.clave 
-          });
-          continue; 
+        const requiereMarca = grupo.clave === 'rines' || confMarca !== undefined;
+        let marcaNormalizada = confMarca ? confMarca.toUpperCase().trim() : null;
+        
+        if (marcaNormalizada) {
+          if (marcaNormalizada === 'FLET MASTER') marcaNormalizada = 'FLEET MASTER';
+          if (marcaNormalizada === 'AMPRO TRAPEZOIDAL') marcaNormalizada = 'AMPRO MASTER TRAPEZOIDAL';
         }
 
-        let qty = calcularCantidad(comp.cantidad, comp.escala);
-        if (grupo.seleccion === 'unica_con_cantidad' && confCant !== undefined) {
-          qty = confCant;
+        let matchedRims = 0;
+
+        for (const comp of componentes) {
+          if (comp.rol === 'sustituto') {
+            const primerasPalabras = comp.nombre.split(' ')[0];
+            const posibles = componentes.filter(c => c.rol !== 'sustituto' && c.nombre.startsWith(primerasPalabras)).map(c => c.nombre);
+            alternativas.push({ 
+              reemplaza: null, 
+              posibles_reemplazos: posibles, 
+              sustituto: comp.nombre, 
+              grupo: grupo.clave 
+            });
+            continue; 
+          }
+
+          let qty = calcularCantidad(comp.cantidad, comp.escala);
+          if ((grupo.seleccion === 'unica_con_cantidad' || grupo.seleccion === 'multiple_con_cantidad' || grupo.seleccion === 'cantidad') && confCant !== undefined) {
+            qty = confCant;
+          }
+
+          if (requiereMarca) {
+            if (!marcaNormalizada) {
+              // Evaluated later
+            } else {
+              const posiblesMarcas = (opcion.marcas || []).map((m: string) => m.toUpperCase().trim());
+              const aliasesMarcas = (opcion.aliases || []).map((m: string) => m.toUpperCase().trim());
+              const esMarcaValida = posiblesMarcas.includes(marcaNormalizada) || aliasesMarcas.includes(marcaNormalizada) || (marcaNormalizada === 'AMPRO MASTER TRAPEZOIDAL' && posiblesMarcas.includes('AMPRO TRAPEZOIDAL')); 
+              
+              if (esMarcaValida) {
+                  const nombreEsperado = `RIN DE ${opcion.clave.toUpperCase()} ${marcaNormalizada}`;
+                  if (comp.nombre === nombreEsperado) {
+                    agregarLinea(comp.material_id, comp.nombre, comp.unidad, qty, comp.paso, comp.uso, `opcion:${grupo.clave}/${opcion.clave}`, comp.costo, comp.descripcion);
+                    matchedRims++;
+                  }
+              }
+            }
+          } else {
+            agregarLinea(comp.material_id, comp.nombre, comp.unidad, qty, comp.paso, comp.uso, `opcion:${grupo.clave}/${opcion.clave}`, comp.costo, comp.descripcion);
+          }
         }
 
         if (requiereMarca) {
           if (!marcaNormalizada) {
-            // Evaluated later
-          } else {
-            const posiblesMarcas = (opcion.marcas || []).map((m: string) => m.toUpperCase().trim());
-            const aliasesMarcas = (opcion.aliases || []).map((m: string) => m.toUpperCase().trim());
-            
-            // Revertimos el alias "AMPRO TRAPEZOIDAL" al checar validez si es que opcion.marcas tiene AMPRO TRAPEZOIDAL
-            const esMarcaValida = posiblesMarcas.includes(marcaNormalizada) || aliasesMarcas.includes(marcaNormalizada) || (marcaNormalizada === 'AMPRO MASTER TRAPEZOIDAL' && posiblesMarcas.includes('AMPRO TRAPEZOIDAL')); 
-            
-            if (!esMarcaValida) {
-                // Not a valid brand for this option
-            } else {
-                // Exact string matching for rims: "RIN DE <MATERIAL> <MARCA>"
-                const nombreEsperado = `RIN DE ${opcion.clave.toUpperCase()} ${marcaNormalizada}`;
-                
-                if (comp.nombre === nombreEsperado) {
-                  agregarLinea(comp.material_id, comp.nombre, comp.unidad, qty, comp.paso, comp.uso, `opcion:${grupo.clave}/${opcion.clave}`, comp.costo, comp.descripcion);
-                  matchedRims++;
-                }
-            }
+              errores.push(`El grupo ${grupo.nombre} requiere especificar una marca.`);
+          } else if (matchedRims !== 1) {
+              errores.push(`No se encontró exactamente un componente con la marca ${marcaNormalizada} para la opción ${opcion.nombre} (se encontraron ${matchedRims}).`);
           }
-        } else {
-          agregarLinea(comp.material_id, comp.nombre, comp.unidad, qty, comp.paso, comp.uso, `opcion:${grupo.clave}/${opcion.clave}`, comp.costo, comp.descripcion);
-        }
-      }
-
-      if (requiereMarca) {
-        if (!marcaNormalizada) {
-            errores.push(`El grupo ${grupo.nombre} requiere especificar una marca.`);
-        } else if (matchedRims !== 1) {
-            errores.push(`No se encontró exactamente un componente con la marca ${marcaNormalizada} para la opción ${opcion.nombre} (se encontraron ${matchedRims}).`);
         }
       }
     }

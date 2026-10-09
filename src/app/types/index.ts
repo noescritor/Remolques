@@ -124,6 +124,7 @@ export interface ItemCotizacion {
   asientos_extra?: number;
   iva_item: number;
   total_item: number;
+  configuracion?: any;
 }
 
 export interface CostosIndirectos {
