@@ -240,8 +240,8 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
             <Button variant="outline" onClick={cargarConfiguracion}><RotateCcw className="w-4 h-4 mr-2" /> Reintentar</Button>
           </div>
         ) : (
-          <div className="flex flex-1 overflow-hidden">
-            <div className="w-64 border-r border-border bg-muted/20 flex flex-col">
+          <div className="flex flex-1 flex-col md:flex-row overflow-y-auto md:overflow-hidden min-h-0">
+            <div className="w-full md:w-64 shrink-0 max-h-36 md:max-h-none border-b md:border-b-0 md:border-r border-border bg-muted/20 flex flex-col">
               <ScrollArea className="flex-1">
                 <div className="p-4 space-y-1">
                   {gruposAplicables.map((g: any) => {
@@ -265,11 +265,11 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
               </ScrollArea>
             </div>
 
-            <div className="flex-1 flex flex-col bg-background relative">
-              <ScrollArea className="flex-1">
+            <div className="md:flex-1 flex flex-col bg-background relative min-w-0 md:min-h-0">
+              <ScrollArea className="h-[260px] shrink-0 md:h-auto md:shrink md:flex-1 md:min-h-0">
                 <div className="p-6">
                   <h3 className="text-lg font-medium mb-4 text-foreground">{grupoActual?.nombre}</h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(100%,240px),1fr))]">
                     {opcionesActuales.map((o: any) => {
                       const value = configuracion.grupos[grupoActual?.clave || ''];
                       const isMultiple = isMultipleLike(grupoActual);
@@ -350,15 +350,15 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                 </div>
               </ScrollArea>
 
-              <div className="border-t border-border bg-card p-4 min-h-[160px]">
-                <div className="flex gap-4">
-                  <div className="flex-1">
+              <div className="border-t border-border bg-card p-3 sm:p-4 md:min-h-[160px]">
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-medium mb-2 text-foreground">Así queda tu equipo:</h4>
                     <p className="text-sm text-muted-foreground uppercase leading-relaxed">
                       {resultado?.texto_especificacion || <span className="opacity-50">Seleccionando configuración...</span>}
                     </p>
                   </div>
-                  <div className="w-64 space-y-3">
+                  <div className="w-full md:w-64 shrink-0 space-y-3">
                     <div className="p-3 bg-muted/50 rounded-md">
                       <div className="text-xs text-muted-foreground">Referencia de tarifario</div>
                       <div className="font-medium text-foreground">{formatearMoneda(getPrecioRef())}</div>
@@ -413,7 +413,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
           </div>
         )}
 
-        <DialogFooter className="px-6 py-4 border-t">
+        <DialogFooter className="px-4 sm:px-6 py-3 sm:py-4 border-t gap-2 flex-col-reverse sm:flex-row">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button 
             disabled={loadingConfig || resolviendo || disableConfirm || errorConfig !== null} 
