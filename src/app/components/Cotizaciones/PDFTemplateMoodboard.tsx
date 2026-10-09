@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import type { Cotizacion, Cliente, Producto, Ajustes } from '../../types';
+import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 import {
   formatearMoneda,
   formatearFecha,
@@ -401,19 +402,20 @@ export function PDFTemplateMoodboard({
                           {item.asientos_extra ? ` • ${item.asientos_extra} asientos extra` : ''}
                         </span>
                       )}
-                      {item.metadata?.configuracion?.resumen_lineas && item.metadata.configuracion.resumen_lineas.length > 0 && (
-                        <div style={{ marginTop: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                          {item.metadata.configuracion.resumen_lineas.map((linea: string, idx: number) => {
-                            const [lbl, ...rest] = linea.split(':');
-                            const val = rest.join(':').trim();
-                            return (
-                              <span key={idx} style={{ ...s(9, 400, 0.5) }}>
-                                <span style={{ fontWeight: 600 }}>{lbl}:</span> {val}
-                              </span>
-                            );
-                          })}
-                        </div>
-                      )}
+                      {(() => {
+                        const cfg = obtenerConfiguracion(item);
+                        const lineas = normalizarResumenLineas(cfg?.resumen_lineas);
+                        if (lineas.length === 0) return null;
+                        return (
+                          <div style={{ marginTop: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            {lineas.map((linea, idx: number) => (
+                                <span key={idx} style={{ ...s(9, 400, 0.5) }}>
+                                  <span style={{ fontWeight: 600 }}>{linea.etiqueta}:</span> {linea.valor}
+                                </span>
+                            ))}
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     {/* Pricing columns */}

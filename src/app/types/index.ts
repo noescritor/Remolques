@@ -125,6 +125,8 @@ export interface ItemCotizacion {
   iva_item: number;
   total_item: number;
   configuracion?: any;
+  metadata?: any;
+  _expanded?: boolean;
 }
 
 export interface CostosIndirectos {
