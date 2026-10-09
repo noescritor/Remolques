@@ -320,13 +320,13 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                             </div>
                           )}
 
-                          {isSelected && grupoActual?.seleccion === 'unica_con_medida' && o.medidas && o.medidas.length > 0 && (
+                          {isSelected && grupoActual?.seleccion === 'unica_con_medida' && o.medidas && Object.keys(o.medidas).length > 0 && (
                             <div className="mt-3 p-3 bg-background border rounded-md">
                               <label className="block text-xs font-medium text-muted-foreground mb-1">Medida</label>
                               <Select value={objVal?.medida || ''} onValueChange={(val) => handleObjProp(grupoActual!.clave, false, o.clave, 'medida', val)}>
                                 <SelectTrigger className="h-8"><SelectValue placeholder="Elegir medida..." /></SelectTrigger>
                                 <SelectContent>
-                                  {o.medidas.map((m: string) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                                  {Object.keys(o.medidas).map((m: string) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
                                 </SelectContent>
                               </Select>
                             </div>

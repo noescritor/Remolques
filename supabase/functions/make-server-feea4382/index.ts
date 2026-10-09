@@ -447,14 +447,14 @@ app.get("/modelos/:id/configuracion", async (c) => {
 
     const { data: modelo, error: modErr } = await supabase
       .from("modelos")
-      .select("tipo")
+      .select("id, tipo, largo_ft, num_ejes, producto_id, productos(nombre)")
       .eq("id", modeloId)
       .single();
     if (modErr || !modelo) return c.json({ error: "Modelo no encontrado" }, 404);
 
     const { data: grupos, error: grpErr } = await supabase
       .from("grupos_configuracion")
-      .select("id, clave, nombre, seleccion, regla, aplica_a, depende_de, cantidad, unidad_precio, medidas");
+      .select("id, clave, nombre, seleccion, regla, aplica_a, depende_de, cantidad, unidad_precio, medidas, orden");
     if (grpErr) throw grpErr;
 
     const { data: opciones, error: optErr } = await supabase
