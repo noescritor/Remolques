@@ -1,3 +1,26 @@
+# Changelog
+
+## 2026-10-09 - Bloque 2R-3a y 2R-3b: Configurador de equipos y tarjeta en cotización (Frontend)
+**Herramienta:** Antigravity
+**Tipo:** cambio
+**Archivos tocados:**
+- supabase/functions/make-server-feea4382/index.ts (hotfix import duplicado)
+- src/app/components/Cotizaciones/CotizacionEditor.tsx
+- src/app/components/Cotizaciones/ConfiguradorEquipo.tsx
+- src/app/components/Cotizaciones/SelectorProductos.tsx
+- src/app/components/Cotizaciones/PDFTemplateLeolca.tsx
+- src/app/components/Cotizaciones/PDFTemplateMoodboard.tsx
+- src/app/components/Cotizaciones/PDFFullPageMoodboard.tsx
+- src/app/components/Portal/PortalCliente.tsx
+- src/app/utils/calculations.ts
+- src/app/App.tsx
+**Qué cambió y por qué:**
+Se completaron los bloques 2R-3a (integración del configurador) y 2R-3b (pulido de la interfaz).
+- **Backend:** Se aplicó un hotfix en index.ts borrando un import duplicado de construirMetadata que impedía el arranque en producción.
+- **Frontend - Editor:** Se implementó el nuevo SelectorProductos agrupado y el componente ConfiguradorEquipo adaptado. Las opciones obligatorias faltantes se agrupan en un solo mensaje de alerta. En CotizacionEditor, los conceptos configurados (Plataformas, etc.) ahora se muestran en una tarjeta dedicada que incluye chips de estado (Precio pendiente, Receta incompleta), botones y el desglose plegable.
+- **Frontend - Totales y PDF:** Se corrigió el cálculo de IVA (asumiendo 0 en vez de NaN si ajustes.iva_por_defecto es nulo). Los desgloses configurados ahora se muestran en el PDF y el Portal de Cliente.
+**Acciones manuales pendientes:** Ninguna. Todo validado en local y construido correctamente.
+
 # Changelog de cambios y hallazgos — Remolques
 
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.

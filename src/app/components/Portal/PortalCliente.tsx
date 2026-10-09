@@ -241,14 +241,34 @@ export function PortalCliente() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {items.map((item, i) => (
-                    <tr key={i} className="py-2">
-                      <td className="py-2 pr-4 text-gray-800">{item.descripcion}</td>
-                      <td className="py-2 text-right text-gray-600">{item.cantidad} {item.unidad}</td>
-                      <td className="py-2 text-right text-gray-600">{formatearMoneda(item.precio_unitario)}</td>
-                      <td className="py-2 text-right font-medium">{formatearMoneda(item.total_item + item.iva_item)}</td>
-                    </tr>
-                  ))}
+                  {items.map((item, i) => {
+                    const cfg = item.metadata?.configuracion;
+                    return (
+                      <tr key={i} className="py-2">
+                        <td className="py-3 pr-4 text-gray-800">
+                          <div className="font-medium">{item.descripcion}</div>
+                          {cfg?.resumen_lineas && cfg.resumen_lineas.length > 0 && (
+                            <div className="mt-2 pl-3 border-l-2 border-gray-200">
+                              <ul className="text-xs text-gray-500 space-y-1">
+                                {cfg.resumen_lineas.map((linea: string, idx: number) => {
+                                  const [lbl, ...rest] = linea.split(':');
+                                  const val = rest.join(':').trim();
+                                  return (
+                                    <li key={idx}>
+                                      <span className="font-semibold text-gray-600 uppercase">{lbl}:</span> {val}
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-3 text-right text-gray-600 align-top">{item.cantidad} {item.unidad}</td>
+                        <td className="py-3 text-right text-gray-600 align-top">{formatearMoneda(item.precio_unitario)}</td>
+                        <td className="py-3 text-right font-medium align-top">{formatearMoneda(item.total_item + item.iva_item)}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
