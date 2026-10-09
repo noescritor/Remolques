@@ -1,4 +1,7 @@
-# Changelog
+# Changelog de cambios y hallazgos — Remolques
+
+Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
+Formato: entradas nuevas **arriba**.
 
 ## 2026-10-09 - Bloque 2R-3a y 2R-3b: Configurador de equipos y tarjeta en cotización (Frontend)
 **Herramienta:** Antigravity
@@ -20,11 +23,6 @@ Se completaron los bloques 2R-3a (integración del configurador) y 2R-3b (pulido
 - **Frontend - Editor:** Se implementó el nuevo SelectorProductos agrupado y el componente ConfiguradorEquipo adaptado. Las opciones obligatorias faltantes se agrupan en un solo mensaje de alerta. En CotizacionEditor, los conceptos configurados (Plataformas, etc.) ahora se muestran en una tarjeta dedicada que incluye chips de estado (Precio pendiente, Receta incompleta), botones y el desglose plegable.
 - **Frontend - Totales y PDF:** Se corrigió el cálculo de IVA (asumiendo 0 en vez de NaN si ajustes.iva_por_defecto es nulo). Los desgloses configurados ahora se muestran en el PDF y el Portal de Cliente.
 **Acciones manuales pendientes:** Ninguna. Todo validado en local y construido correctamente.
-
-# Changelog de cambios y hallazgos — Remolques
-
-Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
-Formato: entradas nuevas **arriba**.
 
 ## 2026-10-09 (12) - Bloque 2R-3a: Configurador de equipo en la cotización
 **Herramienta:** Antigravity
