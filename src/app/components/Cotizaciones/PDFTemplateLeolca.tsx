@@ -1,5 +1,6 @@
 import { Cotizacion, Cliente, Producto, Ajustes } from '../../types';
 import { formatearMoneda, formatearFecha, calcularTotalesCotizacion } from '../../utils/calculations';
+import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 
 interface PDFTemplateLeolcaProps {
   cotizacion: Cotizacion;
@@ -68,37 +69,43 @@ export function PDFTemplateLeolca({ cotizacion, cliente, productos, ajustes }: P
                   </div>
 
                   {/* Lista de sub-componentes (BOM Configurado) */}
-                  {item.metadata?.configuracion?.resumen_lineas ? (
-                    <div className="border border-t-0 border-gray-200 p-4 rounded-b-md bg-white">
-                      <p className="text-sm font-semibold text-gray-700 mb-3">Especificaciones Técnicas / Componentes:</p>
-                      <ul className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-gray-600 list-disc pl-5">
-                        {item.metadata.configuracion.resumen_lineas.map((linea: string, i: number) => {
-                          const [lbl, ...rest] = linea.split(':');
-                          const val = rest.join(':').trim();
-                          return (
-                            <li key={i}>
-                              <span className="font-semibold">{lbl}:</span> {val}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  ) : item.sub_items?.length ? (
-                    <div className="border border-t-0 border-gray-200 p-4 rounded-b-md bg-white">
-                      <p className="text-sm font-semibold text-gray-700 mb-3">Especificaciones Técnicas / Componentes:</p>
-                      <ul className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-gray-600 list-disc pl-5">
-                        {item.sub_items.map((sub, i) => (
-                          <li key={i}>
-                            <span className="font-medium text-gray-800">{sub.cantidad}x</span> {sub.nombre}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : (
-                    <div className="border border-t-0 border-gray-200 p-2 rounded-b-md bg-white text-sm text-gray-500">
-                      Componente unitario.
-                    </div>
-                  )}
+                  {(() => {
+                    const cfg = obtenerConfiguracion(item);
+                    const lineas = normalizarResumenLineas(cfg?.resumen_lineas);
+                    if (lineas.length > 0) {
+                      return (
+                        <div className="border border-t-0 border-gray-200 p-4 rounded-b-md bg-white">
+                          <p className="text-sm font-semibold text-gray-700 mb-3">Especificaciones Técnicas / Componentes:</p>
+                          <ul className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-gray-600 list-disc pl-5">
+                            {lineas.map((linea, i: number) => (
+                              <li key={i}>
+                                <span className="font-semibold">{linea.etiqueta}:</span> {linea.valor}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    }
+                    if (item.sub_items?.length) {
+                      return (
+                        <div className="border border-t-0 border-gray-200 p-4 rounded-b-md bg-white">
+                          <p className="text-sm font-semibold text-gray-700 mb-3">Especificaciones Técnicas / Componentes:</p>
+                          <ul className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-gray-600 list-disc pl-5">
+                            {item.sub_items.map((sub, i) => (
+                              <li key={i}>
+                                <span className="font-medium text-gray-800">{sub.cantidad}x</span> {sub.nombre}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="border border-t-0 border-gray-200 p-2 rounded-b-md bg-white text-sm text-gray-500">
+                        Componente unitario.
+                      </div>
+                    );
+                  })()}
                 </div>
               );
             })}

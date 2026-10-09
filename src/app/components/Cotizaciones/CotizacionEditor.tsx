@@ -14,6 +14,7 @@ import { ArrowLeft, Plus, Trash2, FileDown, Copy, Save, UserPlus, Eye, BookTempl
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, TRANSICIONES_ESTADO, CostosIndirectos, ComisionesPago, Plantilla } from '../../types';
 import { ExcelImportModal } from './ExcelImportModal';
 import { supabase } from '../../utils/supabase/client';
+import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 import { calcularItemCotizacion, calcularTotalesCotizacion, formatearMoneda, calcularAnalisisCompleto, calcularUtilidadItem, calcularTotalesCotizacionServiciosAware, totalItemServicio } from '../../utils/calculations';
 import { ClienteModal } from '../Clientes/ClienteModal';
 import { AnalisisUtilidad } from './AnalisisUtilidad';
@@ -576,7 +577,7 @@ export function CotizacionEditor({
   const transicionesPermitidas = cotizacion ? TRANSICIONES_ESTADO[cotizacion.estado] : [];
 
   const renderConfiguredItemCard = (item: ItemCotizacion, isMobile: boolean, totalCalculado: any) => {
-    const cfg = item.metadata?.configuracion;
+    const cfg = obtenerConfiguracion(item);
     if (!cfg) return null;
     const isPending = (item.precio_unitario || 0) === 0;
     const isErr = !cfg.resuelta;
@@ -625,21 +626,19 @@ export function CotizacionEditor({
         {/* Body (Desglose) */}
         <div className="p-4 bg-background text-sm">
            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3">
-             {(cfg.resumen_lineas || []).slice(0, isExpanded ? undefined : 6).map((linea: string, i: number) => {
-               const [lbl, ...rest] = linea.split(':');
-               const val = rest.join(':').trim();
+             {normalizarResumenLineas(cfg.resumen_lineas).slice(0, isExpanded ? undefined : 6).map((linea, i: number) => {
                return (
                  <div key={i} className="flex flex-col">
-                   <span className="text-[10px] text-muted-foreground uppercase">{lbl}</span>
-                   <span className="font-medium text-foreground text-xs leading-tight line-clamp-2" title={val}>{val}</span>
+                   <span className="text-[10px] text-muted-foreground uppercase">{linea.etiqueta}</span>
+                   <span className="font-medium text-foreground text-xs leading-tight line-clamp-2" title={linea.valor}>{linea.valor}</span>
                  </div>
                )
              })}
            </div>
-           {(cfg.resumen_lineas?.length || 0) > 6 && (
+           {normalizarResumenLineas(cfg.resumen_lineas).length > 6 && (
               <div className="mt-3 text-center sm:text-left">
                 <Button variant="link" size="sm" className="h-auto p-0 text-xs text-primary" onClick={() => setExpandedItems(prev => ({...prev, [item.id]: !prev[item.id]}))}>
-                   {isExpanded ? 'Ver menos' : `Ver todo (${cfg.resumen_lineas.length - 6} más)`}
+                  {isExpanded ? 'Ver menos' : `Ver todo (${normalizarResumenLineas(cfg.resumen_lineas).length - 6} más)`}
                 </Button>
               </div>
            )}

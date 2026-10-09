@@ -10,6 +10,7 @@ import { Badge } from '../ui/badge';
 import { CheckCircle, XCircle, MessageSquare, Loader2, AlertCircle, PenTool, RotateCcw, Download } from 'lucide-react';
 import { LogoIdeally } from '../Cotizaciones/LogoIdeally';
 import { formatearMoneda } from '../../utils/calculations';
+import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 
 const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
 
@@ -242,23 +243,20 @@ export function PortalCliente() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {items.map((item, i) => {
-                    const cfg = item.metadata?.configuracion;
+                    const cfg = obtenerConfiguracion(item);
+                    const lineas = normalizarResumenLineas(cfg?.resumen_lineas);
                     return (
                       <tr key={i} className="py-2">
                         <td className="py-3 pr-4 text-gray-800">
                           <div className="font-medium">{item.descripcion}</div>
-                          {cfg?.resumen_lineas && cfg.resumen_lineas.length > 0 && (
+                          {lineas.length > 0 && (
                             <div className="mt-2 pl-3 border-l-2 border-gray-200">
                               <ul className="text-xs text-gray-500 space-y-1">
-                                {cfg.resumen_lineas.map((linea: string, idx: number) => {
-                                  const [lbl, ...rest] = linea.split(':');
-                                  const val = rest.join(':').trim();
-                                  return (
+                                {lineas.map((linea, idx: number) => (
                                     <li key={idx}>
-                                      <span className="font-semibold text-gray-600 uppercase">{lbl}:</span> {val}
+                                      <span className="font-semibold text-gray-600 uppercase">{linea.etiqueta}:</span> {linea.valor}
                                     </li>
-                                  );
-                                })}
+                                ))}
                               </ul>
                             </div>
                           )}
