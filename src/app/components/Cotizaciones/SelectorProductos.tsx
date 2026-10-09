@@ -162,38 +162,38 @@ export function SelectorProductos({ open, onOpenChange, productos, modelos, cate
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl w-[95vw] h-[85vh] flex flex-col p-0 overflow-hidden">
-        <DialogHeader className="px-6 py-4 border-b">
+      <DialogContent className="sm:max-w-[1100px] w-[95vw] h-[90vh] flex flex-col p-0 overflow-hidden">
+        <DialogHeader className="px-4 sm:px-6 py-4 border-b">
           <DialogTitle>Catálogo de Productos</DialogTitle>
           <DialogDescription>
             Busca y selecciona los productos a incluir en la cotización.
           </DialogDescription>
         </DialogHeader>
-        
-        <div className="flex flex-1 overflow-hidden">
-          {/* Sidebar Grupos */}
-          <div className="w-64 border-r bg-muted/20 overflow-y-auto flex flex-col">
-            <div className="p-3">
-              <button 
-                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${grupoSeleccionado === 'todos' ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-accent'}`}
+
+        <div className="flex flex-1 flex-col md:flex-row overflow-hidden min-h-0">
+          {/* Grupos: barra horizontal en pantallas angostas, columna lateral desde md */}
+          <div className="md:w-64 shrink-0 border-b md:border-b-0 md:border-r bg-muted/20 flex flex-row md:flex-col md:overflow-y-auto overflow-x-auto md:overflow-x-hidden">
+            <div className="p-2 md:p-3 flex flex-row md:flex-col gap-1 md:gap-0 md:space-y-1">
+              <button
+                className={`shrink-0 whitespace-nowrap md:whitespace-normal md:w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${grupoSeleccionado === 'todos' ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-accent'}`}
                 onClick={() => setGrupoSeleccionado('todos')}
               >
                 Todos los productos
               </button>
               {gruposList.map(g => (
-                <button 
+                <button
                   key={g}
-                  className={`w-full text-left px-3 py-2 rounded-md text-sm mt-1 transition-colors ${grupoSeleccionado === g ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-accent'}`}
+                  className={`shrink-0 whitespace-nowrap md:whitespace-normal md:w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${grupoSeleccionado === g ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-accent'}`}
                   onClick={() => setGrupoSeleccionado(g)}
                 >
-                  <span className="truncate block">{g.replace('Configurable:', '').replace('Equipos:', '').replace('Refacciones:', '')}</span>
+                  <span className="block md:truncate">{g.replace('Configurable:', '').replace('Equipos:', '').replace('Refacciones:', '')}</span>
                   <span className="text-[10px] text-muted-foreground uppercase">{g.split(':')[0]}</span>
                 </button>
               ))}
             </div>
-            
-            <div className="mt-auto p-4 border-t">
-              <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+
+            <div className="shrink-0 md:mt-auto p-2 md:p-4 md:border-t flex items-center">
+              <label className="flex items-center gap-2 text-sm cursor-pointer select-none whitespace-nowrap">
                 <input 
                   type="checkbox" 
                   checked={mostrarMateriales} 
@@ -206,7 +206,7 @@ export function SelectorProductos({ open, onOpenChange, productos, modelos, cate
           </div>
 
           {/* Main Area */}
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 min-h-0">
             <div className="p-4 border-b">
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -220,7 +220,7 @@ export function SelectorProductos({ open, onOpenChange, productos, modelos, cate
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-4 bg-gray-50/50">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 bg-muted/30">
               {filtrados.length === 0 ? (
                 <div className="text-center py-10 text-muted-foreground">
                   No se encontraron productos.
@@ -228,17 +228,17 @@ export function SelectorProductos({ open, onOpenChange, productos, modelos, cate
               ) : (
                 filtrados.map(g => (
                   <div key={g.groupName} className="mb-6">
-                    <h3 className="text-sm font-semibold text-muted-foreground mb-3 sticky top-0 bg-gray-50/90 py-1 z-10">{g.groupName}</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <h3 className="text-sm font-semibold text-muted-foreground mb-3 sticky top-0 bg-background/95 py-1 z-10">{g.groupName}</h3>
+                    <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))]">
                       {g.items.map((p: any) => (
-                        <div key={p.id} className="bg-background border rounded-lg p-3 hover:border-primary/50 transition-colors flex flex-col">
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <div className="font-medium text-sm text-foreground leading-tight">{p.nombre}</div>
-                              <div className="text-xs text-muted-foreground mt-0.5">{p.id}</div>
+                        <div key={p.id} className="min-w-0 bg-background border rounded-lg p-3 hover:border-primary/50 transition-colors flex flex-col">
+                          <div className="flex justify-between items-start gap-3 mb-2">
+                            <div className="min-w-0 flex-1">
+                              <div className="font-medium text-sm text-foreground leading-tight break-words">{p.nombre}</div>
+                              {p.id && p.id.length <= 20 && <div className="text-xs text-muted-foreground mt-0.5 truncate">{p.id}</div>}
                             </div>
-                            <div className="text-right">
-                              <div className="font-semibold text-sm text-foreground">{formatearMoneda(p.precio_unitario || 0)}</div>
+                            <div className="text-right shrink-0">
+                              <div className="font-semibold text-sm text-foreground whitespace-nowrap">{formatearMoneda(p.precio_unitario || 0)}</div>
                               <div className="text-[10px] text-muted-foreground uppercase">{p.unidad}</div>
                             </div>
                           </div>
@@ -280,12 +280,13 @@ export function SelectorProductos({ open, onOpenChange, productos, modelos, cate
               )}
             </div>
 
-            <div className="p-4 border-t flex justify-between items-center bg-background">
+            <div className="p-3 sm:p-4 border-t flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-background">
               <div className="text-sm text-muted-foreground">
                 {totalSeleccionados} concepto(s) listos para agregar
               </div>
-              <Button 
-                onClick={handleAgregarSeleccion} 
+              <Button
+                className="w-full sm:w-auto"
+                onClick={handleAgregarSeleccion}
                 disabled={totalSeleccionados === 0}
               >
                 Agregar a la cotización
