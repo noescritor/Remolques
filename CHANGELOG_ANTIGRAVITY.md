@@ -3,6 +3,44 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-07 (11) - Bloque 2R-2: Correcciones Motor CPQ (Validaciones y Contrato)
+**Herramienta:** Antigravity
+**Tipo:** fix (motor, tests)
+**Archivos tocados:**
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.ts`
+- `supabase/functions/make-server-feea4382/motor/reglas_compatibilidad.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.test.ts`
+- `supabase/functions/make-server-feea4382/motor/verificacion_esquema.test.ts`
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+
+**Qué cambió y por qué:**
+Se refinó la lógica del motor para igualar marcas de rines por nombre completo y alias (ej. `AMPRO MASTER TRAPEZOIDAL`); se programó la regla condicional Dona/Gancho con una tabla dura explícita (`holland` <-> `holland_8_10`, etc.); se sustituyó el campo original por `reemplaza: null` y un arreglo `posibles_reemplazos` buscando componentes excluidos con el mismo prefijo. Finalmente, se reconstruyó la prueba de contrato para que abra y lea dinámicamente los archivos `index.ts` y `cargar_datos.ts`, extraiga el árbol de `.select()` real, y los verifique cruzando contra el `CREATE TABLE` de las migraciones SQL. Las pruebas fueron reescritas y actualizadas con escenarios de datos reales.
+
+**Acciones manuales / Despliegue:**
+- Ninguna. Las pruebas corren en Deno (`deno test`).
+
+## 2026-10-07 (10) - Bloque 2R-2: Motor de Resolución de Recetas CPQ
+**Herramienta:** Antigravity
+**Tipo:** feat (motor, server)
+**Archivos tocados:**
+- `supabase/functions/make-server-feea4382/index.ts`
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+- `supabase/functions/make-server-feea4382/motor/reglas_compatibilidad.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.ts`
+- `supabase/functions/make-server-feea4382/motor/cargar_datos.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.test.ts`
+- `scripts/generar_fixture_motor.cjs`
+- `package.json`
+
+**Qué cambió y por qué:**
+Se implementó el Motor de Recetas CPQ en el backend (Deno/Hono). 
+1. Se programó la función pura `resolverReceta` que toma una configuración y los datos de un modelo para generar la lista exhaustiva de materiales (`lineas`), validando exclusividad, sumando piezas repetidas de diferentes orígenes (base u opciones), y alertando sobre incompatibilidades, materiales faltantes o sin costo.
+2. Se programó `cargarDatosModelo` para obtener los datos puros desde Supabase.
+3. Se integraron 3 endpoints nuevos (`GET /modelos`, `GET /modelos/:id/configuracion`, `POST /configuracion/resolver`) bajo el middleware de autenticación.
+4. Se programaron 15 pruebas Deno simulando resoluciones complejas (redilas, marcas de rines, escalas por longitud de plataforma, condiciones cruzadas).
+5. Se generó un script temporal `generar_fixture_motor.cjs` para crear los datos de prueba idénticos al esquema real a partir del `clasificacion_2R1b.json` y el catálogo.
+6. El Despiece de Acero fue excluido intencionalmente, reportando `secciones_pendientes: ["acero"]`.
+
 ## 2026-10-07 (9) - Bloque 2R-1b: Recetas de Plataforma - Ronda 6 (Restauración de costo y precio)
 **Herramienta:** Antigravity
 **Tipo:** fix (db)
