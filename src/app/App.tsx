@@ -486,6 +486,7 @@ export default function App() {
           <CotizacionEditor
             clientes={clientes}
             productos={productos}
+            categorias={categoriasProducto}
             plantillas={plantillas}
             ajustes={ajustes}
             onGuardar={(data) => manejarGuardarCotizacion(data, true)}
@@ -504,6 +505,7 @@ export default function App() {
             loading={loading}
             clientes={clientes}
             productos={productos}
+            categorias={categoriasProducto}
             plantillas={plantillas}
             ajustes={ajustes}
             onGuardar={manejarGuardarCotizacion}

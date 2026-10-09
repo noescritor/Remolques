@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Switch } from '../ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Badge } from '../ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Alert, AlertDescription } from '../ui/alert';
 import { ArrowLeft, Plus, Trash2, FileDown, Copy, Save, UserPlus, Eye, BookTemplate, FileSpreadsheet, Sparkles, Loader2, AlertTriangle, Settings, X } from 'lucide-react';
@@ -17,6 +18,7 @@ import { calcularItemCotizacion, calcularTotalesCotizacion, formatearMoneda, cal
 import { ClienteModal } from '../Clientes/ClienteModal';
 import { AnalisisUtilidad } from './AnalisisUtilidad';
 import { ConfiguradorEquipo } from './ConfiguradorEquipo';
+import { SelectorProductos } from './SelectorProductos';
 import { BASE_URL } from '../../utils/api';
 import { CostosIndirectos as CostosIndirectosComponent } from './CostosIndirectos';
 
@@ -25,6 +27,7 @@ interface CotizacionEditorProps {
   cotizacion?: Cotizacion;
   clientes: Cliente[];
   productos: Producto[];
+  categorias?: any[];
   plantillas?: Plantilla[];
   ajustes: any;
   onGuardar: (cotizacion: Omit<Cotizacion, 'id' | 'folio'> | Partial<Cotizacion>) => void;
@@ -41,6 +44,7 @@ export function CotizacionEditor({
   cotizacion,
   clientes,
   productos,
+  categorias = [],
   plantillas = [],
   ajustes,
   onGuardar,
@@ -82,6 +86,7 @@ export function CotizacionEditor({
   const [showClienteDropdown, setShowClienteDropdown] = useState(false);
   const [busquedaProducto, setBusquedaProducto] = useState('');
   const [showProductoDropdown, setShowProductoDropdown] = useState(false);
+  const [showSelectorProductos, setShowSelectorProductos] = useState(false);
   const [modelos, setModelos] = useState<any[]>([]);
   const [productoSeleccionadoParaCPQ, setProductoSeleccionadoParaCPQ] = useState<Producto | null>(null);
   const [modeloParaCPQ, setModeloParaCPQ] = useState<any>(null);
@@ -95,6 +100,7 @@ export function CotizacionEditor({
   const [showExcelModal, setShowExcelModal] = useState(false);
   const [iaLoadingItemId, setIaLoadingItemId] = useState<string | null>(null);
   const [iaLoadingNota, setIaLoadingNota] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const fetchModelos = async () => {
@@ -177,7 +183,7 @@ export function CotizacionEditor({
   const totales = calcularTotalesCotizacionServiciosAware(
     formData.items, 
     productosIdx, 
-    ajustes.iva_por_defecto, 
+    (ajustes?.iva_por_defecto || 0), 
     formData.con_factura
   );
 
@@ -197,6 +203,60 @@ export function CotizacionEditor({
       items: [...prev.items, nuevoItem]
     }));
   };
+
+    const handleAddMultiples = (items: {producto: any, cantidad: number}[]) => {
+      const nuevosItems: ItemCotizacion[] = items.map(sel => {
+        const producto = sel.producto;
+        let sub_items = undefined;
+        let nuevoItem: ItemCotizacion;
+
+        if (producto.tipo === 'servicio' && producto.servicio) {
+          const servicio = producto.servicio;
+          nuevoItem = {
+            id: crypto.randomUUID(),
+            producto_id: producto.id,
+            posicion: 0,
+            cantidad: sel.cantidad,
+            unidad: producto.unidad || 'servicio',
+            descripcion: producto.nombre,
+            incluir_setup: servicio.modo === 'unico' || servicio.modo === 'hibrido',
+            meses_cobrados: 1,
+            asientos_extra: 0,
+            iva_item: 0,
+            total_item: 0,
+            numero_proyecto: producto.id
+          };
+        } else {
+          const { iva_item, total_item } = calcularItemCotizacion(sel.cantidad, producto.precio_unitario || 0, formData.con_factura ? (ajustes?.iva_por_defecto || 0) : 0);
+          nuevoItem = {
+            id: crypto.randomUUID(),
+            producto_id: producto.id,
+            posicion: 0,
+            cantidad: sel.cantidad,
+            unidad: producto.unidad || 'pz',
+            descripcion: producto.nombre,
+            precio_unitario: producto.precio_unitario,
+            costo_unitario: producto.costo || 0,
+            iva_item,
+            total_item,
+            numero_proyecto: producto.id,
+            sub_items
+          };
+        }
+        return nuevoItem;
+      });
+
+      setFormData(prev => {
+        const conPosicion = nuevosItems.map((item, index) => ({
+          ...item,
+          posicion: prev.items.length + index + 1
+        }));
+        return {
+          ...prev,
+          items: [...prev.items, ...conPosicion]
+        };
+      });
+    };
 
     const agregarItemDesdeProducto = (producto: Producto) => {
       const modeloAsociado = modelos.find(m => m.producto_id === producto.id);
@@ -229,7 +289,7 @@ export function CotizacionEditor({
           numero_proyecto: producto.id
         };
       } else {
-        const { iva_item, total_item } = calcularItemCotizacion(1, producto.precio_unitario || 0, formData.con_factura ? ajustes.iva_por_defecto : 0);
+        const { iva_item, total_item } = calcularItemCotizacion(1, producto.precio_unitario || 0, formData.con_factura ? (ajustes?.iva_por_defecto || 0) : 0);
         nuevoItem = {
           id: Date.now().toString(),
           producto_id: producto.id,
@@ -298,7 +358,7 @@ export function CotizacionEditor({
             const { iva_item, total_item } = calcularItemCotizacion(
               itemActualizado.cantidad,
               itemActualizado.precio_unitario,
-              ajustes.iva_por_defecto
+              (ajustes?.iva_por_defecto || 0)
             );
             itemActualizado.iva_item = iva_item;
             itemActualizado.total_item = total_item;
@@ -515,6 +575,89 @@ export function CotizacionEditor({
 
   const transicionesPermitidas = cotizacion ? TRANSICIONES_ESTADO[cotizacion.estado] : [];
 
+  const renderConfiguredItemCard = (item: ItemCotizacion, isMobile: boolean, totalCalculado: any) => {
+    const cfg = item.metadata?.configuracion;
+    if (!cfg) return null;
+    const isPending = (item.precio_unitario || 0) === 0;
+    const isErr = !cfg.resuelta;
+    const isIncomplete = !cfg.completo;
+    const isExpanded = expandedItems[item.id] || false;
+    
+    const cardContent = (
+      <div className="m-0 sm:m-3 border rounded-lg bg-card text-card-foreground shadow-sm overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start p-4 bg-muted/30 border-b gap-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span className="text-xs text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">#{item.posicion}</span>
+              <h4 className="font-semibold text-lg">{cfg.modelo_id?.toUpperCase() || 'EQUIPO CONFIGURADO'}</h4>
+              {isPending && <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-100">Precio pendiente</Badge>}
+              {isIncomplete && <Badge variant="secondary" className="bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-100">Receta incompleta</Badge>}
+              {isErr && <Badge variant="secondary" className="bg-red-100 text-red-800 border-red-200 hover:bg-red-100">Con errores</Badge>}
+            </div>
+            <Input 
+              value={item.descripcion} 
+              onChange={(e) => actualizarItem(item.id, { descripcion: e.target.value })} 
+              className="h-8 mt-2 text-sm max-w-lg" 
+            />
+          </div>
+          <div className="flex flex-wrap gap-3 md:gap-4 items-center">
+            <div className="flex flex-col items-start md:items-end w-20">
+              <Label className="text-[10px] text-muted-foreground uppercase mb-1">Cant.</Label>
+              <Input type="number" className="h-8 text-center" value={item.cantidad} onChange={(e) => actualizarItem(item.id, { cantidad: parseFloat(e.target.value) || 0 })} />
+            </div>
+            <div className="flex flex-col items-start md:items-end w-28">
+              <Label className="text-[10px] text-muted-foreground uppercase mb-1">Precio Unit.</Label>
+              <Input type="number" className="h-8 text-right" value={item.precio_unitario || ''} placeholder="0.00" onChange={(e) => actualizarItem(item.id, { precio_unitario: parseFloat(e.target.value) || 0 })} />
+            </div>
+            <div className="flex flex-col items-start md:items-end min-w-20">
+              <Label className="text-[10px] text-muted-foreground uppercase mb-1">Total</Label>
+              <div className="font-semibold pt-1 text-sm">{formatearMoneda(totalCalculado.total)}</div>
+            </div>
+            <div className="border-l pl-3 md:pl-4 flex gap-1 h-10 items-center">
+              <Button variant="outline" size="sm" onClick={() => { setProductoSeleccionadoParaCPQ(productos.find(p => p.id === item.producto_id) || null); setModeloParaCPQ(modelos.find(m => m.producto_id === item.producto_id) || null); setItemEditandoCPQ(item); }}>
+                <Settings className="w-4 h-4 mr-1" /> Configurar
+              </Button>
+              <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50" onClick={() => eliminarItem(item.id)}><Trash2 className="w-4 h-4" /></Button>
+            </div>
+          </div>
+        </div>
+        {/* Body (Desglose) */}
+        <div className="p-4 bg-background text-sm">
+           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3">
+             {(cfg.resumen_lineas || []).slice(0, isExpanded ? undefined : 6).map((linea: string, i: number) => {
+               const [lbl, ...rest] = linea.split(':');
+               const val = rest.join(':').trim();
+               return (
+                 <div key={i} className="flex flex-col">
+                   <span className="text-[10px] text-muted-foreground uppercase">{lbl}</span>
+                   <span className="font-medium text-foreground text-xs leading-tight line-clamp-2" title={val}>{val}</span>
+                 </div>
+               )
+             })}
+           </div>
+           {(cfg.resumen_lineas?.length || 0) > 6 && (
+              <div className="mt-3 text-center sm:text-left">
+                <Button variant="link" size="sm" className="h-auto p-0 text-xs text-primary" onClick={() => setExpandedItems(prev => ({...prev, [item.id]: !prev[item.id]}))}>
+                   {isExpanded ? 'Ver menos' : `Ver todo (${cfg.resumen_lineas.length - 6} más)`}
+                </Button>
+              </div>
+           )}
+        </div>
+      </div>
+    );
+
+    if (isMobile) {
+      return <div key={item.id} className="mb-4">{cardContent}</div>;
+    }
+
+    return (
+      <TableRow key={item.id} className="group hover:bg-muted/10">
+        <TableCell colSpan={11} className="p-0 border-b">{cardContent}</TableCell>
+      </TableRow>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -704,12 +847,12 @@ export function CotizacionEditor({
                 />
                 
                 {showClienteDropdown && (
-                  <div className="absolute z-10 w-full mt-1 border border-border rounded-md bg-[var(--surface-secondary)] shadow-lg max-h-40 overflow-y-auto">
+                  <div className="absolute z-50 w-full mt-1 border border-border rounded-md bg-popover text-popover-foreground shadow-md max-h-60 overflow-y-auto">
                     {clientesFiltrados.length > 0 ? (
                       clientesFiltrados.map(cliente => cliente ? (
                         <div
                           key={cliente.id}
-                          className="p-2 hover:bg-white/[0.06] cursor-pointer border-b border-border/50 last:border-b-0"
+                          className="p-2 hover:bg-accent hover:text-accent-foreground cursor-pointer border-b border-border/50 last:border-b-0"
                           onClick={() => {
                             setFormData(prev => ({ ...prev, cliente_id: cliente.id }));
                             setBusquedaCliente('');
@@ -830,47 +973,27 @@ export function CotizacionEditor({
         </CardHeader>
         <CardContent>
           {/* Selector de productos */}
-          <div className="mb-4">
-            <Label>Agregar Producto</Label>
-            <div className="relative">
-              <Input
-                placeholder="Buscar productos por nombre, ID o descripción..."
-                value={busquedaProducto}
-                onChange={(e) => setBusquedaProducto(e.target.value)}
-                onFocus={() => setShowProductoDropdown(true)}
-                onBlur={() => setTimeout(() => setShowProductoDropdown(false), 200)}
-              />
-              
-              {showProductoDropdown && productosFiltrados.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 border border-border rounded-md bg-[var(--surface-secondary)] shadow-lg max-h-40 overflow-y-auto">
-                  {productosFiltrados.map(producto => producto ? (
-                    <div
-                      key={producto.id}
-                      className="p-2 hover:bg-white/[0.06] cursor-pointer border-b border-border/50 last:border-b-0"
-                      onClick={() => agregarItemDesdeProducto(producto)}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="font-medium text-foreground">{producto.nombre}</div>
-                          {producto.descripcion && <div className="text-sm text-muted-foreground">{producto.descripcion}</div>}
-                          <div className="text-xs text-muted-foreground/60">ID: {producto.id}</div>
-                        </div>
-                        <div className="text-right ml-2">
-                          <div className="font-medium text-foreground">{formatearMoneda(producto.precio_unitario)}</div>
-                          <div className="text-xs text-muted-foreground">{producto.unidad}</div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null)}
-                </div>
-              )}
-              
-              {showProductoDropdown && productosFiltrados.length === 0 && (
-                <div className="absolute z-10 w-full mt-1 border border-border rounded-md bg-[var(--surface-secondary)] shadow-lg p-2 text-muted-foreground text-center">
-                  {productos.length === 0 ? 'No hay productos registrados. Crea productos en la sección "Productos".' : 'No se encontraron productos'}
-                </div>
-              )}
-            </div>
+          <div className="mb-4 flex gap-2 items-end">
+            <Button 
+              className="w-full md:w-auto"
+              onClick={() => setShowSelectorProductos(true)}
+            >
+              <Search className="mr-2 h-4 w-4" />
+              Buscar y agregar productos...
+            </Button>
+            <SelectorProductos 
+              open={showSelectorProductos}
+              onOpenChange={setShowSelectorProductos}
+              productos={productos}
+              modelos={modelos}
+              categorias={categorias}
+              onAddConfigurable={(p, m) => {
+                setProductoSeleccionadoParaCPQ(p);
+                setModeloParaCPQ(m);
+                setItemEditandoCPQ(null);
+              }}
+              onAddMultiples={handleAddMultiples}
+            />
           </div>
 
           {formData.items.length === 0 ? (
@@ -890,12 +1013,17 @@ export function CotizacionEditor({
 
                   let totalCalculado = { subtotal: 0, iva: 0, total: 0, costoTotal: 0 };
                   if (esServicio && producto?.servicio) {
-                    totalCalculado = totalItemServicio(item, producto, formData.con_factura ? ajustes.iva_por_defecto : 0);
+                    totalCalculado = totalItemServicio(item, producto, formData.con_factura ? (ajustes?.iva_por_defecto || 0) : 0);
                   } else {
                     const base = (item.cantidad || 0) * (item.precio_unitario || 0);
-                    const iva = formData.con_factura ? base * ajustes.iva_por_defecto : 0;
+                    const iva = formData.con_factura ? base * (ajustes?.iva_por_defecto || 0) : 0;
                     totalCalculado = { subtotal: base, iva, total: base + iva, costoTotal: (item.cantidad || 0) * (item.costo_unitario || 0) };
                   }
+                  
+                  if (item.metadata?.configuracion) {
+                    return renderConfiguredItemCard(item, true, totalCalculado);
+                  }
+
                   return (
                     <div key={item.id} className="border rounded-lg p-3 bg-white space-y-2">
                       <div className="flex justify-between items-start">
@@ -965,10 +1093,10 @@ export function CotizacionEditor({
                   
                   let totalCalculado = { subtotal: 0, iva: 0, total: 0, costoTotal: 0 };
                   if (esServicio && producto?.servicio) {
-                    totalCalculado = totalItemServicio(item, producto, formData.con_factura ? ajustes.iva_por_defecto : 0);
+                    totalCalculado = totalItemServicio(item, producto, formData.con_factura ? (ajustes?.iva_por_defecto || 0) : 0);
                   } else {
                     const base = (item.cantidad || 0) * (item.precio_unitario || 0);
-                    const iva = formData.con_factura ? base * ajustes.iva_por_defecto : 0;
+                    const iva = formData.con_factura ? base * (ajustes?.iva_por_defecto || 0) : 0;
                     totalCalculado = { 
                       subtotal: base, 
                       iva, 
@@ -977,6 +1105,10 @@ export function CotizacionEditor({
                     };
                   }
                   
+                  if (item.metadata?.configuracion) {
+                    return renderConfiguredItemCard(item, false, totalCalculado);
+                  }
+
                   return (
                     <React.Fragment key={item.id}>
 <TableRow className='group'>
@@ -1181,9 +1313,6 @@ export function CotizacionEditor({
                       </div>
                     </TableCell>
                   </TableRow>
-{item.sub_items && (
-<TableRow className='bg-[var(--surface-secondary)]/30'><TableCell colSpan={11} className='p-0 border-b'><div className='p-4 bg-gray-50/50 m-2 rounded-md border border-gray-100'><h4 className='text-sm font-semibold mb-2 flex items-center'><Settings className='w-4 h-4 mr-1'/> Configurador de Componentes (Receta Base)</h4><div className='grid grid-cols-1 md:grid-cols-2 gap-2'>{item.sub_items.map((sub, idx) => (<div key={idx} className='flex items-center gap-2 bg-white p-2 rounded border text-sm'><Input type='number' value={sub.cantidad} onChange={(e) => { const newCant = parseFloat(e.target.value) || 0; const newSub = [...item.sub_items]; newSub[idx].cantidad = newCant; actualizarItem(item.id, { sub_items: newSub }); }} className='w-16 h-8 text-xs'/><span className='flex-1 truncate' title={sub.nombre}>{sub.nombre}</span><Button variant='ghost' size='sm' className='h-6 w-6 p-0 text-red-500' onClick={() => { const newSub = item.sub_items.filter((_, i) => i !== idx); actualizarItem(item.id, { sub_items: newSub }); }}><X className='h-3 w-3'/></Button></div>))}</div></div></TableCell></TableRow>
-)}
 </React.Fragment>
                 );
                 })}
@@ -1207,7 +1336,7 @@ export function CotizacionEditor({
               <div className="text-lg font-medium">{formatearMoneda(totales.subtotal)}</div>
             </div>
             <div>
-              <Label>IVA ({(ajustes.iva_por_defecto * 100).toFixed(0)}%)</Label>
+              <Label>IVA ({((ajustes?.iva_por_defecto || 0) * 100).toFixed(0)}%)</Label>
               <div className="text-lg font-medium">{formatearMoneda(totales.iva)}</div>
             </div>
             <div>

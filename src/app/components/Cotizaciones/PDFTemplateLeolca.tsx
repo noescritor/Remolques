@@ -68,11 +68,26 @@ export function PDFTemplateLeolca({ cotizacion, cliente, productos, ajustes }: P
                   </div>
 
                   {/* Lista de sub-componentes (BOM Configurado) */}
-                  {esTerminado ? (
+                  {item.metadata?.configuracion?.resumen_lineas ? (
                     <div className="border border-t-0 border-gray-200 p-4 rounded-b-md bg-white">
                       <p className="text-sm font-semibold text-gray-700 mb-3">Especificaciones Técnicas / Componentes:</p>
                       <ul className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-gray-600 list-disc pl-5">
-                        {item.sub_items?.map((sub, i) => (
+                        {item.metadata.configuracion.resumen_lineas.map((linea: string, i: number) => {
+                          const [lbl, ...rest] = linea.split(':');
+                          const val = rest.join(':').trim();
+                          return (
+                            <li key={i}>
+                              <span className="font-semibold">{lbl}:</span> {val}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  ) : item.sub_items?.length ? (
+                    <div className="border border-t-0 border-gray-200 p-4 rounded-b-md bg-white">
+                      <p className="text-sm font-semibold text-gray-700 mb-3">Especificaciones Técnicas / Componentes:</p>
+                      <ul className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-gray-600 list-disc pl-5">
+                        {item.sub_items.map((sub, i) => (
                           <li key={i}>
                             <span className="font-medium text-gray-800">{sub.cantidad}x</span> {sub.nombre}
                           </li>

@@ -221,7 +221,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0">
+      <DialogContent className="sm:max-w-[1100px] w-[95vw] h-[90vh] flex flex-col p-0">
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle>Configurar Equipo</DialogTitle>
           <DialogDescription>
@@ -363,19 +363,39 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                       <div className="text-xs text-muted-foreground">Referencia de tarifario</div>
                       <div className="font-medium text-foreground">{formatearMoneda(getPrecioRef())}</div>
                     </div>
-                    <div className="p-3 bg-muted/50 rounded-md">
-                      <div className="text-xs text-muted-foreground">Costo parcial de materiales</div>
-                      <div className="font-medium text-foreground">{formatearMoneda(resultado?.costo_parcial || 0)}</div>
-                    </div>
+                    {(!isIncompleta || (resultado?.costo_parcial || 0) > 0) && (
+                      <div className="p-3 bg-muted/50 rounded-md">
+                        <div className="text-xs text-muted-foreground flex items-center justify-between">
+                          Costo parcial materiales
+                          {isIncompleta && <Badge variant="outline" className="text-[10px] h-4 ml-1">incompleto</Badge>}
+                        </div>
+                        <div className="font-medium text-foreground">{formatearMoneda(resultado?.costo_parcial || 0)}</div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 <div aria-live="polite" className="mt-4 space-y-2">
-                  {resultado?.errores?.map((err: string, i: number) => (
-                    <div key={`err-${i}`} className="text-sm text-red-500 flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4" /> {err}
-                    </div>
-                  ))}
+                  {(() => {
+                    const faltantesRegex = /^Falta elegir una opci[oó]n para el grupo obligatorio:\s*(.+)$/i;
+                    const errFaltantes = (resultado?.errores || []).map((e: string) => e.match(faltantesRegex)?.[1]).filter(Boolean);
+                    const otrosErrores = (resultado?.errores || []).filter((e: string) => !faltantesRegex.test(e));
+                    return (
+                      <>
+                        {errFaltantes.length > 0 && (
+                          <div className="text-sm text-muted-foreground flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4" />
+                            Faltan {errFaltantes.length} grupos por elegir: {errFaltantes.join(', ')}
+                          </div>
+                        )}
+                        {otrosErrores.map((err: string, i: number) => (
+                          <div key={`err-${i}`} className="text-sm text-red-500 flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4" /> {err}
+                          </div>
+                        ))}
+                      </>
+                    );
+                  })()}
                   {resultado?.advertencias?.map((adv: string, i: number) => (
                     <div key={`adv-${i}`} className="text-sm text-yellow-600 flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4" /> {adv}
