@@ -86,9 +86,11 @@ Los 12 conceptos de `configuracion_complementarios` con cantidad mayor a 0 (excl
 | Kits y consumibles fijos (`costos_modelo`) | $45,685.98 | $45,685.98 | $0.00 | Cuadrado al centavo |
 | Kit de aire base (opción `2e_sin_retractil`) | $20,000.00 | $20,000.00 | $0.00 | Cuadrado al centavo |
 | Total complementarios hoja | $65,685.98 | $65,685.98 | $0.00 | Cuadrado al centavo |
-| Mano de obra (80 renglones, 291.1 hrs) | $22,930.02 | $22,930.02 | $0.00 | Cuadrado al centavo |
-| **Suma Costo Base Chasis (pre-opciones)** | **$216,827.69** | **$216,827.69** | **$0.00** | **Exacto** |
+| Mano de obra (80 renglones, 291.1 hrs) | $22,930.00 | $22,930.00 | $0.00 | Cuadrado al centavo |
+| **Suma Costo Base Chasis (pre-opciones)** | **$216,827.67** | **$216,827.67** | **$0.00** | **Exacto** |
 | Ganancia sugerida (`ganancia_factura`) | $110,000.00 | $110,000.00 | $0.00 | Registrada en parámetros |
+
+*Nota:* Valores medidos en Postgres local por Claude Code, no por Antigravity.
 
 ---
 
