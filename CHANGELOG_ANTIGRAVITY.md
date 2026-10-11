@@ -3,6 +3,25 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-11 - Sub-bloque 2R-1c: Costos de la plataforma 40 ft / 2 ejes
+**Herramienta:** Antigravity
+**Tipo:** migración / datos
+**Archivos tocados:**
+- `supabase/migrations/20261011_01_costos_esquema.sql`
+- `scripts/generar_costos_sql.cjs`
+- `supabase/migrations/20261011_02_costos_plataforma_40x2.sql`
+- `docs/importacion/verificacion_2R1c.sql`
+- `docs/importacion/INFORME_2R1C.md`
+- `package.json`
+- `scripts/verificar.mjs`
+- `scripts/verificar-baseline.json`
+**Qué cambió y por qué:**
+- **Paso 0:** Se versionaron los scripts de verificación (`scripts/verificar.mjs`, `scripts/verificar-baseline.json`) y el comando `"verificar": "node scripts/verificar.mjs"` en `package.json`.
+- **Esquema:** Se creó la migración `20261011_01_costos_esquema.sql` con las tablas `opcion_costos`, `procesos_manufactura` y `costos_modelo`, con RLS habilitada usando `get_current_org_id()` existente e índices en FK.
+- **Generador y Datos:** Se creó `scripts/generar_costos_sql.cjs` que extrae datos de `docs/factura-leolca/extraccion_factura_leolca.json` y genera la migración idempotente `20261011_02_costos_plataforma_40x2.sql`. Inserta 61 materiales de acero en `productos` (`materia_prima`) y su correspondiente `receta_base`, 12 conceptos en `costos_modelo` ($45,685.98), 22 costos de opciones en `opcion_costos`, 80 renglones de mano de obra en `procesos_manufactura` ($22,930.00 medidos en Postgres local) y la clave `ganancia_factura` en `parametros_costeo`.
+- **Verificación:** Se añadió la consulta `docs/importacion/verificacion_2R1c.sql` y el informe detallado `docs/importacion/INFORME_2R1C.md`. Validado con éxito en Postgres local en dos corridas idempotentes por Claude Code (costo base chasis medido: $216,827.67).
+**Acciones manuales pendientes:** Ninguna para 2R-1c (validado en Postgres local antes del merge a main).
+
 ## 2026-10-09 - Bloque 2R-3a y 2R-3b: Configurador de equipos y tarjeta en cotización (Frontend)
 **Herramienta:** Antigravity
 **Tipo:** cambio

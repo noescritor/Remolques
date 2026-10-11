@@ -6,7 +6,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "test:motor": "deno test --allow-read supabase/functions/make-server-feea4382/motor/"
+    "test:motor": "deno test --allow-read supabase/functions/make-server-feea4382/motor/",
+    "verificar": "node scripts/verificar.mjs"
   },
   "dependencies": {
     "@fontsource/dm-mono": "^5.2.7",
