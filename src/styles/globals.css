@@ -380,3 +380,15 @@ html {
     display: none !important;
   }
 }
+
+/* Toasts (sonner): el texto sigue los tokens del tema de la app, no el modo del sistema operativo.
+   Sin esto, con el SO en oscuro la descripción salía casi blanca sobre un fondo claro. */
+[data-sonner-toast] [data-title] {
+  color: var(--popover-foreground);
+}
+
+[data-sonner-toast] [data-description] {
+  color: var(--popover-foreground);
+  opacity: 0.8;
+  white-space: pre-line;
+}
