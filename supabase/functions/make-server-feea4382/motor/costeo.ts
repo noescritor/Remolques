@@ -126,7 +126,8 @@ export function costear(
       cantidad: qty,
       costo_unitario: cu,
       importe: Math.round(imp * 100) / 100,
-      origen: "kit"
+      origen: "kit",
+      seccion: kit.seccion
     });
   }
 

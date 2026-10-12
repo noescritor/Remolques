@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { Presupuesto, Cliente } from '../../types';
 
 const styles = StyleSheet.create({
@@ -123,35 +123,40 @@ interface Props {
 }
 
 export function PresupuestoPDF({ presupuesto, cliente }: Props) {
-  const d = presupuesto.datos;
+  const d = (presupuesto.datos || {}) as any;
 
-  const renderTable = (titulo: string, sec: any, bg: any) => (
-    <View style={styles.block}>
-      <View style={[styles.blockHeader, bg]}>
-        <Text>{titulo}</Text>
-      </View>
-      <View style={[styles.tableRow, styles.tableHeader]}>
-        <Text style={styles.colPzas}>PZAS</Text>
-        <Text style={styles.colMat}>MATERIAL</Text>
-        <Text style={styles.colCu}>$ C/U</Text>
-        <Text style={styles.colImp}>IMPORTE</Text>
-      </View>
-      {(sec.items || []).filter((i:any) => i.material.trim() !== '' || i.importe > 0).map((item: any, idx: number) => (
-        <View key={idx} style={styles.tableRow}>
-          <Text style={styles.colPzas}>{item.pzas}</Text>
-          <Text style={styles.colMat}>{item.material}</Text>
-          <Text style={styles.colCu}>{item.cu > 0 ? `$${item.cu.toLocaleString()}` : ''}</Text>
-          <Text style={styles.colImp}>{item.importe > 0 ? `$${item.importe.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : ''}</Text>
+  const renderTable = (titulo: string, secRaw: any, bg: any) => {
+    const sec = secRaw || { items: [], total: 0 };
+    const items = (sec.items || []).filter((i: any) => i && ((i.material && i.material.trim() !== '') || (i.importe && i.importe > 0)));
+    return (
+      <View style={styles.block}>
+        <View style={[styles.blockHeader, bg]}>
+          <Text>{titulo}</Text>
         </View>
-      ))}
-      <View style={styles.tableTotal}>
-        <Text style={{ width: '85%', textAlign: 'right', paddingRight: 10 }}>TOTAL</Text>
-        <Text style={{ width: '15%', textAlign: 'right' }}>${(sec.total || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
+        <View style={[styles.tableRow, styles.tableHeader]}>
+          <Text style={styles.colPzas}>PZAS</Text>
+          <Text style={styles.colMat}>MATERIAL</Text>
+          <Text style={styles.colCu}>$ C/U</Text>
+          <Text style={styles.colImp}>IMPORTE</Text>
+        </View>
+        {items.map((item: any, idx: number) => (
+          <View key={idx} style={styles.tableRow}>
+            <Text style={styles.colPzas}>{item.pzas}</Text>
+            <Text style={styles.colMat}>{item.material}</Text>
+            <Text style={styles.colCu}>{item.cu > 0 ? `$${item.cu.toLocaleString()}` : (item.sin_precio ? 'SIN PRECIO' : '')}</Text>
+            <Text style={styles.colImp}>{item.importe > 0 ? `$${item.importe.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : ''}</Text>
+          </View>
+        ))}
+        <View style={styles.tableTotal}>
+          <Text style={{ width: '85%', textAlign: 'right', paddingRight: 10 }}>TOTAL</Text>
+          <Text style={{ width: '15%', textAlign: 'right' }}>${(sec.total || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const nombreCliente = cliente ? (cliente.nombre_comercial || cliente.razon_social) : 'A QUIEN CORRESPONDA';
+  const esCostoEstimado = !!(d?.meta?.confianza && d.meta.confianza !== 'completa');
 
   return (
     <Document>
@@ -186,12 +191,16 @@ export function PresupuestoPDF({ presupuesto, cliente }: Props) {
         <View style={styles.grid}>
           <View style={styles.col}>
             {renderTable('Acero', d.acero, styles.bgBlue)}
+            {renderTable('Tornillería', d.tornilleria, styles.bgBlue)}
             {renderTable('Pirámide', d.piramide, styles.bgBlue)}
             {renderTable('Truckzone', d.truckzone, styles.bgBlue)}
+            {renderTable('Luz', d.luz, styles.bgTeal)}
+            {renderTable('Aire', d.aire, styles.bgTeal)}
+            {renderTable('Pintura', d.pintura, styles.bgTeal)}
           </View>
           <View style={styles.col}>
-            {renderTable('Otros', d.otros, styles.bgGreen)}
             {renderTable('Piso', d.piso, styles.bgGreen)}
+            {renderTable('Otros', d.otros, styles.bgGreen)}
             {renderTable('Extras', d.extras, styles.bgTeal)}
             {renderTable('Rines y Llantas', d.rines, styles.bgTeal)}
             {renderTable('Mano de Obra', d.manoobra, styles.bgGreen)}
@@ -202,7 +211,9 @@ export function PresupuestoPDF({ presupuesto, cliente }: Props) {
 
         <View style={styles.grandTotals}>
           <View style={[styles.grandRow, { backgroundColor: '#f1f5f9', borderBottomWidth: 1, borderBottomColor: '#c7cdd6' }]}>
-            <Text style={styles.grandLabel}>TOTAL (COSTO):</Text>
+            <Text style={styles.grandLabel}>
+              {esCostoEstimado ? 'TOTAL (COSTO ESTIMADO):' : 'TOTAL (COSTO):'}
+            </Text>
             <Text style={styles.grandValue}>${(presupuesto.total_costo || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
           </View>
           <View style={[styles.grandRow, { backgroundColor: '#dce9f5' }]}>

@@ -408,6 +408,7 @@ export interface PresupuestoItem {
   material: string;
   cu: number;
   importe: number;
+  sin_precio?: boolean;
 }
 
 export interface PresupuestoSeccion {
@@ -426,6 +427,11 @@ export interface PresupuestoDatos {
   indirectos: PresupuestoSeccion;
   manoobra: PresupuestoSeccion;
   adicionales: PresupuestoSeccion;
+  tornilleria?: PresupuestoSeccion;
+  luz?: PresupuestoSeccion;
+  aire?: PresupuestoSeccion;
+  pintura?: PresupuestoSeccion;
+  meta?: any;
 }
 
 export interface Presupuesto {
