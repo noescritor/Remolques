@@ -3,6 +3,37 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-12 - Sub-bloque 2R-4d: Conexión frontend de costeo y precio sugerido en Configurador y Cotización
+**Herramienta:** Antigravity
+**Tipo:** feat (frontend, cpq, costeo, cotizaciones)
+**Archivos tocados:**
+- `src/app/utils/costeo.ts`
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`
+- `src/app/components/Cotizaciones/CotizacionEditor.tsx`
+**Qué cambió y por qué:**
+- **Módulo de utilidades (`src/app/utils/costeo.ts`):**
+  - Se crearon las interfaces TypeScript `ResultadoCosteo`, `SeccionCosteo`, `LineaCosteo`, `PendienteCosteo`, `AjusteManual` y `CosteoResumenGuardado`.
+  - Se implementó la lógica pura de decisión de precios `decidirPrecioItem({ costeo, precioActual, costeoPrevio })`: asigna `precio_sugerido` si el ítem es nuevo o si su precio no fue modificado a mano respecto al sugerido previo; preserva el precio manual si el usuario ya lo había editado.
+  - Se añadieron las funciones `validarAjusteIndividual`, `validarAjustesCliente`, `textoConfianza` y `traducirTipoPendiente`.
+- **Configurador de equipos (`src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`):**
+  - Se conectó la llamada paralela con debounce a `POST /configuracion/costear` junto a `/configuracion/resolver` en `ejecutarCalculos`.
+  - Se reemplazó el recuadro anterior por un **Panel de Costos** completo:
+    - Precio sugerido prominente con badges de confianza ('Costeo completo', 'Estimado: hay datos pendientes', 'Sin costeo para este modelo') y mensajes claros si no hay costos cargados o falta definir ganancia (nunca $0).
+    - Costo unitario y Margen (% sobre precio y $ en pesos).
+    - Indicador sutil de recálculo (`costeando`) sin saltos de layout.
+    - Lista de pendientes legible y traducida (`traducirTipoPendiente`).
+    - Desglose plegable por sección (Acero, Kits y consumibles, Opciones elegidas, Mano de obra, Ajustes) con scroll interno (`max-h-44`) para las 61 líneas de acero.
+  - Sección plegable de **Ajustes al costo**: permite agregar, editar y eliminar renglones (concepto, cantidad > 0, costo unitario con soporte de deducciones negativas), con validación visual en rojo sin romper la UI.
+  - Al confirmar, guarda en `item.configuracion.ajustes` y en `item.configuracion.costeo` el snapshot para trazabilidad, pasando `costeo` a `onConfirm`.
+- **Renglón de la cotización (`src/app/components/Cotizaciones/CotizacionEditor.tsx`):**
+  - Se actualizó `handleCPQConfirm` para recibir el 5.º argumento `costeo`.
+  - Asigna `costo_unitario` al valor de costeo únicamente si la confianza no es `'incompleta'`.
+  - Asigna `precio_unitario` mediante `decidirPrecioItem` y recalcula `iva_item` y `total_item` con `calcularItemCotizacion`.
+  - Guarda en `configuracion.costeo` el resumen para trazabilidad y persistencia.
+- **Validación:**
+  - `npm.cmd run verificar -- --limpio` pasa 10/10 comprobaciones con 0 errores tsc sobre el baseline (55).
+**Acciones manuales pendientes:** Ninguna. Sin merge ni push hasta autorización explícita.
+
 ## 2026-10-11 - Sub-bloque 2R-4c: Motor de costeo (costeo.ts), ruta POST /configuracion/costear y corrección de secciones en resolver
 **Herramienta:** Antigravity
 **Tipo:** feat (backend, cpq, costeo)
