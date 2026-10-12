@@ -14,8 +14,9 @@ export interface LineaReceta {
   descripcion: string | null;
   cantidad: number;
   escala: string;
-  paso: string;
+  paso: string | null;
   uso: string | null;
+  seccion?: string | null;
   condicion?: any;
 }
 
@@ -96,3 +97,81 @@ export interface Resultado {
   completo: boolean;
   secciones_pendientes: string[];
 }
+
+export interface AjusteManual {
+  concepto: string;
+  cantidad: number;
+  costo_unitario: number;
+}
+
+export interface LineaCosteo {
+  concepto: string;
+  cantidad: number;
+  costo_unitario: number;
+  importe: number;
+  origen: string;
+}
+
+export interface SeccionCosteo {
+  total: number;
+  lineas: LineaCosteo[];
+}
+
+export interface PendienteCosteo {
+  tipo: 'sin_precio' | 'opcion_sin_costo' | 'modelo_sin_costos' | 'ganancia_no_definida';
+  detalle: string;
+}
+
+export interface ResultadoCosteo {
+  moneda: 'MXN';
+  secciones: {
+    acero: SeccionCosteo;
+    kits_fijos: SeccionCosteo;
+    opciones: SeccionCosteo;
+    mano_obra: SeccionCosteo;
+    ajustes: SeccionCosteo;
+  };
+  costo: number;
+  ganancia: number | null;
+  precio_sugerido: number | null;
+  margen_sobre_precio: number | null;
+  margen_sobre_costo: number | null;
+  confianza: 'completa' | 'estimada' | 'incompleta';
+  pendientes: PendienteCosteo[];
+}
+
+export interface DatosCosteo {
+  modelo: Modelo;
+  receta_acero: {
+    material_id: string;
+    nombre: string;
+    cantidad: number;
+    escala: string;
+    costo: number | null;
+    descripcion: string | null;
+  }[];
+  costos_modelo: {
+    seccion: string;
+    concepto: string;
+    cantidad: number;
+    costo_unitario: number;
+    escala: string;
+  }[];
+  procesos: {
+    orden: number;
+    proceso: string;
+    subproceso: string | null;
+    minutos: number;
+    tarifa_hora: number;
+  }[];
+  opcion_costos: {
+    grupo_clave: string;
+    opcion_clave: string;
+    cantidad_base: number;
+    escala: string;
+    costo_unitario: number;
+  }[];
+  grupos: GrupoOpcion[];
+  ganancia: number | null;
+}
+

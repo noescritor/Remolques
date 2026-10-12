@@ -23,6 +23,7 @@ export async function cargarDatosModelo(supabase: any, modeloId: string): Promis
       escala,
       paso,
       uso,
+      seccion,
       condicion,
       productos (nombre, unidad, costo, descripcion)
     `)
@@ -62,6 +63,7 @@ export async function cargarDatosModelo(supabase: any, modeloId: string): Promis
       escala: r.escala,
       paso: r.paso,
       uso: r.uso,
+      seccion: r.seccion,
       condicion: r.condicion
     })),
     grupos: grupos || [],

@@ -1,0 +1,1354 @@
+{
+  "modelo": {
+    "id": "00000000-0000-0000-0000-000000000010",
+    "nombre": "Plataforma 40 ft / 2 ejes",
+    "tipo": "plataforma",
+    "largo_ft": 40,
+    "num_ejes": 2
+  },
+  "receta_acero": [
+    {
+      "material_id": "mat-acero-5",
+      "nombre": "ALMA (PLACA DE GRADO A-50 CAL. 1/4\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 12500,
+      "descripcion": "Placa de grado A-50 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-6",
+      "nombre": "SOLERA DE ALMA (SOLERA DE GRADO A-529 A 1/2\" X 6\")",
+      "cantidad": 4,
+      "escala": "fija",
+      "costo": 7304,
+      "descripcion": "Solera de grado A-529 a 1/2\" X 6\""
+    },
+    {
+      "material_id": "mat-acero-7",
+      "nombre": "BORDA DELANTERA (PLACA DE GRADO A-36 CAL. 3/16\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 2068,
+      "descripcion": "Placa de grado A-36 Cal. 3/16\""
+    },
+    {
+      "material_id": "mat-acero-8",
+      "nombre": "BORDA TRASERA (PLACA DE GRADO A-36 CAL. 3/16\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 2500,
+      "descripcion": "Placa de grado A-36 Cal. 3/16\""
+    },
+    {
+      "material_id": "mat-acero-9",
+      "nombre": "PUENTES DE SUSPENSIÓN (PTR A 2 X 6\")",
+      "cantidad": 6,
+      "escala": "fija",
+      "costo": null,
+      "descripcion": "SIN PRECIO"
+    },
+    {
+      "material_id": "mat-acero-10",
+      "nombre": "PLANCHA PARA LA QUINTA (PLACA DE GRADO A-36 CAL. 3/8\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 5700,
+      "descripcion": "Placa de grado A-36 Cal. 3/8\""
+    },
+    {
+      "material_id": "mat-acero-11",
+      "nombre": "PUENTES TIPO J (PLACA DE GRADO A-36 CAL. 3/16\")",
+      "cantidad": 7,
+      "escala": "fija",
+      "costo": 440,
+      "descripcion": "Placa de grado A-36 Cal. 3/16\""
+    },
+    {
+      "material_id": "mat-acero-12",
+      "nombre": "PUENTES DE LA PLANCHA (CANAL U 5\")",
+      "cantidad": 4,
+      "escala": "fija",
+      "costo": 450,
+      "descripcion": "Canal U 5\""
+    },
+    {
+      "material_id": "mat-acero-13",
+      "nombre": "BOTONES (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 16,
+      "escala": "fija",
+      "costo": 40,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-14",
+      "nombre": "ATIZADORES INTERNOS (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 12,
+      "escala": "fija",
+      "costo": 35,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-15",
+      "nombre": "ATIZADORES EXTERNOS 27 CM (SOLERA DE GRADO A-36 A 3/8\" X 2\")",
+      "cantidad": 8,
+      "escala": "fija",
+      "costo": 50,
+      "descripcion": "Solera de grado A-36 a 3/8\" x 2\""
+    },
+    {
+      "material_id": "mat-acero-16",
+      "nombre": "ATIZADORES EXTERNOS 29CM",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 60,
+      "descripcion": "Atizadores externos"
+    },
+    {
+      "material_id": "mat-acero-17",
+      "nombre": "JALON (PLACA DE GRADO A-36 CAL. 1/2\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 2500,
+      "descripcion": "Placa de grado A-36 Cal. 1/2\""
+    },
+    {
+      "material_id": "mat-acero-18",
+      "nombre": "REFUERZO DE JALON (PLACA DE GRADO A-36 CAL. 3/8\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 600,
+      "descripcion": "Placa de grado A-36 Cal. 3/8\""
+    },
+    {
+      "material_id": "mat-acero-19",
+      "nombre": "PERNO REY (PERNO REY HOLLAND 3/8\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 1200,
+      "descripcion": "Perno rey Holland 3/8\""
+    },
+    {
+      "material_id": "mat-acero-20",
+      "nombre": "TAPA PARA PERNO REY (CANAL U 6\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 100,
+      "descripcion": "Canal u 6\""
+    },
+    {
+      "material_id": "mat-acero-21",
+      "nombre": "KIT DE ALETAS 27 X 50 CM (PLACA DE GRADO A-36 CAL. 10)",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 108.99,
+      "descripcion": "Placa de grado A-36 Cal. 10"
+    },
+    {
+      "material_id": "mat-acero-22",
+      "nombre": "KIT DE ALETAS 27 X 60 CM",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 130.99,
+      "descripcion": "Kit de aletas"
+    },
+    {
+      "material_id": "mat-acero-23",
+      "nombre": "KIT DE ALETAS 40 X 50 CM",
+      "cantidad": 3,
+      "escala": "fija",
+      "costo": 161.99,
+      "descripcion": "Kit de aletas"
+    },
+    {
+      "material_id": "mat-acero-24",
+      "nombre": "KIT DE ALETAS 40 X 60 CM",
+      "cantidad": 3,
+      "escala": "fija",
+      "costo": 193.99,
+      "descripcion": "Kit de aletas"
+    },
+    {
+      "material_id": "mat-acero-25",
+      "nombre": "KIT DE ALETAS 45 X 50 CM",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 181.99,
+      "descripcion": "Kit de aletas"
+    },
+    {
+      "material_id": "mat-acero-26",
+      "nombre": "KIT DE ALETAS 45 X 60 CM",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 217.99,
+      "descripcion": "Kit de aletas"
+    },
+    {
+      "material_id": "mat-acero-27",
+      "nombre": "ESQUINERO DELANTERO (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 70,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-28",
+      "nombre": "ESQUINERO TRASERO (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 110,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-29",
+      "nombre": "BUCHACAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 48,
+      "escala": "fija",
+      "costo": 45.5,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-30",
+      "nombre": "TUBOS LATERALES (TUBO DE 1 1/4\" CED. 40)",
+      "cantidad": 42,
+      "escala": "fija",
+      "costo": 12,
+      "descripcion": "Tubo de 1 1/4\" Ced. 40"
+    },
+    {
+      "material_id": "mat-acero-31",
+      "nombre": "BASE PARA ESTRIBO PLACA TRASERA (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 65,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-32",
+      "nombre": "BASE PARA ESTRIBO PLACA FRONTAL (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 170,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-33",
+      "nombre": "BASE PARA ESTRIBO PLACA INTERMEDIA (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 130,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-34",
+      "nombre": "CARGADOR (IPR DE 4\")",
+      "cantidad": 38,
+      "escala": "fija",
+      "costo": 576.82,
+      "descripcion": "IPR DE 4\""
+    },
+    {
+      "material_id": "mat-acero-35",
+      "nombre": "BORDAS LATERALES (CANAL U 6\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 5870.35,
+      "descripcion": "Canal U 6\""
+    },
+    {
+      "material_id": "mat-acero-36",
+      "nombre": "BASE PARA TANQUES (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 4,
+      "escala": "fija",
+      "costo": 77,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-37",
+      "nombre": "BASE PARA PATINES PLACAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 8,
+      "escala": "fija",
+      "costo": 52.6,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-38",
+      "nombre": "BASE PARA PATINES SOLERA (SOLERA DE GRADO A-36 A 3/8\" X 2\")",
+      "cantidad": 8,
+      "escala": "fija",
+      "costo": 23.4,
+      "descripcion": "Solera de grado A-36 a 3/8\" x 2\""
+    },
+    {
+      "material_id": "mat-acero-39",
+      "nombre": "BASE PARA MANITAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 101,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-40",
+      "nombre": "BASE PARA PERCHAS (SOLERA DE GRADO A-36 A 1/2\" X 6\")",
+      "cantidad": 4,
+      "escala": "fija",
+      "costo": 234,
+      "descripcion": "Solera de grado A-36 a 1/2\" x 6\""
+    },
+    {
+      "material_id": "mat-acero-41",
+      "nombre": "BASE PARA PLATOS (SOLERA DE GRADO A-36 A 1/2\" X 3\")",
+      "cantidad": 4,
+      "escala": "fija",
+      "costo": 67,
+      "descripcion": "Solera de grado A-36 a 1/2\" x 3\""
+    },
+    {
+      "material_id": "mat-acero-42",
+      "nombre": "PESTAÑAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 64,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-43",
+      "nombre": "GANCHOS (REDONDO DE 1/2\")",
+      "cantidad": 32,
+      "escala": "fija",
+      "costo": 6.3,
+      "descripcion": "Redondo de 1/2\""
+    },
+    {
+      "material_id": "mat-acero-44",
+      "nombre": "PLAFONES OVALADOS (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 4,
+      "escala": "fija",
+      "costo": 45,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-45",
+      "nombre": "CARTABONES PARA JALON (PLACA DE GRADO A-36 CAL. 3/8\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 300,
+      "descripcion": "Placa de grado A-36 Cal. 3/8\""
+    },
+    {
+      "material_id": "mat-acero-46",
+      "nombre": "SOLERA PARA ESQUINEROS (PLACA DE GRADO A-36 CAL. 3/16\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 60.6,
+      "descripcion": "Placa de grado A-36 Cal. 3/16\""
+    },
+    {
+      "material_id": "mat-acero-47",
+      "nombre": "U PARA JALON (REDONDO DE 1\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 102,
+      "descripcion": "Redondo de 1\""
+    },
+    {
+      "material_id": "mat-acero-48",
+      "nombre": "BASE PARA FOCO DE ABS (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 25,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-49",
+      "nombre": "BASE PARA ABS (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 30,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-50",
+      "nombre": "PORTA PLACAS (PLACA DE GRADO A-36 CAL. 10)",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 42.99,
+      "descripcion": "Placa de grado A-36 Cal. 10"
+    },
+    {
+      "material_id": "mat-acero-51",
+      "nombre": "CINCHO (SOLERA DE GRADO A-36 A 3/8\" X 2\")",
+      "cantidad": 4,
+      "escala": "fija",
+      "costo": 1110,
+      "descripcion": "Solera de grado A-36 a 3/8\" x 2\""
+    },
+    {
+      "material_id": "mat-acero-52",
+      "nombre": "HERAJE PARA PATINES 110CM (PLACA DE GRADO A-36 CAL. 3/16\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 196.99,
+      "descripcion": "Placa de grado A-36 Cal. 3/16\""
+    },
+    {
+      "material_id": "mat-acero-53",
+      "nombre": "HERAJE PARA PATINES 125CM",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 223.99,
+      "descripcion": "Heraje para patines"
+    },
+    {
+      "material_id": "mat-acero-54",
+      "nombre": "HERAJE PARA PATINES 70CM",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 124.99,
+      "descripcion": "Heraje para patines"
+    },
+    {
+      "material_id": "mat-acero-55",
+      "nombre": "HERAJE PARA PATINES 67CM",
+      "cantidad": 4,
+      "escala": "fija",
+      "costo": 119.99,
+      "descripcion": "Heraje para patines"
+    },
+    {
+      "material_id": "mat-acero-56",
+      "nombre": "HERAJE PARA PATINES 23CM",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 41.99,
+      "descripcion": "Heraje para patines"
+    },
+    {
+      "material_id": "mat-acero-57",
+      "nombre": "HERAJE PARA PATINES 7CM (SOLERA DE GRADO A-36 A 1/2\" X 3\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 23.99,
+      "descripcion": "Solera de grado A-36 a 1/2\" x 3\""
+    },
+    {
+      "material_id": "mat-acero-58",
+      "nombre": "HERAJE PARA PATINES 27CM",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 90.99,
+      "descripcion": "Heraje para patines"
+    },
+    {
+      "material_id": "mat-acero-59",
+      "nombre": "HERAJE PARA PATINES 30CM",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 100.99,
+      "descripcion": "Heraje para patines"
+    },
+    {
+      "material_id": "mat-acero-60",
+      "nombre": "HERAJE PARA PATINES BUCHACA (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 40.99,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-61",
+      "nombre": "PORTA LLANTAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 87.99,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-62",
+      "nombre": "PORTA LLANTAS (PLACA DE GRADO A-36 CAL. 1/4\") #2",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 275.99,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\""
+    },
+    {
+      "material_id": "mat-acero-63",
+      "nombre": "PORTA LLANTAS (SOLERA DE GRADO A-36 A 1/2\" X 3\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 738.99,
+      "descripcion": "Solera de grado A-36 a 1/2\" x 3\""
+    },
+    {
+      "material_id": "mat-acero-64",
+      "nombre": "ESTRIBO (PTR DE 4X4\" A 6.10M)",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 1050,
+      "descripcion": "PTR de 4X4\" a 6.10m"
+    },
+    {
+      "material_id": "mat-acero-65",
+      "nombre": "PORTA LODERAS (PLACA DE GRADO A-36 CAL. 12)",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 440,
+      "descripcion": "Placa de grado A-36 Cal. 12"
+    }
+  ],
+  "costos_modelo": [
+    {
+      "seccion": "otros",
+      "concepto": "Tope de goma",
+      "cantidad": 2,
+      "costo_unitario": 82,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Lodera blanca",
+      "cantidad": 2,
+      "costo_unitario": 303.99,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Flejes",
+      "cantidad": 2,
+      "costo_unitario": 232,
+      "escala": "fija"
+    },
+    {
+      "seccion": "tornilleria",
+      "concepto": "Tornillería para loderas",
+      "cantidad": 8,
+      "costo_unitario": 5,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Banderolas",
+      "cantidad": 2,
+      "costo_unitario": 400,
+      "escala": "fija"
+    },
+    {
+      "seccion": "luz",
+      "concepto": "Kit de luz",
+      "cantidad": 1,
+      "costo_unitario": 15000,
+      "escala": "fija"
+    },
+    {
+      "seccion": "consumibles",
+      "concepto": "Rollo de micro tubular",
+      "cantidad": 3,
+      "costo_unitario": 995,
+      "escala": "fija"
+    },
+    {
+      "seccion": "consumibles",
+      "concepto": "Tanque de CO2",
+      "cantidad": 3,
+      "costo_unitario": 925,
+      "escala": "fija"
+    },
+    {
+      "seccion": "consumibles",
+      "concepto": "Consumibles",
+      "cantidad": 1,
+      "costo_unitario": 550,
+      "escala": "fija"
+    },
+    {
+      "seccion": "consumibles",
+      "concepto": "Kit de limpieza",
+      "cantidad": 1,
+      "costo_unitario": 300,
+      "escala": "fija"
+    },
+    {
+      "seccion": "pintura",
+      "concepto": "Praimer",
+      "cantidad": 1,
+      "costo_unitario": 10000,
+      "escala": "fija"
+    },
+    {
+      "seccion": "pintura",
+      "concepto": "Pintura color estándar",
+      "cantidad": 1,
+      "costo_unitario": 12000,
+      "escala": "fija"
+    }
+  ],
+  "procesos": [
+    {
+      "orden": 5,
+      "proceso": "Proceso 1",
+      "subproceso": null,
+      "minutos": 720,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 6,
+      "proceso": "Proceso 2",
+      "subproceso": null,
+      "minutos": 480,
+      "tarifa_hora": 100
+    },
+    {
+      "orden": 7,
+      "proceso": "Proceso 3",
+      "subproceso": null,
+      "minutos": 720,
+      "tarifa_hora": 100
+    },
+    {
+      "orden": 8,
+      "proceso": "Proceso 4",
+      "subproceso": null,
+      "minutos": 480,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 9,
+      "proceso": "Proceso 4",
+      "subproceso": null,
+      "minutos": 480,
+      "tarifa_hora": 82.5
+    },
+    {
+      "orden": 10,
+      "proceso": "Proceso 5",
+      "subproceso": null,
+      "minutos": 960,
+      "tarifa_hora": 45
+    },
+    {
+      "orden": 11,
+      "proceso": "Proceso 5",
+      "subproceso": null,
+      "minutos": 960,
+      "tarifa_hora": 57.5
+    },
+    {
+      "orden": 12,
+      "proceso": "Proceso 6",
+      "subproceso": null,
+      "minutos": 960,
+      "tarifa_hora": 50
+    },
+    {
+      "orden": 13,
+      "proceso": "Proceso 6",
+      "subproceso": null,
+      "minutos": 960,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 14,
+      "proceso": "Encargado de procedimiento",
+      "subproceso": null,
+      "minutos": 720,
+      "tarifa_hora": 125
+    },
+    {
+      "orden": 15,
+      "proceso": "Escoreado y lavado",
+      "subproceso": null,
+      "minutos": 600,
+      "tarifa_hora": 55
+    },
+    {
+      "orden": 16,
+      "proceso": "Escoreado y lavado",
+      "subproceso": null,
+      "minutos": 600,
+      "tarifa_hora": 55
+    },
+    {
+      "orden": 17,
+      "proceso": "Escoreado y lavado",
+      "subproceso": null,
+      "minutos": 600,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 18,
+      "proceso": "Praimer",
+      "subproceso": null,
+      "minutos": 300,
+      "tarifa_hora": 55
+    },
+    {
+      "orden": 19,
+      "proceso": "Pintura",
+      "subproceso": null,
+      "minutos": 600,
+      "tarifa_hora": 87.5
+    },
+    {
+      "orden": 20,
+      "proceso": "Aire",
+      "subproceso": null,
+      "minutos": 600,
+      "tarifa_hora": 125
+    },
+    {
+      "orden": 21,
+      "proceso": "Luz",
+      "subproceso": null,
+      "minutos": 360,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 22,
+      "proceso": "Piso",
+      "subproceso": null,
+      "minutos": 480,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 23,
+      "proceso": "Piso",
+      "subproceso": null,
+      "minutos": 480,
+      "tarifa_hora": 52.5
+    },
+    {
+      "orden": 24,
+      "proceso": "Enllantado",
+      "subproceso": null,
+      "minutos": 160,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 25,
+      "proceso": "Enllantado",
+      "subproceso": null,
+      "minutos": 160,
+      "tarifa_hora": 52.5
+    },
+    {
+      "orden": 26,
+      "proceso": "Rotulado",
+      "subproceso": null,
+      "minutos": 90,
+      "tarifa_hora": 112.5
+    },
+    {
+      "orden": 27,
+      "proceso": "Marcado",
+      "subproceso": null,
+      "minutos": 90,
+      "tarifa_hora": 87.5
+    },
+    {
+      "orden": 28,
+      "proceso": "Encargado de procedimiento",
+      "subproceso": null,
+      "minutos": 720,
+      "tarifa_hora": 112.5
+    },
+    {
+      "orden": 29,
+      "proceso": "Borda delantera",
+      "subproceso": null,
+      "minutos": 30,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 30,
+      "proceso": "Borda delantera",
+      "subproceso": null,
+      "minutos": 30,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 31,
+      "proceso": "Borda trasera",
+      "subproceso": null,
+      "minutos": 30,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 32,
+      "proceso": "Borda trasera",
+      "subproceso": null,
+      "minutos": 30,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 33,
+      "proceso": "Puentes de suspensión",
+      "subproceso": null,
+      "minutos": 20,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 34,
+      "proceso": "Plancha para la quinta",
+      "subproceso": null,
+      "minutos": 30,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 35,
+      "proceso": "Plancha para la quinta",
+      "subproceso": null,
+      "minutos": 30,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 36,
+      "proceso": "Puentes intermedios",
+      "subproceso": null,
+      "minutos": 15,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 37,
+      "proceso": "Puentes de la plancha",
+      "subproceso": null,
+      "minutos": 20,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 38,
+      "proceso": "Botones",
+      "subproceso": null,
+      "minutos": 80,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 39,
+      "proceso": "Atizadores",
+      "subproceso": null,
+      "minutos": 50,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 40,
+      "proceso": "Atizadores",
+      "subproceso": null,
+      "minutos": 60,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 41,
+      "proceso": "Jalon",
+      "subproceso": null,
+      "minutos": 60,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 42,
+      "proceso": "Jalon",
+      "subproceso": null,
+      "minutos": 60,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 43,
+      "proceso": "Refuerzo de Jalon",
+      "subproceso": null,
+      "minutos": 30,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 44,
+      "proceso": "Refuerzo de Jalon",
+      "subproceso": null,
+      "minutos": 30,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 45,
+      "proceso": "Kit de Aletas",
+      "subproceso": null,
+      "minutos": 120,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 46,
+      "proceso": "Kit de Aletas",
+      "subproceso": null,
+      "minutos": 60,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 47,
+      "proceso": "Esquinero delantero",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 48,
+      "proceso": "Esquinero trasero",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 49,
+      "proceso": "Buchacas",
+      "subproceso": null,
+      "minutos": 240,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 50,
+      "proceso": "Buchacas",
+      "subproceso": null,
+      "minutos": 240,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 51,
+      "proceso": "Tubos laterales",
+      "subproceso": null,
+      "minutos": 210,
+      "tarifa_hora": 42.5
+    },
+    {
+      "orden": 52,
+      "proceso": "Base para estribo",
+      "subproceso": null,
+      "minutos": 25,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 53,
+      "proceso": "Base para estribo",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 54,
+      "proceso": "Cargadores",
+      "subproceso": null,
+      "minutos": 570,
+      "tarifa_hora": 42.5
+    },
+    {
+      "orden": 55,
+      "proceso": "Base para tanque",
+      "subproceso": null,
+      "minutos": 15,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 56,
+      "proceso": "Base para tanque",
+      "subproceso": null,
+      "minutos": 15,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 57,
+      "proceso": "Base para patines",
+      "subproceso": null,
+      "minutos": 120,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 58,
+      "proceso": "Base para patines",
+      "subproceso": null,
+      "minutos": 80,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 59,
+      "proceso": "Base para patines",
+      "subproceso": null,
+      "minutos": 80,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 60,
+      "proceso": "Base para manitas",
+      "subproceso": null,
+      "minutos": 20,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 61,
+      "proceso": "Base para perchas",
+      "subproceso": null,
+      "minutos": 15,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 62,
+      "proceso": "Base para platos",
+      "subproceso": null,
+      "minutos": 15,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 63,
+      "proceso": "Pestañas",
+      "subproceso": null,
+      "minutos": 15,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 64,
+      "proceso": "Pestañas",
+      "subproceso": null,
+      "minutos": 15,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 65,
+      "proceso": "Ganchos",
+      "subproceso": null,
+      "minutos": 300,
+      "tarifa_hora": 42.5
+    },
+    {
+      "orden": 66,
+      "proceso": "Plafones ovalados",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 67,
+      "proceso": "Cartabones para jalon",
+      "subproceso": null,
+      "minutos": 20,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 68,
+      "proceso": "Cartabones para jalon",
+      "subproceso": null,
+      "minutos": 15,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 69,
+      "proceso": "U para Jalon",
+      "subproceso": null,
+      "minutos": 30,
+      "tarifa_hora": 42.5
+    },
+    {
+      "orden": 70,
+      "proceso": "Base para Foco de ABS",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 71,
+      "proceso": "Base para ABS",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 72,
+      "proceso": "Porta placas",
+      "subproceso": null,
+      "minutos": 15,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 73,
+      "proceso": "Porta placas",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 74,
+      "proceso": "Herraje para patines",
+      "subproceso": null,
+      "minutos": 90,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 75,
+      "proceso": "Herraje para patines",
+      "subproceso": null,
+      "minutos": 70,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 76,
+      "proceso": "Porta Llantas",
+      "subproceso": null,
+      "minutos": 75,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 77,
+      "proceso": "Porta Llantas",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 78,
+      "proceso": "Porta Llantas",
+      "subproceso": null,
+      "minutos": 5,
+      "tarifa_hora": 42.5
+    },
+    {
+      "orden": 79,
+      "proceso": "Estribo",
+      "subproceso": null,
+      "minutos": 60,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 80,
+      "proceso": "Porta Loderas",
+      "subproceso": null,
+      "minutos": 80,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 81,
+      "proceso": "Porta Loderas",
+      "subproceso": null,
+      "minutos": 15,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 82,
+      "proceso": "Gerencia",
+      "subproceso": null,
+      "minutos": 720,
+      "tarifa_hora": 250
+    },
+    {
+      "orden": 83,
+      "proceso": "Revicion Final",
+      "subproceso": null,
+      "minutos": 90,
+      "tarifa_hora": 87.5
+    },
+    {
+      "orden": 84,
+      "proceso": "Revicion Final",
+      "subproceso": null,
+      "minutos": 60,
+      "tarifa_hora": 50
+    }
+  ],
+  "opcion_costos": [
+    {
+      "grupo_clave": "suspension",
+      "opcion_clave": "fleet_master",
+      "costo_unitario": 23118,
+      "escala": "por_eje",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "suspension",
+      "opcion_clave": "ampro",
+      "costo_unitario": 23118,
+      "escala": "por_eje",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "suspension",
+      "opcion_clave": "hendrickson",
+      "costo_unitario": 35844,
+      "escala": "por_eje",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "suspension",
+      "opcion_clave": "alta_hendrickson",
+      "costo_unitario": 46783.62,
+      "escala": "por_eje",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "eje",
+      "opcion_clave": "fleet_master",
+      "costo_unitario": 19905.6,
+      "escala": "por_eje",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "eje",
+      "opcion_clave": "ampro",
+      "costo_unitario": 21692,
+      "escala": "por_eje",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "patin",
+      "opcion_clave": "hj",
+      "costo_unitario": 5646.88,
+      "escala": "fija",
+      "cantidad_base": 2
+    },
+    {
+      "grupo_clave": "patin",
+      "opcion_clave": "ampro",
+      "costo_unitario": 5916,
+      "escala": "fija",
+      "cantidad_base": 2
+    },
+    {
+      "grupo_clave": "patin",
+      "opcion_clave": "holland",
+      "costo_unitario": 17980,
+      "escala": "fija",
+      "cantidad_base": 2
+    },
+    {
+      "grupo_clave": "gancho",
+      "opcion_clave": "holland_8_10",
+      "costo_unitario": 6844,
+      "escala": "fija",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "gancho",
+      "opcion_clave": "premier_8",
+      "costo_unitario": 11890,
+      "escala": "fija",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "gancho",
+      "opcion_clave": "premier_bestia_6",
+      "costo_unitario": 28040.98,
+      "escala": "fija",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "abs",
+      "opcion_clave": "2e_sin_retractil",
+      "costo_unitario": 20000,
+      "escala": "fija",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "abs",
+      "opcion_clave": "2e_1_retractil",
+      "costo_unitario": 24700,
+      "escala": "fija",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "abs",
+      "opcion_clave": "3e_2_retractil",
+      "costo_unitario": 28500,
+      "escala": "fija",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "rines",
+      "opcion_clave": "acero",
+      "costo_unitario": 1550,
+      "escala": "por_eje",
+      "cantidad_base": 4
+    },
+    {
+      "grupo_clave": "rines",
+      "opcion_clave": "aluminio",
+      "costo_unitario": 5500,
+      "escala": "por_eje",
+      "cantidad_base": 4
+    },
+    {
+      "grupo_clave": "llantas",
+      "opcion_clave": "chinas",
+      "costo_unitario": 3000,
+      "escala": "por_eje",
+      "cantidad_base": 4
+    },
+    {
+      "grupo_clave": "llantas",
+      "opcion_clave": "firestone",
+      "costo_unitario": 8700,
+      "escala": "por_eje",
+      "cantidad_base": 4
+    },
+    {
+      "grupo_clave": "llantas",
+      "opcion_clave": "amulet",
+      "costo_unitario": 4225,
+      "escala": "por_eje",
+      "cantidad_base": 4
+    },
+    {
+      "grupo_clave": "piso",
+      "opcion_clave": "laminado_madera",
+      "costo_unitario": 39060,
+      "escala": "fija",
+      "cantidad_base": 1
+    },
+    {
+      "grupo_clave": "piso",
+      "opcion_clave": "laminado_plastico",
+      "costo_unitario": 52060,
+      "escala": "fija",
+      "cantidad_base": 1
+    }
+  ],
+  "grupos": [
+    {
+      "id": "grp-suspension",
+      "clave": "suspension",
+      "nombre": "Suspensión",
+      "seleccion": "unica"
+    },
+    {
+      "id": "grp-eje",
+      "clave": "eje",
+      "nombre": "Ejes",
+      "seleccion": "unica"
+    },
+    {
+      "id": "grp-patin",
+      "clave": "patin",
+      "nombre": "Patines",
+      "seleccion": "unica"
+    },
+    {
+      "id": "grp-gancho",
+      "clave": "gancho",
+      "nombre": "Gancho",
+      "seleccion": "unica"
+    },
+    {
+      "id": "grp-abs",
+      "clave": "abs",
+      "nombre": "Sistema de frenos ABS",
+      "seleccion": "unica"
+    },
+    {
+      "id": "grp-rines",
+      "clave": "rines",
+      "nombre": "Rines",
+      "seleccion": "unica"
+    },
+    {
+      "id": "grp-llantas",
+      "clave": "llantas",
+      "nombre": "Llantas",
+      "seleccion": "unica"
+    },
+    {
+      "id": "grp-piso",
+      "clave": "piso",
+      "nombre": "Piso",
+      "seleccion": "unica"
+    }
+  ],
+  "ganancia": 110000
+}

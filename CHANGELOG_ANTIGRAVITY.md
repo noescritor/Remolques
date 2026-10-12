@@ -3,6 +3,38 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-11 - Sub-bloque 2R-4c: Motor de costeo (costeo.ts), ruta POST /configuracion/costear y corrección de secciones en resolver
+**Herramienta:** Antigravity
+**Tipo:** feat (backend, cpq, costeo)
+**Archivos tocados:**
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+- `supabase/functions/make-server-feea4382/motor/cargar_datos.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.test.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/cargar_costos.ts`
+- `supabase/functions/make-server-feea4382/index.ts`
+- `supabase/functions/make-server-feea4382/motor/fixtures/datos_costeo_plataforma_40x2.json`
+- `supabase/functions/make-server-feea4382/motor/costeo.test.ts`
+**Qué cambió y por qué:**
+- **Parte 1 (Corrección del resolver):**
+  - En `cargar_datos.ts` se agregó la lectura de `seccion` en la consulta de `receta_base`.
+  - En `tipos.ts` se agregó `seccion?: string | null` y `paso: string | null` a `LineaReceta`.
+  - En `resolver_receta.ts`, la receta base ahora propaga su sección real (por ejemplo `'acero'`), evitando sobrescribirla con `'ensamble'`. La clave del mapa de agregación ahora incluye la sección `${matId}_${unidad}_${seccion}` para no colisionar piezas de diferentes secciones. Se sanitizó la inserción en `linea.paso` para no meter valores `null`. `secciones_pendientes` ahora se calcula dinámicamente (`["acero"]` solo si el modelo carece de líneas de `receta_base` con sección `'acero'`). Se añadieron pruebas unitarias 17 y 18 a `resolver_receta.test.ts`.
+- **Parte 2 & 3 (Motor de costeo y carga de datos):**
+  - En `tipos.ts` se definieron los tipos `DatosCosteo`, `AjusteManual`, `LineaCosteo`, `SeccionCosteo`, `PendienteCosteo` y `ResultadoCosteo`.
+  - Se implementó `motor/costeo.ts` con función pura `costear(datos, configuracion, ajustes)` que desglosa acero, kits fijos, opciones, mano de obra y ajustes manuales, redondeando sección por sección a dos decimales y evaluando nivel de confianza (`'completa'`, `'estimada'`, `'incompleta'`). También se expuso la función `validarAjustes`.
+  - Se implementó `motor/cargar_costos.ts` para extraer de Supabase la receta de acero, costos fijos, mano de obra, costos de opciones por tipo de modelo y parámetro de ganancia.
+  - En `index.ts` se registró la ruta `POST /configuracion/costear` con validación estricta de parámetros y ajustes manuales.
+- **Parte 4 (Prueba de aceptación dorada y suite de pruebas):**
+  - Se generó el fixture `fixtures/datos_costeo_plataforma_40x2.json` a partir de `docs/factura-leolca/extraccion_factura_leolca.json` y los costos de opciones del catálogo.
+  - Se creó `motor/costeo.test.ts` con 8 pruebas automatizadas: la prueba dorada (cuadre exacto al centavo con el Excel de Leolca: acero $128,211.69, kits $45,685.98, opciones $169,400.96, mano de obra $22,930.00, ajustes $31,485.00 -> costo $397,713.63 + ganancia $110,000.00 = precio sugerido $507,713.63, confianza estimada con 1 pendiente por puentes de suspensión sin precio) más 7 pruebas de validación de escala, opciones faltantes, variantes incompletas, ganancia nula, ajustes negativos/descuentos, validación de ajustes inválidos y confianza completa.
+- **Validación:**
+  - 33 pruebas Deno pasando (18 en resolver_receta + 8 en costeo + resto del motor).
+  - Verificación `npm.cmd run verificar -- --limpio` completa con `RESULTADO: TODO OK (10/10 comprobaciones)`.
+**Acciones manuales pendientes:**
+- Rebuild del servicio backend en EasyPanel una vez que el usuario apruebe y autorice el despliegue a main.
+
 ## 2026-10-11 - Sub-bloque 2R-1c: Costos de la plataforma 40 ft / 2 ejes
 **Herramienta:** Antigravity
 **Tipo:** migración / datos
