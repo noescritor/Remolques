@@ -84,9 +84,19 @@ export function validarAjustesCliente(ajustes: any): { valido: boolean; error?: 
 
 /**
  * Decide el precio unitario del item según las reglas de negocio del sub-bloque 2R-4d:
+ * - Si no hay nuevo precio sugerido (costeo null o precio_sugerido null), conserva precioActual
+ *   (o 0 si precioActual es undefined). Nunca devuelve 0 sobre un precio existente por falta de costeo.
  * - Item nuevo (precioActual undefined): si costeo.precio_sugerido no es null, se prellena con él; si no, 0.
  * - Item en edición (precioActual definido): si precioActual es 0 o coincide con el precio_sugerido previo
- *   (el vendedor nunca lo editó), se actualiza al nuevo precio sugerido. De lo contrario, se conserva.
+ *   (el vendedor nunca lo editó), se actualiza al nuevo precio sugerido si está disponible.
+ *   Si el vendedor personalizó el precio o no hay nuevo precio sugerido, conserva precioActual.
+ *
+ * Casos que deben pasar:
+ * - (costeo null, precioActual 500, previo 500) → 500
+ * - (precio_sugerido null, precioActual 500, previo 500) → 500
+ * - (nuevo 520, actual 500, previo 500) → 520
+ * - (nuevo 520, actual 480, previo 500) → 480
+ * - (nuevo 500, actual undefined) → 500
  */
 export function decidirPrecioItem({
   costeo,
@@ -97,16 +107,21 @@ export function decidirPrecioItem({
   precioActual?: number;
   costeoPrevio?: { precio_sugerido?: number | null } | null;
 }): number {
-  const nuevoSugerido = costeo?.precio_sugerido ?? 0;
+  const nuevoSugerido = (costeo?.precio_sugerido !== null && costeo?.precio_sugerido !== undefined)
+    ? costeo.precio_sugerido
+    : null;
 
-  // Item nuevo
-  if (precioActual === undefined) {
-    return costeo?.precio_sugerido !== null && costeo?.precio_sugerido !== undefined
-      ? costeo.precio_sugerido
-      : 0;
+  // Si no hay nuevo precio sugerido, conservar precioActual existente (o 0 si es item nuevo)
+  if (nuevoSugerido === null) {
+    return precioActual !== undefined ? precioActual : 0;
   }
 
-  // Item en edición: verificar si el vendedor nunca tocó el precio
+  // Item nuevo con nuevo precio sugerido disponible
+  if (precioActual === undefined) {
+    return nuevoSugerido;
+  }
+
+  // Item en edición: verificar si el vendedor nunca tocó el precio (o era 0)
   const nuncaLoToco =
     precioActual === 0 ||
     (costeoPrevio?.precio_sugerido !== undefined &&
@@ -114,9 +129,7 @@ export function decidirPrecioItem({
       precioActual === costeoPrevio.precio_sugerido);
 
   if (nuncaLoToco) {
-    return costeo?.precio_sugerido !== null && costeo?.precio_sugerido !== undefined
-      ? costeo.precio_sugerido
-      : 0;
+    return nuevoSugerido;
   }
 
   // El vendedor personalizó el precio: conservarlo intacto

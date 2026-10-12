@@ -39,6 +39,13 @@ interface ConfiguradorEquipoProps {
   ) => void;
 }
 
+interface AjusteFilaUI {
+  id: string;
+  concepto: string;
+  cantidad: string;
+  costo_unitario: string;
+}
+
 export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, itemInicial, onConfirm }: ConfiguradorEquipoProps) {
   const [loadingConfig, setLoadingConfig] = useState(true);
   const [errorConfig, setErrorConfig] = useState<string | null>(null);
@@ -48,8 +55,9 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
   const [resultado, setResultado] = useState<any>(null);
   const [costeo, setCosteo] = useState<ResultadoCosteo | null>(null);
   const [costeando, setCosteando] = useState(false);
+  const [calculoPendiente, setCalculoPendiente] = useState(false);
   const [errorCosteo, setErrorCosteo] = useState<string | null>(null);
-  const [ajustes, setAjustes] = useState<AjusteManual[]>([]);
+  const [ajustesUI, setAjustesUI] = useState<AjusteFilaUI[]>([]);
   const [mostrarDesglose, setMostrarDesglose] = useState(false);
   const [seccionesExpandidas, setSeccionesExpandidas] = useState<Record<string, boolean>>({});
   const [mostrarAjustes, setMostrarAjustes] = useState(false);
@@ -66,8 +74,9 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
       setResultado(null);
       setCosteo(null);
       setCosteando(false);
+      setCalculoPendiente(false);
       setErrorCosteo(null);
-      setAjustes([]);
+      setAjustesUI([]);
       setMostrarDesglose(false);
       setSeccionesExpandidas({});
       setMostrarAjustes(false);
@@ -93,13 +102,18 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
         setDatosModelo(data);
         
         let initialConfig = { grupos: {} } as any;
-        let initialAjustes: AjusteManual[] = [];
+        let initialAjustesUI: AjusteFilaUI[] = [];
 
         const cfgInicial = obtenerConfiguracion(itemInicial);
         if (cfgInicial && cfgInicial.grupos) {
           initialConfig = JSON.parse(JSON.stringify(cfgInicial));
           if (Array.isArray(initialConfig.ajustes)) {
-            initialAjustes = initialConfig.ajustes;
+            initialAjustesUI = initialConfig.ajustes.map((a: any, idx: number) => ({
+              id: `ajuste_${Date.now()}_${idx}`,
+              concepto: a.concepto || '',
+              cantidad: a.cantidad != null ? String(a.cantidad) : '1',
+              costo_unitario: a.costo_unitario != null ? String(a.costo_unitario) : '0'
+            }));
           }
         } else {
           // Pre-llenar valores sugeridos solo si 40ft 2 ejes
@@ -119,12 +133,17 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
         }
         
         setConfiguracion(initialConfig);
-        setAjustes(initialAjustes);
+        setAjustesUI(initialAjustesUI);
         
         const primerGrupo = data.grupos?.[0];
         if (primerGrupo) setGrupoActivo(primerGrupo.clave);
 
-        ejecutarCalculos(initialConfig, initialAjustes);
+        const listaAjustesNumericos: AjusteManual[] = initialAjustesUI.map(a => ({
+          concepto: a.concepto,
+          cantidad: parseFloat(a.cantidad),
+          costo_unitario: parseFloat(a.costo_unitario)
+        }));
+        ejecutarCalculos(initialConfig, listaAjustesNumericos);
       } else {
         setErrorConfig(`Error ${res.status}: ${res.statusText}`);
       }
@@ -179,11 +198,13 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
           setCosteo(data);
           setErrorCosteo(null);
         } else {
+          setCosteo(null);
           setErrorCosteo(`Costeo no disponible (${res.status})`);
         }
       }).catch(err => {
         if (reqId !== currentReqRef.current) return;
         console.error("Error al costear:", err);
+        setCosteo(null);
         setErrorCosteo("Costeo no disponible");
       }).finally(() => {
         if (reqId === currentReqRef.current) {
@@ -192,41 +213,63 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
       });
 
       await Promise.allSettled([pResolver, pCostear]);
+      if (reqId === currentReqRef.current) {
+        setCalculoPendiente(false);
+      }
     } catch (e) {
       console.error(e);
       if (reqId === currentReqRef.current) {
+        setCosteo(null);
         setResolviendo(false);
         setCosteando(false);
+        setCalculoPendiente(false);
       }
     }
   };
 
-  const handleConfigChange = (newConfig: any, nuevosAjustes = ajustes) => {
+  const handleConfigChange = (newConfig: any, nuevosAjustesUI = ajustesUI) => {
     setConfiguracion(newConfig);
+    setCalculoPendiente(true);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => ejecutarCalculos(newConfig, nuevosAjustes), 300);
+    const listaNumerica: AjusteManual[] = nuevosAjustesUI.map(a => ({
+      concepto: a.concepto,
+      cantidad: parseFloat(a.cantidad),
+      costo_unitario: parseFloat(a.costo_unitario)
+    }));
+    debounceRef.current = setTimeout(() => ejecutarCalculos(newConfig, listaNumerica), 300);
   };
 
-  const handleAjustesChange = (nuevosAjustes: AjusteManual[]) => {
-    setAjustes(nuevosAjustes);
+  const handleAjustesUIChange = (nuevosUI: AjusteFilaUI[]) => {
+    setAjustesUI(nuevosUI);
+    setCalculoPendiente(true);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => ejecutarCalculos(configuracion, nuevosAjustes), 300);
+    const listaNumerica: AjusteManual[] = nuevosUI.map(a => ({
+      concepto: a.concepto,
+      cantidad: parseFloat(a.cantidad),
+      costo_unitario: parseFloat(a.costo_unitario)
+    }));
+    debounceRef.current = setTimeout(() => ejecutarCalculos(configuracion, listaNumerica), 300);
   };
 
   const agregarAjuste = () => {
-    const nuevo: AjusteManual = { concepto: '', cantidad: 1, costo_unitario: 0 };
-    handleAjustesChange([...ajustes, nuevo]);
+    const nuevo: AjusteFilaUI = {
+      id: `ajuste_${Date.now()}_${Math.random()}`,
+      concepto: '',
+      cantidad: '1',
+      costo_unitario: '0'
+    };
+    handleAjustesUIChange([...ajustesUI, nuevo]);
   };
 
-  const actualizarAjuste = (index: number, campo: keyof AjusteManual, valor: any) => {
-    const nuevos = [...ajustes];
+  const actualizarAjuste = (index: number, campo: keyof AjusteFilaUI, valor: string) => {
+    const nuevos = [...ajustesUI];
     nuevos[index] = { ...nuevos[index], [campo]: valor };
-    handleAjustesChange(nuevos);
+    handleAjustesUIChange(nuevos);
   };
 
   const eliminarAjuste = (index: number) => {
-    const nuevos = ajustes.filter((_, i) => i !== index);
-    handleAjustesChange(nuevos);
+    const nuevos = ajustesUI.filter((_, i) => i !== index);
+    handleAjustesUIChange(nuevos);
   };
 
   const isMultipleLike = (g: any) => g.seleccion === 'multiple' || g.seleccion === 'multiple_con_cantidad' || g.seleccion === 'cantidad';
@@ -499,7 +542,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                       <div className="flex items-center justify-between gap-2 mb-1">
                         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Precio Sugerido</span>
                         <div className="flex items-center gap-2">
-                          {costeando && (
+                          {(costeando || calculoPendiente) && (
                             <span className="text-[11px] text-muted-foreground flex items-center gap-1 animate-pulse">
                               <Loader2 className="w-3 h-3 animate-spin" /> calculando...
                             </span>
@@ -587,7 +630,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                         onClick={() => setMostrarAjustes(!mostrarAjustes)}
                       >
                         {mostrarAjustes ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                        Ajustes al costo {ajustes.length > 0 && `(${ajustes.length})`}
+                        Ajustes al costo {ajustesUI.length > 0 && `(${ajustesUI.length})`}
                       </Button>
                     </div>
                   </div>
@@ -686,17 +729,25 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                       </Button>
                     </div>
 
-                    {ajustes.length === 0 ? (
+                    {ajustesUI.length === 0 ? (
                       <div className="text-xs text-muted-foreground italic py-2 text-center bg-card rounded border border-dashed border-border">
                         No hay ajustes manuales. Haz clic en "Agregar ajuste" para añadir costos o deducciones.
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        {ajustes.map((ajuste, index) => {
-                          const esValido = validarAjusteIndividual(ajuste);
+                        {ajustesUI.map((ajuste, index) => {
+                          const cantNum = parseFloat(ajuste.cantidad);
+                          const costoNum = parseFloat(ajuste.costo_unitario);
+                          const esValido = validarAjusteIndividual({
+                            concepto: ajuste.concepto,
+                            cantidad: cantNum,
+                            costo_unitario: costoNum
+                          });
+                          const rowTotal = (!isNaN(cantNum) && !isNaN(costoNum)) ? cantNum * costoNum : 0;
+
                           return (
                             <div
-                              key={index}
+                              key={ajuste.id || index}
                               className={`p-2 rounded-md bg-card border flex flex-col sm:flex-row items-stretch sm:items-center gap-2 ${
                                 !esValido ? 'border-destructive dark:border-red-500' : 'border-border'
                               }`}
@@ -715,29 +766,30 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                               <div className="flex items-center gap-2">
                                 <div className="w-20">
                                   <input
-                                    type="number"
+                                    type="text"
+                                    inputMode="decimal"
                                     placeholder="Cant."
-                                    min="0.01"
-                                    step="1"
-                                    value={ajuste.cantidad === 0 && !ajuste.concepto ? '' : ajuste.cantidad}
-                                    onChange={(e) => actualizarAjuste(index, 'cantidad', parseFloat(e.target.value) || 0)}
+                                    value={ajuste.cantidad}
+                                    onChange={(e) => actualizarAjuste(index, 'cantidad', e.target.value)}
                                     className={`w-full text-xs px-2 py-1.5 rounded bg-background border text-right font-mono ${
-                                      ajuste.cantidad <= 0 ? 'border-destructive focus:ring-destructive' : 'border-input'
+                                      isNaN(cantNum) || cantNum <= 0 ? 'border-destructive focus:ring-destructive' : 'border-input'
                                     } focus:outline-none focus:ring-1`}
                                   />
                                 </div>
                                 <div className="w-28">
                                   <input
-                                    type="number"
+                                    type="text"
+                                    inputMode="decimal"
                                     placeholder="Costo U. ($)"
-                                    step="any"
-                                    value={ajuste.costo_unitario === 0 && !ajuste.concepto ? '' : ajuste.costo_unitario}
-                                    onChange={(e) => actualizarAjuste(index, 'costo_unitario', parseFloat(e.target.value) || 0)}
-                                    className="w-full text-xs px-2 py-1.5 rounded bg-background border border-input text-right font-mono focus:outline-none focus:ring-1"
+                                    value={ajuste.costo_unitario}
+                                    onChange={(e) => actualizarAjuste(index, 'costo_unitario', e.target.value)}
+                                    className={`w-full text-xs px-2 py-1.5 rounded bg-background border text-right font-mono ${
+                                      isNaN(costoNum) && ajuste.costo_unitario !== '-' ? 'border-destructive focus:ring-destructive' : 'border-input'
+                                    } focus:outline-none focus:ring-1`}
                                   />
                                 </div>
                                 <div className="w-24 text-right font-mono text-xs font-medium text-foreground pr-1">
-                                  {formatearMoneda((ajuste.cantidad || 0) * (ajuste.costo_unitario || 0))}
+                                  {formatearMoneda(rowTotal)}
                                 </div>
                                 <Button
                                   type="button"
@@ -752,7 +804,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                               </div>
                               {!esValido && (
                                 <div className="text-[11px] text-destructive flex items-center gap-1 sm:hidden">
-                                  <AlertCircle className="w-3 h-3" /> Requiere concepto y cantidad mayor a 0
+                                  <AlertCircle className="w-3 h-3" /> Requiere concepto, cantidad &gt; 0 y costo numérico
                                 </div>
                               )}
                             </div>
@@ -770,22 +822,22 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
         <DialogFooter className="px-4 sm:px-6 py-3 sm:py-4 border-t gap-2 flex-col-reverse sm:flex-row">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button 
-            disabled={loadingConfig || resolviendo || disableConfirm || errorConfig !== null} 
+            disabled={loadingConfig || resolviendo || costeando || calculoPendiente || disableConfirm || errorConfig !== null} 
             onClick={() => {
+              const ajustesValidos: AjusteManual[] = ajustesUI
+                .map(a => ({
+                  concepto: a.concepto.trim(),
+                  cantidad: parseFloat(a.cantidad),
+                  costo_unitario: parseFloat(a.costo_unitario)
+                }))
+                .filter(validarAjusteIndividual);
+
               const cfgToSave = {
                 modelo_id: modeloId,
                 grupos: configuracion.grupos,
-                ajustes: ajustes,
+                ajustes: ajustesValidos,
                 texto_especificacion: resultado?.texto_especificacion || '',
                 resumen_lineas: resultado?.resumen_lineas || [],
-                costeo: costeo ? {
-                  costo: costeo.costo,
-                  ganancia: costeo.ganancia,
-                  precio_sugerido: costeo.precio_sugerido,
-                  confianza: costeo.confianza,
-                  pendientes: costeo.pendientes,
-                  calculado_en: new Date().toISOString()
-                } : undefined,
                 resuelta: !resultado?.errores?.length && !faltanObligatorios,
                 completo: resultado?.completo || false,
                 resuelto_en: new Date().toISOString()
@@ -800,7 +852,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
               onOpenChange(false);
             }}
           >
-            {resolviendo ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+            {(resolviendo || costeando || calculoPendiente) ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
             {itemInicial ? 'Guardar Cambios' : 'Agregar a la cotización'}
           </Button>
         </DialogFooter>
