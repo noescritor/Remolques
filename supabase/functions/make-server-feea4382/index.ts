@@ -8,6 +8,8 @@ import { resolverReceta } from "./motor/resolver_receta.ts";
 import { armarConfiguracionModelo } from "./motor/armar_configuracion.ts";
 import { construirMetadata, desenvolverMetadata } from "./motor/item_metadata.ts";
 import { generarEspecificacion } from "./motor/texto_especificacion.ts";
+import { cargarDatosCosteo } from "./motor/cargar_costos.ts";
+import { costear, validarAjustes } from "./motor/costeo.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -491,6 +493,32 @@ app.post("/configuracion/resolver", async (c) => {
         texto_especificacion: texto,
         resumen_lineas
       });
+    } catch (e: any) {
+      if (e.message === "Modelo no encontrado") return c.json({ error: e.message }, 404);
+      throw e;
+    }
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.post("/configuracion/costear", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const body = await c.req.json();
+    if (!body || !body.modelo_id || !body.configuracion || typeof body.configuracion !== "object") {
+      return c.json({ error: "Parámetros inválidos (modelo_id, configuracion requeridos)" }, 400);
+    }
+
+    const valAjustes = validarAjustes(body.ajustes);
+    if (!valAjustes.valido) {
+      return c.json({ error: valAjustes.error }, 400);
+    }
+
+    try {
+      const datos = await cargarDatosCosteo(supabase, body.modelo_id);
+      const resultado = costear(datos, body.configuracion, body.ajustes || []);
+      return c.json(resultado);
     } catch (e: any) {
       if (e.message === "Modelo no encontrado") return c.json({ error: e.message }, 404);
       throw e;

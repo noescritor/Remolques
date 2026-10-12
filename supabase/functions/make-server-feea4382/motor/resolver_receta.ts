@@ -10,12 +10,25 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
   const sin_precio: string[] = [];
   let costo_parcial = 0;
   let completo = true;
-  const secciones_pendientes = ["acero"];
+
+  const tieneAcero = (datos.receta_base || []).some(rb => rb.seccion === 'acero');
+  const secciones_pendientes: string[] = tieneAcero ? [] : ["acero"];
 
   // Helper to add lines
-  const agregarLinea = (matId: string, nombre: string, unidad: string, cantidad: number, paso: string, uso: string | null, origen: string, costo: number | null, descripcion: string | null) => {
+  const agregarLinea = (
+    matId: string,
+    nombre: string,
+    unidad: string,
+    cantidad: number,
+    paso: string | null,
+    uso: string | null,
+    origen: string,
+    costo: number | null,
+    descripcion: string | null,
+    seccion: string = "ensamble"
+  ) => {
     if (cantidad <= 0) return;
-    const key = `${matId}_${unidad}`;
+    const key = `${matId}_${unidad}_${seccion}`;
     let linea = lineasMap.get(key);
     if (!linea) {
       linea = {
@@ -25,13 +38,13 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
         unidad,
         paso: [],
         uso: [],
-        seccion: "ensamble", // default
+        seccion,
         origen: []
       };
       lineasMap.set(key, linea);
     }
     linea.cantidad += cantidad;
-    if (!linea.paso.includes(paso)) linea.paso.push(paso);
+    if (paso && !linea.paso.includes(paso)) linea.paso.push(paso);
     if (uso && !linea.uso.includes(uso)) linea.uso.push(uso);
     if (!linea.origen.includes(origen)) linea.origen.push(origen);
 
@@ -92,7 +105,8 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
     if (!evaluarCondicion(rb.condicion, rb.nombre, rb.cantidad, rb.uso)) continue;
     
     const qty = calcularCantidad(rb.cantidad, rb.escala);
-    agregarLinea(rb.material_id, rb.nombre, rb.unidad, qty, rb.paso, rb.uso, "base", rb.costo, rb.descripcion);
+    const seccion = rb.seccion || "ensamble";
+    agregarLinea(rb.material_id, rb.nombre, rb.unidad, qty, rb.paso, rb.uso, "base", rb.costo, rb.descripcion, seccion);
   }
 
   // 2. Validate options and configuration

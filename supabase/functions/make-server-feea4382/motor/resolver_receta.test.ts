@@ -214,3 +214,54 @@ Deno.test("16. Validaciones (ausente unica, desconocido, inactiva)", () => {
   assert(resMala.errores.some(e => e.includes("Grupo desconocido")));
   assert(resMala.errores.some(e => e.includes("está inactiva")));
 });
+
+Deno.test("17. Modelo con renglones seccion='acero' y paso nulo", () => {
+  const mockDatos = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  mockDatos.receta_base.push({
+    material_id: "mat_acero_1",
+    nombre: "VIGA PRINCIPAL ACERO",
+    unidad: "PZA",
+    costo: 5000,
+    descripcion: "Acero estructural",
+    cantidad: 2,
+    escala: "fija",
+    paso: null,
+    uso: "Chasis",
+    seccion: "acero"
+  });
+
+  const config: Configuracion = {
+    grupos: {
+      suspension: "alta_hendrickson",
+      retractil: "grande",
+      eje: "hendrickson",
+      patin: "hj"
+    }
+  };
+
+  const res = resolverReceta(mockDatos, config);
+  assertEquals(res.secciones_pendientes, []);
+
+  const lineaAcero = res.lineas.find(l => l.material_id === "mat_acero_1");
+  assert(lineaAcero, "Debe existir la línea de acero");
+  assertEquals(lineaAcero.seccion, "acero");
+  assert(!lineaAcero.paso.includes(null as any), "El arreglo paso no debe contener null");
+  assertEquals(lineaAcero.paso, []);
+});
+
+Deno.test("18. Modelo sin acero marca secciones_pendientes = ['acero']", () => {
+  const mockDatos = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  mockDatos.receta_base = mockDatos.receta_base.filter(r => r.seccion !== "acero");
+
+  const config: Configuracion = {
+    grupos: {
+      suspension: "alta_hendrickson",
+      retractil: "grande",
+      eje: "hendrickson",
+      patin: "hj"
+    }
+  };
+
+  const res = resolverReceta(mockDatos, config);
+  assertEquals(res.secciones_pendientes, ["acero"]);
+});
