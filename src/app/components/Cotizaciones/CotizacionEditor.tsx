@@ -16,6 +16,7 @@ import { ExcelImportModal } from './ExcelImportModal';
 import { supabase } from '../../utils/supabase/client';
 import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 import { calcularItemCotizacion, calcularTotalesCotizacion, formatearMoneda, calcularAnalisisCompleto, calcularUtilidadItem, calcularTotalesCotizacionServiciosAware, totalItemServicio } from '../../utils/calculations';
+import { ResultadoCosteo, decidirPrecioItem } from '../../utils/costeo';
 import { ClienteModal } from '../Clientes/ClienteModal';
 import { AnalisisUtilidad } from './AnalisisUtilidad';
 import { ConfiguradorEquipo } from './ConfiguradorEquipo';
@@ -312,29 +313,77 @@ export function CotizacionEditor({
       setShowProductoDropdown(false);
     };
 
-  const handleCPQConfirm = (configuracion: any, texto: string, completado: boolean, costoParcial: number) => {
+  const handleCPQConfirm = (
+    configuracion: any, 
+    texto: string, 
+    completado: boolean, 
+    costoParcial: number,
+    costeo: ResultadoCosteo | null
+  ) => {
+    const nuevoCosto = (costeo && costeo.confianza !== 'incompleta') ? costeo.costo : undefined;
+
+    if (costeo) {
+      configuracion.costeo = {
+        costo: costeo.costo,
+        ganancia: costeo.ganancia,
+        precio_sugerido: costeo.precio_sugerido,
+        confianza: costeo.confianza,
+        pendientes: (costeo.pendientes || []).map((p: any) => p.detalle),
+        calculado_en: new Date().toISOString()
+      };
+    }
+
     if (itemEditandoCPQ) {
+      const costeoPrevio = itemEditandoCPQ.configuracion?.costeo;
+      const nuevoPrecio = decidirPrecioItem({
+        costeo,
+        precioActual: itemEditandoCPQ.precio_unitario,
+        costeoPrevio
+      });
+
+      const { iva_item, total_item } = calcularItemCotizacion(
+        itemEditandoCPQ.cantidad,
+        nuevoPrecio,
+        (ajustes?.iva_por_defecto || 0)
+      );
+
       setFormData(prev => ({
         ...prev,
         items: prev.items.map(item => item.id === itemEditandoCPQ.id ? {
           ...item,
           descripcion: texto,
-          configuracion,
-          costo_unitario: completado ? costoParcial : undefined
+          precio_unitario: nuevoPrecio,
+          costo_unitario: nuevoCosto,
+          iva_item,
+          total_item,
+          configuracion
         } : item)
       }));
     } else {
+      const nuevoPrecio = decidirPrecioItem({
+        costeo,
+        precioActual: undefined,
+        costeoPrevio: null
+      });
+
+      const cantidad = 1;
+      const { iva_item, total_item } = calcularItemCotizacion(
+        cantidad,
+        nuevoPrecio,
+        (ajustes?.iva_por_defecto || 0)
+      );
+
       const nuevoItem: ItemCotizacion = {
         id: Date.now().toString(),
         producto_id: productoSeleccionadoParaCPQ!.id,
         posicion: formData.items.length + 1,
-        cantidad: 1,
+        cantidad,
         unidad: productoSeleccionadoParaCPQ!.unidad || 'pz',
         descripcion: texto,
-        precio_unitario: 0,
-        costo_unitario: completado ? costoParcial : undefined,
-        iva_item: 0,
-        total_item: 0,
+        precio_unitario: nuevoPrecio,
+        costo_unitario: nuevoCosto,
+        iva_item,
+        total_item,
         configuracion
       };
       setFormData(prev => ({

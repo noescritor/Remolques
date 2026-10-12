@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
-import { Check, AlertCircle, AlertTriangle, Loader2, RotateCcw } from 'lucide-react';
+import { Check, AlertCircle, AlertTriangle, Loader2, RotateCcw, ChevronDown, ChevronUp, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { Producto, ItemCotizacion } from '../../types';
 import { supabase } from '../../utils/supabase/client';
 import { BASE_URL } from '../../utils/api';
@@ -9,6 +9,14 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { formatearMoneda } from '../../utils/calculations';
+import { obtenerConfiguracion } from '../../utils/configuracionEquipo';
+import { 
+  ResultadoCosteo, 
+  AjusteManual, 
+  validarAjusteIndividual, 
+  textoConfianza, 
+  traducirTipoPendiente 
+} from '../../utils/costeo';
 
 export interface ConfiguracionModelo {
   modelo: any;
@@ -22,7 +30,20 @@ interface ConfiguradorEquipoProps {
   producto: Producto | null;
   modeloId: string;
   itemInicial?: ItemCotizacion | null;
-  onConfirm: (configuracion: any, texto: string, completado: boolean, costoParcial: number) => void;
+  onConfirm: (
+    configuracion: any, 
+    texto: string, 
+    completado: boolean, 
+    costoParcial: number,
+    costeo: ResultadoCosteo | null
+  ) => void;
+}
+
+interface AjusteFilaUI {
+  id: string;
+  concepto: string;
+  cantidad: string;
+  costo_unitario: string;
 }
 
 export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, itemInicial, onConfirm }: ConfiguradorEquipoProps) {
@@ -32,6 +53,14 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
   const [configuracion, setConfiguracion] = useState<any>({ grupos: {} });
   const [resolviendo, setResolviendo] = useState(false);
   const [resultado, setResultado] = useState<any>(null);
+  const [costeo, setCosteo] = useState<ResultadoCosteo | null>(null);
+  const [costeando, setCosteando] = useState(false);
+  const [calculoPendiente, setCalculoPendiente] = useState(false);
+  const [errorCosteo, setErrorCosteo] = useState<string | null>(null);
+  const [ajustesUI, setAjustesUI] = useState<AjusteFilaUI[]>([]);
+  const [mostrarDesglose, setMostrarDesglose] = useState(false);
+  const [seccionesExpandidas, setSeccionesExpandidas] = useState<Record<string, boolean>>({});
+  const [mostrarAjustes, setMostrarAjustes] = useState(false);
   const [grupoActivo, setGrupoActivo] = useState<string | null>(null);
   
   const debounceRef = useRef<NodeJS.Timeout>();
@@ -43,6 +72,14 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
     } else {
       setDatosModelo(null);
       setResultado(null);
+      setCosteo(null);
+      setCosteando(false);
+      setCalculoPendiente(false);
+      setErrorCosteo(null);
+      setAjustesUI([]);
+      setMostrarDesglose(false);
+      setSeccionesExpandidas({});
+      setMostrarAjustes(false);
       setConfiguracion({ grupos: {} });
       setGrupoActivo(null);
       setErrorConfig(null);
@@ -65,9 +102,19 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
         setDatosModelo(data);
         
         let initialConfig = { grupos: {} } as any;
-        
-        if (itemInicial?.configuracion && itemInicial.configuracion.grupos) {
-          initialConfig = JSON.parse(JSON.stringify(itemInicial.configuracion));
+        let initialAjustesUI: AjusteFilaUI[] = [];
+
+        const cfgInicial = obtenerConfiguracion(itemInicial);
+        if (cfgInicial && cfgInicial.grupos) {
+          initialConfig = JSON.parse(JSON.stringify(cfgInicial));
+          if (Array.isArray(initialConfig.ajustes)) {
+            initialAjustesUI = initialConfig.ajustes.map((a: any, idx: number) => ({
+              id: `ajuste_${Date.now()}_${idx}`,
+              concepto: a.concepto || '',
+              cantidad: a.cantidad != null ? String(a.cantidad) : '1',
+              costo_unitario: a.costo_unitario != null ? String(a.costo_unitario) : '0'
+            }));
+          }
         } else {
           // Pre-llenar valores sugeridos solo si 40ft 2 ejes
           if (data.modelo.largo_ft === 40 && data.modelo.num_ejes === 2) {
@@ -86,11 +133,17 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
         }
         
         setConfiguracion(initialConfig);
+        setAjustesUI(initialAjustesUI);
         
         const primerGrupo = data.grupos?.[0];
         if (primerGrupo) setGrupoActivo(primerGrupo.clave);
 
-        resolver(initialConfig);
+        const listaAjustesNumericos: AjusteManual[] = initialAjustesUI.map(a => ({
+          concepto: a.concepto,
+          cantidad: parseFloat(a.cantidad),
+          costo_unitario: parseFloat(a.costo_unitario)
+        }));
+        ejecutarCalculos(initialConfig, listaAjustesNumericos);
       } else {
         setErrorConfig(`Error ${res.status}: ${res.statusText}`);
       }
@@ -101,40 +154,122 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
     }
   };
 
-  const resolver = async (config: any) => {
+  const ejecutarCalculos = async (config: any, listaAjustes: AjusteManual[]) => {
     setResolviendo(true);
+    setCosteando(true);
+    setErrorCosteo(null);
     const reqId = ++currentReqRef.current;
     
     try {
       const { data: session } = await supabase.auth.getSession();
-      const res = await fetch(`${BASE_URL}/configuracion/resolver`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.session?.access_token}` 
-        },
-        body: JSON.stringify({ modelo_id: modeloId, configuracion: config })
-      });
-      
-      if (reqId !== currentReqRef.current) return; // ignore stale response
+      const token = session.session?.access_token;
+      const headers = { 
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}` 
+      };
 
-      if (res.ok) {
-        const data = await res.json();
-        setResultado(data);
+      const pResolver = fetch(`${BASE_URL}/configuracion/resolver`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ modelo_id: modeloId, configuracion: config })
+      }).then(async (res) => {
+        if (reqId !== currentReqRef.current) return;
+        if (res.ok) {
+          const data = await res.json();
+          setResultado(data);
+        }
+      }).catch(err => {
+        console.error("Error al resolver:", err);
+      }).finally(() => {
+        if (reqId === currentReqRef.current) {
+          setResolviendo(false);
+        }
+      });
+
+      const ajustesValidos = (listaAjustes || []).filter(validarAjusteIndividual);
+      const pCostear = fetch(`${BASE_URL}/configuracion/costear`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ modelo_id: modeloId, configuracion: config, ajustes: ajustesValidos })
+      }).then(async (res) => {
+        if (reqId !== currentReqRef.current) return;
+        if (res.ok) {
+          const data: ResultadoCosteo = await res.json();
+          setCosteo(data);
+          setErrorCosteo(null);
+        } else {
+          setCosteo(null);
+          setErrorCosteo(`Costeo no disponible (${res.status})`);
+        }
+      }).catch(err => {
+        if (reqId !== currentReqRef.current) return;
+        console.error("Error al costear:", err);
+        setCosteo(null);
+        setErrorCosteo("Costeo no disponible");
+      }).finally(() => {
+        if (reqId === currentReqRef.current) {
+          setCosteando(false);
+        }
+      });
+
+      await Promise.allSettled([pResolver, pCostear]);
+      if (reqId === currentReqRef.current) {
+        setCalculoPendiente(false);
       }
     } catch (e) {
       console.error(e);
-    } finally {
       if (reqId === currentReqRef.current) {
+        setCosteo(null);
         setResolviendo(false);
+        setCosteando(false);
+        setCalculoPendiente(false);
       }
     }
   };
 
-  const handleConfigChange = (newConfig: any) => {
+  const handleConfigChange = (newConfig: any, nuevosAjustesUI = ajustesUI) => {
     setConfiguracion(newConfig);
+    setCalculoPendiente(true);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => resolver(newConfig), 300);
+    const listaNumerica: AjusteManual[] = nuevosAjustesUI.map(a => ({
+      concepto: a.concepto,
+      cantidad: parseFloat(a.cantidad),
+      costo_unitario: parseFloat(a.costo_unitario)
+    }));
+    debounceRef.current = setTimeout(() => ejecutarCalculos(newConfig, listaNumerica), 300);
+  };
+
+  const handleAjustesUIChange = (nuevosUI: AjusteFilaUI[]) => {
+    setAjustesUI(nuevosUI);
+    setCalculoPendiente(true);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const listaNumerica: AjusteManual[] = nuevosUI.map(a => ({
+      concepto: a.concepto,
+      cantidad: parseFloat(a.cantidad),
+      costo_unitario: parseFloat(a.costo_unitario)
+    }));
+    debounceRef.current = setTimeout(() => ejecutarCalculos(configuracion, listaNumerica), 300);
+  };
+
+  const agregarAjuste = () => {
+    const nuevo: AjusteFilaUI = {
+      id: `ajuste_${Date.now()}_${Math.random()}`,
+      concepto: '',
+      cantidad: '1',
+      costo_unitario: '0'
+    };
+    handleAjustesUIChange([...ajustesUI, nuevo]);
+  };
+
+  const actualizarAjuste = (index: number, campo: keyof AjusteFilaUI, valor: string) => {
+    const nuevos = [...ajustesUI];
+    nuevos[index] = { ...nuevos[index], [campo]: valor };
+    handleAjustesUIChange(nuevos);
+  };
+
+  const eliminarAjuste = (index: number) => {
+    const nuevos = ajustesUI.filter((_, i) => i !== index);
+    handleAjustesUIChange(nuevos);
   };
 
   const isMultipleLike = (g: any) => g.seleccion === 'multiple' || g.seleccion === 'multiple_con_cantidad' || g.seleccion === 'cantidad';
@@ -350,64 +485,335 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                 </div>
               </ScrollArea>
 
-              <div className="border-t border-border bg-card p-3 sm:p-4 md:min-h-[160px]">
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium mb-2 text-foreground">Así queda tu equipo:</h4>
-                    <p className="text-sm text-muted-foreground uppercase leading-relaxed">
-                      {resultado?.texto_especificacion || <span className="opacity-50">Seleccionando configuración...</span>}
-                    </p>
-                  </div>
-                  <div className="w-full md:w-64 shrink-0 space-y-3">
-                    <div className="p-3 bg-muted/50 rounded-md">
-                      <div className="text-xs text-muted-foreground">Referencia de tarifario</div>
-                      <div className="font-medium text-foreground">{formatearMoneda(getPrecioRef())}</div>
+              <div className="border-t border-border bg-card p-3 sm:p-4 max-h-[50vh] overflow-y-auto shrink-0">
+                <div className="flex flex-col lg:flex-row gap-4">
+                  <div className="flex-1 min-w-0 space-y-3">
+                    <div>
+                      <h4 className="text-sm font-medium mb-1 text-foreground">Así queda tu equipo:</h4>
+                      <p className="text-sm text-muted-foreground uppercase leading-relaxed">
+                        {resultado?.texto_especificacion || <span className="opacity-50">Seleccionando configuración...</span>}
+                      </p>
                     </div>
-                    {(!isIncompleta || (resultado?.costo_parcial || 0) > 0) && (
-                      <div className="p-3 bg-muted/50 rounded-md">
-                        <div className="text-xs text-muted-foreground flex items-center justify-between">
-                          Costo parcial materiales
-                          {isIncompleta && <Badge variant="outline" className="text-[10px] h-4 ml-1">incompleto</Badge>}
+
+                    <div className="text-xs text-muted-foreground flex items-center gap-1.5 pt-1">
+                      <span>Referencia de tarifario:</span>
+                      <span className="font-medium text-foreground">{formatearMoneda(getPrecioRef())}</span>
+                    </div>
+
+                    <div aria-live="polite" className="space-y-1.5 pt-1">
+                      {(() => {
+                        const faltantesRegex = /^Falta elegir una opci[oó]n para el grupo obligatorio:\s*(.+)$/i;
+                        const errFaltantes = (resultado?.errores || []).map((e: string) => e.match(faltantesRegex)?.[1]).filter(Boolean);
+                        const otrosErrores = (resultado?.errores || []).filter((e: string) => !faltantesRegex.test(e));
+                        return (
+                          <>
+                            {errFaltantes.length > 0 && (
+                              <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                                <span>Faltan {errFaltantes.length} grupos por elegir: {errFaltantes.join(', ')}</span>
+                              </div>
+                            )}
+                            {otrosErrores.map((err: string, i: number) => (
+                              <div key={`err-${i}`} className="text-xs text-destructive flex items-center gap-1.5">
+                                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                                <span>{err}</span>
+                              </div>
+                            ))}
+                          </>
+                        );
+                      })()}
+                      {resultado?.advertencias?.map((adv: string, i: number) => (
+                        <div key={`adv-${i}`} className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{adv}</span>
                         </div>
-                        <div className="font-medium text-foreground">{formatearMoneda(resultado?.costo_parcial || 0)}</div>
+                      ))}
+                      {isIncompleta && (
+                        <div className="text-xs text-orange-500 dark:text-orange-400 flex items-center gap-1.5">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" /> 
+                          <span>Receta incompleta: {resultado?.secciones_pendientes?.length ? 'faltan secciones de despiece' : 'opción sin receta o materiales sin precio'}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="w-full lg:w-[380px] shrink-0 p-3 sm:p-4 bg-muted/40 border border-border rounded-lg space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Precio Sugerido</span>
+                        <div className="flex items-center gap-2">
+                          {(costeando || calculoPendiente) && (
+                            <span className="text-[11px] text-muted-foreground flex items-center gap-1 animate-pulse">
+                              <Loader2 className="w-3 h-3 animate-spin" /> calculando...
+                            </span>
+                          )}
+                          {costeo && (
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border ${
+                              costeo.confianza === 'completa'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                                : costeo.confianza === 'estimada'
+                                ? 'bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
+                                : 'bg-muted text-muted-foreground border-border'
+                            }`}>
+                              {textoConfianza(costeo.confianza)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="min-h-[2rem] flex items-center">
+                        {costeo?.precio_sugerido !== null && costeo?.precio_sugerido !== undefined ? (
+                          <span className="text-2xl font-bold tracking-tight text-foreground">
+                            {formatearMoneda(costeo.precio_sugerido)}
+                          </span>
+                        ) : (
+                          <span className="text-sm font-medium text-muted-foreground italic">
+                            {costeo?.costo === null || costeo?.costo === undefined
+                              ? (errorCosteo || 'Este modelo todavía no tiene costos cargados')
+                              : (costeo?.ganancia === null ? 'Falta definir la ganancia' : 'Sin costeo para este modelo')}
+                          </span>
+                        )}
+                      </div>
+
+                      {costeo?.costo !== null && costeo?.costo !== undefined && (
+                        <div className="mt-2 pt-2 border-t border-border/50 flex flex-wrap items-center justify-between text-xs gap-x-3 gap-y-1 text-muted-foreground">
+                          <div>
+                            <span>Costo: </span>
+                            <span className="font-semibold text-foreground">{formatearMoneda(costeo.costo)}</span>
+                          </div>
+                          {costeo.ganancia !== null && costeo.ganancia !== undefined && costeo.precio_sugerido !== null && (
+                            <div>
+                              <span>Margen: </span>
+                              <span className="font-semibold text-foreground">
+                                {costeo.margen_sobre_precio !== null
+                                  ? `${costeo.margen_sobre_precio.toFixed(1)}%`
+                                  : `${((costeo.ganancia / costeo.precio_sugerido) * 100).toFixed(1)}%`} ({formatearMoneda(costeo.ganancia)})
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {costeo?.pendientes && costeo.pendientes.length > 0 && (
+                      <div className="text-xs bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-900/50 rounded p-2 space-y-1">
+                        <div className="font-medium flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                          <span>Datos pendientes ({costeo.pendientes.length}):</span>
+                        </div>
+                        <ul className="list-disc list-inside space-y-0.5 text-[11px] pl-1">
+                          {costeo.pendientes.map((p, idx) => (
+                            <li key={idx}>
+                              <span className="font-semibold">{traducirTipoPendiente(p.tipo)}:</span> {p.detalle}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     )}
+
+                    <div className="flex items-center gap-2 pt-1 border-t border-border/50">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-xs text-foreground flex items-center gap-1"
+                        onClick={() => setMostrarDesglose(!mostrarDesglose)}
+                      >
+                        {mostrarDesglose ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                        {mostrarDesglose ? 'Ocultar desglose' : 'Ver desglose'}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-xs text-foreground flex items-center gap-1"
+                        onClick={() => setMostrarAjustes(!mostrarAjustes)}
+                      >
+                        {mostrarAjustes ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                        Ajustes al costo {ajustesUI.length > 0 && `(${ajustesUI.length})`}
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
-                <div aria-live="polite" className="mt-4 space-y-2">
-                  {(() => {
-                    const faltantesRegex = /^Falta elegir una opci[oó]n para el grupo obligatorio:\s*(.+)$/i;
-                    const errFaltantes = (resultado?.errores || []).map((e: string) => e.match(faltantesRegex)?.[1]).filter(Boolean);
-                    const otrosErrores = (resultado?.errores || []).filter((e: string) => !faltantesRegex.test(e));
-                    return (
-                      <>
-                        {errFaltantes.length > 0 && (
-                          <div className="text-sm text-muted-foreground flex items-center gap-2">
-                            <AlertCircle className="w-4 h-4" />
-                            Faltan {errFaltantes.length} grupos por elegir: {errFaltantes.join(', ')}
-                          </div>
-                        )}
-                        {otrosErrores.map((err: string, i: number) => (
-                          <div key={`err-${i}`} className="text-sm text-red-500 flex items-center gap-2">
-                            <AlertCircle className="w-4 h-4" /> {err}
-                          </div>
-                        ))}
-                      </>
-                    );
-                  })()}
-                  {resultado?.advertencias?.map((adv: string, i: number) => (
-                    <div key={`adv-${i}`} className="text-sm text-yellow-600 flex items-center gap-2">
-                      <AlertTriangle className="w-4 h-4" /> {adv}
+                {mostrarDesglose && (
+                  <div className="mt-4 p-3 bg-muted/20 border border-border rounded-lg space-y-3">
+                    <div className="flex items-center justify-between border-b border-border pb-2">
+                      <h5 className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                        Desglose de Costos
+                      </h5>
+                      <span className="text-xs text-muted-foreground font-mono">
+                        Total: {formatearMoneda(costeo?.costo || 0)}
+                      </span>
                     </div>
-                  ))}
-                  {isIncompleta && (
-                    <div className="text-sm text-orange-500 flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4" /> 
-                      Receta incompleta: {resultado?.secciones_pendientes?.length ? 'faltan secciones de despiece' : 'opción sin receta o materiales sin precio'}
+
+                    <div className="space-y-2">
+                      {([
+                        { key: 'acero', titulo: 'Acero', total: costeo?.secciones?.acero?.total || 0, lineas: costeo?.secciones?.acero?.lineas || [] },
+                        { key: 'kits_fijos', titulo: 'Kits y consumibles', total: costeo?.secciones?.kits_fijos?.total || 0, lineas: costeo?.secciones?.kits_fijos?.lineas || [] },
+                        { key: 'opciones', titulo: 'Opciones elegidas', total: costeo?.secciones?.opciones?.total || 0, lineas: costeo?.secciones?.opciones?.lineas || [] },
+                        { key: 'mano_obra', titulo: 'Mano de obra', total: costeo?.secciones?.mano_obra?.total || 0, lineas: costeo?.secciones?.mano_obra?.lineas || [] },
+                        { key: 'ajustes', titulo: 'Ajustes', total: costeo?.secciones?.ajustes?.total || 0, lineas: costeo?.secciones?.ajustes?.lineas || [] },
+                      ] as const).map(sec => {
+                        const expandida = !!seccionesExpandidas[sec.key];
+                        return (
+                          <div key={sec.key} className="border border-border rounded-md bg-card overflow-hidden">
+                            <button
+                              type="button"
+                              onClick={() => setSeccionesExpandidas(prev => ({ ...prev, [sec.key]: !prev[sec.key] }))}
+                              className="w-full px-3 py-2 flex items-center justify-between text-xs font-medium hover:bg-muted/50 transition-colors text-left"
+                            >
+                              <div className="flex items-center gap-1.5 text-foreground">
+                                {expandida ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+                                <span>{sec.titulo}</span>
+                                <span className="text-[11px] text-muted-foreground font-normal">({sec.lineas.length} {sec.lineas.length === 1 ? 'línea' : 'líneas'})</span>
+                              </div>
+                              <span className="font-semibold text-foreground font-mono">{formatearMoneda(sec.total)}</span>
+                            </button>
+                            {expandida && (
+                              <div className="border-t border-border bg-background/50 p-2">
+                                {sec.lineas.length === 0 ? (
+                                  <p className="text-xs text-muted-foreground italic px-2 py-1">Sin conceptos registrados</p>
+                                ) : (
+                                  <div className="max-h-44 overflow-y-auto pr-1">
+                                    <table className="w-full text-[11px] text-left">
+                                      <thead>
+                                        <tr className="border-b border-border/60 text-muted-foreground">
+                                          <th className="pb-1 font-medium">Concepto</th>
+                                          <th className="pb-1 font-medium text-right pr-2">Cant.</th>
+                                          <th className="pb-1 font-medium text-right pr-2">Costo U.</th>
+                                          <th className="pb-1 font-medium text-right">Total</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody className="divide-y divide-border/30">
+                                        {sec.lineas.map((linea, lIdx) => (
+                                          <tr key={lIdx} className="hover:bg-muted/40">
+                                            <td className="py-1 text-foreground pr-2 leading-tight">{linea.concepto}</td>
+                                            <td className="py-1 text-muted-foreground text-right pr-2 font-mono">{linea.cantidad}</td>
+                                            <td className="py-1 text-muted-foreground text-right pr-2 font-mono">{formatearMoneda(linea.costo_unitario)}</td>
+                                            <td className="py-1 text-foreground text-right font-medium font-mono">{formatearMoneda(linea.importe ?? (linea.cantidad * linea.costo_unitario))}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+
+                {mostrarAjustes && (
+                  <div className="mt-4 p-3 bg-muted/20 border border-border rounded-lg space-y-3">
+                    <div className="flex items-center justify-between border-b border-border pb-2">
+                      <div>
+                        <h5 className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                          Ajustes al Costo
+                        </h5>
+                        <p className="text-[11px] text-muted-foreground">
+                          Agrega conceptos adicionales o deducciones al costo del equipo.
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs flex items-center gap-1"
+                        onClick={agregarAjuste}
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Agregar ajuste
+                      </Button>
+                    </div>
+
+                    {ajustesUI.length === 0 ? (
+                      <div className="text-xs text-muted-foreground italic py-2 text-center bg-card rounded border border-dashed border-border">
+                        No hay ajustes manuales. Haz clic en "Agregar ajuste" para añadir costos o deducciones.
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {ajustesUI.map((ajuste, index) => {
+                          const cantNum = parseFloat(ajuste.cantidad);
+                          const costoNum = parseFloat(ajuste.costo_unitario);
+                          const esValido = validarAjusteIndividual({
+                            concepto: ajuste.concepto,
+                            cantidad: cantNum,
+                            costo_unitario: costoNum
+                          });
+                          const rowTotal = (!isNaN(cantNum) && !isNaN(costoNum)) ? cantNum * costoNum : 0;
+
+                          return (
+                            <div
+                              key={ajuste.id || index}
+                              className={`p-2 rounded-md bg-card border flex flex-col sm:flex-row items-stretch sm:items-center gap-2 ${
+                                !esValido ? 'border-destructive dark:border-red-500' : 'border-border'
+                              }`}
+                            >
+                              <div className="flex-1 min-w-0">
+                                <input
+                                  type="text"
+                                  placeholder="Concepto (ej. Pintura especial)"
+                                  value={ajuste.concepto}
+                                  onChange={(e) => actualizarAjuste(index, 'concepto', e.target.value)}
+                                  className={`w-full text-xs px-2.5 py-1.5 rounded bg-background border ${
+                                    !ajuste.concepto?.trim() ? 'border-destructive focus:ring-destructive' : 'border-input'
+                                  } focus:outline-none focus:ring-1`}
+                                />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-20">
+                                  <input
+                                    type="text"
+                                    inputMode="decimal"
+                                    placeholder="Cant."
+                                    value={ajuste.cantidad}
+                                    onChange={(e) => actualizarAjuste(index, 'cantidad', e.target.value)}
+                                    className={`w-full text-xs px-2 py-1.5 rounded bg-background border text-right font-mono ${
+                                      isNaN(cantNum) || cantNum <= 0 ? 'border-destructive focus:ring-destructive' : 'border-input'
+                                    } focus:outline-none focus:ring-1`}
+                                  />
+                                </div>
+                                <div className="w-28">
+                                  <input
+                                    type="text"
+                                    inputMode="decimal"
+                                    placeholder="Costo U. ($)"
+                                    value={ajuste.costo_unitario}
+                                    onChange={(e) => actualizarAjuste(index, 'costo_unitario', e.target.value)}
+                                    className={`w-full text-xs px-2 py-1.5 rounded bg-background border text-right font-mono ${
+                                      isNaN(costoNum) && ajuste.costo_unitario !== '-' ? 'border-destructive focus:ring-destructive' : 'border-input'
+                                    } focus:outline-none focus:ring-1`}
+                                  />
+                                </div>
+                                <div className="w-24 text-right font-mono text-xs font-medium text-foreground pr-1">
+                                  {formatearMoneda(rowTotal)}
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive shrink-0"
+                                  onClick={() => eliminarAjuste(index)}
+                                  title="Eliminar ajuste"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              </div>
+                              {!esValido && (
+                                <div className="text-[11px] text-destructive flex items-center gap-1 sm:hidden">
+                                  <AlertCircle className="w-3 h-3" /> Requiere concepto, cantidad &gt; 0 y costo numérico
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -416,11 +822,20 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
         <DialogFooter className="px-4 sm:px-6 py-3 sm:py-4 border-t gap-2 flex-col-reverse sm:flex-row">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button 
-            disabled={loadingConfig || resolviendo || disableConfirm || errorConfig !== null} 
+            disabled={loadingConfig || resolviendo || costeando || calculoPendiente || disableConfirm || errorConfig !== null} 
             onClick={() => {
+              const ajustesValidos: AjusteManual[] = ajustesUI
+                .map(a => ({
+                  concepto: a.concepto.trim(),
+                  cantidad: parseFloat(a.cantidad),
+                  costo_unitario: parseFloat(a.costo_unitario)
+                }))
+                .filter(validarAjusteIndividual);
+
               const cfgToSave = {
                 modelo_id: modeloId,
                 grupos: configuracion.grupos,
+                ajustes: ajustesValidos,
                 texto_especificacion: resultado?.texto_especificacion || '',
                 resumen_lineas: resultado?.resumen_lineas || [],
                 resuelta: !resultado?.errores?.length && !faltanObligatorios,
@@ -431,12 +846,13 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                 cfgToSave, 
                 resultado?.texto_especificacion || '', 
                 !isIncompleta,
-                resultado?.costo_parcial || 0
+                resultado?.costo_parcial || 0,
+                costeo
               );
               onOpenChange(false);
             }}
           >
-            {resolviendo ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+            {(resolviendo || costeando || calculoPendiente) ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
             {itemInicial ? 'Guardar Cambios' : 'Agregar a la cotización'}
           </Button>
         </DialogFooter>

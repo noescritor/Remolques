@@ -3,6 +3,44 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-12 - Sub-bloque 2R-4d: Conexión frontend de costeo y precio sugerido en Configurador y Cotización
+**Herramienta:** Antigravity
+**Tipo:** feat (frontend, cpq, costeo, cotizaciones)
+**Archivos tocados:**
+- `src/app/utils/costeo.ts`
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`
+- `src/app/components/Cotizaciones/CotizacionEditor.tsx`
+**Qué cambió y por qué:**
+- **Módulo de utilidades (`src/app/utils/costeo.ts`):**
+  - Se crearon las interfaces TypeScript `ResultadoCosteo`, `SeccionCosteo`, `LineaCosteo`, `PendienteCosteo`, `AjusteManual` y `CosteoResumenGuardado`.
+  - Se implementó la lógica pura de decisión de precios `decidirPrecioItem({ costeo, precioActual, costeoPrevio })`:
+    - Si no hay nuevo precio sugerido (`costeo === null` o `precio_sugerido === null`), conserva `precioActual` intacto (o 0 si `precioActual` es undefined); nunca devuelve 0 sobre un precio existente por falta de costeo.
+    - Si el ítem es nuevo (`precioActual === undefined`), asigna el nuevo sugerido.
+    - Si el ítem está en edición y el usuario no personalizó el precio (era 0 o coincidía con el sugerido previo), se actualiza al nuevo precio sugerido.
+    - Si el usuario personalizó el precio a mano, se preserva su precio manual.
+    - Se documentaron y probaron los 5 casos de aceptación en el archivo.
+  - Se añadieron las funciones `validarAjusteIndividual`, `validarAjustesCliente`, `textoConfianza` y `traducirTipoPendiente`.
+- **Configurador de equipos (`src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`):**
+  - Se conectó la llamada paralela con debounce a `POST /configuracion/costear` junto a `/configuracion/resolver` en `ejecutarCalculos`.
+  - Se añadió el estado `calculoPendiente` que se activa de inmediato en `handleConfigChange` y `handleAjustesUIChange` y se desactiva al resolver la última petición (con protección `reqId`).
+  - El botón de confirmar se deshabilita si `calculoPendiente || costeando || resolviendo`.
+  - Si `/costear` responde con error o falla de red, ejecuta `setCosteo(null)` para evitar confirmar con datos de una configuración anterior.
+  - **Panel de Costos**: Precio sugerido prominente con badges de confianza ('Costeo completo', 'Estimado: hay datos pendientes', 'Sin costeo para este modelo') y mensajes claros si no hay costos cargados o falta definir ganancia (nunca $0).
+  - Costo unitario y Margen (% sobre precio y $ en pesos).
+  - Indicador sutil de recálculo (`costeando || calculoPendiente`) sin saltos de layout.
+  - Lista de pendientes legible y traducida (`traducirTipoPendiente`).
+  - Desglose plegable por sección (Acero, Kits y consumibles, Opciones elegidas, Mano de obra, Ajustes) con scroll interno (`max-h-44`) para las 61 líneas de acero.
+  - Sección plegable de **Ajustes al costo**: maneja estado local de texto por renglón (`AjusteFilaUI`: `cantidad`, `costo_unitario` como strings), permitiendo escribir el signo `-` y decimales sin saltos a 0.
+  - Al confirmar, `cfgToSave.ajustes` guarda únicamente los ajustes que pasan `validarAjusteIndividual`, y se retiró `costeo` de `cfgToSave` para mantener una única fuente de verdad en `handleCPQConfirm`.
+- **Renglón de la cotización (`src/app/components/Cotizaciones/CotizacionEditor.tsx`):**
+  - Se actualizó `handleCPQConfirm` para recibir el 5.º argumento `costeo`.
+  - Asigna `costo_unitario` al valor de costeo únicamente si la confianza no es `'incompleta'`.
+  - Asigna `precio_unitario` mediante `decidirPrecioItem` y recalcula `iva_item` y `total_item` con `calcularItemCotizacion`.
+  - Guarda en `configuracion.costeo` el resumen para trazabilidad y persistencia.
+- **Validación:**
+  - `npm.cmd run verificar -- --limpio` pasa 10/10 comprobaciones con 0 errores tsc sobre el baseline (55).
+**Acciones manuales pendientes:** Ninguna. Sin merge ni push hasta autorización explícita.
+
 ## 2026-10-11 - Sub-bloque 2R-4c: Motor de costeo (costeo.ts), ruta POST /configuracion/costear y corrección de secciones en resolver
 **Herramienta:** Antigravity
 **Tipo:** feat (backend, cpq, costeo)
