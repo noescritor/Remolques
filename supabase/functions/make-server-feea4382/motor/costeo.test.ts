@@ -195,3 +195,18 @@ Deno.test("Adicional 7: cuando todos los materiales de acero tienen precio asign
   assertEquals(res.confianza, "completa");
   assert(res.precio_sugerido !== null);
 });
+
+Deno.test("Adicional 8: las 12 líneas de kits fijos traen el campo seccion poblado", () => {
+  const res = costear(datosBase, { grupos: {} });
+  assertEquals(res.secciones.kits_fijos.lineas.length, 12);
+  for (const l of res.secciones.kits_fijos.lineas) {
+    assert(typeof l.seccion === "string" && l.seccion.length > 0);
+  }
+  // Verificar secciones esperadas en la fixture
+  const secciones = res.secciones.kits_fijos.lineas.map(l => l.seccion);
+  assert(secciones.includes("tornilleria"));
+  assert(secciones.includes("luz"));
+  assert(secciones.includes("pintura"));
+  assert(secciones.includes("consumibles"));
+  assert(secciones.includes("otros"));
+});

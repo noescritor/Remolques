@@ -3,6 +3,45 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-12 - Sub-bloque 2R-4a (V2): Generación de presupuesto desde costeo real (presupuesto_desde_costeo.ts)
+**Herramienta:** Antigravity
+**Tipo:** feat (motor, backend, frontend, presupuestos, cpq)
+**Archivos tocados:**
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.test.ts`
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.test.ts`
+- `supabase/functions/make-server-feea4382/index.ts`
+- `src/app/types/index.ts`
+- `src/app/utils/costeo.ts`
+- `src/app/components/Presupuestos/presupuestoTemplate.ts`
+- `src/app/components/Presupuestos/PresupuestoEditor.tsx`
+- `src/app/components/Presupuestos/PresupuestoPDF.tsx`
+- `src/app/components/Cotizaciones/CotizacionesList.tsx`
+**Qué cambió y por qué:**
+- **Sección A (Tipos y kits con sección):**
+  - Añadido `seccion?: string` a `LineaCosteo` en `motor/tipos.ts` y `src/app/utils/costeo.ts`.
+  - En `motor/costeo.ts`, se asigna `seccion: kit.seccion` a las líneas de kits/procesos de manufactura (tornilleria, luz, pintura, etc.).
+  - En `motor/costeo.test.ts`, prueba añadida para verificar que las 12 líneas de kits traen su sección poblada.
+- **Sección B (Función pura `generarPresupuestoDesdeCosteo`):**
+  - Creado `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.ts`: función pura que mapea líneas de costeo y opciones a las 14 secciones del presupuesto, fusiona líneas idénticas (mismo material y cu), agrupa procesos de mano de obra, congela `meta.bom` por unidad y preserva trazabilidad (`meta.pendientes`, `meta.conceptos_omitidos`, `meta.confianza`).
+  - Creado `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.test.ts` con 8 pruebas que pasan al 100%, incluyendo la prueba dorada que reproduce el total exacto del Excel ($397,713.63) y desglose por sección al centavo.
+- **Sección C (Ruta POST /cotizaciones/:id/presupuesto):**
+  - En `supabase/functions/make-server-feea4382/index.ts`, añadida la ruta que recalcula costos y BOM de los equipos con datos de hoy, responde 400 si ningún equipo es elegible, 409 si ya existe un folio PRE- (con soporte para `{ reemplazar: true }`), e inserta/actualiza en `presupuestos` con registro de auditoría en bitácora.
+- **Sección D (Botón "Generar presupuesto" en CotizacionesList):**
+  - Reemplazada la implementación legacy en `handleGenerarPresupuesto`: eliminadas las constantes duplicadas y llamadas a `/productos/:id/materiales`.
+  - Ahora invoca `POST /cotizaciones/:id/presupuesto` usando `BASE_URL` de `utils/api.ts`.
+  - Manejo de confirmación ante respuesta 409 con diálogo ("Ya existe un presupuesto para esta cotización. ¿Reemplazarlo?"), bloqueo ante dobles clics y mensajes descriptivos para errores 400.
+- **Sección E (Editor, PDF y compatibilidad hacia atrás):**
+  - Añadidas las secciones opcionales `tornilleria`, `luz`, `aire`, `pintura` y `meta?` a `PresupuestoDatos` en `src/app/types/index.ts` y `presupuestoTemplate.ts`.
+  - `PresupuestoEditor.tsx`: renderiza las 14 secciones, destaca filas con `sin_precio: true` y retira la marca al ingresar `cu > 0`, muestra banner de avisos para `datos.meta` (pendientes, sin_precio, omitidos, confianza), rotula "Gran Total (Costo estimado)" si la confianza no es completa, y preserva `datos.meta` al guardar.
+  - `PresupuestoPDF.tsx`: renderiza las nuevas secciones de forma segura (tolerante a presupuestos antiguos sin esas claves) y añade la leyenda `TOTAL (COSTO ESTIMADO):` cuando corresponde.
+- **Verificación:**
+  - `npm.cmd run verificar -- --limpio` pasando 10/10 comprobaciones con 44 pruebas Deno exitosas y tsc en 53 errores ($\le$ baseline de 55).
+**Acciones manuales pendientes:** Ninguna. Sin merge ni push hasta autorización explícita.
+
+
 ## 2026-10-12 - Sub-bloque 2R-4d: Conexión frontend de costeo y precio sugerido en Configurador y Cotización
 **Herramienta:** Antigravity
 **Tipo:** feat (frontend, cpq, costeo, cotizaciones)

@@ -4,6 +4,7 @@ export interface LineaCosteo {
   costo_unitario: number;
   importe: number;
   origen: string;
+  seccion?: string;
 }
 
 export interface SeccionCosteo {

@@ -124,5 +124,21 @@ export const defaultPresupuestoDatos = {
       { pzas: '16', material: 'PLAFONES DE CARRITO ROJOS P/ESTRIBO', cu: 0, importe: 0 },
       { pzas: '20', material: 'PLAFONES DE CARRITO AMBAR LATERALES', cu: 0, importe: 0 }
     ], total: 0
+  },
+  tornilleria: {
+    items: [],
+    total: 0
+  },
+  luz: {
+    items: [],
+    total: 0
+  },
+  aire: {
+    items: [],
+    total: 0
+  },
+  pintura: {
+    items: [],
+    total: 0
   }
 };

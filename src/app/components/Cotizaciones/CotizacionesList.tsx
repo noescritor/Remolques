@@ -8,7 +8,15 @@ import { Cotizacion } from '../../types';
 import { CotizacionesTableModern } from './CotizacionesTableModern';
 import { supabase } from '../../utils/supabase/client';
 import { toast } from 'sonner';
-import { defaultPresupuestoDatos } from '../Presupuestos/presupuestoTemplate';
+import { BASE_URL } from '../../utils/api';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 
 interface CotizacionesListProps {
   cotizaciones: Cotizacion[];
@@ -33,113 +41,96 @@ export function CotizacionesList({
 }: CotizacionesListProps) {
   const [busqueda, setBusqueda] = useState('');
   const [filtroEstado, setFiltroEstado] = useState<string>('todos');
-
-  
   const [generandoPresupuesto, setGenerandoPresupuesto] = useState(false);
+  const [cotizacionAReemplazar, setCotizacionAReemplazar] = useState<Cotizacion | null>(null);
 
-  const handleGenerarPresupuesto = async (cotizacion: Cotizacion) => {
+  const ejecutarGenerarPresupuesto = async (cotizacion: Cotizacion, reemplazar = false) => {
+    if (generandoPresupuesto) return;
+    setGenerandoPresupuesto(true);
     try {
-      setGenerandoPresupuesto(true);
-      toast.info('Extrayendo recetas BOM para generar presupuesto...');
-
-      // Find the first producto_terminado in the quote items
-      const mainItems = cotizacion.items;
-      if (!mainItems || mainItems.length === 0) {
-        toast.error('La cotización no tiene items.');
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) {
+        toast.error('Sesión no válida. Por favor inicia sesión nuevamente.');
         return;
       }
 
-      // We will create a budget for the first finished product (or merge them)
-      // For simplicity, let's just grab all materials required for this quote
-      const requiredMaterials: { pzas: string, material: string, cu: number, importe: number }[] = [];
-      let totalCosto = 0;
+      const res = await fetch(`${BASE_URL}/cotizaciones/${cotizacion.id}/presupuesto`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ reemplazar })
+      });
 
-      
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-      const headers = {
-        'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-      };
-      const BASE_URL = 'https://remolques-remolques-api.gehkp3.easypanel.host';
+      if (res.status === 409) {
+        setCotizacionAReemplazar(cotizacion);
+        return;
+      }
 
-      for (const item of mainItems) {
-        if (!item.producto_id) continue;
-        
-        // Use proxy to bypass CORS
-        const resProd = await fetch(`${BASE_URL}/productos/${item.producto_id}`, { headers }).catch(() => null);
-        let esTerminado = false;
-        
-        if (resProd && resProd.ok) {
-           const pData = await resProd.json();
-           esTerminado = (pData?.tipo_item === 'producto_terminado' || pData?.[0]?.tipo_item === 'producto_terminado');
-        } else {
-           // Si falla la API proxy, asumimos que s lo es para intentar sacar la receta
-           esTerminado = true;
-        }
-
-        if (esTerminado) {
-          // Fetch BOM via proxy
-          const recetaRes = await fetch(`${BASE_URL}/productos/${item.producto_id}/materiales`, { headers });
-          if (recetaRes.ok) {
-            const receta = await recetaRes.json();
-            if (receta && receta.length > 0) {
-              for (const rm of receta) {
-                const cant = Number(rm.cantidad) * item.cantidad;
-                const mat = rm.material || {};
-                const costo = Number(mat.costo || mat.precio_unitario || 0);
-                const importe = cant * costo;
-                
-                requiredMaterials.push({
-                  pzas: cant.toString(),
-                  material: mat.nombre || 'Material',
-                  cu: costo,
-                  importe: importe
-                });
-                totalCosto += importe;
-              }
-            }
+      if (res.status === 400) {
+        const errData = await res.json().catch(() => ({}));
+        const omitidosStr = Array.isArray(errData.conceptos_omitidos)
+          ? errData.conceptos_omitidos.map((o: any) => `• ${o.descripcion}: ${o.motivo}`).join('\n')
+          : '';
+        toast.error(
+          errData.error || 'No se pudo generar el presupuesto',
+          {
+            description: omitidosStr || 'Revisa la configuración de los equipos en la cotización.',
+            duration: 6000
           }
-        }
-      }
-
-      if (requiredMaterials.length === 0) {
-        toast.error('Ninguno de los items de la cotización tiene una receta (BOM) configurada en la BD.');
+        );
         return;
       }
 
-      // Create new presupuesto payload
-      const datos = JSON.parse(JSON.stringify(defaultPresupuestoDatos));
-      // Empty out the default template and dump our custom BOM into 'acero' to show it cleanly
-      for (const key of Object.keys(datos)) {
-        datos[key].items = [];
-        datos[key].total = 0;
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({ error: 'Error del servidor' }));
+        toast.error('Error al generar presupuesto', {
+          description: errData.error || `HTTP ${res.status}`,
+          action: {
+            label: 'Reintentar',
+            onClick: () => ejecutarGenerarPresupuesto(cotizacion, reemplazar)
+          }
+        });
+        return;
       }
-      datos.acero.items = requiredMaterials;
-      datos.acero.total = totalCosto;
 
-      const payload = {
-        organizacion_id: cotizacion.organizacion_id,
-        cliente_id: cotizacion.cliente_id,
-        folio: 'PRE-' + cotizacion.folio,
-        fecha: new Date().toISOString().split('T')[0],
-        concepto: 'Presupuesto basado en Cotización ' + cotizacion.folio,
-        datos: datos,
-        total_costo: totalCosto,
-        precio_venta: cotizacion.total_cotizacion || 0
-      };
+      const data = await res.json();
+      setCotizacionAReemplazar(null);
 
-      const { error } = await supabase.from('presupuestos').insert(payload);
-      if (error) throw error;
+      const folioPres = data.presupuesto?.folio || `PRE-${cotizacion.folio}`;
+      const nEquipos = data.equipos_incluidos ?? 1;
+      const costoFormateado = (data.total_costo ?? 0).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
 
-      toast.success('Presupuesto de producción generado con éxito. Revisa el módulo de Presupuestos.');
+      let msgExito = `Presupuesto ${folioPres} ${data.reemplazado ? 'reemplazado' : 'generado'}: ${nEquipos} equipo(s), costo $${costoFormateado}`;
+      if (data.confianza && data.confianza !== 'completa') {
+        msgExito += ` (Costeo ${data.confianza})`;
+      }
 
+      toast.success(msgExito, {
+        description: 'Revisa el módulo de Presupuestos para ver el detalle y materiales.',
+        duration: 5000
+      });
     } catch (err: any) {
-      console.error(err);
-      toast.error('Error generando presupuesto: ' + err.message);
+      console.error('[CotizacionesList] Error generando presupuesto:', err);
+      toast.error('Error de red al conectar con el servidor', {
+        description: err.message,
+        action: {
+          label: 'Reintentar',
+          onClick: () => ejecutarGenerarPresupuesto(cotizacion, reemplazar)
+        }
+      });
     } finally {
       setGenerandoPresupuesto(false);
     }
+  };
+
+  const handleGenerarPresupuesto = (cotizacion: Cotizacion) => {
+    ejecutarGenerarPresupuesto(cotizacion, false);
   };
 
   const cotizacionesSeguras = Array.isArray(cotizaciones) ? cotizaciones : [];
@@ -247,13 +238,41 @@ export function CotizacionesList({
         </div>
       ) : (
         <CotizacionesTableModern
-            onGenerarPresupuesto={handleGenerarPresupuesto}
+          onGenerarPresupuesto={handleGenerarPresupuesto}
           cotizaciones={cotizacionesFiltradas}
           onVerCotizacion={onVerCotizacion}
           onDuplicarCotizacion={onDuplicarCotizacion}
           onEliminarCotizacion={onEliminarCotizacion}
         />
       )}
+
+      {/* Diálogo de confirmación para reemplazar presupuesto (409) */}
+      <Dialog open={!!cotizacionAReemplazar} onOpenChange={(open) => !open && setCotizacionAReemplazar(null)}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Presupuesto existente</DialogTitle>
+            <DialogDescription>
+              Ya existe un presupuesto para la cotización {cotizacionAReemplazar?.folio}. ¿Deseas reemplazarlo con los costos y configuración actuales?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setCotizacionAReemplazar(null)}
+              disabled={generandoPresupuesto}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => cotizacionAReemplazar && ejecutarGenerarPresupuesto(cotizacionAReemplazar, true)}
+              disabled={generandoPresupuesto}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              {generandoPresupuesto ? 'Reemplazando...' : 'Reemplazar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
