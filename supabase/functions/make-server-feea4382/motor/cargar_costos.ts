@@ -84,6 +84,9 @@ export async function cargarDatosCosteo(supabase: any, modeloId: string): Promis
     if (modeloMapeado.tipo === "plataforma" || modeloMapeado.tipo === "dolly") {
       const val = paramGanancia.valor[modeloMapeado.tipo];
       ganancia = typeof val === "number" ? val : null;
+    } else if (modeloMapeado.tipo === "gondola") {
+      const val = paramGanancia.valor.gondola_servicios_sueldos;
+      ganancia = typeof val === "number" ? val : null;
     } else {
       ganancia = null;
     }

@@ -55,7 +55,7 @@ export function costear(
   // 1. Validar si el modelo tiene costos cargados
   const tieneAcero = (datos.receta_acero || []).length > 0;
   const tieneKits = (datos.costos_modelo || []).length > 0;
-  const tieneProcesos = (datos.procesos || []).length > 0;
+  const tieneProcesos = modelo.tipo === "gondola" ? true : (datos.procesos || []).length > 0;
 
   if (!tieneAcero) {
     pendientes.push({
@@ -81,6 +81,13 @@ export function costear(
     pendientes.push({
       tipo: "variante_supuesta",
       detalle: `Costos estimados a partir de ${nombreOrigen}: no hay desglose propio de esta variante`
+    });
+  }
+
+  if (modelo.tipo === "gondola") {
+    pendientes.push({
+      tipo: "iva_gondola",
+      detalle: "El IVA de la góndola está por confirmar con el dueño: en el Excel es 16% solo sobre chasis + tina; el precio sugerido no lo incluye"
     });
   }
 

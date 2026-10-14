@@ -167,6 +167,8 @@ export function traducirTipoPendiente(tipo: string): string {
       return 'Ganancia no definida';
     case 'variante_supuesta':
       return 'Costo supuesto';
+    case 'iva_gondola':
+      return 'IVA por confirmar';
     default:
       return tipo;
   }

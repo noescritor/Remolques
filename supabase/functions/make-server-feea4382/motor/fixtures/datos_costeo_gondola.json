@@ -1,0 +1,1503 @@
+{
+  "gondola_a36": {
+    "modelo": {
+      "id": "00000000-0000-0000-0000-000000000030",
+      "nombre": "GONDOLA 2 EJES 45 M3",
+      "tipo": "gondola",
+      "largo_ft": 0,
+      "num_ejes": 2
+    },
+    "receta_acero": [
+      {
+        "material_id": "mat-gondola-chasis-1",
+        "nombre": "ALMA (PLACA DE GRADO A-50 CAL. 1/4\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 12500,
+        "descripcion": "Placa de grado A-50 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-2",
+        "nombre": "SOLERAS (SOLERA DE GRADO A-529 A 1/2\" X 6\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 7304,
+        "descripcion": "Solera de grado A-529 a 1/2\" X 6\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-3",
+        "nombre": "PUENTES DE SUSPENSIÓN (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 9,
+        "escala": "fija",
+        "costo": 700,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-4",
+        "nombre": "PUENTES INTERMEDIOS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 600,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-5",
+        "nombre": "PUENTES PARA PATINES (PLACA DE GRADO A-36 CAL. 3/16\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 440,
+        "descripcion": "Placa de grado A-36 Cal. 3/16\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-6",
+        "nombre": "CARTABON PARA PUENTE DE PATIN (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 300,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-7",
+        "nombre": "PUENTES PARA PLANCHA (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 3,
+        "escala": "fija",
+        "costo": 700,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-8",
+        "nombre": "BORDA DELANTERA (PLACA DE GRADO A-36 CAL. 3/16\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 480,
+        "descripcion": "Placa de grado A-36 Cal. 3/16\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-9",
+        "nombre": "PLANCHA (PLACA DE GRADO A-36 CAL. 3/8\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 3235,
+        "descripcion": "Placa de grado A-36 Cal. 3/8\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-10",
+        "nombre": "ATISADOR (SOLERA DE GRADO A-36 A 3/8\" X 2\")",
+        "cantidad": 6,
+        "escala": "fija",
+        "costo": 40,
+        "descripcion": "Solera de grado A-36 a 3/8\" X 2\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-11",
+        "nombre": "ATISADOR (SOLERA DE GRADO A-36 A 3/8\" X 2\")",
+        "cantidad": 18,
+        "escala": "fija",
+        "costo": 75,
+        "descripcion": "Solera de grado A-36 a 3/8\" X 2\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-12",
+        "nombre": "KIT DE PERNOS",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 13000,
+        "descripcion": "Kit de pernos"
+      },
+      {
+        "material_id": "mat-gondola-chasis-13",
+        "nombre": "BASE PARA TANQUES (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 77,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-14",
+        "nombre": "JALON PLACA BASE (PLACA DE GRADO A-36 CAL. 1/2\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 2500,
+        "descripcion": "Placa de grado A-36 Cal. 1/2\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-15",
+        "nombre": "JALON REFUERZO (PLACA DE GRADO A-36 CAL. 3/8\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 600,
+        "descripcion": "Placa de grado A-36 Cal. 3/8\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-16",
+        "nombre": "JALON CARTABONES",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 400,
+        "descripcion": "Jalon"
+      },
+      {
+        "material_id": "mat-gondola-chasis-17",
+        "nombre": "BASE PARA ESTRIBO PLACA (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 130,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-18",
+        "nombre": "BASE PARA ESTRIBO SOLERA FRONTAL",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 170,
+        "descripcion": "Base para estribo"
+      },
+      {
+        "material_id": "mat-gondola-chasis-19",
+        "nombre": "BASE PARA ESTRIBO SOLERA POSTERIOR",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 65,
+        "descripcion": "Base para estribo"
+      },
+      {
+        "material_id": "mat-gondola-chasis-20",
+        "nombre": "ESTRIBO (PTR 4X4\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 1050,
+        "descripcion": "PTR 4X4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-21",
+        "nombre": "C PARA GATO (PLACA DE GRADO A-36 CAL. 3/8\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 350,
+        "descripcion": "Placa de grado A-36 Cal. 3/8\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-22",
+        "nombre": "BASE PARA MANITAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 101,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-23",
+        "nombre": "PORTA LODERAS (PLACA DE GRADO A-36 CAL. 10)",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 380,
+        "descripcion": "Placa de grado A-36 Cal. 10"
+      },
+      {
+        "material_id": "mat-gondola-chasis-24",
+        "nombre": "U PARA JALON (REDONDO DE 1\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 102,
+        "descripcion": "Redondo de 1\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-25",
+        "nombre": "BASE PARA PERCHAS (SOLERA DE GRADO A-36 A 1/2\" X 6\")",
+        "cantidad": 6,
+        "escala": "fija",
+        "costo": 234,
+        "descripcion": "Solera de grado A-36 a 1/2\" x 6\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-26",
+        "nombre": "BASE PARA PLATOS (SOLERA DE GRADO A-36 A 1/2\" X 3\")",
+        "cantidad": 6,
+        "escala": "fija",
+        "costo": 67,
+        "descripcion": "Solera de grado A-36 a 1/2\" x 3\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-27",
+        "nombre": "TAPA PARA PERNO REY (CANAL U 6\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 100,
+        "descripcion": "Canal u 6\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-28",
+        "nombre": "BASE PARA PATINES PLACAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 8,
+        "escala": "fija",
+        "costo": 52.6,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-29",
+        "nombre": "BASE PARA PATINES SOLERA (SOLERA DE GRADO A-36 A 3/8\" X 2\")",
+        "cantidad": 8,
+        "escala": "fija",
+        "costo": 23.4,
+        "descripcion": "Solera de grado A-36 a 3/8\" x 2\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-30",
+        "nombre": "BASE PARA FOCO DE ABS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 22.6,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-31",
+        "nombre": "BASE PARA ABS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 28,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-32",
+        "nombre": "PORTA PLACAS (PLACA DE GRADO A-36 CAL. 10)",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 45,
+        "descripcion": "Placa de grado A-36 Cal. 10"
+      },
+      {
+        "material_id": "mat-gondola-chasis-33",
+        "nombre": "HERAJE PARA PATINES 110CM (PLACA DE GRADO A-36 CAL. 3/16\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 196.99,
+        "descripcion": "Placa de grado A-36 Cal. 3/16\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-34",
+        "nombre": "HERAJE PARA PATINES 125CM",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 223.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-35",
+        "nombre": "HERAJE PARA PATINES 70CM",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 124.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-36",
+        "nombre": "HERAJE PARA PATINES 67CM",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 119.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-37",
+        "nombre": "HERAJE PARA PATINES 23CM",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 41.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-38",
+        "nombre": "HERAJE PARA PATINES 7CM (SOLERA DE GRADO A-36 A 1/2\" X 3\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 23.99,
+        "descripcion": "Solera de grado A-36 a 1/2\" x 3\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-39",
+        "nombre": "HERAJE PARA PATINES 27CM",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 90.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-40",
+        "nombre": "HERAJE PARA PATINES 30CM",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 100.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-41",
+        "nombre": "HERAJE PARA PATINES BUCHACA (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 40.99,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-42",
+        "nombre": "PORTA LLANTAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 87.99,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-43",
+        "nombre": "PORTA LLANTAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 275.99,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-44",
+        "nombre": "PORTA LLANTAS (SOLERA DE GRADO A-36 A 1/2\" X 3\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 738.99,
+        "descripcion": "Solera de grado A-36 a 1/2\" x 3\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-45",
+        "nombre": "PORTA LLANTAS (REDONDO DE 1\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 400,
+        "descripcion": "Redondo de 1\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-46",
+        "nombre": "TUBOS PARA CABLEADO (TUBO DE 1 1/2\" CED. 40)",
+        "cantidad": 20,
+        "escala": "fija",
+        "costo": 10.99,
+        "descripcion": "Tubo de 1 1/2\" Ced. 40"
+      },
+      {
+        "material_id": "mat-gondola-chasis-47",
+        "nombre": "CHAMBER PARA PUERTAS",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 487.99,
+        "descripcion": "Chamber para puertas"
+      },
+      {
+        "material_id": "mat-gondola-chasis-48",
+        "nombre": "REFUERZO TRUZA (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 12,
+        "escala": "fija",
+        "costo": 82.99,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-49",
+        "nombre": "CAJON PARA CASQUILLO TRASERO (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 340,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      }
+    ],
+    "costos_modelo": [
+      {
+        "seccion": "luz",
+        "concepto": "Kit de luz",
+        "cantidad": 1,
+        "costo_unitario": 8500,
+        "escala": "fija"
+      },
+      {
+        "seccion": "pintura",
+        "concepto": "Praimer",
+        "cantidad": 1,
+        "costo_unitario": 10000,
+        "escala": "fija"
+      },
+      {
+        "seccion": "tornilleria",
+        "concepto": "Kit de tornillería para patines",
+        "cantidad": 44,
+        "costo_unitario": 15,
+        "escala": "fija"
+      },
+      {
+        "seccion": "tornilleria",
+        "concepto": "Tornillería para loderas",
+        "cantidad": 8,
+        "costo_unitario": 5,
+        "escala": "fija"
+      },
+      {
+        "seccion": "consumibles",
+        "concepto": "Rollo de micro tubular",
+        "cantidad": 3,
+        "costo_unitario": 995,
+        "escala": "fija"
+      },
+      {
+        "seccion": "consumibles",
+        "concepto": "Rollo de sólido",
+        "cantidad": 2,
+        "costo_unitario": 995,
+        "escala": "fija"
+      },
+      {
+        "seccion": "consumibles",
+        "concepto": "Tanque de CO2",
+        "cantidad": 3,
+        "costo_unitario": 925,
+        "escala": "fija"
+      },
+      {
+        "seccion": "consumibles",
+        "concepto": "Consumibles",
+        "cantidad": 2,
+        "costo_unitario": 550,
+        "escala": "fija"
+      },
+      {
+        "seccion": "consumibles",
+        "concepto": "Kit de limpieza",
+        "cantidad": 1,
+        "costo_unitario": 750,
+        "escala": "fija"
+      },
+      {
+        "seccion": "otros",
+        "concepto": "Perno rey Holland",
+        "cantidad": 1,
+        "costo_unitario": 1200,
+        "escala": "fija"
+      },
+      {
+        "seccion": "otros",
+        "concepto": "Tanque para aire",
+        "cantidad": 2,
+        "costo_unitario": 1050,
+        "escala": "fija"
+      },
+      {
+        "seccion": "otros",
+        "concepto": "Pistón",
+        "cantidad": 1,
+        "costo_unitario": 55825,
+        "escala": "fija"
+      },
+      {
+        "seccion": "otros",
+        "concepto": "Lodera blanca",
+        "cantidad": 2,
+        "costo_unitario": 303.99,
+        "escala": "fija"
+      },
+      {
+        "seccion": "otros",
+        "concepto": "Flejes",
+        "cantidad": 2,
+        "costo_unitario": 232,
+        "escala": "fija"
+      },
+      {
+        "seccion": "tornilleria",
+        "concepto": "Kit de tornillería para gancho",
+        "cantidad": 1,
+        "costo_unitario": 49,
+        "escala": "fija"
+      }
+    ],
+    "procesos": [],
+    "opcion_costos": [
+      {
+        "grupo_clave": "tina_material",
+        "opcion_clave": "a36",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 167505.76
+      },
+      {
+        "grupo_clave": "tina_material",
+        "opcion_clave": "hardox_450",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 286748.42
+      },
+      {
+        "grupo_clave": "suspension",
+        "opcion_clave": "fleet_master",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 23118
+      },
+      {
+        "grupo_clave": "suspension",
+        "opcion_clave": "ampro",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 23118
+      },
+      {
+        "grupo_clave": "suspension",
+        "opcion_clave": "hendrickson",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 35844
+      },
+      {
+        "grupo_clave": "suspension",
+        "opcion_clave": "alta_hendrickson",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 46783.62
+      },
+      {
+        "grupo_clave": "suspension",
+        "opcion_clave": "phm",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 30000
+      },
+      {
+        "grupo_clave": "eje",
+        "opcion_clave": "ampro",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 21692
+      },
+      {
+        "grupo_clave": "eje",
+        "opcion_clave": "fleet_master",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 19905.6
+      },
+      {
+        "grupo_clave": "patin",
+        "opcion_clave": "ampro",
+        "cantidad_base": 2,
+        "escala": "fija",
+        "costo_unitario": 5916
+      },
+      {
+        "grupo_clave": "patin",
+        "opcion_clave": "hj",
+        "cantidad_base": 2,
+        "escala": "fija",
+        "costo_unitario": 5646.88
+      },
+      {
+        "grupo_clave": "patin",
+        "opcion_clave": "holland",
+        "cantidad_base": 2,
+        "escala": "fija",
+        "costo_unitario": 17980
+      },
+      {
+        "grupo_clave": "gancho",
+        "opcion_clave": "holland_8_10",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 6844
+      },
+      {
+        "grupo_clave": "gancho",
+        "opcion_clave": "premier_8",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 11890
+      },
+      {
+        "grupo_clave": "gancho",
+        "opcion_clave": "premier_bestia_6",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 28040.98
+      },
+      {
+        "grupo_clave": "abs",
+        "opcion_clave": "2e_sin_retractil",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 22000
+      },
+      {
+        "grupo_clave": "abs",
+        "opcion_clave": "2e_1_retractil",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 26700
+      },
+      {
+        "grupo_clave": "abs",
+        "opcion_clave": "3e_1_retractil",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 27200
+      },
+      {
+        "grupo_clave": "abs",
+        "opcion_clave": "3e_2_retractil",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 30500
+      },
+      {
+        "grupo_clave": "retractil",
+        "opcion_clave": "paleta",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 15000
+      },
+      {
+        "grupo_clave": "rines",
+        "opcion_clave": "acero",
+        "cantidad_base": 4,
+        "escala": "por_eje",
+        "costo_unitario": 1550
+      },
+      {
+        "grupo_clave": "rines",
+        "opcion_clave": "aluminio",
+        "cantidad_base": 4,
+        "escala": "por_eje",
+        "costo_unitario": 5500
+      },
+      {
+        "grupo_clave": "llantas",
+        "opcion_clave": "chinas",
+        "cantidad_base": 4,
+        "escala": "por_eje",
+        "costo_unitario": 3000
+      },
+      {
+        "grupo_clave": "llantas",
+        "opcion_clave": "firestone",
+        "cantidad_base": 4,
+        "escala": "por_eje",
+        "costo_unitario": 8700
+      },
+      {
+        "grupo_clave": "llantas",
+        "opcion_clave": "amulet",
+        "cantidad_base": 4,
+        "escala": "por_eje",
+        "costo_unitario": 4225
+      }
+    ],
+    "grupos": [
+      {
+        "id": "grp-tina_material",
+        "clave": "tina_material",
+        "nombre": "Material de tina",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-suspension",
+        "clave": "suspension",
+        "nombre": "Suspensión",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-eje",
+        "clave": "eje",
+        "nombre": "Ejes",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-patin",
+        "clave": "patin",
+        "nombre": "Patines",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-gancho",
+        "clave": "gancho",
+        "nombre": "Gancho de arrastre",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-abs",
+        "clave": "abs",
+        "nombre": "Sistema de frenos ABS",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-retractil",
+        "clave": "retractil",
+        "nombre": "Sistema retráctil",
+        "seleccion": "multiple",
+        "regla": null
+      },
+      {
+        "id": "grp-rines",
+        "clave": "rines",
+        "nombre": "Rines",
+        "seleccion": "unica_con_cantidad",
+        "regla": null
+      },
+      {
+        "id": "grp-llantas",
+        "clave": "llantas",
+        "nombre": "Llantas",
+        "seleccion": "unica_con_cantidad",
+        "regla": null
+      }
+    ],
+    "ganancia": 100000
+  },
+  "gondola_hardox450": {
+    "modelo": {
+      "id": "00000000-0000-0000-0000-000000000031",
+      "nombre": "GONDOLA 3 EJES 45 M3",
+      "tipo": "gondola",
+      "largo_ft": 0,
+      "num_ejes": 3
+    },
+    "receta_acero": [
+      {
+        "material_id": "mat-gondola-chasis-1",
+        "nombre": "ALMA (PLACA DE GRADO A-50 CAL. 1/4\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 12500,
+        "descripcion": "Placa de grado A-50 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-2",
+        "nombre": "SOLERAS (SOLERA DE GRADO A-529 A 1/2\" X 6\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 7304,
+        "descripcion": "Solera de grado A-529 a 1/2\" X 6\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-3",
+        "nombre": "PUENTES DE SUSPENSIÓN (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 9,
+        "escala": "fija",
+        "costo": 700,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-4",
+        "nombre": "PUENTES INTERMEDIOS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 600,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-5",
+        "nombre": "PUENTES PARA PATINES (PLACA DE GRADO A-36 CAL. 3/16\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 440,
+        "descripcion": "Placa de grado A-36 Cal. 3/16\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-6",
+        "nombre": "CARTABON PARA PUENTE DE PATIN (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 300,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-7",
+        "nombre": "PUENTES PARA PLANCHA (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 3,
+        "escala": "fija",
+        "costo": 700,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-8",
+        "nombre": "BORDA DELANTERA (PLACA DE GRADO A-36 CAL. 3/16\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 480,
+        "descripcion": "Placa de grado A-36 Cal. 3/16\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-9",
+        "nombre": "PLANCHA (PLACA DE GRADO A-36 CAL. 3/8\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 3235,
+        "descripcion": "Placa de grado A-36 Cal. 3/8\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-10",
+        "nombre": "ATISADOR (SOLERA DE GRADO A-36 A 3/8\" X 2\")",
+        "cantidad": 6,
+        "escala": "fija",
+        "costo": 40,
+        "descripcion": "Solera de grado A-36 a 3/8\" X 2\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-11",
+        "nombre": "ATISADOR (SOLERA DE GRADO A-36 A 3/8\" X 2\")",
+        "cantidad": 18,
+        "escala": "fija",
+        "costo": 75,
+        "descripcion": "Solera de grado A-36 a 3/8\" X 2\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-12",
+        "nombre": "KIT DE PERNOS",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 13000,
+        "descripcion": "Kit de pernos"
+      },
+      {
+        "material_id": "mat-gondola-chasis-13",
+        "nombre": "BASE PARA TANQUES (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 77,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-14",
+        "nombre": "JALON PLACA BASE (PLACA DE GRADO A-36 CAL. 1/2\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 2500,
+        "descripcion": "Placa de grado A-36 Cal. 1/2\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-15",
+        "nombre": "JALON REFUERZO (PLACA DE GRADO A-36 CAL. 3/8\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 600,
+        "descripcion": "Placa de grado A-36 Cal. 3/8\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-16",
+        "nombre": "JALON CARTABONES",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 400,
+        "descripcion": "Jalon"
+      },
+      {
+        "material_id": "mat-gondola-chasis-17",
+        "nombre": "BASE PARA ESTRIBO PLACA (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 130,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-18",
+        "nombre": "BASE PARA ESTRIBO SOLERA FRONTAL",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 170,
+        "descripcion": "Base para estribo"
+      },
+      {
+        "material_id": "mat-gondola-chasis-19",
+        "nombre": "BASE PARA ESTRIBO SOLERA POSTERIOR",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 65,
+        "descripcion": "Base para estribo"
+      },
+      {
+        "material_id": "mat-gondola-chasis-20",
+        "nombre": "ESTRIBO (PTR 4X4\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 1050,
+        "descripcion": "PTR 4X4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-21",
+        "nombre": "C PARA GATO (PLACA DE GRADO A-36 CAL. 3/8\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 350,
+        "descripcion": "Placa de grado A-36 Cal. 3/8\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-22",
+        "nombre": "BASE PARA MANITAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 101,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-23",
+        "nombre": "PORTA LODERAS (PLACA DE GRADO A-36 CAL. 10)",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 380,
+        "descripcion": "Placa de grado A-36 Cal. 10"
+      },
+      {
+        "material_id": "mat-gondola-chasis-24",
+        "nombre": "U PARA JALON (REDONDO DE 1\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 102,
+        "descripcion": "Redondo de 1\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-25",
+        "nombre": "BASE PARA PERCHAS (SOLERA DE GRADO A-36 A 1/2\" X 6\")",
+        "cantidad": 6,
+        "escala": "fija",
+        "costo": 234,
+        "descripcion": "Solera de grado A-36 a 1/2\" x 6\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-26",
+        "nombre": "BASE PARA PLATOS (SOLERA DE GRADO A-36 A 1/2\" X 3\")",
+        "cantidad": 6,
+        "escala": "fija",
+        "costo": 67,
+        "descripcion": "Solera de grado A-36 a 1/2\" x 3\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-27",
+        "nombre": "TAPA PARA PERNO REY (CANAL U 6\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 100,
+        "descripcion": "Canal u 6\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-28",
+        "nombre": "BASE PARA PATINES PLACAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 8,
+        "escala": "fija",
+        "costo": 52.6,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-29",
+        "nombre": "BASE PARA PATINES SOLERA (SOLERA DE GRADO A-36 A 3/8\" X 2\")",
+        "cantidad": 8,
+        "escala": "fija",
+        "costo": 23.4,
+        "descripcion": "Solera de grado A-36 a 3/8\" x 2\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-30",
+        "nombre": "BASE PARA FOCO DE ABS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 22.6,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-31",
+        "nombre": "BASE PARA ABS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 28,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-32",
+        "nombre": "PORTA PLACAS (PLACA DE GRADO A-36 CAL. 10)",
+        "cantidad": 1,
+        "escala": "fija",
+        "costo": 45,
+        "descripcion": "Placa de grado A-36 Cal. 10"
+      },
+      {
+        "material_id": "mat-gondola-chasis-33",
+        "nombre": "HERAJE PARA PATINES 110CM (PLACA DE GRADO A-36 CAL. 3/16\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 196.99,
+        "descripcion": "Placa de grado A-36 Cal. 3/16\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-34",
+        "nombre": "HERAJE PARA PATINES 125CM",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 223.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-35",
+        "nombre": "HERAJE PARA PATINES 70CM",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 124.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-36",
+        "nombre": "HERAJE PARA PATINES 67CM",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 119.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-37",
+        "nombre": "HERAJE PARA PATINES 23CM",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 41.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-38",
+        "nombre": "HERAJE PARA PATINES 7CM (SOLERA DE GRADO A-36 A 1/2\" X 3\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 23.99,
+        "descripcion": "Solera de grado A-36 a 1/2\" x 3\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-39",
+        "nombre": "HERAJE PARA PATINES 27CM",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 90.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-40",
+        "nombre": "HERAJE PARA PATINES 30CM",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 100.99,
+        "descripcion": "Heraje para patines"
+      },
+      {
+        "material_id": "mat-gondola-chasis-41",
+        "nombre": "HERAJE PARA PATINES BUCHACA (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 40.99,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-42",
+        "nombre": "PORTA LLANTAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 4,
+        "escala": "fija",
+        "costo": 87.99,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-43",
+        "nombre": "PORTA LLANTAS (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 275.99,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-44",
+        "nombre": "PORTA LLANTAS (SOLERA DE GRADO A-36 A 1/2\" X 3\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 738.99,
+        "descripcion": "Solera de grado A-36 a 1/2\" x 3\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-45",
+        "nombre": "PORTA LLANTAS (REDONDO DE 1\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 400,
+        "descripcion": "Redondo de 1\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-46",
+        "nombre": "TUBOS PARA CABLEADO (TUBO DE 1 1/2\" CED. 40)",
+        "cantidad": 20,
+        "escala": "fija",
+        "costo": 10.99,
+        "descripcion": "Tubo de 1 1/2\" Ced. 40"
+      },
+      {
+        "material_id": "mat-gondola-chasis-47",
+        "nombre": "CHAMBER PARA PUERTAS",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 487.99,
+        "descripcion": "Chamber para puertas"
+      },
+      {
+        "material_id": "mat-gondola-chasis-48",
+        "nombre": "REFUERZO TRUZA (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 12,
+        "escala": "fija",
+        "costo": 82.99,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      },
+      {
+        "material_id": "mat-gondola-chasis-49",
+        "nombre": "CAJON PARA CASQUILLO TRASERO (PLACA DE GRADO A-36 CAL. 1/4\")",
+        "cantidad": 2,
+        "escala": "fija",
+        "costo": 340,
+        "descripcion": "Placa de grado A-36 Cal. 1/4\""
+      }
+    ],
+    "costos_modelo": [
+      {
+        "seccion": "luz",
+        "concepto": "Kit de luz",
+        "cantidad": 1,
+        "costo_unitario": 8500,
+        "escala": "fija"
+      },
+      {
+        "seccion": "pintura",
+        "concepto": "Praimer",
+        "cantidad": 1,
+        "costo_unitario": 10000,
+        "escala": "fija"
+      },
+      {
+        "seccion": "tornilleria",
+        "concepto": "Kit de tornillería para patines",
+        "cantidad": 44,
+        "costo_unitario": 15,
+        "escala": "fija"
+      },
+      {
+        "seccion": "tornilleria",
+        "concepto": "Tornillería para loderas",
+        "cantidad": 8,
+        "costo_unitario": 5,
+        "escala": "fija"
+      },
+      {
+        "seccion": "consumibles",
+        "concepto": "Rollo de micro tubular",
+        "cantidad": 3,
+        "costo_unitario": 995,
+        "escala": "fija"
+      },
+      {
+        "seccion": "consumibles",
+        "concepto": "Rollo de sólido",
+        "cantidad": 2,
+        "costo_unitario": 995,
+        "escala": "fija"
+      },
+      {
+        "seccion": "consumibles",
+        "concepto": "Tanque de CO2",
+        "cantidad": 3,
+        "costo_unitario": 925,
+        "escala": "fija"
+      },
+      {
+        "seccion": "consumibles",
+        "concepto": "Consumibles",
+        "cantidad": 2,
+        "costo_unitario": 550,
+        "escala": "fija"
+      },
+      {
+        "seccion": "consumibles",
+        "concepto": "Kit de limpieza",
+        "cantidad": 1,
+        "costo_unitario": 750,
+        "escala": "fija"
+      },
+      {
+        "seccion": "otros",
+        "concepto": "Perno rey Holland",
+        "cantidad": 1,
+        "costo_unitario": 1200,
+        "escala": "fija"
+      },
+      {
+        "seccion": "otros",
+        "concepto": "Tanque para aire",
+        "cantidad": 2,
+        "costo_unitario": 1050,
+        "escala": "fija"
+      },
+      {
+        "seccion": "otros",
+        "concepto": "Pistón",
+        "cantidad": 1,
+        "costo_unitario": 55825,
+        "escala": "fija"
+      },
+      {
+        "seccion": "otros",
+        "concepto": "Lodera blanca",
+        "cantidad": 2,
+        "costo_unitario": 303.99,
+        "escala": "fija"
+      },
+      {
+        "seccion": "otros",
+        "concepto": "Flejes",
+        "cantidad": 2,
+        "costo_unitario": 232,
+        "escala": "fija"
+      }
+    ],
+    "procesos": [],
+    "opcion_costos": [
+      {
+        "grupo_clave": "tina_material",
+        "opcion_clave": "a36",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 167505.76
+      },
+      {
+        "grupo_clave": "tina_material",
+        "opcion_clave": "hardox_450",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 286748.42
+      },
+      {
+        "grupo_clave": "suspension",
+        "opcion_clave": "fleet_master",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 23118
+      },
+      {
+        "grupo_clave": "suspension",
+        "opcion_clave": "ampro",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 23118
+      },
+      {
+        "grupo_clave": "suspension",
+        "opcion_clave": "hendrickson",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 35844
+      },
+      {
+        "grupo_clave": "suspension",
+        "opcion_clave": "alta_hendrickson",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 46783.62
+      },
+      {
+        "grupo_clave": "suspension",
+        "opcion_clave": "phm",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 30000
+      },
+      {
+        "grupo_clave": "eje",
+        "opcion_clave": "ampro",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 21692
+      },
+      {
+        "grupo_clave": "eje",
+        "opcion_clave": "fleet_master",
+        "cantidad_base": 1,
+        "escala": "por_eje",
+        "costo_unitario": 19905.6
+      },
+      {
+        "grupo_clave": "patin",
+        "opcion_clave": "ampro",
+        "cantidad_base": 2,
+        "escala": "fija",
+        "costo_unitario": 5916
+      },
+      {
+        "grupo_clave": "patin",
+        "opcion_clave": "hj",
+        "cantidad_base": 2,
+        "escala": "fija",
+        "costo_unitario": 5646.88
+      },
+      {
+        "grupo_clave": "patin",
+        "opcion_clave": "holland",
+        "cantidad_base": 2,
+        "escala": "fija",
+        "costo_unitario": 17980
+      },
+      {
+        "grupo_clave": "gancho",
+        "opcion_clave": "holland_8_10",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 6844
+      },
+      {
+        "grupo_clave": "gancho",
+        "opcion_clave": "premier_8",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 11890
+      },
+      {
+        "grupo_clave": "gancho",
+        "opcion_clave": "premier_bestia_6",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 28040.98
+      },
+      {
+        "grupo_clave": "abs",
+        "opcion_clave": "2e_sin_retractil",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 22000
+      },
+      {
+        "grupo_clave": "abs",
+        "opcion_clave": "2e_1_retractil",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 26700
+      },
+      {
+        "grupo_clave": "abs",
+        "opcion_clave": "3e_1_retractil",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 27200
+      },
+      {
+        "grupo_clave": "abs",
+        "opcion_clave": "3e_2_retractil",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 30500
+      },
+      {
+        "grupo_clave": "retractil",
+        "opcion_clave": "paleta",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 15000
+      },
+      {
+        "grupo_clave": "rines",
+        "opcion_clave": "acero",
+        "cantidad_base": 4,
+        "escala": "por_eje",
+        "costo_unitario": 1550
+      },
+      {
+        "grupo_clave": "rines",
+        "opcion_clave": "aluminio",
+        "cantidad_base": 4,
+        "escala": "por_eje",
+        "costo_unitario": 5500
+      },
+      {
+        "grupo_clave": "llantas",
+        "opcion_clave": "chinas",
+        "cantidad_base": 4,
+        "escala": "por_eje",
+        "costo_unitario": 3000
+      },
+      {
+        "grupo_clave": "llantas",
+        "opcion_clave": "firestone",
+        "cantidad_base": 4,
+        "escala": "por_eje",
+        "costo_unitario": 8700
+      },
+      {
+        "grupo_clave": "llantas",
+        "opcion_clave": "amulet",
+        "cantidad_base": 4,
+        "escala": "por_eje",
+        "costo_unitario": 4225
+      }
+    ],
+    "grupos": [
+      {
+        "id": "grp-tina_material",
+        "clave": "tina_material",
+        "nombre": "Material de tina",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-suspension",
+        "clave": "suspension",
+        "nombre": "Suspensión",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-eje",
+        "clave": "eje",
+        "nombre": "Ejes",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-patin",
+        "clave": "patin",
+        "nombre": "Patines",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-gancho",
+        "clave": "gancho",
+        "nombre": "Gancho de arrastre",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-abs",
+        "clave": "abs",
+        "nombre": "Sistema de frenos ABS",
+        "seleccion": "unica",
+        "regla": null
+      },
+      {
+        "id": "grp-retractil",
+        "clave": "retractil",
+        "nombre": "Sistema retráctil",
+        "seleccion": "multiple",
+        "regla": null
+      },
+      {
+        "id": "grp-rines",
+        "clave": "rines",
+        "nombre": "Rines",
+        "seleccion": "unica_con_cantidad",
+        "regla": null
+      },
+      {
+        "id": "grp-llantas",
+        "clave": "llantas",
+        "nombre": "Llantas",
+        "seleccion": "unica_con_cantidad",
+        "regla": null
+      }
+    ],
+    "ganancia": 100000
+  }
+}

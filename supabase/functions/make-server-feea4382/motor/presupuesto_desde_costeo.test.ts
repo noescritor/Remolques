@@ -335,6 +335,8 @@ Deno.test("Verificación de cada fila de la tabla de mapeo", () => {
   assertEquals(clasificarOpcion("opcion:redilas/sin_redilas", sinClas), "extras");
   assertEquals(clasificarOpcion("opcion:adicionales/bicicletera", sinClas), "adicionales");
   assertEquals(clasificarOpcion("opcion:plafones/ambar", sinClas), "adicionales");
+  assertEquals(clasificarOpcion("opcion:tina_material/a36", sinClas), "acero");
+  assertEquals(clasificarOpcion("opcion:tina_material/hardox_450", sinClas), "acero");
 
   assertEquals(clasificarOpcion("opcion:grupo_desconocido/algo", sinClas), "otros");
   assert(sinClas.has("grupo_desconocido"));

@@ -138,7 +138,9 @@ export const MAPEO_GRUPOS_OPCIONES: Record<string, keyof PresupuestoDatos> = {
   redilas: "extras",
   // adicionales
   adicionales: "adicionales",
-  plafones: "adicionales"
+  plafones: "adicionales",
+  // acero
+  tina_material: "acero"
 };
 
 /**
