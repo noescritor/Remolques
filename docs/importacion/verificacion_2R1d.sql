@@ -2,7 +2,7 @@
 -- Devuelve una fila por cada modelo destino (8) y una fila final de totales y control del origen.
 
 WITH origen AS (
-    SELECT id, nombre, largo_ft, num_ejes
+    SELECT id, largo_ft, num_ejes
     FROM modelos
     WHERE tipo = 'plataforma' AND largo_ft = 40 AND num_ejes = 2
     LIMIT 1
