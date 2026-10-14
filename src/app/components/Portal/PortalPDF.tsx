@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PDFTemplateMoodboard } from '../Cotizaciones/PDFTemplateMoodboard';
+import { normalizarAjustes } from '../../utils/ajustes';
 import { Button } from '../ui/button';
 import { ArrowLeft, Download, Printer, Loader2, AlertCircle } from 'lucide-react';
 
@@ -79,7 +80,7 @@ export function PortalPDF() {
 
   const cot = cotizacion;
   const cliente = cot.cliente || {};
-  const ajustes = cot.ajustes || {};
+  const ajustes = normalizarAjustes(cot.ajustes);
   const productos = cot.productos || [];
 
   return (
