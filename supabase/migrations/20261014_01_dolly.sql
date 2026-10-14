@@ -379,7 +379,7 @@ BEGIN
     WHERE gc.clave = 'rines' AND oc.clave = 'acero' AND oc.organizacion_id = v_org_id LIMIT 1;
     IF v_opt_id IS NULL THEN RAISE EXCEPTION 'Opción no encontrada: % / %', 'rines', 'acero'; END IF;
     INSERT INTO opcion_costos (organizacion_id, opcion_id, tipo_modelo, cantidad_base, escala, costo_unitario, fuente, notas)
-    VALUES (v_org_id, v_opt_id, 'dolly', 4, 'por_eje', 1550, 'Factura Leolca', 'la hoja del dolly da precio unitario pero no cantidad; la cantidad por eje se supone igual a la de plataforma y góndola; import-2r1e')
+    VALUES (v_org_id, v_opt_id, 'dolly', 4, 'por_eje', 1550, 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)', 'import-2r1e')
     ON CONFLICT (opcion_id, tipo_modelo) DO UPDATE SET
         cantidad_base = EXCLUDED.cantidad_base, escala = EXCLUDED.escala, costo_unitario = EXCLUDED.costo_unitario, fuente = EXCLUDED.fuente, notas = EXCLUDED.notas;
     SELECT oc.id INTO v_opt_id FROM opciones_configuracion oc
@@ -387,7 +387,7 @@ BEGIN
     WHERE gc.clave = 'rines' AND oc.clave = 'aluminio' AND oc.organizacion_id = v_org_id LIMIT 1;
     IF v_opt_id IS NULL THEN RAISE EXCEPTION 'Opción no encontrada: % / %', 'rines', 'aluminio'; END IF;
     INSERT INTO opcion_costos (organizacion_id, opcion_id, tipo_modelo, cantidad_base, escala, costo_unitario, fuente, notas)
-    VALUES (v_org_id, v_opt_id, 'dolly', 4, 'por_eje', 5500, 'Factura Leolca', 'la hoja del dolly da precio unitario pero no cantidad; la cantidad por eje se supone igual a la de plataforma y góndola; import-2r1e')
+    VALUES (v_org_id, v_opt_id, 'dolly', 4, 'por_eje', 5500, 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)', 'import-2r1e')
     ON CONFLICT (opcion_id, tipo_modelo) DO UPDATE SET
         cantidad_base = EXCLUDED.cantidad_base, escala = EXCLUDED.escala, costo_unitario = EXCLUDED.costo_unitario, fuente = EXCLUDED.fuente, notas = EXCLUDED.notas;
     SELECT oc.id INTO v_opt_id FROM opciones_configuracion oc
@@ -395,7 +395,7 @@ BEGIN
     WHERE gc.clave = 'llantas' AND oc.clave = 'chinas' AND oc.organizacion_id = v_org_id LIMIT 1;
     IF v_opt_id IS NULL THEN RAISE EXCEPTION 'Opción no encontrada: % / %', 'llantas', 'chinas'; END IF;
     INSERT INTO opcion_costos (organizacion_id, opcion_id, tipo_modelo, cantidad_base, escala, costo_unitario, fuente, notas)
-    VALUES (v_org_id, v_opt_id, 'dolly', 4, 'por_eje', 3000, 'Factura Leolca', 'la hoja del dolly da precio unitario pero no cantidad; la cantidad por eje se supone igual a la de plataforma y góndola; import-2r1e')
+    VALUES (v_org_id, v_opt_id, 'dolly', 4, 'por_eje', 3000, 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)', 'import-2r1e')
     ON CONFLICT (opcion_id, tipo_modelo) DO UPDATE SET
         cantidad_base = EXCLUDED.cantidad_base, escala = EXCLUDED.escala, costo_unitario = EXCLUDED.costo_unitario, fuente = EXCLUDED.fuente, notas = EXCLUDED.notas;
     SELECT oc.id INTO v_opt_id FROM opciones_configuracion oc
@@ -403,7 +403,7 @@ BEGIN
     WHERE gc.clave = 'llantas' AND oc.clave = 'firestone' AND oc.organizacion_id = v_org_id LIMIT 1;
     IF v_opt_id IS NULL THEN RAISE EXCEPTION 'Opción no encontrada: % / %', 'llantas', 'firestone'; END IF;
     INSERT INTO opcion_costos (organizacion_id, opcion_id, tipo_modelo, cantidad_base, escala, costo_unitario, fuente, notas)
-    VALUES (v_org_id, v_opt_id, 'dolly', 4, 'por_eje', 8700, 'Factura Leolca', 'la hoja del dolly da precio unitario pero no cantidad; la cantidad por eje se supone igual a la de plataforma y góndola; import-2r1e')
+    VALUES (v_org_id, v_opt_id, 'dolly', 4, 'por_eje', 8700, 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)', 'import-2r1e')
     ON CONFLICT (opcion_id, tipo_modelo) DO UPDATE SET
         cantidad_base = EXCLUDED.cantidad_base, escala = EXCLUDED.escala, costo_unitario = EXCLUDED.costo_unitario, fuente = EXCLUDED.fuente, notas = EXCLUDED.notas;
     SELECT oc.id INTO v_opt_id FROM opciones_configuracion oc
@@ -411,7 +411,7 @@ BEGIN
     WHERE gc.clave = 'llantas' AND oc.clave = 'amulet' AND oc.organizacion_id = v_org_id LIMIT 1;
     IF v_opt_id IS NULL THEN RAISE EXCEPTION 'Opción no encontrada: % / %', 'llantas', 'amulet'; END IF;
     INSERT INTO opcion_costos (organizacion_id, opcion_id, tipo_modelo, cantidad_base, escala, costo_unitario, fuente, notas)
-    VALUES (v_org_id, v_opt_id, 'dolly', 4, 'por_eje', 4225, 'Factura Leolca', 'la hoja del dolly da precio unitario pero no cantidad; la cantidad por eje se supone igual a la de plataforma y góndola; import-2r1e')
+    VALUES (v_org_id, v_opt_id, 'dolly', 4, 'por_eje', 4225, 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)', 'import-2r1e')
     ON CONFLICT (opcion_id, tipo_modelo) DO UPDATE SET
         cantidad_base = EXCLUDED.cantidad_base, escala = EXCLUDED.escala, costo_unitario = EXCLUDED.costo_unitario, fuente = EXCLUDED.fuente, notas = EXCLUDED.notas;
 

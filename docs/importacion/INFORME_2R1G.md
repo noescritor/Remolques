@@ -125,3 +125,42 @@ Dando como resultado:
 ok | 57 passed | 0 failed (1s)
 ```
 Incluyendo las 6 pruebas unitarias del Sub-bloque 2R-1g en `costeo.test.ts` y la prueba de integración de presupuesto en `presupuesto_desde_costeo.test.ts`.
+
+---
+
+## 7. Normalización de Notas Heredadas (2R-1c y 2R-1e)
+
+Para garantizar consistencia y facilitar filtros de auditoría limpios, se normalizaron las notas heredadas en `opcion_costos` y `costos_modelo`:
+1. **Dolly (`opcion_costos`):** 5 filas de rines y llantas con notas descriptivas terminadas en `'; import-2r1e'` migraron el texto explicativo a `fuente = 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)'` y fijaron `notas = 'import-2r1e'`.
+2. **Plataforma (`costos_modelo`):** 1 fila de pintura con `notas = ' 1 1/2 Cubeta; import-2r1c'` migró la aclaración a `fuente = 'Factura Leolca (cantidad original: 1 1/2 cubeta)'` y fijó `notas = 'import-2r1c'`.
+3. **Generadores y Migraciones:** Se actualizaron `scripts/generar_costos_sql.cjs` y `scripts/generar_costos_dolly_sql.cjs`, regenerando de forma 100% determinista e idempotente `20261011_02_costos_plataforma_40x2.sql` y `20261014_01_dolly.sql`. Se creó además la migración correctiva idempotente `supabase/migrations/20261015_02_normalizar_notas.sql` producida por `scripts/generar_normalizar_notas_sql.cjs`.
+
+### Consulta de Auditoría de Notas Exactas
+
+Al ejecutar en Postgres:
+```sql
+SELECT notas, count(*) 
+FROM opcion_costos 
+WHERE notas ILIKE '%import-2r1%' 
+GROUP BY notas
+ORDER BY notas;
+```
+El resultado debe arrojar exclusivamente variantes exactas:
+- `'import-2r1c'`: 22
+- `'import-2r1e'`: 9
+- `'import-2r1f'`: 25
+- `'import-2r1g'`: 144
+
+Y en `costos_modelo`:
+```sql
+SELECT notas, count(*) 
+FROM costos_modelo 
+WHERE notas ILIKE '%import-2r1%' 
+GROUP BY notas
+ORDER BY notas;
+```
+El resultado debe arrojar exclusivamente:
+- `'import-2r1c'`: 12
+- `'import-2r1e'`: 18
+- `'import-2r1f'`: 29 (15 en 2E y 14 en 3E)
+

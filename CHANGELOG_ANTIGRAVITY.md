@@ -3,6 +3,30 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-15 - Corrección 2R-1g: normalización de notas heredadas (2R-1c y 2R-1e) y ajuste en verificación
+**Herramienta:** Antigravity  
+**Tipo:** fix (migraciones, docs)  
+**Archivos tocados:**  
+- `scripts/generar_costos_sql.cjs`
+- `supabase/migrations/20261011_02_costos_plataforma_40x2.sql`
+- `scripts/generar_costos_dolly_sql.cjs`
+- `supabase/migrations/20261014_01_dolly.sql`
+- `scripts/generar_normalizar_notas_sql.cjs`
+- `supabase/migrations/20261015_02_normalizar_notas.sql`
+- `docs/importacion/verificacion_2R1g.sql`
+- `docs/importacion/INFORME_2R1G.md`
+**Qué cambió y por qué:**  
+- **Normalización de notas y generadores de 2R-1c y 2R-1e:**  
+  - En `scripts/generar_costos_dolly_sql.cjs` y `20261014_01_dolly.sql`, 5 filas de `opcion_costos` (rines y llantas) que contenían textos explicativos en notas migraron a `fuente = 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)'` y `notas = 'import-2r1e'`.
+  - En `scripts/generar_costos_sql.cjs` y `20261011_02_costos_plataforma_40x2.sql`, la fila de pintura de `costos_modelo` migró a `fuente = 'Factura Leolca (cantidad original: 1 1/2 cubeta)'` y `notas = 'import-2r1c'`.
+  - Se creó el generador `scripts/generar_normalizar_notas_sql.cjs` y la nueva migración idempotente `supabase/migrations/20261015_02_normalizar_notas.sql` para aplicar estas normalizaciones en bases ya existentes.
+- **Correcciones en `docs/importacion/verificacion_2R1g.sql`:**  
+  - `escala_por_largo`: Evalúa que en plataforma existan exactamente los 8 pisos con escala `por_largo` (2 de 2R-1c + 6 de 2R-1g) y ninguna otra opción fuera de pisos con dicha escala, sin filtrar por notas.
+  - `dolly_previas`: Filtra con `fuente = 'Factura Leolca' AND notas ILIKE '%import-2r1e%' = 9` para tolerar tanto el estado previo como el normalizado.
+- **Documentación en `docs/importacion/INFORME_2R1G.md`:**  
+  - Se agregó la Sección 7 con la justificación y las consultas SQL para auditar que `notas ILIKE '%import-2r1%'` devuelva únicamente variantes exactas.
+**Acciones manuales pendientes:** Ejecutar `20261015_02_normalizar_notas.sql` y `verificacion_2R1g.sql` en Postgres local.
+
 ## 2026-10-15 - Sub-bloque 2R-1g: Costos de respaldo del tarifario para opciones no cubiertas por factura
 **Herramienta:** Antigravity  
 **Tipo:** feat (migraciones, backend, motor, cpq)  

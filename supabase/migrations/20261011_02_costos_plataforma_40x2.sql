@@ -481,7 +481,7 @@ BEGIN
     INSERT INTO costos_modelo (organizacion_id, modelo_id, seccion, concepto, cantidad, costo_unitario, escala, fuente, notas)
     VALUES (v_org_id, v_model_id, 'pintura', 'Praimer', 1, 10000, 'fija', 'Factura Leolca', 'import-2r1c');
     INSERT INTO costos_modelo (organizacion_id, modelo_id, seccion, concepto, cantidad, costo_unitario, escala, fuente, notas)
-    VALUES (v_org_id, v_model_id, 'pintura', 'Pintura color estándar', 1, 12000, 'fija', 'Factura Leolca', ' 1 1/2 Cubeta; import-2r1c');
+    VALUES (v_org_id, v_model_id, 'pintura', 'Pintura color estándar', 1, 12000, 'fija', 'Factura Leolca (cantidad original: 1 1/2 cubeta)', 'import-2r1c');
 
     -- 6. Inserción de opcion_costos (22 opciones mapeadas)
     SELECT oc.id INTO v_opt_id FROM opciones_configuracion oc

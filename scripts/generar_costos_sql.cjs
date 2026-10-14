@@ -137,12 +137,12 @@ const itemsCostosModelo = [
   { grupo: 'Consumibles', opcion: null, seccion: 'consumibles', concepto: 'Consumibles', cantidad: 1, cu: 550, notas: 'import-2r1c' },
   { grupo: 'Kit de limpieza', opcion: null, seccion: 'consumibles', concepto: 'Kit de limpieza', cantidad: 1, cu: 300, notas: 'import-2r1c' },
   { grupo: 'Praimer', opcion: null, seccion: 'pintura', concepto: 'Praimer', cantidad: 1, cu: 10000, notas: 'import-2r1c' },
-  { grupo: 'Pintura', opcion: 'Color estandar', seccion: 'pintura', concepto: 'Pintura color estándar', cantidad: 1, cu: 12000, notas: ' 1 1/2 Cubeta; import-2r1c' }
+  { grupo: 'Pintura', opcion: 'Color estandar', seccion: 'pintura', concepto: 'Pintura color estándar', cantidad: 1, cu: 12000, fuente: 'Factura Leolca (cantidad original: 1 1/2 cubeta)', notas: 'import-2r1c' }
 ];
 
 for (const cm of itemsCostosModelo) {
   lines.push(`    INSERT INTO costos_modelo (organizacion_id, modelo_id, seccion, concepto, cantidad, costo_unitario, escala, fuente, notas)`);
-  lines.push(`    VALUES (v_org_id, v_model_id, ${escapeSql(cm.seccion)}, ${escapeSql(cm.concepto)}, ${cm.cantidad}, ${cm.cu}, 'fija', 'Factura Leolca', ${escapeSql(cm.notas)});`);
+  lines.push(`    VALUES (v_org_id, v_model_id, ${escapeSql(cm.seccion)}, ${escapeSql(cm.concepto)}, ${cm.cantidad}, ${cm.cu}, 'fija', ${escapeSql(cm.fuente || 'Factura Leolca')}, ${escapeSql(cm.notas)});`);
 }
 
 lines.push('');
