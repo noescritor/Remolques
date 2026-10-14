@@ -3,6 +3,36 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-15 - Sub-bloque 2R-1g: Costos de respaldo del tarifario para opciones no cubiertas por factura
+**Herramienta:** Antigravity  
+**Tipo:** feat (migraciones, backend, motor, cpq)  
+**Archivos tocados:**  
+- `scripts/generar_costos_respaldo_sql.cjs`
+- `supabase/migrations/20261015_01_costos_respaldo.sql`
+- `src/app/utils/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+- `supabase/functions/make-server-feea4382/motor/cargar_costos.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.test.ts`
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.test.ts`
+- `docs/importacion/verificacion_2R1g.sql`
+- `docs/importacion/INFORME_2R1G.md`
+**Qué cambió y por qué:**  
+- **Generador y migración SQL (`scripts/generar_costos_respaldo_sql.cjs` → `20261015_01_costos_respaldo.sql`):**  
+  - Inserta 144 filas en `opcion_costos` con `notas = 'import-2r1g'` de forma estrictamente idempotente en una sola transacción (`DELETE WHERE notas = 'import-2r1g'` + `INSERT ... SELECT ... WHERE NOT EXISTS`).
+  - Cobertura de 60 opciones únicas distribuidas por tipo de modelo: Plataforma (60 filas: 8 Factura, 33 Tarifario, 19 Supuesto; suma Tarifario = $543,675.52), Dolly (42 filas: 3 Factura, 20 Tarifario, 19 Supuesto; suma Tarifario = $278,096.00) y Góndola (42 filas: 3 Factura, 20 Tarifario, 19 Supuesto; suma Tarifario = $278,096.00).
+  - Incluye guardas de coherencia para 36 opciones verificando que el costo unitario no supere el precio de venta (`costo_unitario <= precio_venta`), contemplando las excepciones de regla neta (`suspension/hj_alta`) y diferencias justificadas de tarifario (`bicicletera`, `canastilla`, `con_riel`, `corrediza`).
+- **Motor TypeScript/Deno y Frontend:**  
+  - `motor/tipos.ts`: Se añadió `'costo_no_factura'` a `PendienteCosteo.tipo` y `fuente?: string` a `DatosCosteo.opcion_costos`.
+  - `motor/cargar_costos.ts`: Lee y mapea la columna `fuente` de `opcion_costos`.
+  - `motor/costeo.ts`: Agrupa las opciones seleccionadas que no provienen de `'Factura Leolca'` por su `fuente` e inyecta un único pendiente consolidado por cada fuente (`tipo: 'costo_no_factura'`, detalle: `Costos que no vienen de la Factura (por confirmar): <fuente> → <opciones>`), degradando la confianza a `estimada` sin inflar alertas por cada opción individual.
+  - `src/app/utils/costeo.ts`: Registra la traducción `'costo_no_factura': 'Costo no es de la Factura'`.
+  - Tests en `motor/costeo.test.ts` (6 casos exhaustivos para 2R-1g) y `motor/presupuesto_desde_costeo.test.ts` pasando al 100% (57 passed).
+- **Verificación y documentación:**  
+  - Script SQL `docs/importacion/verificacion_2R1g.sql` (un solo `SELECT`) que audita conteos, desglose por fuente, sumas de tarifario, escala `por_largo` restringida a pisos laminados e integridad de filas previas.
+  - Informe detallado en `docs/importacion/INFORME_2R1G.md` documentando discrepancia de canastilla ($5,784.50 vs $5,040.00), resolución de 4 conflictos Factura vs Tarifario, justificación de conceptos no mapeados y simulación de plataforma 40/3.
+**Acciones manuales pendientes:** Ejecutar migración `20261015_01_costos_respaldo.sql` en Postgres local para pruebas; posterior rebuild del backend en EasyPanel cuando se autorice el despliegue.
+
 ## 2026-10-14 - Corrección 2R-1f: notas uniformes en costos_modelo y detalle de 11 colisiones (GONDOLA)
 **Herramienta:** Antigravity  
 **Tipo:** fix (migraciones, docs)  

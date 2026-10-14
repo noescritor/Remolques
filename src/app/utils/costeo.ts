@@ -169,6 +169,8 @@ export function traducirTipoPendiente(tipo: string): string {
       return 'Costo supuesto';
     case 'iva_gondola':
       return 'IVA por confirmar';
+    case 'costo_no_factura':
+      return 'Costo no es de la Factura';
     default:
       return tipo;
   }

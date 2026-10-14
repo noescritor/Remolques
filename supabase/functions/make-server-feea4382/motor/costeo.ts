@@ -149,8 +149,14 @@ export function costear(
   // 4. Opciones
   const lineasOpciones: LineaCosteo[] = [];
   let sumOpciones = 0;
+  const noFacturaPorFuente = new Map<string, string[]>();
 
-  for (const [grupoClave, valConfigRaw] of Object.entries(configuracion.grupos || {})) {
+  const gruposEntries = Object.entries(configuracion.grupos || {});
+  if (configuracion.adicionales && !configuracion.grupos?.adicionales) {
+    gruposEntries.push(["adicionales", configuracion.adicionales]);
+  }
+
+  for (const [grupoClave, valConfigRaw] of gruposEntries) {
     if (!valConfigRaw) continue;
     const configVals = Array.isArray(valConfigRaw) ? valConfigRaw : [valConfigRaw];
 
@@ -163,6 +169,15 @@ export function costear(
       );
 
       if (optCosto) {
+        if (optCosto.fuente && !optCosto.fuente.startsWith("Factura")) {
+          const lista = noFacturaPorFuente.get(optCosto.fuente) || [];
+          const optStr = `${grupoClave}/${oClave}`;
+          if (!lista.includes(optStr)) {
+            lista.push(optStr);
+          }
+          noFacturaPorFuente.set(optCosto.fuente, lista);
+        }
+
         let qty: number;
         const confCant = typeof valConfig === "object" ? valConfig.cantidad : undefined;
 
@@ -209,6 +224,13 @@ export function costear(
         });
       }
     }
+  }
+
+  for (const [fuente, items] of noFacturaPorFuente.entries()) {
+    pendientes.push({
+      tipo: "costo_no_factura",
+      detalle: `Costos que no vienen de la Factura (por confirmar): ${fuente} → ${items.join(", ")}`
+    });
   }
 
   // 5. Mano de obra
