@@ -120,7 +120,7 @@ lines.push('');
 lines.push('    -- 2. Limpieza previa idempotente para import-2r1e');
 lines.push("    DELETE FROM receta_base WHERE modelo_id = v_model_id AND notas = 'import-2r1e';");
 lines.push("    DELETE FROM costos_modelo WHERE modelo_id = v_model_id AND notas = 'import-2r1e';");
-lines.push("    DELETE FROM opcion_costos WHERE tipo_modelo = 'dolly' AND (notas = 'import-2r1e' OR fuente = 'Factura Leolca');");
+lines.push("    DELETE FROM opcion_costos WHERE tipo_modelo = 'dolly' AND notas = 'import-2r1e';");
 lines.push("    DELETE FROM procesos_manufactura WHERE modelo_id = v_model_id AND notas = 'import-2r1e';");
 lines.push('');
 lines.push('    -- 3. Inserción de materiales de acero y receta_base sección acero');

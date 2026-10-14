@@ -3,6 +3,30 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-15 - Corrección 2R-1g (ronda 2): blindaje contra borrado cruzado en generadores y filtro LIKE en verificación
+**Herramienta:** Antigravity  
+**Tipo:** fix (migraciones, docs)  
+**Archivos tocados:**  
+- `docs/importacion/verificacion_2R1g.sql`
+- `scripts/generar_costos_sql.cjs`
+- `supabase/migrations/20261011_02_costos_plataforma_40x2.sql`
+- `scripts/generar_costos_dolly_sql.cjs`
+- `supabase/migrations/20261014_01_dolly.sql`
+- `scripts/generar_costos_gondola_sql.cjs`
+- `supabase/migrations/20261014_02_gondola.sql`
+- `docs/importacion/INFORME_2R1G.md`
+**Qué cambió y por qué:**  
+- **Ajuste en `docs/importacion/verificacion_2R1g.sql`:**  
+  - En `control_previos`, se actualizó `fuente LIKE 'Factura Leolca%'` para `plat_factura_previas`, `dolly_factura_previas` y `gondola_factura_previas`, reconociendo las 5 filas de dolly normalizadas con texto descriptivo en fuente.
+- **Blindaje contra borrado cruzado en generadores (2R-1c, 2R-1e y 2R-1f):**  
+  - Se removió la cláusula amplia `OR fuente = 'Factura Leolca'` de las sentencias `DELETE` en `opcion_costos` y `costos_modelo`.
+  - Ahora cada generador borra estrictamente por su etiqueta de `notas` exacto (`import-2r1c`, `import-2r1e`, `import-2r1f`) y por su modelo/tipo (`modelo_id = ...` o `tipo_modelo = ...`).
+  - En `scripts/generar_costos_sql.cjs`, las opciones de piso `laminado_madera` y `laminado_plastico` se generan directamente con `escala = 'por_largo'`, evitando revertir el ajuste de 2R-1d al re-ejecutar.
+  - Se regeneraron `20261011_02_costos_plataforma_40x2.sql`, `20261014_01_dolly.sql` y `20261014_02_gondola.sql`.
+- **Verificación de idempotencia y re-ejecución:**  
+  - Se documentó en la Sección 8 de `INFORME_2R1G.md` que re-ejecutar 1c, 1e y 1f sobre una base con 1g mantiene idénticos los 200 registros de `opcion_costos` y 59 de `costos_modelo` sin pérdidas de datos.
+**Acciones manuales pendientes:** Ejecutar `verificacion_2R1g.sql` en Postgres local.
+
 ## 2026-10-15 - Corrección 2R-1g: normalización de notas heredadas (2R-1c y 2R-1e) y ajuste en verificación
 **Herramienta:** Antigravity  
 **Tipo:** fix (migraciones, docs)  

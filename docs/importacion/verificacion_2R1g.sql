@@ -56,9 +56,9 @@ control_escala_por_largo AS (
 ),
 control_previos AS (
     SELECT
-        count(*) FILTER (WHERE tipo_modelo = 'plataforma' AND notas = 'import-2r1c')::int AS plat_factura_previas,
-        count(*) FILTER (WHERE tipo_modelo = 'dolly' AND fuente = 'Factura Leolca' AND notas ILIKE '%import-2r1e%')::int AS dolly_factura_previas,
-        count(*) FILTER (WHERE tipo_modelo = 'gondola' AND notas = 'import-2r1f')::int AS gondola_factura_previas
+        count(*) FILTER (WHERE tipo_modelo = 'plataforma' AND fuente LIKE 'Factura Leolca%' AND notas = 'import-2r1c')::int AS plat_factura_previas,
+        count(*) FILTER (WHERE tipo_modelo = 'dolly' AND fuente LIKE 'Factura Leolca%' AND notas ILIKE '%import-2r1e%')::int AS dolly_factura_previas,
+        count(*) FILTER (WHERE tipo_modelo = 'gondola' AND fuente LIKE 'Factura Leolca%' AND notas = 'import-2r1f')::int AS gondola_factura_previas
     FROM opcion_costos
 )
 SELECT

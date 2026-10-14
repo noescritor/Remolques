@@ -53,10 +53,10 @@ lines.push('    END IF;');
 lines.push("    SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND largo_ft = 40 AND num_ejes = 2;");
 lines.push('');
 lines.push('    -- 2. Limpieza idempotente previa para import-2r1c');
-lines.push("    DELETE FROM receta_base WHERE notas = 'import-2r1c';");
-lines.push("    DELETE FROM costos_modelo WHERE notas LIKE '%import-2r1c%' OR fuente = 'Factura Leolca';");
-lines.push("    DELETE FROM opcion_costos WHERE notas = 'import-2r1c' OR fuente = 'Factura Leolca';");
-lines.push("    DELETE FROM procesos_manufactura WHERE notas = 'import-2r1c';");
+lines.push("    DELETE FROM receta_base WHERE modelo_id = v_model_id AND notas = 'import-2r1c';");
+lines.push("    DELETE FROM costos_modelo WHERE modelo_id = v_model_id AND notas = 'import-2r1c';");
+lines.push("    DELETE FROM opcion_costos WHERE tipo_modelo = 'plataforma' AND notas = 'import-2r1c';");
+lines.push("    DELETE FROM procesos_manufactura WHERE modelo_id = v_model_id AND notas = 'import-2r1c';");
 lines.push('');
 lines.push('    -- 3. Inserción de materiales de acero (61 piezas)');
 
@@ -177,8 +177,8 @@ const opcionesCostos = [
   { grupo_clave: 'llantas', opcion_clave: 'firestone', costo: 8700, escala: 'por_eje', cantidad_base: 4 },
   { grupo_clave: 'llantas', opcion_clave: 'amulet', costo: 4225, escala: 'por_eje', cantidad_base: 4 },
   // piso (2)
-  { grupo_clave: 'piso', opcion_clave: 'laminado_madera', costo: 39060, escala: 'fija', cantidad_base: 1 },
-  { grupo_clave: 'piso', opcion_clave: 'laminado_plastico', costo: 52060, escala: 'fija', cantidad_base: 1 }
+  { grupo_clave: 'piso', opcion_clave: 'laminado_madera', costo: 39060, escala: 'por_largo', cantidad_base: 1 },
+  { grupo_clave: 'piso', opcion_clave: 'laminado_plastico', costo: 52060, escala: 'por_largo', cantidad_base: 1 }
 ];
 
 for (const oc of opcionesCostos) {

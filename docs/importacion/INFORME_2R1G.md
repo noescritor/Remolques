@@ -164,3 +164,36 @@ El resultado debe arrojar exclusivamente:
 - `'import-2r1e'`: 18
 - `'import-2r1f'`: 29 (15 en 2E y 14 en 3E)
 
+---
+
+## 8. Blindaje de Limpieza Idempotente y Re-ejecución Cruzada
+
+Para eliminar el riesgo de borrados cruzados accidentales entre sub-bloques, se refinaron las sentencias `DELETE` de los tres generadores (`2R-1c`, `2R-1e` y `2R-1f`):
+- Se removió la cláusula amplia `OR fuente = 'Factura Leolca'` de `opcion_costos` y `costos_modelo`.
+- Cada migración ahora borra **estrictamente** por su etiqueta de `notas` exacto y por su modelo/tipo (`tipo_modelo = ...` o `modelo_id = ...`).
+- El generador de 2R-1c (`scripts/generar_costos_sql.cjs`) inserta directamente las opciones de piso `laminado_madera` y `laminado_plastico` con `escala = 'por_largo'`, evitando que una re-ejecución de 2R-1c revierta el ajuste de 2R-1d.
+
+### Prueba de Re-ejecución Cruzada (Idempotencia Total)
+
+Se validó el ciclo completo de migraciones:
+1. Ejecución secuencial inicial: `1c` -> `1d` -> `1e` -> `1f` -> `1g` -> `normalizar_notas`.
+2. Re-ejecución de `1c` ([20261011_02_costos_plataforma_40x2.sql](file:///c:/Users/luisa/Downloads/proyectos_antygravity/Remolques/supabase/migrations/20261011_02_costos_plataforma_40x2.sql)).
+3. Re-ejecución de `1e` ([20261014_01_dolly.sql](file:///c:/Users/luisa/Downloads/proyectos_antygravity/Remolques/supabase/migrations/20261014_01_dolly.sql)).
+4. Re-ejecución de `1f` ([20261014_02_gondola.sql](file:///c:/Users/luisa/Downloads/proyectos_antygravity/Remolques/supabase/migrations/20261014_02_gondola.sql)).
+
+**Conteos verificados (idénticos antes y después de re-ejecutar):**
+
+| Tabla | Tipo / Modelo | Conteo Esperado | Estado Post Re-ejecución |
+|---|---|---:|:---:|
+| `opcion_costos` | `plataforma` (22 de 1c + 60 de 1g) | **82** | **82 (intacto)** |
+| `opcion_costos` | `dolly` (9 de 1e + 42 de 1g) | **51** | **51 (intacto)** |
+| `opcion_costos` | `gondola` (25 de 1f + 42 de 1g) | **67** | **67 (intacto)** |
+| `opcion_costos` | **Total general** | **200** | **200 (intacto)** |
+| `costos_modelo` | Plataforma 40/2 (`import-2r1c`) | **12** | **12 (intacto)** |
+| `costos_modelo` | Dolly 2 Ejes (`import-2r1e`) | **18** | **18 (intacto)** |
+| `costos_modelo` | Góndola 2 Ejes (`import-2r1f`) | **15** | **15 (intacto)** |
+| `costos_modelo` | Góndola 3 Ejes (`import-2r1f`) | **14** | **14 (intacto)** |
+| `costos_modelo` | **Total general** | **59** | **59 (intacto)** |
+| Pisos `por_largo` | Plataforma (2 de 1c + 6 de 1g) | **8** | **8 (intacto)** |
+
+

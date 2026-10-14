@@ -21,10 +21,10 @@ BEGIN
     SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND largo_ft = 40 AND num_ejes = 2;
 
     -- 2. Limpieza idempotente previa para import-2r1c
-    DELETE FROM receta_base WHERE notas = 'import-2r1c';
-    DELETE FROM costos_modelo WHERE notas LIKE '%import-2r1c%' OR fuente = 'Factura Leolca';
-    DELETE FROM opcion_costos WHERE notas = 'import-2r1c' OR fuente = 'Factura Leolca';
-    DELETE FROM procesos_manufactura WHERE notas = 'import-2r1c';
+    DELETE FROM receta_base WHERE modelo_id = v_model_id AND notas = 'import-2r1c';
+    DELETE FROM costos_modelo WHERE modelo_id = v_model_id AND notas = 'import-2r1c';
+    DELETE FROM opcion_costos WHERE tipo_modelo = 'plataforma' AND notas = 'import-2r1c';
+    DELETE FROM procesos_manufactura WHERE modelo_id = v_model_id AND notas = 'import-2r1c';
 
     -- 3. Inserción de materiales de acero (61 piezas)
     INSERT INTO productos (nombre, tipo, tipo_item, unidad, costo, precio_unitario, descripcion, organizacion_id)
@@ -649,7 +649,7 @@ BEGIN
     WHERE gc.clave = 'piso' AND oc.clave = 'laminado_madera' AND oc.organizacion_id = v_org_id LIMIT 1;
     IF v_opt_id IS NULL THEN RAISE EXCEPTION 'Opción no encontrada: % / %', 'piso', 'laminado_madera'; END IF;
     INSERT INTO opcion_costos (organizacion_id, opcion_id, tipo_modelo, cantidad_base, escala, costo_unitario, fuente, notas)
-    VALUES (v_org_id, v_opt_id, 'plataforma', 1, 'fija', 39060, 'Factura Leolca', 'import-2r1c')
+    VALUES (v_org_id, v_opt_id, 'plataforma', 1, 'por_largo', 39060, 'Factura Leolca', 'import-2r1c')
     ON CONFLICT (opcion_id, tipo_modelo) DO UPDATE SET
         cantidad_base = EXCLUDED.cantidad_base, escala = EXCLUDED.escala, costo_unitario = EXCLUDED.costo_unitario, fuente = EXCLUDED.fuente, notas = EXCLUDED.notas;
     SELECT oc.id INTO v_opt_id FROM opciones_configuracion oc
@@ -657,7 +657,7 @@ BEGIN
     WHERE gc.clave = 'piso' AND oc.clave = 'laminado_plastico' AND oc.organizacion_id = v_org_id LIMIT 1;
     IF v_opt_id IS NULL THEN RAISE EXCEPTION 'Opción no encontrada: % / %', 'piso', 'laminado_plastico'; END IF;
     INSERT INTO opcion_costos (organizacion_id, opcion_id, tipo_modelo, cantidad_base, escala, costo_unitario, fuente, notas)
-    VALUES (v_org_id, v_opt_id, 'plataforma', 1, 'fija', 52060, 'Factura Leolca', 'import-2r1c')
+    VALUES (v_org_id, v_opt_id, 'plataforma', 1, 'por_largo', 52060, 'Factura Leolca', 'import-2r1c')
     ON CONFLICT (opcion_id, tipo_modelo) DO UPDATE SET
         cantidad_base = EXCLUDED.cantidad_base, escala = EXCLUDED.escala, costo_unitario = EXCLUDED.costo_unitario, fuente = EXCLUDED.fuente, notas = EXCLUDED.notas;
 
