@@ -119,7 +119,7 @@ export interface SeccionCosteo {
 }
 
 export interface PendienteCosteo {
-  tipo: 'sin_precio' | 'opcion_sin_costo' | 'modelo_sin_costos' | 'ganancia_no_definida';
+  tipo: 'sin_precio' | 'opcion_sin_costo' | 'modelo_sin_costos' | 'ganancia_no_definida' | 'variante_supuesta';
   detalle: string;
 }
 
@@ -143,6 +143,7 @@ export interface ResultadoCosteo {
 
 export interface DatosCosteo {
   modelo: Modelo;
+  costos_derivados_de?: { id: string; nombre: string } | null;
   receta_acero: {
     material_id: string;
     nombre: string;

@@ -768,7 +768,7 @@ app.post("/cotizaciones/:id/presupuesto", async (c) => {
     // Cargar conceptos con metadata
     const { data: itemsRaw, error: errItems } = await supabase
       .from("items_cotizacion")
-      .select("id, producto_id, cantidad, descripcion, metadata, producto:productos(tipo_item)")
+      .select("id, producto_id, cantidad, descripcion, metadata, producto:productos(tipo_item, nombre)")
       .eq("cotizacion_id", id);
 
     if (errItems) {
@@ -809,9 +809,10 @@ app.post("/cotizaciones/:id/presupuesto", async (c) => {
         const resultadoCosteo = costear(datosCosteo, { grupos: cfg.grupos }, cfg.ajustes || []);
 
         if (resultadoCosteo.confianza === "incompleta") {
+          const modNom = datosCosteo.modelo?.nombre || item.producto?.nombre || "";
           omitidos.push({
             descripcion: desc,
-            motivo: "el modelo no tiene costos cargados"
+            motivo: modNom ? `${modNom}: sin costos cargados todavía` : "sin costos cargados todavía"
           });
           continue;
         }
@@ -844,10 +845,11 @@ app.post("/cotizaciones/:id/presupuesto", async (c) => {
           bom: resultadoBom
         });
       } catch (errCosteo: any) {
+        const modNom = item.producto?.nombre || "";
         omitidos.push({
           descripcion: desc,
           motivo: errCosteo.message === "Modelo no encontrado"
-            ? "el modelo no tiene costos cargados"
+            ? (modNom ? `${modNom}: sin costos cargados todavía` : "sin costos cargados todavía")
             : `error al costear: ${errCosteo.message}`
         });
       }

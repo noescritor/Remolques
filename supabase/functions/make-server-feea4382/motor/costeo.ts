@@ -76,6 +76,14 @@ export function costear(
     });
   }
 
+  if (datos.costos_derivados_de) {
+    const nombreOrigen = datos.costos_derivados_de.nombre || "modelo base";
+    pendientes.push({
+      tipo: "variante_supuesta",
+      detalle: `Costos estimados a partir de ${nombreOrigen}: no hay desglose propio de esta variante`
+    });
+  }
+
   // 2. Acero
   const lineasAcero: LineaCosteo[] = [];
   let sumAcero = 0;

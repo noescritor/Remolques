@@ -3,6 +3,45 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-14 - Sub-bloque 2R-1d: Costos de variantes de plataforma (derivadas de la 40/2)
+**Herramienta:** Antigravity
+**Tipo:** feat (migraciones, backend, motor, cpq)
+**Archivos tocados:**
+- `supabase/migrations/20261013_01_costos_derivados.sql`
+- `scripts/generar_costos_variantes_sql.cjs`
+- `supabase/migrations/20261013_02_costos_variantes_plataforma.sql`
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+- `supabase/functions/make-server-feea4382/motor/cargar_costos.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.test.ts`
+- `supabase/functions/make-server-feea4382/index.ts`
+- `src/app/components/Cotizaciones/CotizacionesList.tsx`
+- `src/app/utils/costeo.ts`
+- `docs/importacion/verificacion_2R1d.sql`
+- `docs/importacion/INFORME_2R1D.md`
+**Qué cambió y por qué:**
+- **Migración de esquema (`20261013_01_costos_derivados.sql`):**
+  - Se agregó la columna `costos_derivados_de uuid REFERENCES modelos(id) ON DELETE SET NULL` en la tabla `modelos` con su comentario SQL.
+  - Se actualizó la escala de las opciones de piso (`laminado_madera` y `laminado_plastico`) a `'por_largo'` en `opcion_costos` para que escalen proporcionalmente al largo (`largo_ft / 40.0`). La 40/2 permanece idéntica ($397,713.63 costo / $507,713.63 precio).
+- **Generador y migración de datos (`generar_costos_variantes_sql.cjs` → `20261013_02_costos_variantes_plataforma.sql`):**
+  - Script determinista que deriva costos para 8 variantes (35/2, 40/3, 42/2, 42/3, 45/2, 45/3, 48/2, 48/3) copiando los 61 renglones de acero (con cargadores de 4" ajustados según `BASE DAT PLANAS`), 12 costos de kits y consumibles fijos, y 80 procesos de mano de obra (total 1,224 renglones insertados).
+  - Valida que el modelo origen 40/2 sea exactamente 1 con 61 renglones de acero y que exista el material determinista `CARGADOR (IPR DE 4")`.
+  - El modelo 43/3 se omite intencionalmente por no figurar en `BASE DAT PLANAS` (documentado como pendiente).
+  - Marca los 8 modelos destino con `costos_derivados_de = <id_40_2>`.
+- **Motor de costeo y backend:**
+  - `motor/tipos.ts`: añadido `DatosCosteo.costos_derivados_de` y el tipo de pendiente `'variante_supuesta'` a `PendienteCosteo`.
+  - `motor/cargar_costos.ts`: lee `modelos.costos_derivados_de` y el nombre del modelo origen.
+  - `motor/costeo.ts`: si `costos_derivados_de` está presente, agrega el pendiente `{ tipo: 'variante_supuesta', detalle: 'Costos estimados a partir de <nombre>: no hay desglose propio de esta variante' }`, asignando confianza `'estimada'` mientras calcula el precio sugerido.
+  - `motor/costeo.test.ts`: agregadas pruebas para validar que la 40/2 no trae `variante_supuesta`, que un modelo derivado obtiene `variante_supuesta` y precio sugerido, y que el piso de 45 ft escala a 45/40 del de 40 ft.
+  - `supabase/functions/make-server-feea4382/index.ts`: los motivos de conceptos omitidos en `POST /cotizaciones/:id/presupuesto` ante modelos sin costos incluyen el nombre corto del modelo (e.g., `PLATAFORMA 3 43 FT: sin costos cargados todavía`).
+  - `CotizacionesList.tsx`: recorta la descripción del concepto a 70 caracteres con '…' al mostrar el aviso toast.
+  - `src/app/utils/costeo.ts`: agregada la traducción `'variante_supuesta' -> 'Costo supuesto'` en `traducirTipoPendiente`.
+- **Verificación y documentación:**
+  - Creada consulta `docs/importacion/verificacion_2R1d.sql` (un solo `SELECT` con 8 filas de destinos y 1 fila de totales de control).
+  - Creado informe `docs/importacion/INFORME_2R1D.md` con tabla de sanidad y supuestos para el dueño.
+**Acciones manuales pendientes:** Ejecutar migraciones `20261013_01_costos_derivados.sql` y `20261013_02_costos_variantes_plataforma.sql` en SQL Editor tras autorización. Rebuild del backend en EasyPanel una vez mergeado.
+
+
 ## 2026-10-12 - Sub-bloque 2R-4a (V2): Generación de presupuesto desde costeo real (presupuesto_desde_costeo.ts)
 **Herramienta:** Antigravity
 **Tipo:** feat (motor, backend, frontend, presupuestos, cpq)

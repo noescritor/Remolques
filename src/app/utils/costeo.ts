@@ -13,7 +13,7 @@ export interface SeccionCosteo {
 }
 
 export interface PendienteCosteo {
-  tipo: 'sin_precio' | 'opcion_sin_costo' | 'modelo_sin_costos' | 'ganancia_no_definida' | string;
+  tipo: 'sin_precio' | 'opcion_sin_costo' | 'modelo_sin_costos' | 'ganancia_no_definida' | 'variante_supuesta' | string;
   detalle: string;
 }
 
@@ -165,6 +165,8 @@ export function traducirTipoPendiente(tipo: string): string {
       return 'Modelo sin costos';
     case 'ganancia_no_definida':
       return 'Ganancia no definida';
+    case 'variante_supuesta':
+      return 'Costo supuesto';
     default:
       return tipo;
   }

@@ -3,7 +3,7 @@ import type { DatosCosteo, Modelo } from "./tipos.ts";
 export async function cargarDatosCosteo(supabase: any, modeloId: string): Promise<DatosCosteo> {
   const { data: modelo, error: errMod } = await supabase
     .from("modelos")
-    .select("id, tipo, largo_ft, num_ejes, productos(nombre)")
+    .select("id, tipo, largo_ft, num_ejes, costos_derivados_de, productos(nombre)")
     .eq("id", modeloId)
     .single();
 
@@ -16,6 +16,22 @@ export async function cargarDatosCosteo(supabase: any, modeloId: string): Promis
     num_ejes: Number(modelo.num_ejes),
     nombre: modelo.productos?.nombre || ""
   };
+
+  let costosDerivadosDe: { id: string; nombre: string } | null = null;
+  if (modelo.costos_derivados_de) {
+    const { data: modOrigen } = await supabase
+      .from("modelos")
+      .select("id, productos(nombre)")
+      .eq("id", modelo.costos_derivados_de)
+      .maybeSingle();
+
+    if (modOrigen) {
+      costosDerivadosDe = {
+        id: modOrigen.id,
+        nombre: modOrigen.productos?.nombre || ""
+      };
+    }
+  }
 
   const { data: receta_base } = await supabase
     .from("receta_base")
@@ -77,6 +93,7 @@ export async function cargarDatosCosteo(supabase: any, modeloId: string): Promis
 
   return {
     modelo: modeloMapeado,
+    costos_derivados_de: costosDerivadosDe,
     receta_acero: (receta_base || []).map((r: any) => ({
       material_id: r.material_id,
       nombre: r.productos?.nombre || "",
