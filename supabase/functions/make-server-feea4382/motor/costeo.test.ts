@@ -1,9 +1,11 @@
 import { assertEquals, assert } from "https://deno.land/std@0.192.0/testing/asserts.ts";
 import { costear, validarAjustes } from "./costeo.ts";
 import * as fixtureData from "./fixtures/datos_costeo_plataforma_40x2.json" with { type: "json" };
+import * as fixtureDolly from "./fixtures/datos_costeo_dolly.json" with { type: "json" };
 import type { DatosCosteo, Configuracion, AjusteManual } from "./tipos.ts";
 
 const datosBase = fixtureData.default as DatosCosteo;
+const datosDolly = fixtureDolly.default as DatosCosteo;
 
 Deno.test("Prueba dorada: Plataforma 40 ft 2 ejes - costeo exacto contra Excel Leolca", () => {
   const config: Configuracion = {
@@ -267,4 +269,43 @@ Deno.test("Adicional 10: con escala por_largo el piso de 45 ft cuesta 45/40 del 
   assertEquals(linea45.cantidad, 45 / 40.0);
   assertEquals(linea45.importe, 52060.00 * (45 / 40.0)); // 58,567.50
 });
+
+Deno.test("Prueba dorada: Dolly 2 ejes - costeo exacto contra Excel Leolca", () => {
+  const config: Configuracion = {
+    grupos: {
+      quinta: "holland",
+      abs: "2e_sin_retractil"
+    }
+  };
+
+  const ajustes: AjusteManual[] = [
+    {
+      concepto: "Dona 6 barrenos (sin mapear)",
+      cantidad: 1,
+      costo_unitario: 5176
+    }
+  ];
+
+  const res = costear(datosDolly, config, ajustes);
+
+  // Verificaciones exactas
+  assertEquals(res.secciones.acero.total, 27018.80);
+  assertEquals(res.secciones.kits_fijos.total, 20089.14);
+  assertEquals(res.secciones.opciones.total, 47375.00);
+  assertEquals(res.secciones.ajustes.total, 5176.00);
+  assertEquals(res.secciones.mano_obra.total, 11249.90);
+  assertEquals(res.costo, 110908.84);
+  assertEquals(res.ganancia, 65000.00);
+  assertEquals(res.precio_sugerido, 175908.84);
+
+  // Margen sobre precio ≈ 0.3695 (65,000 / 175,908.84)
+  assert(res.margen_sobre_precio !== null);
+  const diffMargen = Math.abs(res.margen_sobre_precio - (65000 / 175908.84));
+  assert(diffMargen < 0.0001);
+
+  // Confianza: completa si no hay pendientes
+  assertEquals(res.confianza, "completa");
+  assertEquals(res.pendientes.length, 0);
+});
+
 

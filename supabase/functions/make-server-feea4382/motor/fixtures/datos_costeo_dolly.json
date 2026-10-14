@@ -1,0 +1,804 @@
+{
+  "modelo": {
+    "id": "00000000-0000-0000-0000-000000000020",
+    "nombre": "DOLLY 2 EJES",
+    "tipo": "dolly",
+    "largo_ft": 0,
+    "num_ejes": 2
+  },
+  "receta_acero": [
+    {
+      "material_id": "mat-dolly-acero-paquete",
+      "nombre": "PAQUETE CUERPO CHASIS DOLLY (PUENTES J, C, Z, ALMA, SOLERAS SUPERIOR E INFERIOR)",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 14800,
+      "descripcion": "PAQUETE"
+    },
+    {
+      "material_id": "mat-dolly-acero-12",
+      "nombre": "ATIZADOR (SOLERA DE GRADO A-36 DE 3/8\" X 2\" A 14,2CM)",
+      "cantidad": 8,
+      "escala": "fija",
+      "costo": 22.5,
+      "descripcion": "Solera de grado A-36 de 3/8\" X 2\" a 14,2cm"
+    },
+    {
+      "material_id": "mat-dolly-acero-13",
+      "nombre": "ATIZADOR (SOLERA DE GRADO A-36 DE 1/2\" X 3\" A 14,2CM)",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 43.6,
+      "descripcion": "Solera de grado A-36 de 1/2\" X 3\" a 14,2cm"
+    },
+    {
+      "material_id": "mat-dolly-acero-14",
+      "nombre": "BASE PARA PORTA LODERAS (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 41.5,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-15",
+      "nombre": "BASE PARA VALVULA DE ABS (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 38,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-16",
+      "nombre": "BASE PARA FOCO DE ABS (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 20,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-17",
+      "nombre": "TAPA PARA PUENTE C (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 130,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-18",
+      "nombre": "BASE PARA LA QUINTA (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 891,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-19",
+      "nombre": "PALOMA PARA CHASIS (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 73,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-20",
+      "nombre": "MEDIA LUNA PARA CADENA (PLACA DE GRADO A-36 CAL. 1/2\" (12,7MM))",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 40,
+      "descripcion": "Placa de grado A-36 Cal. 1/2\" (12,7mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-21",
+      "nombre": "BASE PARA VALVULAS PONCHADORAS (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 34,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-22",
+      "nombre": "BASE PARA PERCHA (SOLERA DE GRADO A-36 DE 1/2\" X 6\" A 30CM)",
+      "cantidad": 4,
+      "escala": "fija",
+      "costo": 182.6,
+      "descripcion": "Solera de grado A-36 de 1/2\" X 6\" a 30cm"
+    },
+    {
+      "material_id": "mat-dolly-acero-23",
+      "nombre": "BASE PARA PLATO (SOLERA DE GRADO A-36 DE 1/2\" X 4\" A 20CM)",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 150,
+      "descripcion": "Solera de grado A-36 de 1/2\" X 4\" a 20cm"
+    },
+    {
+      "material_id": "mat-dolly-acero-24",
+      "nombre": "BASE PARA PLATO CORRIDA (SOLERA DE GRADO A-36 DE 1/2\" X 4\" A 95,5CM)",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 280,
+      "descripcion": "Solera de grado A-36 de 1/2\" X 4\" a 95,5cm"
+    },
+    {
+      "material_id": "mat-dolly-acero-25",
+      "nombre": "HERRAJE TRANSVERSAL (PLACA DE GRADO A-36 CAL. 3/16\" (4,76MM))",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 66.85,
+      "descripcion": "Placa de grado A-36 Cal. 3/16\" (4,76mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-26",
+      "nombre": "HERRAJE A 1,10M (PLACA DE GRADO A-36 CAL. 3/16\" (4,76MM))",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 175,
+      "descripcion": "Placa de grado A-36 Cal. 3/16\" (4,76mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-27",
+      "nombre": "PTR PARA BISAGRA (PTR DE 4\" X 2\" EN CAL. ROJO)",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 108,
+      "descripcion": "PTR de 4\" X 2\" en Cal. Rojo"
+    },
+    {
+      "material_id": "mat-dolly-acero-30",
+      "nombre": "LANZA POSTERIOR 1,25M (PTR DE 3\" X 3\" EN CAL. VERDE)",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 355,
+      "descripcion": "PTR de 3\" X 3\" en Cal. Verde"
+    },
+    {
+      "material_id": "mat-dolly-acero-31",
+      "nombre": "LANZA LATERAL 1,10 M (PTR DE 3\" X 3\" EN CAL. VERDE)",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 312,
+      "descripcion": "PTR de 3\" X 3\" en Cal. Verde"
+    },
+    {
+      "material_id": "mat-dolly-acero-32",
+      "nombre": "TRAVESAÑO 1, 45CM (PTR DE 3\" X 3\" EN CAL. VERDE)",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 128,
+      "descripcion": "PTR de 3\" X 3\" en Cal. Verde"
+    },
+    {
+      "material_id": "mat-dolly-acero-33",
+      "nombre": "TRAVESAÑO 2, 41,5CM (PTR DE 3\" X 3\" EN CAL. VERDE)",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 120,
+      "descripcion": "PTR de 3\" X 3\" en Cal. Verde"
+    },
+    {
+      "material_id": "mat-dolly-acero-34",
+      "nombre": "PLACA LATERAL DE DONA (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 24,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-35",
+      "nombre": "DORITOS (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 4,
+      "escala": "fija",
+      "costo": 42,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-36",
+      "nombre": "TAPAS PARA LANZA (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 1750,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-37",
+      "nombre": "BUCHACA (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 45.5,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-38",
+      "nombre": "U PARA CADENA",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 300,
+      "descripcion": "U para cadena"
+    },
+    {
+      "material_id": "mat-dolly-acero-39",
+      "nombre": "CADENA",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 500,
+      "descripcion": "Cadena"
+    },
+    {
+      "material_id": "mat-dolly-acero-40",
+      "nombre": "KIT DE TORNILLERIA",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 226,
+      "descripcion": "Kit de tornilleria"
+    },
+    {
+      "material_id": "mat-dolly-acero-43",
+      "nombre": "PLACA PARA PORTA LODERAS (PLACA DE GRADO A-36 CAL. 1/4\" (6,35MM))",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 200,
+      "descripcion": "Placa de grado A-36 Cal. 1/4\" (6,35mm)"
+    },
+    {
+      "material_id": "mat-dolly-acero-44",
+      "nombre": "ANGULO LARGUERO 1,77M (ANGULO 1 1/2\" X 1/8\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 2160,
+      "descripcion": "Angulo 1 1/2\" X 1/8\""
+    },
+    {
+      "material_id": "mat-dolly-acero-45",
+      "nombre": "ANGULOS LATERALES 45CM (ANGULO 1 1/2\" X 1/8\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 46,
+      "descripcion": "Angulo 1 1/2\" X 1/8\""
+    },
+    {
+      "material_id": "mat-dolly-acero-46",
+      "nombre": "SOLERAS LATERALES 1,40M (SOLERA 3/16\" X 1 1/2\")",
+      "cantidad": 2,
+      "escala": "fija",
+      "costo": 100,
+      "descripcion": "Solera 3/16\" X 1 1/2\""
+    },
+    {
+      "material_id": "mat-dolly-acero-47",
+      "nombre": "SOLERA CENTRAL 42CM (SOLERA 3/16\" X 1 1/2\")",
+      "cantidad": 1,
+      "escala": "fija",
+      "costo": 28,
+      "descripcion": "Solera 3/16\" X 1 1/2\""
+    }
+  ],
+  "costos_modelo": [
+    {
+      "seccion": "otros",
+      "concepto": "Gata de izaje",
+      "cantidad": 1,
+      "costo_unitario": 433,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Bisagra",
+      "cantidad": 2,
+      "costo_unitario": 1041,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Oreja",
+      "cantidad": 2,
+      "costo_unitario": 843,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Perno de Dona",
+      "cantidad": 2,
+      "costo_unitario": 421.08,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Buje cónico",
+      "cantidad": 4,
+      "costo_unitario": 160,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Lodera blanca",
+      "cantidad": 2,
+      "costo_unitario": 303.99,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Flejes",
+      "cantidad": 2,
+      "costo_unitario": 232,
+      "escala": "fija"
+    },
+    {
+      "seccion": "tornilleria",
+      "concepto": "Tornillería para loderas",
+      "cantidad": 8,
+      "costo_unitario": 5,
+      "escala": "fija"
+    },
+    {
+      "seccion": "luz",
+      "concepto": "Kit de luz",
+      "cantidad": 1,
+      "costo_unitario": 4500,
+      "escala": "fija"
+    },
+    {
+      "seccion": "consumibles",
+      "concepto": "Rollo de micro tubular",
+      "cantidad": 2,
+      "costo_unitario": 995,
+      "escala": "fija"
+    },
+    {
+      "seccion": "consumibles",
+      "concepto": "Tanque de CO2",
+      "cantidad": 1,
+      "costo_unitario": 925,
+      "escala": "fija"
+    },
+    {
+      "seccion": "consumibles",
+      "concepto": "Consumibles",
+      "cantidad": 0.5,
+      "costo_unitario": 550,
+      "escala": "fija"
+    },
+    {
+      "seccion": "consumibles",
+      "concepto": "Kit de limpieza",
+      "cantidad": 1,
+      "costo_unitario": 400,
+      "escala": "fija"
+    },
+    {
+      "seccion": "pintura",
+      "concepto": "Praimer",
+      "cantidad": 4,
+      "costo_unitario": 285,
+      "escala": "fija"
+    },
+    {
+      "seccion": "pintura",
+      "concepto": "Pintura color estándar",
+      "cantidad": 4,
+      "costo_unitario": 640,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Tanque para aire",
+      "cantidad": 1,
+      "costo_unitario": 904,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Kit de rotulación",
+      "cantidad": 1,
+      "costo_unitario": 400,
+      "escala": "fija"
+    },
+    {
+      "seccion": "otros",
+      "concepto": "Cinta reflejante",
+      "cantidad": 1,
+      "costo_unitario": 200,
+      "escala": "fija"
+    }
+  ],
+  "procesos": [
+    {
+      "orden": 4,
+      "proceso": "Atizador",
+      "subproceso": null,
+      "minutos": 100,
+      "tarifa_hora": 87.5
+    },
+    {
+      "orden": 5,
+      "proceso": "Base para porta loderas",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 6,
+      "proceso": "Base para Valvula de ABS",
+      "subproceso": null,
+      "minutos": 5,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 7,
+      "proceso": "Base para Foco de ABS",
+      "subproceso": null,
+      "minutos": 5,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 8,
+      "proceso": "Tapa para puente C",
+      "subproceso": null,
+      "minutos": 5,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 9,
+      "proceso": "Tapa para puente C",
+      "subproceso": null,
+      "minutos": 5,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 10,
+      "proceso": "Base para la Quinta",
+      "subproceso": null,
+      "minutos": 20,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 11,
+      "proceso": "Paloma para chasis",
+      "subproceso": null,
+      "minutos": 16,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 12,
+      "proceso": "Media luna para cadena",
+      "subproceso": null,
+      "minutos": 16,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 13,
+      "proceso": "Base para Valvulas ponchadoras",
+      "subproceso": null,
+      "minutos": 8,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 14,
+      "proceso": "Base para Valvulas ponchadoras",
+      "subproceso": null,
+      "minutos": 5,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 15,
+      "proceso": "Base para percha",
+      "subproceso": null,
+      "minutos": 48,
+      "tarifa_hora": 87.5
+    },
+    {
+      "orden": 16,
+      "proceso": "Base para plato",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 87.5
+    },
+    {
+      "orden": 17,
+      "proceso": "Base para plato corrida",
+      "subproceso": null,
+      "minutos": 12,
+      "tarifa_hora": 87.5
+    },
+    {
+      "orden": 18,
+      "proceso": "Herraje transversal",
+      "subproceso": null,
+      "minutos": 12,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 19,
+      "proceso": "Herraje transversal",
+      "subproceso": null,
+      "minutos": 16,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 20,
+      "proceso": "Herraje a 1,10m",
+      "subproceso": null,
+      "minutos": 8,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 21,
+      "proceso": "Herraje a 1,10m",
+      "subproceso": null,
+      "minutos": 11.52,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 22,
+      "proceso": "PTR para bisagra",
+      "subproceso": null,
+      "minutos": 36,
+      "tarifa_hora": 87.5
+    },
+    {
+      "orden": 23,
+      "proceso": "Placa lateral de dona",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 24,
+      "proceso": "Doritos",
+      "subproceso": null,
+      "minutos": 20,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 25,
+      "proceso": "Tapas para lanza",
+      "subproceso": null,
+      "minutos": 50,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 26,
+      "proceso": "Buchaca",
+      "subproceso": null,
+      "minutos": 5,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 27,
+      "proceso": "Buchaca",
+      "subproceso": null,
+      "minutos": 5,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 28,
+      "proceso": "Placa para porta loderas",
+      "subproceso": null,
+      "minutos": 25,
+      "tarifa_hora": 75
+    },
+    {
+      "orden": 29,
+      "proceso": "Angulo larguero 1,77m",
+      "subproceso": null,
+      "minutos": 6,
+      "tarifa_hora": 87.5
+    },
+    {
+      "orden": 30,
+      "proceso": "Angulos laterales 45cm",
+      "subproceso": null,
+      "minutos": 10,
+      "tarifa_hora": 88.5
+    },
+    {
+      "orden": 31,
+      "proceso": "Soleras laterales 1,40m",
+      "subproceso": null,
+      "minutos": 12,
+      "tarifa_hora": 89.5
+    },
+    {
+      "orden": 32,
+      "proceso": "Solera central 42cm",
+      "subproceso": null,
+      "minutos": 5,
+      "tarifa_hora": 90.5
+    },
+    {
+      "orden": 33,
+      "proceso": "Ensamble",
+      "subproceso": null,
+      "minutos": 2400,
+      "tarifa_hora": 125
+    },
+    {
+      "orden": 34,
+      "proceso": "Ensamble",
+      "subproceso": null,
+      "minutos": 2400,
+      "tarifa_hora": 60
+    },
+    {
+      "orden": 35,
+      "proceso": "Escoreado y Lavado",
+      "subproceso": null,
+      "minutos": 240,
+      "tarifa_hora": 55
+    },
+    {
+      "orden": 36,
+      "proceso": "Escoreado y Lavado",
+      "subproceso": null,
+      "minutos": 240,
+      "tarifa_hora": 55
+    },
+    {
+      "orden": 37,
+      "proceso": "Escoreado y Lavado",
+      "subproceso": null,
+      "minutos": 240,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 38,
+      "proceso": "Praimer",
+      "subproceso": null,
+      "minutos": 180,
+      "tarifa_hora": 55
+    },
+    {
+      "orden": 39,
+      "proceso": "Pintura",
+      "subproceso": null,
+      "minutos": 300,
+      "tarifa_hora": 87.5
+    },
+    {
+      "orden": 40,
+      "proceso": "Aire",
+      "subproceso": null,
+      "minutos": 480,
+      "tarifa_hora": 125
+    },
+    {
+      "orden": 41,
+      "proceso": "Luz",
+      "subproceso": null,
+      "minutos": 240,
+      "tarifa_hora": 62.5
+    },
+    {
+      "orden": 42,
+      "proceso": "Enllantado",
+      "subproceso": null,
+      "minutos": 90,
+      "tarifa_hora": 52.5
+    },
+    {
+      "orden": 43,
+      "proceso": "Enllantado",
+      "subproceso": null,
+      "minutos": 90,
+      "tarifa_hora": 52.5
+    },
+    {
+      "orden": 44,
+      "proceso": "Colocacion de Quinta rueda",
+      "subproceso": null,
+      "minutos": 90,
+      "tarifa_hora": 112.5
+    },
+    {
+      "orden": 45,
+      "proceso": "Colocacion de Quinta rueda",
+      "subproceso": null,
+      "minutos": 90,
+      "tarifa_hora": 125
+    },
+    {
+      "orden": 46,
+      "proceso": "MARCADO",
+      "subproceso": null,
+      "minutos": 90,
+      "tarifa_hora": 87.5
+    }
+  ],
+  "opcion_costos": [
+    {
+      "grupo_clave": "quinta",
+      "opcion_clave": "holland",
+      "cantidad_base": 1,
+      "escala": "fija",
+      "costo_unitario": 27375
+    },
+    {
+      "grupo_clave": "abs",
+      "opcion_clave": "2e_sin_retractil",
+      "cantidad_base": 1,
+      "escala": "fija",
+      "costo_unitario": 20000
+    },
+    {
+      "grupo_clave": "abs",
+      "opcion_clave": "2e_1_retractil",
+      "cantidad_base": 1,
+      "escala": "fija",
+      "costo_unitario": 24700
+    },
+    {
+      "grupo_clave": "retractil",
+      "opcion_clave": "paleta",
+      "cantidad_base": 1,
+      "escala": "fija",
+      "costo_unitario": 8200
+    },
+    {
+      "grupo_clave": "rines",
+      "opcion_clave": "acero",
+      "cantidad_base": 4,
+      "escala": "por_eje",
+      "costo_unitario": 1550
+    },
+    {
+      "grupo_clave": "rines",
+      "opcion_clave": "aluminio",
+      "cantidad_base": 4,
+      "escala": "por_eje",
+      "costo_unitario": 5500
+    },
+    {
+      "grupo_clave": "llantas",
+      "opcion_clave": "chinas",
+      "cantidad_base": 4,
+      "escala": "por_eje",
+      "costo_unitario": 3000
+    },
+    {
+      "grupo_clave": "llantas",
+      "opcion_clave": "firestone",
+      "cantidad_base": 4,
+      "escala": "por_eje",
+      "costo_unitario": 8700
+    },
+    {
+      "grupo_clave": "llantas",
+      "opcion_clave": "amulet",
+      "cantidad_base": 4,
+      "escala": "por_eje",
+      "costo_unitario": 4225
+    }
+  ],
+  "grupos": [
+    {
+      "id": "grp-quinta",
+      "clave": "quinta",
+      "nombre": "Quinta",
+      "seleccion": "unica"
+    },
+    {
+      "id": "grp-abs",
+      "clave": "abs",
+      "nombre": "Sistema de frenos ABS",
+      "seleccion": "unica"
+    },
+    {
+      "id": "grp-retractil",
+      "clave": "retractil",
+      "nombre": "Sistema retráctil",
+      "seleccion": "unica"
+    },
+    {
+      "id": "grp-rines",
+      "clave": "rines",
+      "nombre": "Rines",
+      "seleccion": "unica_con_cantidad"
+    },
+    {
+      "id": "grp-llantas",
+      "clave": "llantas",
+      "nombre": "Llantas",
+      "seleccion": "unica_con_cantidad"
+    }
+  ],
+  "ganancia": 65000
+}

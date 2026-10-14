@@ -79,3 +79,25 @@ Deno.test("Generar texto con 3 ejes, sin gancho, sin redilas y arreglos en adici
   assertEquals(texto.includes("GANCHO"), false);
   assertEquals(texto.includes("REDILAS"), false);
 });
+
+Deno.test("Generar texto de encabezado para Dolly y Góndola", () => {
+  const { grupos, opciones } = fixtures.default as any;
+
+  // Dolly 2 ejes
+  const modDolly = { id: "mod-dolly", tipo: "dolly", largo_ft: null, num_ejes: 2, nombre: "DOLLY 2 EJES" };
+  const resDolly = generarEspecificacion(modDolly as any, { grupos: {} }, grupos, opciones);
+  assertEquals(resDolly.texto.startsWith("SEMIREMOLQUE TIPO: DOLLY 2 EJES"), true);
+  assertEquals(resDolly.resumen_lineas[0].valor, "DOLLY 2 EJES");
+
+  // Góndola 3 ejes
+  const modGondola = { id: "mod-gondola", tipo: "gondola", largo_ft: 30, num_ejes: 3, nombre: "GONDOLA 3 EJES" };
+  const resGondola = generarEspecificacion(modGondola as any, { grupos: {} }, grupos, opciones);
+  assertEquals(resGondola.texto.startsWith("SEMIREMOLQUE TIPO: GONDOLA 3 EJES"), true);
+  assertEquals(resGondola.resumen_lineas[0].valor, "GONDOLA 3 EJES");
+
+  // Tipo desconocido en mayúsculas
+  const modOtro = { id: "mod-otro", tipo: "traila", largo_ft: null, num_ejes: 2, nombre: "TRAILA" };
+  const resOtro = generarEspecificacion(modOtro as any, { grupos: {} }, grupos, opciones);
+  assertEquals(resOtro.texto.startsWith("SEMIREMOLQUE TIPO: TRAILA"), true);
+  assertEquals(resOtro.resumen_lineas[0].valor, "TRAILA");
+});

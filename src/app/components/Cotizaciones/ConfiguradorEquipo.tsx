@@ -360,7 +360,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle>Configurar Equipo</DialogTitle>
           <DialogDescription>
-            {producto?.nombre} - {datosModelo?.modelo?.tipo} {datosModelo?.modelo?.largo_ft}FT {datosModelo?.modelo?.num_ejes} EJES
+            {producto?.nombre} - {datosModelo?.modelo?.tipo} {datosModelo?.modelo?.largo_ft ? `${datosModelo.modelo.largo_ft}FT ` : ''}{datosModelo?.modelo?.num_ejes} EJES
           </DialogDescription>
         </DialogHeader>
 

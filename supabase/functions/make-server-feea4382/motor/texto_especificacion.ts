@@ -118,7 +118,16 @@ export function generarEspecificacion(
   const resumen_lineas: { etiqueta: string; valor: string }[] = [];
   const frases: string[] = [];
 
-  const modeloTexto = `PLATAFORMA ${modelo.largo_ft} FT ${modelo.num_ejes} EJES`;
+  let modeloTexto: string;
+  if (modelo.tipo === 'plataforma') {
+    modeloTexto = `PLATAFORMA ${modelo.largo_ft} FT ${modelo.num_ejes} EJES`;
+  } else if (modelo.tipo === 'dolly') {
+    modeloTexto = `DOLLY ${modelo.num_ejes} EJES`;
+  } else if (modelo.tipo === 'gondola') {
+    modeloTexto = `GONDOLA ${modelo.num_ejes} EJES`;
+  } else {
+    modeloTexto = (modelo.tipo || '').toUpperCase();
+  }
   frases.push(`SEMIREMOLQUE TIPO: ${modeloTexto}`);
   resumen_lineas.push({ etiqueta: 'Estructura (modelo)', valor: modeloTexto });
 
