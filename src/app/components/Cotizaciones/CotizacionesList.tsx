@@ -72,7 +72,11 @@ export function CotizacionesList({
       if (res.status === 400) {
         const errData = await res.json().catch(() => ({}));
         const omitidosStr = Array.isArray(errData.conceptos_omitidos)
-          ? errData.conceptos_omitidos.map((o: any) => `• ${o.descripcion}: ${o.motivo}`).join('\n')
+          ? errData.conceptos_omitidos.map((o: any) => {
+              const d = o.descripcion || '';
+              const descRecortada = d.length > 70 ? `${d.slice(0, 70)}…` : d;
+              return `• ${descRecortada}: ${o.motivo}`;
+            }).join('\n')
           : '';
         toast.error(
           errData.error || 'No se pudo generar el presupuesto',

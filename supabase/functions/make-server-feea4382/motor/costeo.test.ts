@@ -51,6 +51,7 @@ Deno.test("Prueba dorada: Plataforma 40 ft 2 ejes - costeo exacto contra Excel L
   assertEquals(res.pendientes.length, 1);
   assertEquals(res.pendientes[0].tipo, "sin_precio");
   assert(res.pendientes[0].detalle.toLowerCase().includes("puentes de suspensión"));
+  assert(!res.pendientes.some(p => p.tipo === "variante_supuesta"));
 });
 
 Deno.test("Adicional 1: por_eje con 3 ejes escala proporcionalmente suspensión y ejes", () => {
@@ -210,3 +211,60 @@ Deno.test("Adicional 8: las 12 líneas de kits fijos traen el campo seccion pobl
   assert(secciones.includes("consumibles"));
   assert(secciones.includes("otros"));
 });
+
+Deno.test("Adicional 9: modelo con costos_derivados_de sale estimada con variante_supuesta y con precio_sugerido", () => {
+  const datosDerivados: DatosCosteo = JSON.parse(JSON.stringify(datosBase));
+  datosDerivados.costos_derivados_de = {
+    id: "00000000-0000-0000-0000-000000000040",
+    nombre: "PLATAFORMA 2 40 FT"
+  };
+
+  const config: Configuracion = {
+    grupos: {
+      suspension: "fleet_master",
+      eje: "fleet_master",
+      patin: "hj",
+      piso: "laminado_plastico",
+      abs: "2e_sin_retractil"
+    }
+  };
+
+  const res = costear(datosDerivados, config);
+  assertEquals(res.confianza, "estimada");
+  assert(res.precio_sugerido !== null);
+
+  const pendiente = res.pendientes.find(p => p.tipo === "variante_supuesta");
+  assert(pendiente !== undefined);
+  assert(pendiente.detalle.includes("PLATAFORMA 2 40 FT"));
+  assert(pendiente.detalle.includes("no hay desglose propio de esta variante"));
+});
+
+Deno.test("Adicional 10: con escala por_largo el piso de 45 ft cuesta 45/40 del de 40 ft", () => {
+  const datos40: DatosCosteo = JSON.parse(JSON.stringify(datosBase));
+  const optPiso40 = datos40.opcion_costos.find(oc => oc.grupo_clave === "piso" && oc.opcion_clave === "laminado_plastico");
+  assert(optPiso40);
+  optPiso40.escala = "por_largo";
+
+  const datos45: DatosCosteo = JSON.parse(JSON.stringify(datos40));
+  datos45.modelo.largo_ft = 45;
+
+  const config: Configuracion = {
+    grupos: {
+      piso: "laminado_plastico"
+    }
+  };
+
+  const res40 = costear(datos40, config);
+  const res45 = costear(datos45, config);
+
+  const linea40 = res40.secciones.opciones.lineas.find(l => l.concepto.includes("piso"));
+  const linea45 = res45.secciones.opciones.lineas.find(l => l.concepto.includes("piso"));
+
+  assert(linea40 && linea45);
+  assertEquals(linea40.cantidad, 1);
+  assertEquals(linea40.importe, 52060.00);
+
+  assertEquals(linea45.cantidad, 45 / 40.0);
+  assertEquals(linea45.importe, 52060.00 * (45 / 40.0)); // 58,567.50
+});
+
