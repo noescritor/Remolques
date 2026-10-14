@@ -4,6 +4,7 @@ import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganiza
 import { toast } from 'sonner';
 // Remueve la barra final para evitar URLs duplicadas como //clientes
 import { BASE_URL } from '../utils/api';
+import { normalizarAjustes } from '../utils/ajustes';
 
 const getHeaders = (token?: string) => ({
   'Content-Type': 'application/json',
@@ -266,7 +267,7 @@ export function useSupabaseData(token?: string) {
         setPagosProveedor(localPagosProveedor ? JSON.parse(localPagosProveedor) : []);
         setCotizacionEventos(localEventos ? JSON.parse(localEventos) : []);
 
-        setAjustes(localAjustes ? JSON.parse(localAjustes) : ajustes);
+        setAjustes(normalizarAjustes(localAjustes ? JSON.parse(localAjustes) : ajustes));
         setNotasList(localNotas ? JSON.parse(localNotas) : []);
       } catch (error) {
         // Silent fail - just use empty arrays
@@ -346,7 +347,7 @@ export function useSupabaseData(token?: string) {
       setComprasProveedor(Array.isArray(comprasProveedorData) ? comprasProveedorData : []);
       setCotizacionEventos(Array.isArray(eventosData) ? eventosData : []);
 
-      setAjustes(ajustesData?.error ? ajustes : (ajustesData || ajustes));
+      setAjustes(normalizarAjustes(ajustesData?.error ? ajustes : (ajustesData || ajustes)));
       setPlantillas(Array.isArray(plantillasData) ? plantillasData : []);
       setEquipo(Array.isArray(equipoData) ? equipoData : []);
       setInvitaciones(Array.isArray(invitacionesData) ? invitacionesData : []);
@@ -394,7 +395,7 @@ export function useSupabaseData(token?: string) {
         setPagosProveedor(localPagosProveedor ? JSON.parse(localPagosProveedor) : []);
         setCotizacionEventos(localEventos ? JSON.parse(localEventos) : []);
 
-        setAjustes(localAjustes ? JSON.parse(localAjustes) : ajustes);
+        setAjustes(normalizarAjustes(localAjustes ? JSON.parse(localAjustes) : ajustes));
         setNotasList(localNotas ? JSON.parse(localNotas) : []);
       } catch (localError) {
         // Silent fail
