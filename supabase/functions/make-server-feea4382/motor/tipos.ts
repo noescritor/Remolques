@@ -119,7 +119,7 @@ export interface SeccionCosteo {
 }
 
 export interface PendienteCosteo {
-  tipo: 'sin_precio' | 'opcion_sin_costo' | 'modelo_sin_costos' | 'ganancia_no_definida' | 'variante_supuesta';
+  tipo: 'sin_precio' | 'opcion_sin_costo' | 'modelo_sin_costos' | 'ganancia_no_definida' | 'variante_supuesta' | 'iva_gondola';
   detalle: string;
 }
 

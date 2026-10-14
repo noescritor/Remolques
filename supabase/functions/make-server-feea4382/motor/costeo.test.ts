@@ -2,10 +2,13 @@ import { assertEquals, assert } from "https://deno.land/std@0.192.0/testing/asse
 import { costear, validarAjustes } from "./costeo.ts";
 import * as fixtureData from "./fixtures/datos_costeo_plataforma_40x2.json" with { type: "json" };
 import * as fixtureDolly from "./fixtures/datos_costeo_dolly.json" with { type: "json" };
+import * as fixtureGondola from "./fixtures/datos_costeo_gondola.json" with { type: "json" };
 import type { DatosCosteo, Configuracion, AjusteManual } from "./tipos.ts";
 
 const datosBase = fixtureData.default as DatosCosteo;
 const datosDolly = fixtureDolly.default as DatosCosteo;
+const datosGondolaA36 = fixtureGondola.default.gondola_a36 as unknown as DatosCosteo;
+const datosGondolaHardox = fixtureGondola.default.gondola_hardox450 as unknown as DatosCosteo;
 
 Deno.test("Prueba dorada: Plataforma 40 ft 2 ejes - costeo exacto contra Excel Leolca", () => {
   const config: Configuracion = {
@@ -307,5 +310,120 @@ Deno.test("Prueba dorada: Dolly 2 ejes - costeo exacto contra Excel Leolca", () 
   assertEquals(res.confianza, "completa");
   assertEquals(res.pendientes.length, 0);
 });
+
+Deno.test("Prueba dorada: Góndola A-36, 2 ejes - costeo exacto contra Excel Leolca", () => {
+  const config: Configuracion = {
+    grupos: {
+      eje: "fleet_master",
+      patin: "hj",
+      gancho: "holland_8_10",
+      abs: "2e_1_retractil",
+      retractil: "paleta",
+      rines: "acero",
+      llantas: "chinas",
+      tina_material: "a36"
+    }
+  };
+
+  const ajustes: AjusteManual[] = [
+    {
+      concepto: "Suspensión HJ (sin mapear)",
+      cantidad: 2,
+      costo_unitario: 25000
+    },
+    {
+      concepto: "Pintura color metálico (sin mapear)",
+      cantidad: 1,
+      costo_unitario: 15000
+    }
+  ];
+
+  const res = costear(datosGondolaA36, config, ajustes);
+
+  // Verificaciones exactas al centavo
+  assertEquals(res.secciones.acero.total, 103936.96);
+  assertEquals(res.secciones.kits_fijos.total, 89045.98);
+  assertEquals(res.secciones.opciones.total, 303554.72);
+  assertEquals(res.secciones.mano_obra.total, 0.00);
+  assertEquals(res.secciones.ajustes.total, 65000.00);
+  assertEquals(res.costo, 561537.66);
+  assertEquals(res.ganancia, 100000.00);
+  assertEquals(res.precio_sugerido, 661537.66);
+
+  // Margen sobre precio (100,000 / 661,537.66)
+  assert(res.margen_sobre_precio !== null);
+  const diffMargen = Math.abs(res.margen_sobre_precio - (100000 / 661537.66));
+  assert(diffMargen < 0.0001);
+
+  // Verificación de IVA 16% sobre chasis + tina (43,430.84)
+  // Total con IVA = 661,537.66 + 43,430.84 = 704,968.50
+  const chasis = res.secciones.acero.total;
+  const tina = res.secciones.opciones.lineas.find(l => l.concepto.includes("tina_material: a36"))?.importe || 0;
+  assertEquals(tina, 167505.76);
+  const ivaChasisTina = Math.round((chasis + tina) * 0.16 * 100) / 100;
+  assertEquals(ivaChasisTina, 43430.84);
+  assertEquals(Math.round((res.precio_sugerido! + ivaChasisTina) * 100) / 100, 704968.50);
+
+  // Confianza estimada debido a iva_gondola
+  assertEquals(res.confianza, "estimada");
+  assertEquals(res.pendientes.length, 1);
+  assertEquals(res.pendientes[0].tipo, "iva_gondola");
+  assert(res.pendientes[0].detalle.includes("El IVA de la góndola está por confirmar"));
+});
+
+Deno.test("Prueba dorada: Góndola Hardox 450, 3 ejes - costeo exacto contra Excel Leolca", () => {
+  const config: Configuracion = {
+    grupos: {
+      suspension: "hendrickson",
+      eje: "ampro",
+      patin: "holland",
+      abs: "3e_2_retractil",
+      retractil: { opcion: "paleta", cantidad: 2 },
+      rines: "acero",
+      tina_material: "hardox_450"
+    }
+  };
+
+  const ajustes: AjusteManual[] = [
+    {
+      concepto: "Pintura color metálico (sin mapear)",
+      cantidad: 1,
+      costo_unitario: 15000
+    }
+  ];
+
+  const res = costear(datosGondolaHardox, config, ajustes);
+
+  // Verificaciones exactas al centavo
+  assertEquals(res.secciones.acero.total, 103936.96);
+  assertEquals(res.secciones.kits_fijos.total, 88996.98);
+  assertEquals(res.secciones.opciones.total, 574416.42);
+  assertEquals(res.secciones.mano_obra.total, 0.00);
+  assertEquals(res.secciones.ajustes.total, 15000.00);
+  assertEquals(res.costo, 782350.36);
+  assertEquals(res.ganancia, 100000.00);
+  assertEquals(res.precio_sugerido, 882350.36);
+
+  // Margen sobre precio (100,000 / 882,350.36)
+  assert(res.margen_sobre_precio !== null);
+  const diffMargen = Math.abs(res.margen_sobre_precio - (100000 / 882350.36));
+  assert(diffMargen < 0.0001);
+
+  // Verificación de IVA 16% sobre chasis + tina (62,509.66)
+  // Total con IVA = 882,350.36 + 62,509.66 = 944,860.02
+  const chasis = res.secciones.acero.total;
+  const tina = res.secciones.opciones.lineas.find(l => l.concepto.includes("tina_material: hardox_450"))?.importe || 0;
+  assertEquals(tina, 286748.42);
+  const ivaChasisTina = Math.round((chasis + tina) * 0.16 * 100) / 100;
+  assertEquals(ivaChasisTina, 62509.66);
+  assertEquals(Math.round((res.precio_sugerido! + ivaChasisTina) * 100) / 100, 944860.02);
+
+  // Confianza estimada debido a iva_gondola
+  assertEquals(res.confianza, "estimada");
+  assertEquals(res.pendientes.length, 1);
+  assertEquals(res.pendientes[0].tipo, "iva_gondola");
+  assert(res.pendientes[0].detalle.includes("El IVA de la góndola está por confirmar"));
+});
+
 
 

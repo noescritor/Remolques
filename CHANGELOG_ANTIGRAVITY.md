@@ -3,6 +3,60 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-14 - Corrección 2R-1f: notas uniformes en costos_modelo y detalle de 11 colisiones (GONDOLA)
+**Herramienta:** Antigravity  
+**Tipo:** fix (migraciones, docs)  
+**Archivos tocados:**  
+- `scripts/generar_costos_gondola_sql.cjs`
+- `supabase/migrations/20261014_02_gondola.sql`
+- `docs/importacion/INFORME_2R1F.md`
+**Qué cambió y por qué:**  
+- **Generador y migración (`scripts/generar_costos_gondola_sql.cjs` → `20261014_02_gondola.sql`):**  
+  - Se corrigió la fila 'Kit de tornillería para gancho' de 2 ejes para que lleve estrictamente `notas = 'import-2r1f'` (igual que todas las demás filas importadas) y la explicación en `fuente`. Esto asegura que los filtros de borrado y la validación `RAISE EXCEPTION` (`v_sum_kits_2e = 89045.98`) coincidan exactamente y no falle la migración ni se dupliquen filas al re-ejecutar.
+- **Informe de importación (`docs/importacion/INFORME_2R1F.md`):**  
+  - Se listaron con datos reales del JSON los 11 materiales que reciben sufijo `(GONDOLA)` o `(GONDOLA) #2` (6 por colisión de precio con la plataforma y 5 por colisiones internas entre piezas de la góndola).
+  - Se alineó la tabla comparativa Excel vs Sistema al desglose exacto que mide el motor de costeo: A-36 ($103,936.96 chasis + $303,554.72 tina y opciones + $89,045.98 kits + $65,000 ajustes = $561,537.66) y Hardox 450 ($103,936.96 chasis + $574,416.42 opciones con tina + $88,996.98 kits + $15,000 ajustes = $782,350.36).
+**Acciones manuales pendientes:** Ejecutar migración `20261014_02_gondola.sql` en Postgres local para validar idempotencia.
+
+## 2026-10-14 - Sub-bloque 2R-1f: La Góndola (modelos, chasis, tina por material, kits fijos y costos de opciones)
+**Herramienta:** Antigravity  
+**Tipo:** feat (migraciones, backend, motor, cpq)  
+**Archivos tocados:**  
+- `scripts/generar_costos_gondola_sql.cjs`
+- `supabase/migrations/20261014_02_gondola.sql`
+- `scripts/generar_fixture_gondola.cjs`
+- `supabase/functions/make-server-feea4382/motor/fixtures/datos_costeo_gondola.json`
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+- `supabase/functions/make-server-feea4382/motor/cargar_costos.ts`
+- `supabase/functions/make-server-feea4382/motor/cargar_costos.test.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.test.ts`
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.test.ts`
+- `src/app/utils/costeo.ts`
+- `docs/importacion/verificacion_2R1f.sql`
+- `docs/importacion/INFORME_2R1F.md`
+**Qué cambió y por qué:**  
+- **Generador y migración SQL (`scripts/generar_costos_gondola_sql.cjs` → `20261014_02_gondola.sql`):**  
+  - Crea los productos terminados `GONDOLA 2 EJES 45 M3` y `GONDOLA 3 EJES 45 M3` y sus modelos en `modelos` (`tipo = 'gondola'`, `largo_ft = NULL`, `num_ejes` = 2 y 3).
+  - Carga el acero del chasis (49 renglones por modelo, $103,936.96 cada uno) en `receta_base` (`seccion = 'acero'`) usando la función de sesión `pg_temp.resolver_o_crear_material_gondola`. Resuelve 20 materiales reutilizados, 24 nuevos y 5 colisiones de precio con la plataforma (`Borda delantera`, `Base para foco de ABS`, `Base para ABS`, `Porta placas`, `Porta llantas`) creando materiales separados con sufijo ` (GONDOLA)` para proteger los costos de la plataforma.
+  - Carga el despiece de tina (BOM) en `opcion_componentes`: 43 renglones para `tina_material / a36`, y 39 renglones para `tina_material / hardox_450` (donde 2 paquetes cotizados de proveedor reemplazan 6 renglones).
+  - Carga el costo de las tinas en `opcion_costos`: `a36` = $167,505.76; `hardox_450` = $286,748.42.
+  - Carga los costos fijos en `costos_modelo`: 15 conceptos para 2 ejes ($89,045.98) incluyendo el kit de tornillería para gancho de $49; y 14 conceptos comunes para 3 ejes ($88,996.98).
+  - Carga 23 opciones catalogadas para góndola en `opcion_costos` (suspensión, ejes, patines, ganchos, ABS, retráctil, rines, llantas).
+  - Todo etiquetado con `notas = 'import-2r1f'` e idempotente en una sola transacción.
+- **Motor TypeScript/Deno y Frontend:**  
+  - `motor/tipos.ts`: Se agregó `'iva_gondola'` a `PendienteCosteo.tipo`.
+  - `motor/cargar_costos.ts`: Asigna `ganancia = paramGanancia.valor.gondola_servicios_sueldos` ($100,000) para `tipo = 'gondola'`.
+  - `motor/costeo.ts`: Reconoce que la góndola no requiere procesos de manufactura individuales (`tieneProcesos = true`) y agrega el pendiente `{ tipo: 'iva_gondola', detalle: 'El IVA de la góndola está por confirmar con el dueño: en el Excel es 16% solo sobre chasis + tina; el precio sugerido no lo incluye' }`, otorgando confianza `estimada` y calculando el precio sugerido sin IVA.
+  - `src/app/utils/costeo.ts`: Traduce `iva_gondola` a `'IVA por confirmar'`.
+  - `motor/presupuesto_desde_costeo.ts`: Mapea `tina_material` a la sección `acero` en `MAPEO_GRUPOS_OPCIONES`.
+  - `motor/costeo.test.ts`: Pruebas doradas exactas para Góndola A-36 ($561,537.66 costo / $661,537.66 sugerido sin IVA / $704,968.50 con IVA 16% sobre chasis+tina) y Góndola Hardox 450 ($782,350.36 costo / $882,350.36 sugerido sin IVA / $944,860.02 con IVA).
+- **Verificación y documentación:**  
+  - Script SQL `docs/importacion/verificacion_2R1f.sql` (un solo `SELECT`) que valida conteos, totales de góndola e integridad intacta de Plataforma 40/2 y Dolly.
+  - Informe detallado en `docs/importacion/INFORME_2R1F.md` con hallazgos de tina (piezas Hardox en tina A-36, salpicaderas exclusivas en Hardox) y tabla comparativa Excel vs Sistema.
+**Acciones manuales pendientes:** Ejecutar migración `20261014_02_gondola.sql` en SQL Editor de Supabase tras autorización. Rebuild del backend en EasyPanel.
+
 ## 2026-10-14 - Sub-bloque 2R-1e: El Dolly (modelo, acero, kits, mano de obra y costos de opciones)
 **Herramienta:** Antigravity
 **Tipo:** feat (migraciones, backend, motor, cpq)
