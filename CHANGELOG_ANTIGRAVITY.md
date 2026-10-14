@@ -3,6 +3,41 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-14 - Sub-bloque 2R-1e: El Dolly (modelo, acero, kits, mano de obra y costos de opciones)
+**Herramienta:** Antigravity
+**Tipo:** feat (migraciones, backend, motor, cpq)
+**Archivos tocados:**
+- `scripts/generar_costos_dolly_sql.cjs`
+- `supabase/migrations/20261014_01_dolly.sql`
+- `scripts/generar_fixture_dolly.cjs`
+- `supabase/functions/make-server-feea4382/motor/fixtures/datos_costeo_dolly.json`
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.ts`
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.test.ts`
+- `supabase/functions/make-server-feea4382/motor/cargar_costos.ts`
+- `supabase/functions/make-server-feea4382/motor/cargar_costos.test.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.test.ts`
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`
+- `docs/importacion/verificacion_2R1e.sql`
+- `docs/importacion/INFORME_2R1e.md`
+**Qué cambió y por qué:**
+- **Generador y migración SQL (`scripts/generar_costos_dolly_sql.cjs` → `20261014_01_dolly.sql`):**
+  - Crea el producto terminado `DOLLY 2 EJES` y su modelo en `modelos` (`tipo = 'dolly'`, `largo_ft = NULL`, `num_ejes = 2`).
+  - Carga el acero del Dolly en `receta_base` (`seccion = 'acero'`, 33 renglones, suma exacta: $27,018.80) consolidando los primeros 6 renglones en `PAQUETE CUERPO CHASIS DOLLY (PUENTES J, C, Z, ALMA, SOLERAS SUPERIOR E INFERIOR)` ($14,800.00).
+  - Incluye la función temporal `pg_temp.resolver_o_crear_material_dolly` para resolver dinámicamente colisiones de materiales (reutiliza si el costo coincide, o añade sufijo ` (DOLLY)` si difiere).
+  - Carga los 18 conceptos fijos de kits y consumibles en `costos_modelo` (suma exacta: $20,089.14).
+  - Carga los 43 procesos de mano de obra en `procesos_manufactura` (suma exacta: $11,249.90, ajustando minutos totales por unidad según el costo de la fila).
+  - Mapea 9 opciones del catálogo unificado en `opcion_costos` para `tipo_modelo = 'dolly'` (quinta Holland $27,375, ABS 2e sin retráctil $20,000, ABS 2e 1 retráctil $24,700, retráctil paleta $8,200, rines acero $1,550 y aluminio $5,500, llantas chinas $3,000, Firestone $8,700 y Amulet $4,225).
+  - Toda la inserción está etiquetada con `notas = 'import-2r1e'` y es estrictamente idempotente.
+- **Motor TypeScript/Deno y Frontend:**
+  - `motor/texto_especificacion.ts`: Formatea el encabezado por tipo (`DOLLY ${num_ejes} EJES`, `GONDOLA ${num_ejes} EJES`, o en mayúsculas). Pruebas agregadas en `texto_especificacion.test.ts`.
+  - `motor/cargar_costos.ts`: Mapea `largo_ft` nulo como `0` en vez de `NaN`. Prueba unitaria agregada en `cargar_costos.test.ts`.
+  - `motor/costeo.test.ts`: Agregada prueba dorada del Dolly con fixture `datos_costeo_dolly.json` generado por `scripts/generar_fixture_dolly.cjs`. Coincide al centavo: costo $110,908.84, ganancia $65,000.00, precio sugerido $175,908.84.
+  - `ConfiguradorEquipo.tsx`: Corrige `DialogDescription` para no mostrar "nullFT" cuando `largo_ft` es nulo.
+- **Verificación y documentación:**
+  - Consulta SQL `docs/importacion/verificacion_2R1e.sql` con un solo `SELECT` que valida totales del Dolly e integridad intacta de la Plataforma 40/2 ($128,211.69 / $45,685.98 / $22,930.00).
+  - Informe completo en `docs/importacion/INFORME_2R1e.md`.
+**Acciones manuales pendientes:** Ejecutar migración `20261014_01_dolly.sql` en SQL Editor de Supabase tras autorización. Rebuild del backend en EasyPanel.
+
 ## 2026-10-14 - Sub-bloque 2R-1d: Costos de variantes de plataforma (derivadas de la 40/2)
 **Herramienta:** Antigravity
 **Tipo:** feat (migraciones, backend, motor, cpq)

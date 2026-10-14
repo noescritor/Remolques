@@ -12,7 +12,7 @@ export async function cargarDatosCosteo(supabase: any, modeloId: string): Promis
   const modeloMapeado: Modelo = {
     id: modelo.id,
     tipo: modelo.tipo,
-    largo_ft: Number(modelo.largo_ft),
+    largo_ft: modelo.largo_ft != null && !isNaN(Number(modelo.largo_ft)) ? Number(modelo.largo_ft) : 0,
     num_ejes: Number(modelo.num_ejes),
     nombre: modelo.productos?.nombre || ""
   };
