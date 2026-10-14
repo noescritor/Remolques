@@ -70,6 +70,7 @@ export function CotizacionesList({
       }
 
       if (res.status === 400) {
+        const errData = await res.json().catch(() => ({}));
         const omitidosStr = Array.isArray(errData.conceptos_omitidos)
           ? errData.conceptos_omitidos.map((o: any) => {
               const d = o.descripcion || '';
