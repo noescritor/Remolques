@@ -3,6 +3,21 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-14 - Corrección 2R-1f: notas uniformes en costos_modelo y detalle de 11 colisiones (GONDOLA)
+**Herramienta:** Antigravity  
+**Tipo:** fix (migraciones, docs)  
+**Archivos tocados:**  
+- `scripts/generar_costos_gondola_sql.cjs`
+- `supabase/migrations/20261014_02_gondola.sql`
+- `docs/importacion/INFORME_2R1F.md`
+**Qué cambió y por qué:**  
+- **Generador y migración (`scripts/generar_costos_gondola_sql.cjs` → `20261014_02_gondola.sql`):**  
+  - Se corrigió la fila 'Kit de tornillería para gancho' de 2 ejes para que lleve estrictamente `notas = 'import-2r1f'` (igual que todas las demás filas importadas) y la explicación en `fuente`. Esto asegura que los filtros de borrado y la validación `RAISE EXCEPTION` (`v_sum_kits_2e = 89045.98`) coincidan exactamente y no falle la migración ni se dupliquen filas al re-ejecutar.
+- **Informe de importación (`docs/importacion/INFORME_2R1F.md`):**  
+  - Se listaron con datos reales del JSON los 11 materiales que reciben sufijo `(GONDOLA)` o `(GONDOLA) #2` (6 por colisión de precio con la plataforma y 5 por colisiones internas entre piezas de la góndola).
+  - Se alineó la tabla comparativa Excel vs Sistema al desglose exacto que mide el motor de costeo: A-36 ($103,936.96 chasis + $303,554.72 tina y opciones + $89,045.98 kits + $65,000 ajustes = $561,537.66) y Hardox 450 ($103,936.96 chasis + $574,416.42 opciones con tina + $88,996.98 kits + $15,000 ajustes = $782,350.36).
+**Acciones manuales pendientes:** Ejecutar migración `20261014_02_gondola.sql` en Postgres local para validar idempotencia.
+
 ## 2026-10-14 - Sub-bloque 2R-1f: La Góndola (modelos, chasis, tina por material, kits fijos y costos de opciones)
 **Herramienta:** Antigravity  
 **Tipo:** feat (migraciones, backend, motor, cpq)  

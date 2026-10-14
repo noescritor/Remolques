@@ -354,7 +354,7 @@ for (const cm of kitsComunes) {
 }
 // Insertar tornilleria de gancho para 2 ejes (en hoja A-36 cant=1, cu=49)
 lines.push(`    INSERT INTO costos_modelo (organizacion_id, modelo_id, seccion, concepto, cantidad, costo_unitario, escala, fuente, notas)`);
-lines.push(`    VALUES (v_org_id, v_model_2e_id, 'tornilleria', 'Kit de tornillería para gancho', 1, 49, 'fija', 'Factura Leolca', 'presente en hoja A-36 con gancho Holland; import-2r1f');`);
+lines.push(`    VALUES (v_org_id, v_model_2e_id, 'tornilleria', 'Kit de tornillería para gancho', 1, 49, 'fija', 'Factura Leolca (hoja A-36 con gancho Holland)', 'import-2r1f');`);
 
 // Insertar comunes para 3 ejes
 for (const cm of kitsComunes) {

@@ -693,7 +693,7 @@ BEGIN
     INSERT INTO costos_modelo (organizacion_id, modelo_id, seccion, concepto, cantidad, costo_unitario, escala, fuente, notas)
     VALUES (v_org_id, v_model_2e_id, 'otros', 'Flejes', 2, 232, 'fija', 'Factura Leolca', 'import-2r1f');
     INSERT INTO costos_modelo (organizacion_id, modelo_id, seccion, concepto, cantidad, costo_unitario, escala, fuente, notas)
-    VALUES (v_org_id, v_model_2e_id, 'tornilleria', 'Kit de tornillería para gancho', 1, 49, 'fija', 'Factura Leolca', 'presente en hoja A-36 con gancho Holland; import-2r1f');
+    VALUES (v_org_id, v_model_2e_id, 'tornilleria', 'Kit de tornillería para gancho', 1, 49, 'fija', 'Factura Leolca (hoja A-36 con gancho Holland)', 'import-2r1f');
     INSERT INTO costos_modelo (organizacion_id, modelo_id, seccion, concepto, cantidad, costo_unitario, escala, fuente, notas)
     VALUES (v_org_id, v_model_3e_id, 'luz', 'Kit de luz', 1, 8500, 'fija', 'Factura Leolca', 'import-2r1f');
     INSERT INTO costos_modelo (organizacion_id, modelo_id, seccion, concepto, cantidad, costo_unitario, escala, fuente, notas)

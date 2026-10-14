@@ -33,21 +33,27 @@ Se cargaron los costos completos de los dos modelos de Góndola extraídos de la
 El chasis de la góndola consta de 49 renglones en ambas hojas, sumando exactamente **$103,936.96**.
 
 ### Regla de Resolución de Materiales:
-- **20 materiales reutilizados** de la plataforma al coincidir exactamente nombre y costo.
-- **24 materiales nuevos** exclusivos de la góndola.
-- **5 colisiones de precio con la plataforma**: materiales con el mismo nombre pero diferente costo unitario entre plataforma y góndola. Se crearon materiales independientes con el sufijo ` (GONDOLA)` para preservar íntegros los costos de la plataforma.
+Al importar la góndola, la función determinista `pg_temp.resolver_o_crear_material_gondola` busca si ya existe una materia prima con el mismo nombre en `productos`. Si existe con el mismo costo, se reutiliza; si difiere en costo, se genera un material independiente con el sufijo ` (GONDOLA)` (o ` (GONDOLA) #2`) para garantizar que ni los costos de la plataforma ni los diferentes componentes de la propia góndola se alteren entre sí.
 
-### Detalle de Colisiones de Materiales
+En total se generan **11 materiales con sufijo `(GONDOLA)`** (6 por colisión con la plataforma previa y 5 por colisiones entre piezas con diferente costo unitario dentro de la propia góndola):
 
-| Material | Costo Plataforma | Costo Góndola | Acción Tomada |
-|---|---:|---:|---|
-| `BORDA DELANTERA (PLACA DE GRADO A-36 CAL. 3/16")` | $2,068.00 | $480.00 | Creado material separado con sufijo `(GONDOLA)` |
-| `BASE PARA FOCO DE ABS (PLACA DE GRADO A-36 CAL. 1/4")` | $25.00 | $22.60 | Creado material separado con sufijo `(GONDOLA)` |
-| `BASE PARA ABS (PLACA DE GRADO A-36 CAL. 1/4")` | $30.00 | $28.00 | Creado material separado con sufijo `(GONDOLA)` |
-| `PORTA PLACAS (PLACA DE GRADO A-36 CAL. 10)` | $42.99 | $45.00 | Creado material separado con sufijo `(GONDOLA)` |
-| `PORTA LLANTAS (PLACA DE GRADO A-36 CAL. 1/4")` | $87.99 | $275.99 | Creado material separado con sufijo `(GONDOLA)` |
+### Detalle de los 11 Materiales con Sufijo `(GONDOLA)`
 
-> **Nota para el dueño:** Estas 5 piezas difieren de precio entre el archivo de plataforma y el de góndola. Se mantuvieron separadas con sufijo para no alterar los costos de la plataforma.
+| # | Material Creado en Góndola | Costo Góndola | Costo Existente | Origen del Costo Existente |
+|---|---|---:|---:|---|
+| 1 | `BORDA DELANTERA (PLACA DE GRADO A-36 CAL. 3/16") (GONDOLA)` | $480.00 | $2,068.00 | Plataforma previa (`costos_plataforma_40x2.sql`) |
+| 2 | `ATISADOR (SOLERA DE GRADO A-36 A 3/8" X 2") (GONDOLA)` | $75.00 | $40.00 | Chasis góndola (renglón 17) |
+| 3 | `BASE PARA FOCO DE ABS (PLACA DE GRADO A-36 CAL. 1/4") (GONDOLA)` | $22.60 | $25.00 | Plataforma previa (`costos_plataforma_40x2.sql`) |
+| 4 | `BASE PARA ABS (PLACA DE GRADO A-36 CAL. 1/4") (GONDOLA)` | $28.00 | $30.00 | Plataforma previa (`costos_plataforma_40x2.sql`) |
+| 5 | `PORTA PLACAS (PLACA DE GRADO A-36 CAL. 10) (GONDOLA)` | $45.00 | $42.99 | Plataforma previa (`costos_plataforma_40x2.sql`) |
+| 6 | `PORTA LLANTAS (PLACA DE GRADO A-36 CAL. 1/4") (GONDOLA)` | $275.99 | $87.99 | Plataforma previa (`costos_plataforma_40x2.sql`) |
+| 7 | `BORDA TRASERA (PLACA DE GRADO A-36 CAL. 3/16") (GONDOLA)` | $1,690.00 | $2,500.00 | Plataforma previa (`costos_plataforma_40x2.sql`) |
+| 8 | `BASE PARA CHAMBER (GONDOLA)` | $460.00 | $100.00 | Chasis góndola (renglón 41) |
+| 9 | `PALOMA PARA LA PUERTA (GONDOLA)` | $120.00 | $19.00 | Chasis góndola (renglón 44) |
+| 10 | `SALPICADERAS (GONDOLA)` | $110.00 | $3,500.00 | Chasis góndola (renglón 48) |
+| 11 | `SALPICADERAS (GONDOLA) #2` | $150.00 | $110.00 | Tina Hardox góndola (`SALPICADERAS (GONDOLA)`) |
+
+> **Nota para el dueño:** Estas 11 piezas tienen costos unitarios específicos en la góndola que difieren de la plataforma o de otros ensambles con la misma descripción en el Excel. Se crearon como materias primas independientes con sufijo `(GONDOLA)` para preservar la integridad de la plataforma.
 
 ---
 
@@ -123,19 +129,19 @@ Se mapearon 23 opciones de componentes a `opcion_costos` (`tipo_modelo = 'gondol
 - Opciones: `eje: fleet_master` (2), `patin: hj`, `gancho: holland_8_10`, `abs: 2e_1_retractil`, `retractil: paleta`, `rines: acero` (8), `llantas: chinas` (8), `tina_material: a36`.
 - Ajustes: Suspensión HJ ($50,000.00) + Pintura metálico ($15,000.00).
 
-| Sección | Valor Excel | Valor Medido en Sistema | Estado |
+| Componente del Costeo | Valor Excel | Valor Medido en Sistema | Estado |
 |---|---:|---:|:---:|
-| Chasis (Acero) | $103,936.96 | $103,936.96 | Exacto |
-| Tina A-36 | $167,505.76 | $167,505.76 | Exacto |
-| Equipamiento (Kits + Opciones + Ajustes) | $290,094.94 | $290,094.94 | Exacto |
-| — Kits fijos modelo 2 ejes | — | $89,045.98 | — |
-| — Opciones elegidas | — | $136,048.96 | — |
-| — Ajustes manuales | — | $65,000.00 | — |
-| Mano de obra | $0.00 | $0.00 | Exacto |
+| Chasis (Acero base) | $103,936.96 | $103,936.96 | Exacto |
+| Tina y opciones elegidas | $303,554.72 | $303,554.72 | Exacto |
+| — Tina A-36 (`tina_material`) | $167,505.76 | $167,505.76 | Exacto |
+| — Opciones de componentes | $136,048.96 | $136,048.96 | Exacto |
+| Kits fijos (`costos_modelo` 2 ejes) | $89,045.98 | $89,045.98 | Exacto |
+| Ajustes manuales (Suspensión HJ $50k + Pintura $15k) | $65,000.00 | $65,000.00 | Exacto |
+| Mano de obra | $0.00 | $0.00 | Exacto (en ganancia) |
 | **Costo Total** | **$561,537.66** | **$561,537.66** | **Exacto** |
 | Servicios y sueldos (Ganancia) | $100,000.00 | $100,000.00 | Exacto |
 | **Precio Sugerido sin IVA** | — | **$661,537.66** | Exacto |
-| IVA 16% sobre chasis + tina ($271,442.72 × 0.16) | $43,430.84 | $43,430.84 | En nota |
+| IVA 16% sobre chasis + tina ($271,442.72 × 0.16) | $43,430.84 | $43,430.84 | En nota (`iva_gondola`) |
 | **Precio Total con IVA (Excel)** | **$704,968.50** | **$704,968.50** | **Exacto** |
 
 ---
@@ -144,19 +150,19 @@ Se mapearon 23 opciones de componentes a `opcion_costos` (`tipo_modelo = 'gondol
 - Opciones: `suspension: hendrickson` (3), `eje: ampro` (3), `patin: holland`, `abs: 3e_2_retractil`, `retractil: {opcion: paleta, cantidad: 2}`, `rines: acero` (12), `tina_material: hardox_450`.
 - Ajustes: Pintura metálico ($15,000.00).
 
-| Sección | Valor Excel | Valor Medido en Sistema | Estado |
+| Componente del Costeo | Valor Excel | Valor Medido en Sistema | Estado |
 |---|---:|---:|:---:|
-| Chasis (Acero) | $103,936.96 | $103,936.96 | Exacto |
-| Tina Hardox 450 | $286,748.42 | $286,748.42 | Exacto |
-| Equipamiento (Kits + Opciones + Ajustes) | $391,664.98 | $391,664.98 | Exacto |
-| — Kits fijos modelo 3 ejes | — | $88,996.98 | — |
-| — Opciones elegidas | — | $287,668.00 | — |
-| — Ajustes manuales | — | $15,000.00 | — |
-| Mano de obra | $0.00 | $0.00 | Exacto |
+| Chasis (Acero base) | $103,936.96 | $103,936.96 | Exacto |
+| Opciones elegidas (incluye tina) | $574,416.42 | $574,416.42 | Exacto |
+| — Tina Hardox 450 (`tina_material`) | $286,748.42 | $286,748.42 | Exacto |
+| — Opciones de componentes | $287,668.00 | $287,668.00 | Exacto |
+| Kits fijos (`costos_modelo` 3 ejes) | $88,996.98 | $88,996.98 | Exacto |
+| Ajustes manuales (Pintura metálico $15k) | $15,000.00 | $15,000.00 | Exacto |
+| Mano de obra | $0.00 | $0.00 | Exacto (en ganancia) |
 | **Costo Total** | **$782,350.36** | **$782,350.36** | **Exacto** |
 | Servicios y sueldos (Ganancia) | $100,000.00 | $100,000.00 | Exacto |
 | **Precio Sugerido sin IVA** | — | **$882,350.36** | Exacto |
-| IVA 16% sobre chasis + tina ($390,685.38 × 0.16) | $62,509.66 | $62,509.66 | En nota |
+| IVA 16% sobre chasis + tina ($390,685.38 × 0.16) | $62,509.66 | $62,509.66 | En nota (`iva_gondola`) |
 | **Precio Total con IVA (Excel)** | **$944,860.02** | **$944,860.02** | **Exacto** |
 
 ---
