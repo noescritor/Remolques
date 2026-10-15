@@ -69,6 +69,7 @@ export async function cargarDatosCosteo(supabase: any, modeloId: string): Promis
       escala,
       costo_unitario,
       tipo_modelo,
+      fuente,
       opciones_configuracion (clave, grupo_id)
     `)
     .eq("tipo_modelo", modeloMapeado.tipo);
@@ -126,7 +127,8 @@ export async function cargarDatosCosteo(supabase: any, modeloId: string): Promis
         opcion_clave: oc.opciones_configuracion?.clave || "",
         cantidad_base: Number(oc.cantidad_base),
         escala: oc.escala || "fija",
-        costo_unitario: Number(oc.costo_unitario)
+        costo_unitario: Number(oc.costo_unitario),
+        fuente: oc.fuente || undefined
       };
     }),
     grupos: gruposList,

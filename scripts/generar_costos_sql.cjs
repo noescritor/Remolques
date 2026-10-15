@@ -53,10 +53,10 @@ lines.push('    END IF;');
 lines.push("    SELECT id INTO v_model_id FROM modelos WHERE tipo = 'plataforma' AND largo_ft = 40 AND num_ejes = 2;");
 lines.push('');
 lines.push('    -- 2. Limpieza idempotente previa para import-2r1c');
-lines.push("    DELETE FROM receta_base WHERE notas = 'import-2r1c';");
-lines.push("    DELETE FROM costos_modelo WHERE notas LIKE '%import-2r1c%' OR fuente = 'Factura Leolca';");
-lines.push("    DELETE FROM opcion_costos WHERE notas = 'import-2r1c' OR fuente = 'Factura Leolca';");
-lines.push("    DELETE FROM procesos_manufactura WHERE notas = 'import-2r1c';");
+lines.push("    DELETE FROM receta_base WHERE modelo_id = v_model_id AND notas = 'import-2r1c';");
+lines.push("    DELETE FROM costos_modelo WHERE modelo_id = v_model_id AND notas = 'import-2r1c';");
+lines.push("    DELETE FROM opcion_costos WHERE tipo_modelo = 'plataforma' AND notas = 'import-2r1c';");
+lines.push("    DELETE FROM procesos_manufactura WHERE modelo_id = v_model_id AND notas = 'import-2r1c';");
 lines.push('');
 lines.push('    -- 3. Inserción de materiales de acero (61 piezas)');
 
@@ -137,12 +137,12 @@ const itemsCostosModelo = [
   { grupo: 'Consumibles', opcion: null, seccion: 'consumibles', concepto: 'Consumibles', cantidad: 1, cu: 550, notas: 'import-2r1c' },
   { grupo: 'Kit de limpieza', opcion: null, seccion: 'consumibles', concepto: 'Kit de limpieza', cantidad: 1, cu: 300, notas: 'import-2r1c' },
   { grupo: 'Praimer', opcion: null, seccion: 'pintura', concepto: 'Praimer', cantidad: 1, cu: 10000, notas: 'import-2r1c' },
-  { grupo: 'Pintura', opcion: 'Color estandar', seccion: 'pintura', concepto: 'Pintura color estándar', cantidad: 1, cu: 12000, notas: ' 1 1/2 Cubeta; import-2r1c' }
+  { grupo: 'Pintura', opcion: 'Color estandar', seccion: 'pintura', concepto: 'Pintura color estándar', cantidad: 1, cu: 12000, fuente: 'Factura Leolca (cantidad original: 1 1/2 cubeta)', notas: 'import-2r1c' }
 ];
 
 for (const cm of itemsCostosModelo) {
   lines.push(`    INSERT INTO costos_modelo (organizacion_id, modelo_id, seccion, concepto, cantidad, costo_unitario, escala, fuente, notas)`);
-  lines.push(`    VALUES (v_org_id, v_model_id, ${escapeSql(cm.seccion)}, ${escapeSql(cm.concepto)}, ${cm.cantidad}, ${cm.cu}, 'fija', 'Factura Leolca', ${escapeSql(cm.notas)});`);
+  lines.push(`    VALUES (v_org_id, v_model_id, ${escapeSql(cm.seccion)}, ${escapeSql(cm.concepto)}, ${cm.cantidad}, ${cm.cu}, 'fija', ${escapeSql(cm.fuente || 'Factura Leolca')}, ${escapeSql(cm.notas)});`);
 }
 
 lines.push('');
@@ -177,8 +177,8 @@ const opcionesCostos = [
   { grupo_clave: 'llantas', opcion_clave: 'firestone', costo: 8700, escala: 'por_eje', cantidad_base: 4 },
   { grupo_clave: 'llantas', opcion_clave: 'amulet', costo: 4225, escala: 'por_eje', cantidad_base: 4 },
   // piso (2)
-  { grupo_clave: 'piso', opcion_clave: 'laminado_madera', costo: 39060, escala: 'fija', cantidad_base: 1 },
-  { grupo_clave: 'piso', opcion_clave: 'laminado_plastico', costo: 52060, escala: 'fija', cantidad_base: 1 }
+  { grupo_clave: 'piso', opcion_clave: 'laminado_madera', costo: 39060, escala: 'por_largo', cantidad_base: 1 },
+  { grupo_clave: 'piso', opcion_clave: 'laminado_plastico', costo: 52060, escala: 'por_largo', cantidad_base: 1 }
 ];
 
 for (const oc of opcionesCostos) {

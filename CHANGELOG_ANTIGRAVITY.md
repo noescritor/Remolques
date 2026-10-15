@@ -3,6 +3,84 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-15 - Corrección 2R-1g (ronda 2): blindaje contra borrado cruzado en generadores y filtro LIKE en verificación
+**Herramienta:** Antigravity  
+**Tipo:** fix (migraciones, docs)  
+**Archivos tocados:**  
+- `docs/importacion/verificacion_2R1g.sql`
+- `scripts/generar_costos_sql.cjs`
+- `supabase/migrations/20261011_02_costos_plataforma_40x2.sql`
+- `scripts/generar_costos_dolly_sql.cjs`
+- `supabase/migrations/20261014_01_dolly.sql`
+- `scripts/generar_costos_gondola_sql.cjs`
+- `supabase/migrations/20261014_02_gondola.sql`
+- `docs/importacion/INFORME_2R1G.md`
+**Qué cambió y por qué:**  
+- **Ajuste en `docs/importacion/verificacion_2R1g.sql`:**  
+  - En `control_previos`, se actualizó `fuente LIKE 'Factura Leolca%'` para `plat_factura_previas`, `dolly_factura_previas` y `gondola_factura_previas`, reconociendo las 5 filas de dolly normalizadas con texto descriptivo en fuente.
+- **Blindaje contra borrado cruzado en generadores (2R-1c, 2R-1e y 2R-1f):**  
+  - Se removió la cláusula amplia `OR fuente = 'Factura Leolca'` de las sentencias `DELETE` en `opcion_costos` y `costos_modelo`.
+  - Ahora cada generador borra estrictamente por su etiqueta de `notas` exacto (`import-2r1c`, `import-2r1e`, `import-2r1f`) y por su modelo/tipo (`modelo_id = ...` o `tipo_modelo = ...`).
+  - En `scripts/generar_costos_sql.cjs`, las opciones de piso `laminado_madera` y `laminado_plastico` se generan directamente con `escala = 'por_largo'`, evitando revertir el ajuste de 2R-1d al re-ejecutar.
+  - Se regeneraron `20261011_02_costos_plataforma_40x2.sql`, `20261014_01_dolly.sql` y `20261014_02_gondola.sql`.
+- **Verificación de idempotencia y re-ejecución:**  
+  - Se documentó en la Sección 8 de `INFORME_2R1G.md` que re-ejecutar 1c, 1e y 1f sobre una base con 1g mantiene idénticos los 200 registros de `opcion_costos` y 59 de `costos_modelo` sin pérdidas de datos.
+**Acciones manuales pendientes:** Ejecutar `verificacion_2R1g.sql` en Postgres local.
+
+## 2026-10-15 - Corrección 2R-1g: normalización de notas heredadas (2R-1c y 2R-1e) y ajuste en verificación
+**Herramienta:** Antigravity  
+**Tipo:** fix (migraciones, docs)  
+**Archivos tocados:**  
+- `scripts/generar_costos_sql.cjs`
+- `supabase/migrations/20261011_02_costos_plataforma_40x2.sql`
+- `scripts/generar_costos_dolly_sql.cjs`
+- `supabase/migrations/20261014_01_dolly.sql`
+- `scripts/generar_normalizar_notas_sql.cjs`
+- `supabase/migrations/20261015_02_normalizar_notas.sql`
+- `docs/importacion/verificacion_2R1g.sql`
+- `docs/importacion/INFORME_2R1G.md`
+**Qué cambió y por qué:**  
+- **Normalización de notas y generadores de 2R-1c y 2R-1e:**  
+  - En `scripts/generar_costos_dolly_sql.cjs` y `20261014_01_dolly.sql`, 5 filas de `opcion_costos` (rines y llantas) que contenían textos explicativos en notas migraron a `fuente = 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)'` y `notas = 'import-2r1e'`.
+  - En `scripts/generar_costos_sql.cjs` y `20261011_02_costos_plataforma_40x2.sql`, la fila de pintura de `costos_modelo` migró a `fuente = 'Factura Leolca (cantidad original: 1 1/2 cubeta)'` y `notas = 'import-2r1c'`.
+  - Se creó el generador `scripts/generar_normalizar_notas_sql.cjs` y la nueva migración idempotente `supabase/migrations/20261015_02_normalizar_notas.sql` para aplicar estas normalizaciones en bases ya existentes.
+- **Correcciones en `docs/importacion/verificacion_2R1g.sql`:**  
+  - `escala_por_largo`: Evalúa que en plataforma existan exactamente los 8 pisos con escala `por_largo` (2 de 2R-1c + 6 de 2R-1g) y ninguna otra opción fuera de pisos con dicha escala, sin filtrar por notas.
+  - `dolly_previas`: Filtra con `fuente = 'Factura Leolca' AND notas ILIKE '%import-2r1e%' = 9` para tolerar tanto el estado previo como el normalizado.
+- **Documentación en `docs/importacion/INFORME_2R1G.md`:**  
+  - Se agregó la Sección 7 con la justificación y las consultas SQL para auditar que `notas ILIKE '%import-2r1%'` devuelva únicamente variantes exactas.
+**Acciones manuales pendientes:** Ejecutar `20261015_02_normalizar_notas.sql` y `verificacion_2R1g.sql` en Postgres local.
+
+## 2026-10-15 - Sub-bloque 2R-1g: Costos de respaldo del tarifario para opciones no cubiertas por factura
+**Herramienta:** Antigravity  
+**Tipo:** feat (migraciones, backend, motor, cpq)  
+**Archivos tocados:**  
+- `scripts/generar_costos_respaldo_sql.cjs`
+- `supabase/migrations/20261015_01_costos_respaldo.sql`
+- `src/app/utils/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+- `supabase/functions/make-server-feea4382/motor/cargar_costos.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.test.ts`
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.test.ts`
+- `docs/importacion/verificacion_2R1g.sql`
+- `docs/importacion/INFORME_2R1G.md`
+**Qué cambió y por qué:**  
+- **Generador y migración SQL (`scripts/generar_costos_respaldo_sql.cjs` → `20261015_01_costos_respaldo.sql`):**  
+  - Inserta 144 filas en `opcion_costos` con `notas = 'import-2r1g'` de forma estrictamente idempotente en una sola transacción (`DELETE WHERE notas = 'import-2r1g'` + `INSERT ... SELECT ... WHERE NOT EXISTS`).
+  - Cobertura de 60 opciones únicas distribuidas por tipo de modelo: Plataforma (60 filas: 8 Factura, 33 Tarifario, 19 Supuesto; suma Tarifario = $543,675.52), Dolly (42 filas: 3 Factura, 20 Tarifario, 19 Supuesto; suma Tarifario = $278,096.00) y Góndola (42 filas: 3 Factura, 20 Tarifario, 19 Supuesto; suma Tarifario = $278,096.00).
+  - Incluye guardas de coherencia para 36 opciones verificando que el costo unitario no supere el precio de venta (`costo_unitario <= precio_venta`), contemplando las excepciones de regla neta (`suspension/hj_alta`) y diferencias justificadas de tarifario (`bicicletera`, `canastilla`, `con_riel`, `corrediza`).
+- **Motor TypeScript/Deno y Frontend:**  
+  - `motor/tipos.ts`: Se añadió `'costo_no_factura'` a `PendienteCosteo.tipo` y `fuente?: string` a `DatosCosteo.opcion_costos`.
+  - `motor/cargar_costos.ts`: Lee y mapea la columna `fuente` de `opcion_costos`.
+  - `motor/costeo.ts`: Agrupa las opciones seleccionadas que no provienen de `'Factura Leolca'` por su `fuente` e inyecta un único pendiente consolidado por cada fuente (`tipo: 'costo_no_factura'`, detalle: `Costos que no vienen de la Factura (por confirmar): <fuente> → <opciones>`), degradando la confianza a `estimada` sin inflar alertas por cada opción individual.
+  - `src/app/utils/costeo.ts`: Registra la traducción `'costo_no_factura': 'Costo no es de la Factura'`.
+  - Tests en `motor/costeo.test.ts` (6 casos exhaustivos para 2R-1g) y `motor/presupuesto_desde_costeo.test.ts` pasando al 100% (57 passed).
+- **Verificación y documentación:**  
+  - Script SQL `docs/importacion/verificacion_2R1g.sql` (un solo `SELECT`) que audita conteos, desglose por fuente, sumas de tarifario, escala `por_largo` restringida a pisos laminados e integridad de filas previas.
+  - Informe detallado en `docs/importacion/INFORME_2R1G.md` documentando discrepancia de canastilla ($5,784.50 vs $5,040.00), resolución de 4 conflictos Factura vs Tarifario, justificación de conceptos no mapeados y simulación de plataforma 40/3.
+**Acciones manuales pendientes:** Ejecutar migración `20261015_01_costos_respaldo.sql` en Postgres local para pruebas; posterior rebuild del backend en EasyPanel cuando se autorice el despliegue.
+
 ## 2026-10-14 - Corrección 2R-1f: notas uniformes en costos_modelo y detalle de 11 colisiones (GONDOLA)
 **Herramienta:** Antigravity  
 **Tipo:** fix (migraciones, docs)  

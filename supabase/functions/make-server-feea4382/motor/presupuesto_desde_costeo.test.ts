@@ -341,3 +341,45 @@ Deno.test("Verificación de cada fila de la tabla de mapeo", () => {
   assertEquals(clasificarOpcion("opcion:grupo_desconocido/algo", sinClas), "otros");
   assert(sinClas.has("grupo_desconocido"));
 });
+
+Deno.test("Sub-bloque 2R-1g: Presupuesto incluye pendiente costo_no_factura y total_costo coincide con costeo", () => {
+  const datosConRespaldo: DatosCosteo = {
+    ...datosCosteoBase,
+    opcion_costos: [
+      ...datosCosteoBase.opcion_costos,
+      { grupo_clave: "llantas", opcion_clave: "cerex", cantidad_base: 4, escala: "por_eje", costo_unitario: 3586, fuente: "Tarifario" },
+      { grupo_clave: "color", opcion_clave: "rojo_claro", cantidad_base: 1, escala: "fija", costo_unitario: 0, fuente: "Supuesto: sin costo adicional" },
+      { grupo_clave: "pintura", opcion_clave: "sherwin_williams", cantidad_base: 1, escala: "fija", costo_unitario: 0, fuente: "Supuesto: sin costo adicional" }
+    ]
+  };
+
+  const configConRespaldo: Configuracion = {
+    grupos: {
+      ...configExcel.grupos,
+      llantas: "cerex",
+      color: "rojo_claro",
+      pintura: "sherwin_williams"
+    }
+  };
+
+  const costeoRes = costear(datosConRespaldo, configConRespaldo, ajustesExcel);
+  const bomRes = resolverReceta(datosModeloBase, configConRespaldo);
+
+  const res = generarPresupuestoDesdeCosteo([
+    {
+      item: {
+        descripcion: "Plataforma 40 ft / 2 ejes con llantas cerex y pintura",
+        cantidad: 1,
+        modelo_id: "mod-plat-40-2"
+      },
+      costeo: costeoRes,
+      bom: bomRes
+    }
+  ], {
+    cotizacion_id: "cot-test-2r1g"
+  });
+
+  assertEquals(res.total_costo, costeoRes.costo);
+  assert(res.meta.pendientes.some((d: string) => d.includes("Tarifario")));
+  assert(res.meta.pendientes.some((d: string) => d.includes("Supuesto: sin costo adicional")));
+});

@@ -120,7 +120,7 @@ lines.push('');
 lines.push('    -- 2. Limpieza previa idempotente para import-2r1e');
 lines.push("    DELETE FROM receta_base WHERE modelo_id = v_model_id AND notas = 'import-2r1e';");
 lines.push("    DELETE FROM costos_modelo WHERE modelo_id = v_model_id AND notas = 'import-2r1e';");
-lines.push("    DELETE FROM opcion_costos WHERE tipo_modelo = 'dolly' AND (notas = 'import-2r1e' OR fuente = 'Factura Leolca');");
+lines.push("    DELETE FROM opcion_costos WHERE tipo_modelo = 'dolly' AND notas = 'import-2r1e';");
 lines.push("    DELETE FROM procesos_manufactura WHERE modelo_id = v_model_id AND notas = 'import-2r1e';");
 lines.push('');
 lines.push('    -- 3. Inserción de materiales de acero y receta_base sección acero');
@@ -253,12 +253,12 @@ const opcionesCostos = [
   // retractil (1)
   { grupo_clave: 'retractil', opcion_clave: 'paleta', costo: 8200, escala: 'fija', cantidad_base: 1, notas: 'import-2r1e' },
   // rines (2)
-  { grupo_clave: 'rines', opcion_clave: 'acero', costo: 1550, escala: 'por_eje', cantidad_base: 4, notas: 'la hoja del dolly da precio unitario pero no cantidad; la cantidad por eje se supone igual a la de plataforma y góndola; import-2r1e' },
-  { grupo_clave: 'rines', opcion_clave: 'aluminio', costo: 5500, escala: 'por_eje', cantidad_base: 4, notas: 'la hoja del dolly da precio unitario pero no cantidad; la cantidad por eje se supone igual a la de plataforma y góndola; import-2r1e' },
+  { grupo_clave: 'rines', opcion_clave: 'acero', costo: 1550, escala: 'por_eje', cantidad_base: 4, fuente: 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)', notas: 'import-2r1e' },
+  { grupo_clave: 'rines', opcion_clave: 'aluminio', costo: 5500, escala: 'por_eje', cantidad_base: 4, fuente: 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)', notas: 'import-2r1e' },
   // llantas (3)
-  { grupo_clave: 'llantas', opcion_clave: 'chinas', costo: 3000, escala: 'por_eje', cantidad_base: 4, notas: 'la hoja del dolly da precio unitario pero no cantidad; la cantidad por eje se supone igual a la de plataforma y góndola; import-2r1e' },
-  { grupo_clave: 'llantas', opcion_clave: 'firestone', costo: 8700, escala: 'por_eje', cantidad_base: 4, notas: 'la hoja del dolly da precio unitario pero no cantidad; la cantidad por eje se supone igual a la de plataforma y góndola; import-2r1e' },
-  { grupo_clave: 'llantas', opcion_clave: 'amulet', costo: 4225, escala: 'por_eje', cantidad_base: 4, notas: 'la hoja del dolly da precio unitario pero no cantidad; la cantidad por eje se supone igual a la de plataforma y góndola; import-2r1e' }
+  { grupo_clave: 'llantas', opcion_clave: 'chinas', costo: 3000, escala: 'por_eje', cantidad_base: 4, fuente: 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)', notas: 'import-2r1e' },
+  { grupo_clave: 'llantas', opcion_clave: 'firestone', costo: 8700, escala: 'por_eje', cantidad_base: 4, fuente: 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)', notas: 'import-2r1e' },
+  { grupo_clave: 'llantas', opcion_clave: 'amulet', costo: 4225, escala: 'por_eje', cantidad_base: 4, fuente: 'Factura Leolca (cantidad por eje supuesta igual a plataforma y góndola)', notas: 'import-2r1e' }
 ];
 
 for (const oc of opcionesCostos) {
@@ -267,7 +267,7 @@ for (const oc of opcionesCostos) {
   lines.push(`    WHERE gc.clave = ${escapeSql(oc.grupo_clave)} AND oc.clave = ${escapeSql(oc.opcion_clave)} AND oc.organizacion_id = v_org_id LIMIT 1;`);
   lines.push(`    IF v_opt_id IS NULL THEN RAISE EXCEPTION 'Opción no encontrada: % / %', ${escapeSql(oc.grupo_clave)}, ${escapeSql(oc.opcion_clave)}; END IF;`);
   lines.push(`    INSERT INTO opcion_costos (organizacion_id, opcion_id, tipo_modelo, cantidad_base, escala, costo_unitario, fuente, notas)`);
-  lines.push(`    VALUES (v_org_id, v_opt_id, 'dolly', ${oc.cantidad_base}, ${escapeSql(oc.escala)}, ${oc.costo}, 'Factura Leolca', ${escapeSql(oc.notas)})`);
+  lines.push(`    VALUES (v_org_id, v_opt_id, 'dolly', ${oc.cantidad_base}, ${escapeSql(oc.escala)}, ${oc.costo}, ${escapeSql(oc.fuente || 'Factura Leolca')}, ${escapeSql(oc.notas)})`);
   lines.push(`    ON CONFLICT (opcion_id, tipo_modelo) DO UPDATE SET`);
   lines.push(`        cantidad_base = EXCLUDED.cantidad_base, escala = EXCLUDED.escala, costo_unitario = EXCLUDED.costo_unitario, fuente = EXCLUDED.fuente, notas = EXCLUDED.notas;`);
 }

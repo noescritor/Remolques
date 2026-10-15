@@ -118,7 +118,7 @@ BEGIN
     -- 2. Limpieza previa idempotente para import-2r1f
     DELETE FROM receta_base WHERE modelo_id IN (v_model_2e_id, v_model_3e_id) AND notas = 'import-2r1f';
     DELETE FROM costos_modelo WHERE modelo_id IN (v_model_2e_id, v_model_3e_id) AND notas = 'import-2r1f';
-    DELETE FROM opcion_costos WHERE tipo_modelo = 'gondola' AND (notas = 'import-2r1f' OR fuente = 'Factura Leolca');
+    DELETE FROM opcion_costos WHERE tipo_modelo = 'gondola' AND notas = 'import-2r1f';
 
     -- Obtener IDs de las opciones tina_material para opcion_componentes
     SELECT oc.id INTO v_opt_a36_id FROM opciones_configuracion oc

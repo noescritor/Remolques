@@ -425,5 +425,167 @@ Deno.test("Prueba dorada: Góndola Hardox 450, 3 ejes - costeo exacto contra Exc
   assert(res.pendientes[0].detalle.includes("El IVA de la góndola está por confirmar"));
 });
 
+// ==========================================
+// Pruebas Sub-bloque 2R-1g: Costos de respaldo
+// ==========================================
+
+const opcionCostosRespaldo = [
+  { grupo_clave: "llantas", opcion_clave: "cerex", cantidad_base: 4, escala: "por_eje", costo_unitario: 3586, fuente: "Tarifario" },
+  { grupo_clave: "color", opcion_clave: "rojo_claro", cantidad_base: 1, escala: "fija", costo_unitario: 0, fuente: "Supuesto: sin costo adicional" },
+  { grupo_clave: "pintura", opcion_clave: "sherwin_williams", cantidad_base: 1, escala: "fija", costo_unitario: 0, fuente: "Supuesto: sin costo adicional" },
+  { grupo_clave: "plafones", opcion_clave: "ambar_laterales", cantidad_base: 1, escala: "fija", costo_unitario: 168.20, fuente: "Tarifario" },
+  { grupo_clave: "redilas", opcion_clave: "70", cantidad_base: 1, escala: "fija", costo_unitario: 35000, fuente: "Tarifario" },
+  { grupo_clave: "matracas", opcion_clave: "corrediza", cantidad_base: 12, escala: "fija", costo_unitario: 307.40, fuente: "Factura Leolca" }
+];
+
+const datosPlataformaConRespaldo: DatosCosteo = {
+  ...datosBase,
+  opcion_costos: [
+    ...datosBase.opcion_costos,
+    ...opcionCostosRespaldo
+  ]
+};
+
+Deno.test("Sub-bloque 2R-1g: (1) Golden tests no generan pendiente costo_no_factura", () => {
+  const resPlat = costear(datosBase, {
+    grupos: {
+      suspension: "fleet_master",
+      eje: "fleet_master",
+      patin: "hj",
+      piso: "laminado_plastico",
+      abs: "2e_sin_retractil"
+    }
+  });
+  assert(!resPlat.pendientes.some(p => p.tipo === "costo_no_factura"));
+
+  const resDolly = costear(datosDolly, {
+    grupos: {
+      suspension: "ampro",
+      eje: "ampro",
+      quinta: "holland_fija",
+      rines: "acero",
+      llantas: "chinas",
+      abs: "2e_sin_retractil"
+    }
+  });
+  assert(!resDolly.pendientes.some(p => p.tipo === "costo_no_factura"));
+});
+
+Deno.test("Sub-bloque 2R-1g: (2) Plataforma 2 ejes con llantas cerex, color y pintura", () => {
+  const config: Configuracion = {
+    grupos: {
+      llantas: "cerex",
+      color: "rojo_claro",
+      pintura: "sherwin_williams"
+    }
+  };
+
+  const res = costear(datosPlataformaConRespaldo, config);
+
+  // llantas: 4 * 2 * 3,586 = 28,688; color: 0; pintura: 0
+  const lineaLlantas = res.secciones.opciones.lineas.find(l => l.concepto === "llantas: cerex");
+  const lineaColor = res.secciones.opciones.lineas.find(l => l.concepto === "color: rojo_claro");
+  const lineaPintura = res.secciones.opciones.lineas.find(l => l.concepto === "pintura: sherwin_williams");
+
+  assert(lineaLlantas !== undefined);
+  assertEquals(lineaLlantas.cantidad, 8);
+  assertEquals(lineaLlantas.costo_unitario, 3586);
+  assertEquals(lineaLlantas.importe, 28688);
+
+  assert(lineaColor !== undefined);
+  assertEquals(lineaColor.importe, 0);
+
+  assert(lineaPintura !== undefined);
+  assertEquals(lineaPintura.importe, 0);
+
+  assertEquals(res.secciones.opciones.total, 28688);
+
+  // Un pendiente por fuente con sus opciones listadas
+  const pendTarifario = res.pendientes.find(p => p.tipo === "costo_no_factura" && p.detalle.includes("Tarifario"));
+  const pendSupuesto = res.pendientes.find(p => p.tipo === "costo_no_factura" && p.detalle.includes("Supuesto: sin costo adicional"));
+
+  assert(pendTarifario !== undefined);
+  assertEquals(pendTarifario.detalle, "Costos que no vienen de la Factura (por confirmar): Tarifario → llantas/cerex");
+
+  assert(pendSupuesto !== undefined);
+  assertEquals(pendSupuesto.detalle, "Costos que no vienen de la Factura (por confirmar): Supuesto: sin costo adicional → color/rojo_claro, pintura/sherwin_williams");
+});
+
+Deno.test("Sub-bloque 2R-1g: (3) Misma configuración con 3 ejes escala llantas correctamente", () => {
+  const datos3e: DatosCosteo = {
+    ...datosPlataformaConRespaldo,
+    modelo: {
+      ...datosPlataformaConRespaldo.modelo,
+      num_ejes: 3
+    }
+  };
+
+  const config: Configuracion = {
+    grupos: {
+      llantas: "cerex",
+      color: "rojo_claro",
+      pintura: "sherwin_williams"
+    }
+  };
+
+  const res = costear(datos3e, config);
+
+  // llantas: 4 * 3 * 3,586 = 43,032
+  const lineaLlantas = res.secciones.opciones.lineas.find(l => l.concepto === "llantas: cerex");
+  assert(lineaLlantas !== undefined);
+  assertEquals(lineaLlantas.cantidad, 12);
+  assertEquals(lineaLlantas.costo_unitario, 3586);
+  assertEquals(lineaLlantas.importe, 43032);
+});
+
+Deno.test("Sub-bloque 2R-1g: (4) Plafones con cantidad personalizada multiplica importe", () => {
+  const config: Configuracion = {
+    grupos: {
+      plafones: { opcion: "ambar_laterales", cantidad: 10 }
+    }
+  };
+
+  const res = costear(datosPlataformaConRespaldo, config);
+  const lineaPlafones = res.secciones.opciones.lineas.find(l => l.concepto === "plafones: ambar_laterales");
+  assert(lineaPlafones !== undefined);
+  assertEquals(lineaPlafones.cantidad, 10);
+  assertEquals(lineaPlafones.costo_unitario, 168.20);
+  assertEquals(lineaPlafones.importe, 1682.00);
+});
+
+Deno.test("Sub-bloque 2R-1g: (5) Redilas 70 suma 35,000", () => {
+  const config: Configuracion = {
+    grupos: {
+      redilas: "70"
+    }
+  };
+
+  const res = costear(datosPlataformaConRespaldo, config);
+  const lineaRedilas = res.secciones.opciones.lineas.find(l => l.concepto === "redilas: 70");
+  assert(lineaRedilas !== undefined);
+  assertEquals(lineaRedilas.cantidad, 1);
+  assertEquals(lineaRedilas.costo_unitario, 35000);
+  assertEquals(lineaRedilas.importe, 35000);
+});
+
+Deno.test("Sub-bloque 2R-1g: (6) Matracas corrediza suma 12 × 307.40 = 3,688.80 y no genera costo_no_factura", () => {
+  const config: Configuracion = {
+    grupos: {
+      matracas: "corrediza"
+    }
+  };
+
+  const res = costear(datosPlataformaConRespaldo, config);
+  const lineaMatracas = res.secciones.opciones.lineas.find(l => l.concepto === "matracas: corrediza");
+  assert(lineaMatracas !== undefined);
+  assertEquals(lineaMatracas.cantidad, 12);
+  assertEquals(lineaMatracas.costo_unitario, 307.40);
+  assertEquals(lineaMatracas.importe, 3688.80);
+
+  // Fuente es Factura Leolca -> NO debe haber pendiente costo_no_factura para matracas
+  const pendNoFactura = res.pendientes.find(p => p.tipo === "costo_no_factura" && p.detalle.includes("matracas"));
+  assertEquals(pendNoFactura, undefined);
+});
+
 
 

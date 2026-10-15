@@ -119,7 +119,7 @@ export interface SeccionCosteo {
 }
 
 export interface PendienteCosteo {
-  tipo: 'sin_precio' | 'opcion_sin_costo' | 'modelo_sin_costos' | 'ganancia_no_definida' | 'variante_supuesta' | 'iva_gondola';
+  tipo: 'sin_precio' | 'opcion_sin_costo' | 'modelo_sin_costos' | 'ganancia_no_definida' | 'variante_supuesta' | 'iva_gondola' | 'costo_no_factura';
   detalle: string;
 }
 
@@ -172,6 +172,7 @@ export interface DatosCosteo {
     cantidad_base: number;
     escala: string;
     costo_unitario: number;
+    fuente?: string;
   }[];
   grupos: GrupoOpcion[];
   ganancia: number | null;
