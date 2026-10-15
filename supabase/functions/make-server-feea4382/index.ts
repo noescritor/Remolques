@@ -912,6 +912,11 @@ app.delete("/productos/:id", async (c) => {
 // Unwrap metadata fields stored in JSONB back to root-level item properties
 const unwrapItemMetadata = (item: any) => desenvolverMetadata(item);
 
+// Las respuestas de crear/actualizar/duplicar deben devolver los items igual que el GET (desenvueltos).
+// Si no, el frontend guarda items con la configuración solo dentro de `metadata` y al volver a guardar se perdía.
+const cotizacionConItemsDesenvueltos = (cot: any) =>
+  cot ? { ...cot, items: (cot.items || []).map(unwrapItemMetadata) } : cot;
+
 // Get the highest sequential folio number across all non-version cotizaciones
 const getUltimaFolioNumber = async (supabase: SupabaseClient): Promise<number> => {
   const { data } = await supabase
@@ -1000,7 +1005,7 @@ app.post("/cotizaciones", async (c) => {
       .eq('id', nuevaCotizacion.id)
       .single();
 
-    return c.json(finalCotizacion);
+    return c.json(cotizacionConItemsDesenvueltos(finalCotizacion));
   } catch (error) {
     console.error('[make-server] Error creating cotizacion:', error);
     const details = error instanceof Error ? error.message : JSON.stringify(error);
@@ -1072,7 +1077,7 @@ app.put("/cotizaciones/:id", async (c) => {
       .eq('id', id)
       .single();
 
-    return c.json(finalCotizacion);
+    return c.json(cotizacionConItemsDesenvueltos(finalCotizacion));
   } catch (error) {
     console.error('[make-server] Error updating cotizacion:', error);
     const details = error instanceof Error ? error.message : JSON.stringify(error);
@@ -1158,7 +1163,7 @@ app.post("/cotizaciones/:id/duplicate", async (c) => {
       .eq('id', nuevaCotizacion.id)
       .single();
 
-    return c.json(finalCotizacion);
+    return c.json(cotizacionConItemsDesenvueltos(finalCotizacion));
   } catch (error) {
     console.error('[make-server] Error duplicating cotizacion:', error);
     return c.json({ error: 'Error duplicating cotizacion' }, 500);
