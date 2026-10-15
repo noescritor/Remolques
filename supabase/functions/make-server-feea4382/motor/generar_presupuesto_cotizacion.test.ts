@@ -1,5 +1,5 @@
 import { assertEquals, assert } from "https://deno.land/std@0.192.0/testing/asserts.ts";
-import { generarPresupuestoDeCotizacion, ejecutarAprobacionCotizacion } from "./generar_presupuesto_cotizacion.ts";
+import { generarPresupuestoDeCotizacion, ejecutarAprobacionCotizacion, generarPresupuestoAlAprobar } from "./generar_presupuesto_cotizacion.ts";
 
 function createMockSupabase(opciones: {
   cotizacionExiste?: boolean;
@@ -8,10 +8,12 @@ function createMockSupabase(opciones: {
 }) {
   const eventos: any[] = [];
   const presupuestosEnDb: any[] = opciones.presupuestoPrevio ? [opciones.presupuestoPrevio] : [];
+  const updatesCotizaciones: any[] = [];
 
   const mock = {
     eventos,
     presupuestosEnDb,
+    updatesCotizaciones,
     from: (table: string) => {
       if (table === "cotizaciones") {
         return {
@@ -37,9 +39,12 @@ function createMockSupabase(opciones: {
               })
             })
           }),
-          update: (_payload: any) => ({
-            eq: () => Promise.resolve({ error: null })
-          })
+          update: (payload: any) => {
+            updatesCotizaciones.push(payload);
+            return {
+              eq: () => Promise.resolve({ error: null })
+            };
+          }
         };
       }
 
@@ -449,4 +454,28 @@ Deno.test("ejecutarAprobacionCotizacion: un error interno en presupuesto no impi
   assertEquals(mockSupabase.eventos.length, 2);
   assertEquals(mockSupabase.eventos[0].evento, "Cotizacion aprobada");
   assert(mockSupabase.eventos[1].evento.includes("No se generó el presupuesto automático"));
+});
+
+Deno.test("generarPresupuestoAlAprobar (camino PUT): crea presupuesto sin actualizar estado_produccion ni registrar 'Cotizacion aprobada'", async () => {
+  const mockSupabase = createMockSupabase({});
+
+  // Ejecutar el camino usado por PUT /cotizaciones/:id
+  await generarPresupuestoAlAprobar(mockSupabase as any, "cot-1", "org-xyz", "user-1", mockSupabase as any);
+
+  // 1. Debe crear el presupuesto exactamente una vez
+  assertEquals(mockSupabase.presupuestosEnDb.length, 1);
+  assertEquals(mockSupabase.presupuestosEnDb[0].folio, "PRE-COT-2026-0099");
+
+  // 2. NO debe haber actualizado estado_produccion en la tabla cotizaciones
+  assertEquals(mockSupabase.updatesCotizaciones.length, 0);
+
+  // 3. NO debe haber registrado el evento "Cotizacion aprobada", SOLO el evento del presupuesto
+  assertEquals(mockSupabase.eventos.length, 1);
+  assertEquals(mockSupabase.eventos[0].evento, "Presupuesto PRE-COT-2026-0099 generado automáticamente al aprobar");
+  assert(!mockSupabase.eventos.some((e: any) => e.evento === "Cotizacion aprobada"));
+
+  // 4. Una segunda llamada no debe duplicar el presupuesto ni registrar eventos adicionales
+  await generarPresupuestoAlAprobar(mockSupabase as any, "cot-1", "org-xyz", "user-1", mockSupabase as any);
+  assertEquals(mockSupabase.presupuestosEnDb.length, 1);
+  assertEquals(mockSupabase.eventos.length, 1);
 });

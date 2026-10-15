@@ -239,22 +239,14 @@ export async function generarPresupuestoDeCotizacion(
   };
 }
 
-export async function ejecutarAprobacionCotizacion(
-  supabase: any,
+export async function generarPresupuestoAlAprobar(
+  _supabase: any,
   cotizacionId: string,
   orgId: string,
   usuarioId: string | null,
   clientParaPresupuesto?: any
 ) {
-  await supabase.from("cotizaciones").update({ estado_produccion: "Aprobada" }).eq("id", cotizacionId);
-  await registrarEventoHelper(supabase, {
-    cotizacion_id: cotizacionId,
-    organizacion_id: orgId,
-    evento: "Cotizacion aprobada",
-    usuario_id: usuarioId
-  });
-
-  const clienteServicio = clientParaPresupuesto || supabase;
+  const clienteServicio = clientParaPresupuesto || _supabase;
 
   try {
     const res = await generarPresupuestoDeCotizacion(clienteServicio, {
@@ -281,8 +273,9 @@ export async function ejecutarAprobacionCotizacion(
         usuario_id: usuarioId || null
       });
     }
+    return res;
   } catch (err: any) {
-    console.error("[aplicarAprobacion] Error generando presupuesto automático:", err);
+    console.error("[generarPresupuestoAlAprobar] Error generando presupuesto automático:", err);
     try {
       await registrarEventoHelper(clienteServicio, {
         cotizacion_id: cotizacionId,
@@ -291,8 +284,26 @@ export async function ejecutarAprobacionCotizacion(
         usuario_id: usuarioId || null
       });
     } catch (_e) {
-      // no romper aprobación
+      // no romper aprobación bajo ninguna circunstancia
     }
   }
+}
+
+export async function ejecutarAprobacionCotizacion(
+  supabase: any,
+  cotizacionId: string,
+  orgId: string,
+  usuarioId: string | null,
+  clientParaPresupuesto?: any
+) {
+  await supabase.from("cotizaciones").update({ estado_produccion: "Aprobada" }).eq("id", cotizacionId);
+  await registrarEventoHelper(supabase, {
+    cotizacion_id: cotizacionId,
+    organizacion_id: orgId,
+    evento: "Cotizacion aprobada",
+    usuario_id: usuarioId
+  });
+
+  await generarPresupuestoAlAprobar(supabase, cotizacionId, orgId, usuarioId, clientParaPresupuesto);
 }
 

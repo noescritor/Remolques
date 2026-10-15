@@ -3,6 +3,22 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-15 - Corrección 2R-4b: Separación de presupuesto al aprobar (camino PUT vs. portal)
+**Herramienta:** Antigravity  
+**Tipo:** fix (backend, motor)  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/generar_presupuesto_cotizacion.ts`
+- `supabase/functions/make-server-feea4382/motor/generar_presupuesto_cotizacion.test.ts`
+- `supabase/functions/make-server-feea4382/index.ts`
+**Qué cambió y por qué:**  
+- **Separación de responsabilidades en la generación automática:**  
+  - En `motor/generar_presupuesto_cotizacion.ts`, se extrajo la función `generarPresupuestoAlAprobar` (que contiene únicamente la lógica try/catch para generar el presupuesto con `{ reemplazar: false }` y registrar eventos de presupuesto, sin alterar el estado de producción ni registrar eventos de cotización).
+  - `ejecutarAprobacionCotizacion` se mantiene exclusivamente para el portal público (`POST /portal/:token/aprobar`), conservando el `UPDATE estado_produccion = 'Aprobada'`, el evento `"Cotizacion aprobada"` y la llamada a `generarPresupuestoAlAprobar`.
+  - En `PUT /cotizaciones/:id`, al detectar la transición a `'Aprobada'`, se invoca directamente `generarPresupuestoAlAprobar` con el cliente de servicio. De esta forma, el `estado_produccion` se mantiene intacto (ej. en `'Pendiente'` para los tableros de producción) y no se genera el evento duplicado `"Cotizacion aprobada"`.
+- **Prueba unitaria añadida:**  
+  - En `motor/generar_presupuesto_cotizacion.test.ts`, se agregó la prueba `generarPresupuestoAlAprobar (camino PUT): crea presupuesto sin actualizar estado_produccion ni registrar 'Cotizacion aprobada'`, verificando con un cliente stub que: (1) crea el presupuesto una sola vez, (2) no actualiza `estado_produccion`, (3) no registra `"Cotizacion aprobada"`, y (4) una segunda invocación es idempotente y no duplica datos.
+**Acciones manuales pendientes:** Ninguna.
+
 ## 2026-10-15 - Sub-bloque 2R-4b: Despiece visible en el presupuesto y presupuesto automático al aprobar
 **Herramienta:** Antigravity  
 **Tipo:** feat (motor, backend, frontend, ui)  

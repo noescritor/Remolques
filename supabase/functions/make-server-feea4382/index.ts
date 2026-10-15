@@ -11,7 +11,7 @@ import { generarEspecificacion } from "./motor/texto_especificacion.ts";
 import { cargarDatosCosteo } from "./motor/cargar_costos.ts";
 import { costear, validarAjustes } from "./motor/costeo.ts";
 import { generarPresupuestoDesdeCosteo } from "./motor/presupuesto_desde_costeo.ts";
-import { generarPresupuestoDeCotizacion, ejecutarAprobacionCotizacion } from "./motor/generar_presupuesto_cotizacion.ts";
+import { generarPresupuestoDeCotizacion, ejecutarAprobacionCotizacion, generarPresupuestoAlAprobar } from "./motor/generar_presupuesto_cotizacion.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -1057,7 +1057,13 @@ app.put("/cotizaciones/:id", async (c) => {
     }
 
     if (!wasApproved && isNowApproved) {
-      await aplicarAprobacion(supabase, id, orgId, userId);
+      let serviceClient = null;
+      try {
+        serviceClient = getServiceClient();
+      } catch (_e) {
+        // fallback
+      }
+      await generarPresupuestoAlAprobar(supabase, id, orgId, userId, serviceClient || supabase);
     }
 
     const { data: finalCotizacion } = await supabase
