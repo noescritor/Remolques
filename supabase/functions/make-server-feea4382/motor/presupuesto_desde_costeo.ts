@@ -38,6 +38,8 @@ export interface BomLineaResumen {
   cantidad: number;
   seccion: string;
   origen: string[];
+  paso?: string[];
+  uso?: string[];
 }
 
 export interface BomEquipoResumen {
@@ -52,6 +54,7 @@ export interface BomEquipoResumen {
 export interface MetaPresupuesto {
   origen: "costeo";
   cotizacion_id?: string | null;
+  cotizacion_folio?: string | null;
   generado_en: string;
   conceptos_incluidos: MetaConceptoIncluido[];
   conceptos_omitidos: MetaConceptoOmitido[];
@@ -95,6 +98,7 @@ export interface EquipoPresupuestoInput {
 
 export interface OpcionesPresupuesto {
   cotizacion_id?: string | null;
+  cotizacion_folio?: string | null;
   conceptos_omitidos?: MetaConceptoOmitido[];
   generado_en?: string;
 }
@@ -296,7 +300,9 @@ export function generarPresupuestoDesdeCosteo(
           unidad: l.unidad,
           cantidad: l.cantidad,
           seccion: l.seccion,
-          origen: l.origen || []
+          origen: l.origen || [],
+          paso: l.paso || [],
+          uso: l.uso || []
         })),
         omitidas: bom.omitidas || [],
         alternativas: bom.alternativas || []
@@ -485,6 +491,7 @@ export function generarPresupuestoDesdeCosteo(
   const meta: MetaPresupuesto = {
     origen: "costeo",
     cotizacion_id: opciones?.cotizacion_id || null,
+    cotizacion_folio: opciones?.cotizacion_folio || null,
     generado_en: opciones?.generado_en || new Date().toISOString(),
     conceptos_incluidos: incluidos,
     conceptos_omitidos: omitidos,

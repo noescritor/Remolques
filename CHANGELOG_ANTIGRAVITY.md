@@ -3,6 +3,38 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-15 - Sub-bloque 2R-4b: Despiece visible en el presupuesto y presupuesto automático al aprobar
+**Herramienta:** Antigravity  
+**Tipo:** feat (motor, backend, frontend, ui)  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.test.ts`
+- `supabase/functions/make-server-feea4382/motor/generar_presupuesto_cotizacion.ts`
+- `supabase/functions/make-server-feea4382/motor/generar_presupuesto_cotizacion.test.ts`
+- `supabase/functions/make-server-feea4382/motor/despiece.test.ts`
+- `supabase/functions/make-server-feea4382/index.ts`
+- `src/app/utils/despiece.ts`
+- `src/app/components/Presupuestos/PresupuestoDespieceTab.tsx`
+- `src/app/components/Presupuestos/PresupuestoEditor.tsx`
+**Qué cambió y por qué:**  
+- **Parte A (Refactorización a función reutilizable):**  
+  - Se extrajo toda la lógica de generación del presupuesto desde cotización (~200 líneas de `index.ts`) a `motor/generar_presupuesto_cotizacion.ts` (`generarPresupuestoDeCotizacion`).
+  - El handler `POST /cotizaciones/:id/presupuesto` en `index.ts` quedó delgado delegando en la función y mapeando exactamente a los mismos códigos HTTP (`200`, `409`, `400`, `404`, `500`).
+  - Pruebas unitarias completas con stub en `motor/generar_presupuesto_cotizacion.test.ts` cubriendo: (1) cotización configurada → `creado`, (2) segunda llamada sin reemplazar → `existe`, (3) con reemplazar → `reemplazado` (mismo ID), (4) sin equipos elegibles → `sin_equipos`, (5) `registrarEvento` con texto exacto.
+- **Parte B (Metadatos de despiece):**  
+  - En `motor/presupuesto_desde_costeo.ts`, se añadieron los campos opcionales aditivos `paso?: string[]` y `uso?: string[]` a `BomLineaResumen`, y `cotizacion_folio?: string | null` a `MetaPresupuesto` y `OpcionesPresupuesto`.
+  - La prueba dorada de Plataforma 40 ft / 2 ejes se mantiene exacta en $397,713.63 y se agregaron aserciones de propagación.
+- **Parte C (Pestaña Despiece y exportación CSV):**  
+  - Se creó el módulo de lógica pura `src/app/utils/despiece.ts` para consolidar, agrupar, filtrar y exportar a CSV con BOM UTF-8 (`\uFEFF`).
+  - En `src/app/components/Presupuestos/PresupuestoEditor.tsx`, se añadieron pestañas "Costos" y "Despiece" (`ui/tabs`).
+  - Se implementó `PresupuestoDespieceTab.tsx` con encabezado (folio de cotización, conteo de equipos y piezas distintas), tarjetas plegables por equipo con selector de agrupación ("Sección" vs "Paso / kit"), buscador en tiempo real, bloque consolidado, sección plegable "Pendientes de definir" (omisiones y alternativas) y botón de descarga CSV en cliente.
+- **Parte D (Presupuesto automático al aprobar):**  
+  - Se identificaron los caminos de aprobación:
+    1. Portal cliente: `POST /portal/:token/aprobar` llama a `aplicarAprobacion(supabase, cot.id, cot.organizacion_id, null)` con el cliente de servicio.
+    2. Editor / manual desde la app: `useSupabaseData.ts -> actualizarCotizacion` envía `PUT /cotizaciones/:id`. Se enganchó `aplicarAprobacion(supabase, id, orgId, userId)` cuando transiciona a `Aprobada` (`!wasApproved && isNowApproved`).
+  - En `aplicarAprobacion` (vía `ejecutarAprobacionCotizacion`), se dispara `generarPresupuestoDeCotizacion(..., { reemplazar: false })` dentro de `try/catch`. Nunca rompe la aprobación y registra en `cotizacion_eventos` tanto el éxito como si no hubo equipos o si ocurrió un error.
+**Acciones manuales pendientes:** Ninguna. En producción, hacer "Rebuild" en EasyPanel para el servicio del backend cuando se despliegue.
+
 ## 2026-10-15 - Corrección 2R-1g (ronda 2): blindaje contra borrado cruzado en generadores y filtro LIKE en verificación
 **Herramienta:** Antigravity  
 **Tipo:** fix (migraciones, docs)  

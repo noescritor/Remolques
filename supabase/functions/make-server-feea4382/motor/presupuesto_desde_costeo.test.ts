@@ -383,3 +383,31 @@ Deno.test("Sub-bloque 2R-1g: Presupuesto incluye pendiente costo_no_factura y to
   assert(res.meta.pendientes.some((d: string) => d.includes("Tarifario")));
   assert(res.meta.pendientes.some((d: string) => d.includes("Supuesto: sin costo adicional")));
 });
+
+Deno.test("Sub-bloque 2R-4b: paso, uso y cotizacion_folio viajan a meta y meta.bom", () => {
+  const costeoRes = costear(datosCosteoBase, configExcel, ajustesExcel);
+  const bomRes = resolverReceta(datosModeloBase, configExcel);
+
+  const res = generarPresupuestoDesdeCosteo([
+    {
+      item: {
+        descripcion: "Plataforma 40 ft / 2 ejes",
+        cantidad: 1,
+        modelo_id: "mod-plat-40-2"
+      },
+      costeo: costeoRes,
+      bom: bomRes
+    }
+  ], {
+    cotizacion_id: "cot-12345",
+    cotizacion_folio: "COT-2026-0042"
+  });
+
+  assertEquals(res.meta.cotizacion_folio, "COT-2026-0042");
+  const bom = res.meta.bom[0];
+  assert(bom.lineas.length > 0);
+  const algunaConPaso = bom.lineas.some((l) => Array.isArray(l.paso) && l.paso.length > 0);
+  assert(algunaConPaso, "Debe haber líneas con paso");
+  const algunaConUso = bom.lineas.some((l) => Array.isArray(l.uso));
+  assert(algunaConUso, "Debe haber líneas con uso array");
+});

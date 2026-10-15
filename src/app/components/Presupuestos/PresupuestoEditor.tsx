@@ -4,9 +4,11 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
 import { Presupuesto, Cliente, PresupuestoDatos, PresupuestoSeccion } from '../../types';
 import { defaultPresupuestoDatos } from './presupuestoTemplate';
 import { ArrowLeft, Save, Plus, Trash2, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { PresupuestoDespieceTab } from './PresupuestoDespieceTab';
 
 interface Props {
   presupuesto: Presupuesto | null;
@@ -143,6 +145,7 @@ export function PresupuestoEditor({ presupuesto, clientes, onSave, onUpdate, onC
   };
 
   const meta = datos.meta;
+  const tieneBom = Array.isArray(meta?.bom) && meta.bom.length > 0;
   const esCostoEstimado = !!(meta?.confianza && meta.confianza !== 'completa');
   const totalSinPrecio = SECCIONES_PRESUPUESTO.reduce((acc, key) => {
     const sec = datos[key] as PresupuestoSeccion | undefined;
@@ -244,7 +247,21 @@ export function PresupuestoEditor({ presupuesto, clientes, onSave, onUpdate, onC
         </Button>
       </div>
 
-      {meta && (
+      <Tabs defaultValue="costos" className="w-full">
+        <div className="flex items-center justify-between border-b border-border pb-2">
+          <TabsList>
+            <TabsTrigger value="costos">Costos</TabsTrigger>
+            <TabsTrigger value="despiece">Despiece</TabsTrigger>
+          </TabsList>
+          {!tieneBom && (
+            <span className="text-xs text-muted-foreground italic hidden sm:inline">
+              Despiece no incluido en presupuestos previos a 2R-4b
+            </span>
+          )}
+        </div>
+
+        <TabsContent value="costos" className="space-y-4 pt-2">
+          {meta && (
         <div className={`p-4 rounded-lg border text-sm space-y-3 ${esCostoEstimado ? 'border-amber-500/40 bg-amber-500/10' : 'border-emerald-500/40 bg-emerald-500/10'}`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 font-semibold text-foreground">
@@ -371,6 +388,12 @@ export function PresupuestoEditor({ presupuesto, clientes, onSave, onUpdate, onC
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="despiece" className="space-y-4 pt-2">
+          <PresupuestoDespieceTab meta={datos.meta} folio={folio} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
