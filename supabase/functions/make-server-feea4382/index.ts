@@ -11,6 +11,7 @@ import { generarEspecificacion } from "./motor/texto_especificacion.ts";
 import { cargarDatosCosteo } from "./motor/cargar_costos.ts";
 import { costear, validarAjustes } from "./motor/costeo.ts";
 import { generarPresupuestoDesdeCosteo } from "./motor/presupuesto_desde_costeo.ts";
+import { generarPresupuestoDeCotizacion, ejecutarAprobacionCotizacion, generarPresupuestoAlAprobar } from "./motor/generar_presupuesto_cotizacion.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -21,14 +22,14 @@ async function registrarEvento(supabase: any, evento: any) {
   if (error) console.error("Error registrando evento:", error);
 }
 
-async function aplicarAprobacion(supabase: any, cotizacionId: string, orgId: string, usuarioId: string) {
-  await supabase.from("cotizaciones").update({ estado_produccion: 'Aprobada' }).eq("id", cotizacionId);
-  await registrarEvento(supabase, {
-    cotizacion_id: cotizacionId,
-    organizacion_id: orgId,
-    evento: "Cotizacion aprobada",
-    usuario_id: usuarioId
-  });
+async function aplicarAprobacion(supabase: any, cotizacionId: string, orgId: string, usuarioId: string | null) {
+  let serviceClient = null;
+  try {
+    serviceClient = getServiceClient();
+  } catch (_e) {
+    // fallback
+  }
+  await ejecutarAprobacionCotizacion(supabase, cotizacionId, orgId, usuarioId, serviceClient || supabase);
 }
 
 async function calcularRequisicion(supabase, cotizacionId, orgId) {
@@ -753,193 +754,41 @@ app.post("/cotizaciones/:id/presupuesto", async (c) => {
     const id = c.req.param("id");
     const body = await c.req.json().catch(() => ({}));
 
-    // Cargar cotización
-    const { data: cotizacion, error: errCot } = await supabase
-      .from("cotizaciones")
-      .select("id, folio, cliente_id, organizacion_id, descripcion, total")
-      .eq("id", id)
-      .eq("organizacion_id", orgId)
-      .single();
+    const res = await generarPresupuestoDeCotizacion(supabase, {
+      cotizacionId: id,
+      orgId,
+      usuarioId: user?.id || null,
+      reemplazar: Boolean(body?.reemplazar)
+    });
 
-    if (errCot || !cotizacion) {
-      return c.json({ error: "Cotización no encontrada" }, 404);
-    }
-
-    // Cargar conceptos con metadata
-    const { data: itemsRaw, error: errItems } = await supabase
-      .from("items_cotizacion")
-      .select("id, producto_id, cantidad, descripcion, metadata, producto:productos(tipo_item, nombre)")
-      .eq("cotizacion_id", id);
-
-    if (errItems) {
-      return c.json({ error: "Error al cargar conceptos de la cotización: " + errItems.message }, 500);
-    }
-
-    const items = itemsRaw || [];
-    const omitidos: { descripcion: string; motivo: string }[] = [];
-    const equiposValidos: any[] = [];
-
-    for (const rawItem of items) {
-      const item = desenvolverMetadata(rawItem);
-      const desc = item.descripcion || "Item sin descripción";
-
-      const esProductoTerminado = item.producto?.tipo_item === "producto_terminado";
-      if (!esProductoTerminado && !item.configuracion) {
-        omitidos.push({
-          descripcion: desc,
-          motivo: "no es equipo configurable"
-        });
-        continue;
-      }
-
-      const cfg = item.configuracion;
-      const modeloId = cfg?.modelo_id || item.producto_id;
-
-      if (!cfg || !cfg.grupos || typeof cfg.grupos !== "object" || !modeloId) {
-        omitidos.push({
-          descripcion: desc,
-          motivo: "sin configurar"
-        });
-        continue;
-      }
-
-      // Recalcular con datos de hoy
-      try {
-        const datosCosteo = await cargarDatosCosteo(supabase, modeloId);
-        const resultadoCosteo = costear(datosCosteo, { grupos: cfg.grupos }, cfg.ajustes || []);
-
-        if (resultadoCosteo.confianza === "incompleta") {
-          const modNom = datosCosteo.modelo?.nombre || item.producto?.nombre || "";
-          omitidos.push({
-            descripcion: desc,
-            motivo: modNom ? `${modNom}: sin costos cargados todavía` : "sin costos cargados todavía"
-          });
-          continue;
-        }
-
-        let resultadoBom = null;
-        try {
-          const datosModelo = await cargarDatosModelo(supabase, modeloId);
-          resultadoBom = resolverReceta(datosModelo, { grupos: cfg.grupos });
-          const erroresReales = (resultadoBom.errores || []).filter(
-            (e: string) => !e.startsWith("Falta elegir una opción para el grupo obligatorio")
-          );
-          if (erroresReales.length > 0) {
-            omitidos.push({
-              descripcion: desc,
-              motivo: `la configuración tiene errores: ${erroresReales.join(", ")}`
-            });
-            continue;
-          }
-        } catch (_eBom: any) {
-          // Si el modelo no tiene receta, el costeo es la fuente de verdad
-        }
-
-        equiposValidos.push({
-          item: {
-            descripcion: desc,
-            cantidad: Number(item.cantidad) > 0 ? Number(item.cantidad) : 1,
-            modelo_id: modeloId
-          },
-          costeo: resultadoCosteo,
-          bom: resultadoBom
-        });
-      } catch (errCosteo: any) {
-        const modNom = item.producto?.nombre || "";
-        omitidos.push({
-          descripcion: desc,
-          motivo: errCosteo.message === "Modelo no encontrado"
-            ? (modNom ? `${modNom}: sin costos cargados todavía` : "sin costos cargados todavía")
-            : `error al costear: ${errCosteo.message}`
-        });
-      }
-    }
-
-    if (equiposValidos.length === 0) {
-      return c.json({
-        error: "Configura al menos un equipo con costos cargados",
-        conceptos_omitidos: omitidos
-      }, 400);
-    }
-
-    const folioPresupuesto = `PRE-${cotizacion.folio}`;
-
-    // Verificar si ya existe
-    const { data: existente } = await supabase
-      .from("presupuestos")
-      .select("id")
-      .eq("folio", folioPresupuesto)
-      .eq("organizacion_id", orgId)
-      .maybeSingle();
-
-    if (existente && !body?.reemplazar) {
+    if (res.estado === "existe") {
       return c.json({
         existe: true,
-        presupuesto_id: existente.id,
-        mensaje: `Ya existe un presupuesto con folio ${folioPresupuesto}`
+        presupuesto_id: res.presupuesto_id,
+        mensaje: res.mensaje || `Ya existe un presupuesto con folio ${res.folio}`
       }, 409);
     }
 
-    const resultadoPresupuesto = generarPresupuestoDesdeCosteo(equiposValidos, {
-      cotizacion_id: cotizacion.id,
-      conceptos_omitidos: omitidos,
-      generado_en: new Date().toISOString()
-    });
-
-    const payloadPresupuesto = {
-      organizacion_id: orgId,
-      cliente_id: cotizacion.cliente_id || null,
-      folio: folioPresupuesto,
-      fecha: new Date().toISOString().split("T")[0],
-      concepto: cotizacion.descripcion || `Presupuesto basado en Cotización ${cotizacion.folio}`,
-      datos: resultadoPresupuesto.datos,
-      total_costo: resultadoPresupuesto.total_costo,
-      precio_venta: Number(cotizacion.total) || 0
-    };
-
-    let presFinal = null;
-    let fueReemplazado = false;
-
-    if (existente && body?.reemplazar) {
-      const { data: updated, error: errUpdate } = await supabase
-        .from("presupuestos")
-        .update(payloadPresupuesto)
-        .eq("id", existente.id)
-        .eq("organizacion_id", orgId)
-        .select()
-        .single();
-      if (errUpdate) throw errUpdate;
-      presFinal = updated;
-      fueReemplazado = true;
-    } else {
-      const { data: inserted, error: errInsert } = await supabase
-        .from("presupuestos")
-        .insert(payloadPresupuesto)
-        .select()
-        .single();
-      if (errInsert) throw errInsert;
-      presFinal = inserted;
+    if (res.estado === "sin_equipos") {
+      return c.json({
+        error: "Configura al menos un equipo con costos cargados",
+        conceptos_omitidos: res.conceptos_omitidos || []
+      }, 400);
     }
-
-    await registrarEvento(supabase, {
-      cotizacion_id: cotizacion.id,
-      organizacion_id: orgId,
-      evento: fueReemplazado
-        ? `Presupuesto ${folioPresupuesto} reemplazado desde costeo`
-        : `Presupuesto ${folioPresupuesto} generado desde costeo`,
-      usuario_id: user?.id || null
-    });
 
     return c.json({
       success: true,
-      presupuesto: presFinal,
-      reemplazado: fueReemplazado,
-      total_costo: resultadoPresupuesto.total_costo,
-      confianza: resultadoPresupuesto.meta.confianza,
-      equipos_incluidos: resultadoPresupuesto.meta.conceptos_incluidos.length,
-      conceptos_omitidos: resultadoPresupuesto.meta.conceptos_omitidos
+      presupuesto: res.presupuesto,
+      reemplazado: res.estado === "reemplazado",
+      total_costo: res.total_costo,
+      confianza: res.confianza,
+      equipos_incluidos: res.equipos_incluidos,
+      conceptos_omitidos: res.conceptos_omitidos
     });
   } catch (error: any) {
+    if (error.message === "Cotización no encontrada") {
+      return c.json({ error: "Cotización no encontrada" }, 404);
+    }
     console.error("[make-server] Error generando presupuesto desde cotización:", error);
     return c.json({ error: error.message }, 500);
   }
@@ -1205,6 +1054,16 @@ app.put("/cotizaciones/:id", async (c) => {
       if (items.length > 0) {
         await insertItemsCotizacion(supabase, items, id, c.get("organizacionId"));
       }
+    }
+
+    if (!wasApproved && isNowApproved) {
+      let serviceClient = null;
+      try {
+        serviceClient = getServiceClient();
+      } catch (_e) {
+        // fallback
+      }
+      await generarPresupuestoAlAprobar(supabase, id, orgId, userId, serviceClient || supabase);
     }
 
     const { data: finalCotizacion } = await supabase
