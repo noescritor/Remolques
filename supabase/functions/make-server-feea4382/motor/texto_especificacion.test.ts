@@ -101,3 +101,62 @@ Deno.test("Generar texto de encabezado para Dolly y Góndola", () => {
   assertEquals(resOtro.texto.startsWith("SEMIREMOLQUE TIPO: TRAILA"), true);
   assertEquals(resOtro.resumen_lineas[0].valor, "TRAILA");
 });
+
+Deno.test("2R-8: Generar texto con 1, 2 y 3 filas (rines, llantas y matracas)", () => {
+  const { modelo, grupos, opciones } = fixtures.default as any;
+  const mod3 = { ...modelo, num_ejes: 3 };
+
+  // 1. Una sola fila (sigue igual que hoy)
+  const config1 = {
+    grupos: {
+      rines: { opcion: "acero", marca: "Ampro", cantidad: 12 },
+      llantas: { opcion: "firestone", cantidad: 12 },
+      matracas: { opcion: "corrediza", cantidad: 10 }
+    }
+  };
+  const res1 = generarEspecificacion(mod3, config1, grupos, opciones);
+  assertEquals(res1.texto.includes("12 RINES DE ACERO MARCA AMPRO"), true);
+  assertEquals(res1.texto.includes("12 LLANTAS FIRESTONE"), true);
+  assertEquals(res1.texto.includes("10 MATRACAS CORREDIZAS"), true);
+
+  // 2. Dos filas (ej. 8 acero + 4 aluminio, 6 firestone + 6 cerex)
+  const config2 = {
+    grupos: {
+      rines: [
+        { opcion: "acero", marca: "Ampro", cantidad: 8 },
+        { opcion: "aluminio", marca: "Ampro", cantidad: 4 }
+      ],
+      llantas: [
+        { opcion: "firestone", cantidad: 6 },
+        { opcion: "cerex", cantidad: 6 }
+      ],
+      matracas: { opcion: "corrediza", cantidad: 10 }
+    }
+  };
+  const res2 = generarEspecificacion(mod3, config2, grupos, opciones);
+  assertEquals(
+    res2.texto.includes("8 RINES DE ACERO MARCA AMPRO Y 4 RINES DE ALUMINIO MARCA AMPRO"),
+    true
+  );
+  assertEquals(
+    res2.texto.includes("6 LLANTAS FIRESTONE Y 6 LLANTAS CEREX"),
+    true
+  );
+  assertEquals(res2.texto.includes("10 MATRACAS CORREDIZAS"), true);
+
+  // 3. Tres filas de rines (unidas con coma y final Y)
+  const config3 = {
+    grupos: {
+      rines: [
+        { opcion: "acero", marca: "Ampro", cantidad: 6 },
+        { opcion: "aluminio", marca: "Ampro", cantidad: 4 },
+        { opcion: "cliente", cantidad: 2 }
+      ]
+    }
+  };
+  const res3 = generarEspecificacion(mod3, config3, grupos, opciones);
+  assertEquals(
+    res3.texto.includes("6 RINES DE ACERO MARCA AMPRO, 4 RINES DE ALUMINIO MARCA AMPRO Y 2 RINES PROPORCIONADOS POR EL CLIENTE"),
+    true
+  );
+});

@@ -411,3 +411,82 @@ Deno.test("Sub-bloque 2R-4b: paso, uso y cotizacion_folio viajan a meta y meta.b
   const algunaConUso = bom.lineas.some((l) => Array.isArray(l.uso));
   assert(algunaConUso, "Debe haber líneas con uso array");
 });
+
+Deno.test("Sub-bloque 2R-8: Presupuesto con rines y llantas mixtos genera una línea por fila y suma rines exacta", () => {
+  const datosConRinesMixtos: DatosCosteo = {
+    ...datosCosteoBase,
+    opcion_costos: [
+      ...datosCosteoBase.opcion_costos,
+      { grupo_clave: "rines", opcion_clave: "acero", cantidad_base: 4, escala: "por_eje", costo_unitario: 1550, fuente: "Tarifario" },
+      { grupo_clave: "rines", opcion_clave: "aluminio", cantidad_base: 4, escala: "por_eje", costo_unitario: 5500, fuente: "Tarifario" },
+      { grupo_clave: "llantas", opcion_clave: "firestone", cantidad_base: 4, escala: "por_eje", costo_unitario: 4200, fuente: "Tarifario" },
+      { grupo_clave: "llantas", opcion_clave: "cerex", cantidad_base: 4, escala: "por_eje", costo_unitario: 3586, fuente: "Tarifario" }
+    ]
+  };
+
+  const configMixta: Configuracion = {
+    grupos: {
+      ...configExcel.grupos,
+      rines: [
+        { opcion: "acero", marca: "Ampro", cantidad: 8 },
+        { opcion: "aluminio", marca: "Ampro", cantidad: 4 }
+      ],
+      llantas: [
+        { opcion: "firestone", cantidad: 6 },
+        { opcion: "cerex", cantidad: 6 }
+      ]
+    }
+  };
+
+  const costeoRes = costear(datosConRinesMixtos, configMixta, ajustesExcel);
+  const bomRes = resolverReceta(datosModeloBase, configMixta);
+
+  const res = generarPresupuestoDesdeCosteo([
+    {
+      item: {
+        descripcion: "Plataforma 40 ft / 3 ejes con rines y llantas mixtos",
+        cantidad: 1,
+        modelo_id: "mod-plat-40-3"
+      },
+      costeo: costeoRes,
+      bom: bomRes
+    }
+  ], {
+    cotizacion_id: "cot-test-2r8"
+  });
+
+  // El total coincide con el costeo
+  assertEquals(res.total_costo, costeoRes.costo);
+
+  // La sección 'rines' contiene las 4 líneas (2 de rines + 2 de llantas)
+  const itemsRines = res.datos.rines.items;
+  assertEquals(itemsRines.length, 4);
+
+  // Verificamos cada fila
+  const rAcero = itemsRines.find(i => i.material.includes("rines: acero"));
+  assert(rAcero !== undefined);
+  assertEquals(rAcero.pzas, 8);
+  assertEquals(rAcero.cu, 1550);
+  assertEquals(rAcero.importe, 12400);
+
+  const rAlum = itemsRines.find(i => i.material.includes("rines: aluminio"));
+  assert(rAlum !== undefined);
+  assertEquals(rAlum.pzas, 4);
+  assertEquals(rAlum.cu, 5500);
+  assertEquals(rAlum.importe, 22000);
+
+  const llFire = itemsRines.find(i => i.material.includes("llantas: firestone"));
+  assert(llFire !== undefined);
+  assertEquals(llFire.pzas, 6);
+  assertEquals(llFire.cu, 8700);
+  assertEquals(llFire.importe, 52200);
+
+  const llCerex = itemsRines.find(i => i.material.includes("llantas: cerex"));
+  assert(llCerex !== undefined);
+  assertEquals(llCerex.pzas, 6);
+  assertEquals(llCerex.cu, 3586);
+  assertEquals(llCerex.importe, 21516);
+
+  // Total de la sección rines suma exactamente 108,116 (12,400 + 22,000 + 52,200 + 21,516)
+  assertEquals(res.datos.rines.total, 108116);
+});

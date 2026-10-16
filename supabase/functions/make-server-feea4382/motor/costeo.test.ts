@@ -717,5 +717,117 @@ Deno.test("Sub-bloque 2R-7: fuentes 'Manual (usuario)' y 'Producto' NO generan c
   assert(pendTarifario.detalle.includes("gancho/opcion_tarifario_test"));
 });
 
+Deno.test("Sub-bloque 2R-8: rines mixtos (8 acero + 4 aluminio) en 3 ejes cuesta exactamente 8 × 1,550 + 4 × 5,500 = 34,400", () => {
+  const datos3Ejes = JSON.parse(JSON.stringify(datosBase)) as DatosCosteo;
+  datos3Ejes.modelo.num_ejes = 3;
+
+  const config: Configuracion = {
+    grupos: {
+      rines: [
+        { opcion: "acero", marca: "Ampro", cantidad: 8 },
+        { opcion: "aluminio", marca: "Ampro", cantidad: 4 }
+      ]
+    }
+  };
+
+  const res = costear(datos3Ejes, config);
+  const lineaAcero = res.secciones.opciones.lineas.find(l => l.concepto === "rines: acero");
+  const lineaAluminio = res.secciones.opciones.lineas.find(l => l.concepto === "rines: aluminio");
+
+  assert(lineaAcero);
+  assertEquals(lineaAcero.cantidad, 8);
+  assertEquals(lineaAcero.costo_unitario, 1550);
+  assertEquals(lineaAcero.importe, 12400);
+
+  assert(lineaAluminio);
+  assertEquals(lineaAluminio.cantidad, 4);
+  assertEquals(lineaAluminio.costo_unitario, 5500);
+  assertEquals(lineaAluminio.importe, 22000);
+
+  assertEquals(lineaAcero.importe + lineaAluminio.importe, 34400);
+});
+
+Deno.test("Sub-bloque 2R-8: llantas mixtas (6 firestone + 6 cerex) suman cada fila con su costo propio", () => {
+  const datos3Ejes = JSON.parse(JSON.stringify(datosBase)) as DatosCosteo;
+  datos3Ejes.modelo.num_ejes = 3;
+
+  // Agregar costo de cerex a opcion_costos si no está en fixture
+  const yaTieneCerex = (datos3Ejes.opcion_costos || []).some(oc => oc.grupo_clave === "llantas" && oc.opcion_clave === "cerex");
+  if (!yaTieneCerex) {
+    datos3Ejes.opcion_costos.push({
+      grupo_clave: "llantas",
+      opcion_clave: "cerex",
+      costo_unitario: 3586,
+      cantidad_base: 4,
+      escala: "por_eje"
+    });
+  }
+
+  const config: Configuracion = {
+    grupos: {
+      llantas: [
+        { opcion: "firestone", cantidad: 6 },
+        { opcion: "cerex", cantidad: 6 }
+      ]
+    }
+  };
+
+  const res = costear(datos3Ejes, config);
+  const lineaFirestone = res.secciones.opciones.lineas.find(l => l.concepto === "llantas: firestone");
+  const lineaCerex = res.secciones.opciones.lineas.find(l => l.concepto === "llantas: cerex");
+
+  assert(lineaFirestone);
+  assertEquals(lineaFirestone.cantidad, 6);
+  assertEquals(lineaFirestone.costo_unitario, 8700);
+  assertEquals(lineaFirestone.importe, 52200);
+
+  assert(lineaCerex);
+  assertEquals(lineaCerex.cantidad, 6);
+  assertEquals(lineaCerex.costo_unitario, 3586);
+  assertEquals(lineaCerex.importe, 21516);
+
+  assertEquals(lineaFirestone.importe + lineaCerex.importe, 73716);
+});
+
+Deno.test("Sub-bloque 2R-8: matracas con cantidad explícita (corrediza × 10) vs sin cantidad (usa default 12)", () => {
+  const datosTest = JSON.parse(JSON.stringify(datosBase)) as DatosCosteo;
+  const yaTieneMatracas = (datosTest.opcion_costos || []).some(oc => oc.grupo_clave === "matracas" && oc.opcion_clave === "corrediza");
+  if (!yaTieneMatracas) {
+    datosTest.opcion_costos.push({
+      grupo_clave: "matracas",
+      opcion_clave: "corrediza",
+      costo_unitario: 307.4,
+      cantidad_base: 12,
+      escala: "fija"
+    });
+  }
+
+  // 1. Con cantidad explícita (10 piezas)
+  const config10: Configuracion = {
+    grupos: {
+      matracas: { opcion: "corrediza", cantidad: 10 }
+    }
+  };
+  const res10 = costear(datosTest, config10);
+  const linea10 = res10.secciones.opciones.lineas.find(l => l.concepto === "matracas: corrediza");
+  assert(linea10);
+  assertEquals(linea10.cantidad, 10);
+  assertEquals(linea10.costo_unitario, 307.4);
+  assertEquals(linea10.importe, 3074);
+
+  // 2. Sin cantidad explícita (debe usar default 12 y no dejar en 0)
+  const configDefault: Configuracion = {
+    grupos: {
+      matracas: "corrediza"
+    }
+  };
+  const resDef = costear(datosTest, configDefault);
+  const lineaDef = resDef.secciones.opciones.lineas.find(l => l.concepto === "matracas: corrediza");
+  assert(lineaDef);
+  assertEquals(lineaDef.cantidad, 12);
+  assertEquals(lineaDef.costo_unitario, 307.4);
+  assertEquals(lineaDef.importe, 3688.8);
+});
+
 
 

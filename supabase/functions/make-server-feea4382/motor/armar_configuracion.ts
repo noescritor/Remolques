@@ -3,7 +3,29 @@ export function armarConfiguracionModelo(modelo: any, gruposRaw: any[], opciones
 
   const grupos = gruposRaw
     .filter((g: any) => !g.aplica_a || g.aplica_a.includes(modelo.tipo))
-    .sort((a: any, b: any) => (a.orden || 0) - (b.orden || 0));
+    .sort((a: any, b: any) => (a.orden || 0) - (b.orden || 0))
+    .map((g: any) => {
+      let max_piezas: number | undefined = undefined;
+      let regla = g.regla;
+      if (typeof regla === 'string') {
+        try {
+          regla = JSON.parse(regla);
+        } catch {
+          regla = null;
+        }
+      }
+      if (regla && typeof regla === 'object') {
+        if (regla.max_total?.por_eje && typeof modelo?.num_ejes === 'number') {
+          max_piezas = regla.max_total.por_eje * modelo.num_ejes;
+        } else if (typeof regla.max_total?.fija === 'number') {
+          max_piezas = regla.max_total.fija;
+        }
+      }
+      return {
+        ...g,
+        ...(max_piezas !== undefined ? { max_piezas } : {})
+      };
+    });
 
   const gruposIds = new Set(grupos.map((g: any) => g.id));
 

@@ -265,3 +265,130 @@ Deno.test("18. Modelo sin acero marca secciones_pendientes = ['acero']", () => {
   const res = resolverReceta(mockDatos, config);
   assertEquals(res.secciones_pendientes, ["acero"]);
 });
+
+Deno.test("19. 2R-8: Rines mixtos (8 acero + 4 aluminio) generan ambas líneas BOM y no degradan completo", () => {
+  const datos3Ejes = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  datos3Ejes.modelo.num_ejes = 3;
+
+  // Asignar regla max_total al grupo rines en la fixture
+  const grpRines = datos3Ejes.grupos.find(g => g.clave === "rines");
+  if (grpRines) {
+    grpRines.regla = { max_total: { por_eje: 4 } };
+    grpRines.seleccion = "multiple_con_cantidad";
+  }
+
+  const config: Configuracion = {
+    grupos: {
+      suspension: "alta_hendrickson",
+      retractil: "grande",
+      eje: "hendrickson",
+      patin: "hj",
+      rines: [
+        { opcion: "acero", marca: "Ampro", cantidad: 8 },
+        { opcion: "aluminio", marca: "Ampro", cantidad: 4 }
+      ]
+    }
+  };
+
+  const res = resolverReceta(datos3Ejes, config);
+  const lineaAcero = res.lineas.find(l => l.nombre === "RIN DE ACERO AMPRO");
+  const lineaAluminio = res.lineas.find(l => l.nombre === "RIN DE ALUMINIO AMPRO");
+
+  assert(lineaAcero, "Debe existir línea de rines de acero");
+  assertEquals(lineaAcero.cantidad, 8);
+  assert(lineaAluminio, "Debe existir línea de rines de aluminio");
+  assertEquals(lineaAluminio.cantidad, 4);
+
+  assertEquals(res.errores.filter(e => e.toLowerCase().includes("rin")), []);
+  assert(!res.advertencias.some(a => a.toLowerCase().includes("rin")));
+});
+
+Deno.test("20. 2R-8: Duplicados en la misma opción y marca se fusionan antes de procesar", () => {
+  const datos3Ejes = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  datos3Ejes.modelo.num_ejes = 3;
+
+  const grpRines = datos3Ejes.grupos.find(g => g.clave === "rines");
+  if (grpRines) grpRines.regla = { max_total: { por_eje: 4 } };
+
+  const config: Configuracion = {
+    grupos: {
+      suspension: "alta_hendrickson",
+      retractil: "grande",
+      eje: "hendrickson",
+      patin: "hj",
+      rines: [
+        { opcion: "acero", marca: "Ampro", cantidad: 4 },
+        { opcion: "acero", marca: "Ampro", cantidad: 4 }
+      ]
+    }
+  };
+
+  const res = resolverReceta(datos3Ejes, config);
+  const lineasAcero = res.lineas.filter(l => l.nombre === "RIN DE ACERO AMPRO");
+  assertEquals(lineasAcero.length, 1);
+  assertEquals(lineasAcero[0].cantidad, 8);
+});
+
+Deno.test("21. 2R-8: Exceso de piezas arroja error exacto y piezas faltantes arroja advertencia", () => {
+  const datos2Ejes = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  datos2Ejes.modelo.num_ejes = 2; // máx rines = 8
+
+  const grpRines = datos2Ejes.grupos.find(g => g.clave === "rines");
+  if (grpRines) grpRines.regla = { max_total: { por_eje: 4 } };
+
+  // 10 piezas cuando el máximo es 8 -> error
+  const configExceso: Configuracion = {
+    grupos: {
+      suspension: "alta_hendrickson",
+      retractil: "grande",
+      eje: "hendrickson",
+      patin: "hj",
+      rines: [
+        { opcion: "acero", marca: "Ampro", cantidad: 6 },
+        { opcion: "aluminio", marca: "Ampro", cantidad: 4 }
+      ]
+    }
+  };
+  const resExceso = resolverReceta(datos2Ejes, configExceso);
+  assert(resExceso.errores.some(e => e === "Los rines suman 10 piezas y el máximo para este modelo es 8"));
+  assertEquals(resExceso.completo, false);
+
+  // 4 piezas cuando el máximo es 8 -> advertencia, no error
+  const configFaltante: Configuracion = {
+    grupos: {
+      suspension: "alta_hendrickson",
+      retractil: "grande",
+      eje: "hendrickson",
+      patin: "hj",
+      rines: [
+        { opcion: "acero", marca: "Ampro", cantidad: 4 }
+      ]
+    }
+  };
+  const resFaltante = resolverReceta(datos2Ejes, configFaltante);
+  assertEquals(resFaltante.errores.filter(e => e.includes("suman")), []);
+  assert(resFaltante.advertencias.some(a => a === "Faltan 4 rines por definir"));
+});
+
+Deno.test("22. 2R-8: Opción cliente en rines no arroja advertencia de sin receta y cuenta para el tope", () => {
+  const datos2Ejes = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  datos2Ejes.modelo.num_ejes = 2;
+
+  const grpRines = datos2Ejes.grupos.find(g => g.clave === "rines");
+  if (grpRines) grpRines.regla = { max_total: { por_eje: 4 } };
+
+  const config: Configuracion = {
+    grupos: {
+      suspension: "alta_hendrickson",
+      retractil: "grande",
+      eje: "hendrickson",
+      patin: "hj",
+      rines: [
+        { opcion: "cliente", cantidad: 8 }
+      ]
+    }
+  };
+  const res = resolverReceta(datos2Ejes, config);
+  assert(!res.advertencias.some(a => a.includes("cliente")));
+  assertEquals(res.errores.filter(e => e.toLowerCase().includes("rin")), []);
+});

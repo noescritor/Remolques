@@ -1,5 +1,5 @@
 import type { DatosModelo, Configuracion, Resultado, LineaResultado } from "./tipos.ts";
-import { validarCompatibilidad } from "./reglas_compatibilidad.ts";
+import { validarCompatibilidad, fusionarFilasConfig } from "./reglas_compatibilidad.ts";
 
 export function resolverReceta(datos: DatosModelo, configuracion: Configuracion): Resultado {
   const lineasMap = new Map<string, LineaResultado>();
@@ -110,7 +110,7 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
   }
 
   // 2. Validate options and configuration
-  validarCompatibilidad(configuracion, datos, errores);
+  validarCompatibilidad(configuracion, datos, errores, advertencias);
 
   // Group config logic
   const modelType = datos.modelo.tipo;
@@ -139,7 +139,8 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
       continue;
     }
 
-    const configVals = Array.isArray(valConfigRaw) ? valConfigRaw : [valConfigRaw];
+    const rawVals = Array.isArray(valConfigRaw) ? valConfigRaw : [valConfigRaw];
+    const configVals = fusionarFilasConfig(rawVals);
 
     for (const valConfig of configVals) {
       const oClave = typeof valConfig === 'string' ? valConfig : valConfig.opcion;
@@ -157,7 +158,7 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
       const componentes = datos.opcion_componentes.filter(c => c.opcion_id === opcion.id);
       
       if (componentes.length === 0) {
-        if (!opcion.clave.startsWith('sin_') && opcion.clave !== 'paleta') {
+        if (!opcion.clave.startsWith('sin_') && opcion.clave !== 'paleta' && opcion.clave !== 'cliente') {
           advertencias.push(`La opción ${opcion.nombre} no tiene receta configurada.`);
           completo = false;
         }
@@ -165,7 +166,7 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
         let confMarca = typeof valConfig === 'object' ? valConfig.marca : undefined;
         let confCant = typeof valConfig === 'object' ? valConfig.cantidad : undefined;
 
-        const requiereMarca = grupo.clave === 'rines' || confMarca !== undefined;
+        const requiereMarca = (grupo.clave === 'rines' && opcion.clave !== 'sin_rines' && opcion.clave !== 'cliente') || confMarca !== undefined;
         let marcaNormalizada = confMarca ? confMarca.toUpperCase().trim() : null;
         
         if (marcaNormalizada) {

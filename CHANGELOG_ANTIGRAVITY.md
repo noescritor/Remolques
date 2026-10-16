@@ -3,6 +3,45 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-17 - Sub-bloque 2R-8: Rines, llantas y matracas con selección mixta y cantidad con tope de piezas
+**Herramienta:** Antigravity  
+**Tipo:** feat (catálogo, motor, frontend, ui)  
+**Archivos tocados:**  
+- `scripts/generar_seleccion_mixta_sql.cjs`
+- `supabase/migrations/20261017_01_seleccion_mixta.sql`
+- `docs/importacion/verificacion_2R8.sql`
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+- `supabase/functions/make-server-feea4382/motor/armar_configuracion.ts`
+- `supabase/functions/make-server-feea4382/motor/armar_configuracion.test.ts`
+- `supabase/functions/make-server-feea4382/motor/reglas_compatibilidad.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.test.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.test.ts`
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.ts`
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.test.ts`
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.test.ts`
+- `src/app/utils/seleccionMixta.ts`
+- `src/app/utils/seleccionMixta.test.ts`
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`
+**Qué cambió y por qué:**  
+- **Catálogo y Migración (`20261017_01_seleccion_mixta.sql`):**  
+  - Se actualizaron los grupos `rines`, `llantas` y `matracas` a `seleccion = 'multiple_con_cantidad'`.  
+  - Se configuró la columna `regla` (jsonb) con el tope de piezas: `{"max_total":{"por_eje":4}}` (rines y llantas: 4 por eje) y `{"max_total":{"fija":12}}` (matracas). Idempotente mediante notas exactas `import-2r8` y validación de existencia única con `RAISE EXCEPTION`.  
+  - Script de verificación generado en `docs/importacion/verificacion_2R8.sql`.
+- **Motor Backend:**  
+  - `armar_configuracion.ts`: calcula `max_piezas` para cada modelo (`por_eje * num_ejes` o fija) y lo incluye en la respuesta del grupo para el cliente y configurador.  
+  - `reglas_compatibilidad.ts`: valida que la suma de piezas no supere `max_piezas` (error explícito: `Los rines suman 10 piezas y el máximo para este modelo es 8`), emite advertencia si la suma es menor (`Faltan 4 rines por definir`) sin bloquear, fusiona duplicados con `fusionarFilasConfig`, y mantiene compatibilidad hacia atrás con configuraciones heredadas (objeto único o string).  
+  - `resolver_receta.ts`: genera líneas BOM para cada fila de combinación con su cantidad individual, preservando `completo = true` cuando todas las opciones tienen receta. La opción `cliente` cuenta para el tope y queda exenta de falta de receta.  
+  - `costeo.ts`: costea cada fila con su cantidad específica, aplica defaults por grupo cuando la cantidad no se especifica explícitamente (12 matracas, 4 × ejes rines/llantas), y preserva intactas las 4 pruebas doradas de costeo.  
+  - `texto_especificacion.ts`: genera textos compuestos legibles combinando múltiples filas con "Y" (ej. `8 RINES DE ACERO MARCA AMPRO Y 4 RINES DE ALUMINIO MARCA AMPRO`, `6 LLANTAS FIRESTONE Y 6 LLANTAS CEREX`, `10 MATRACAS CORREDIZAS`), manteniendo el formato intacto cuando solo hay una opción.  
+  - `presupuesto_desde_costeo.test.ts`: verifica que una configuración con combinaciones mixtas desglosa una línea por fila en la sección `rines` y suma exactamente con el costo total.
+- **Frontend y Lógica Pura:**  
+  - `src/app/utils/seleccionMixta.ts`: módulo puro y agnóstico de UI con `normalizarFilas`, `calcularSumaPiezas`, `calcularFaltantes`, `fusionarDuplicados`, `calcularMaxPiezasGrupo`, `validarFilasSeleccionMixta`, `siguienteCantidad` y `completarConEstaOpcion`. Probado con 6 pruebas unitarias en Deno (`seleccionMixta.test.ts`).  
+  - `ConfiguradorEquipo.tsx`: editor de filas de combinación para grupos con `max_piezas` con selector de opción, selector de marca (para rines), medida (si aplica), stepper numérico de cantidad (±), botón "Completar con esta opción", botón para quitar fila, botón "+ Agregar otra combinación" (deshabilitado al alcanzar el tope con aviso guiado), y contador semántico visible "Piezas: X de Y" (ámbar, rojo o verde). Bloqueo automático del botón de confirmación ante excesos y diseño responsive.
+**Acciones manuales pendientes:**  
+- Correr migración `supabase/migrations/20261017_01_seleccion_mixta.sql` en SQL Editor de Supabase al autorizar despliegue.
+
 ## 2026-10-16 - Ajuste 2R-9: Escalar SVG a ancho completo (1,200 px) en calcularDimensionesLogo
 **Herramienta:** Antigravity  
 **Tipo:** fix (frontend, utils, pruebas)  
