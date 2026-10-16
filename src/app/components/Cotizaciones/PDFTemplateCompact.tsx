@@ -1,6 +1,7 @@
 import { Cotizacion, Cliente, Producto, Ajustes } from '../../types';
 import { formatearMoneda, formatearFecha, calcularTotalesCotizacion, calcularTotalesCotizacionServiciosAware, totalItemServicio } from '../../utils/calculations';
 import { LogoIdeally } from './LogoIdeally';
+import { decidirLogoEncabezado } from '../../utils/logo';
 
 interface PDFTemplateCompactProps {
   cotizacion: Cotizacion;
@@ -25,6 +26,7 @@ export function PDFTemplateCompact({ cotizacion, cliente, productos, ajustes }: 
     cotizacion.con_factura !== false
   );
   
+  const logoInfo = decidirLogoEncabezado(ajustes, 'claro');
   const shouldShowLogo = (!ajustes.nombre_empresa || 
                           ajustes.nombre_empresa === '' || 
                           ajustes.nombre_empresa.toUpperCase() === 'IDEALLY');
@@ -37,13 +39,33 @@ export function PDFTemplateCompact({ cotizacion, cliente, productos, ajustes }: 
         <div className="flex justify-between items-start">
           {/* Logo y Nombre */}
           <div className="flex items-center gap-4">
-            {shouldShowLogo && (
-              <LogoIdeally size={48} />
+            {logoInfo.url ? (
+              <>
+                <div className={logoInfo.usarContenedorNegro ? "p-1.5 bg-black rounded-md flex items-center justify-center" : "flex items-center"}>
+                  <img
+                    src={logoInfo.url}
+                    alt={ajustes.nombre_empresa || 'Logo'}
+                    style={{ height: 40, maxWidth: 180, objectFit: 'contain' }}
+                  />
+                </div>
+                {logoInfo.mostrarNombre && (
+                  <div>
+                    <h1 className="text-2xl font-bold text-blue-600 leading-none">{ajustes.nombre_empresa || 'IDEALLY'}</h1>
+                    <p className="text-gray-600 text-sm mt-1">{ajustes.tagline || 'Arte . Diseño . Ingeniería'}</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                {shouldShowLogo && (
+                  <LogoIdeally size={48} />
+                )}
+                <div>
+                  <h1 className="text-2xl font-bold text-blue-600 leading-none">{ajustes.nombre_empresa || 'IDEALLY'}</h1>
+                  <p className="text-gray-600 text-sm mt-1">{ajustes.tagline || 'Arte . Diseño . Ingeniería'}</p>
+                </div>
+              </>
             )}
-            <div>
-              <h1 className="text-2xl font-bold text-blue-600 leading-none">{ajustes.nombre_empresa || 'IDEALLY'}</h1>
-              <p className="text-gray-600 text-sm mt-1">{ajustes.tagline || 'Arte . Diseño . Ingeniería'}</p>
-            </div>
           </div>
           
           {/* Información de Contacto */}

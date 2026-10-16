@@ -7,6 +7,7 @@ import {
   calcularTotalesCotizacionServiciosAware,
   totalItemServicio,
 } from '../../utils/calculations';
+import { decidirLogoEncabezado } from '../../utils/logo';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const PURPLE = '#6351D3';
@@ -53,6 +54,8 @@ function PageHeader({
   compact?: boolean;
   folio?: string;
 }) {
+  const logoInfo = decidirLogoEncabezado(ajustes, 'oscuro');
+
   if (compact) {
     return (
       <header
@@ -65,11 +68,26 @@ function PageHeader({
           flexShrink: 0,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {ajustes?.logo_url ? (
-            <img src={ajustes.logo_url} alt="Logo" style={{ width: 22, height: 22, borderRadius: 3, objectFit: 'contain' }} />
-          ) : null}
-          <span style={{ ...s(15, 700), color: '#fff' }}>{empresa}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {logoInfo.url ? (
+            <>
+              <img
+                src={logoInfo.url}
+                alt={empresa}
+                style={{ height: 26, maxWidth: 140, objectFit: 'contain' }}
+              />
+              {logoInfo.mostrarNombre && (
+                <span style={{ ...s(15, 700), color: '#fff' }}>{empresa}</span>
+              )}
+            </>
+          ) : (
+            <>
+              {ajustes?.logo_url ? (
+                <img src={ajustes.logo_url} alt="Logo" style={{ width: 22, height: 22, borderRadius: 3, objectFit: 'contain' }} />
+              ) : null}
+              <span style={{ ...s(15, 700), color: '#fff' }}>{empresa}</span>
+            </>
+          )}
         </div>
         <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.4)' }}>
           Cotización {folio}
@@ -91,15 +109,45 @@ function PageHeader({
     >
       {/* Brand */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {ajustes?.logo_url ? (
-            <img src={ajustes.logo_url} alt="Logo" style={{ width: 26, height: 26, borderRadius: 3, objectFit: 'contain' }} />
-          ) : null}
-          <span style={{ ...s(17, 700), color: '#fff' }}>{empresa}</span>
-        </div>
-        <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.45)', textTransform: 'none' }}>
-          {tagline}
-        </span>
+        {logoInfo.url ? (
+          logoInfo.mostrarNombre ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <img
+                src={logoInfo.url}
+                alt={empresa}
+                style={{ height: 38, maxWidth: 220, objectFit: 'contain' }}
+              />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span style={{ ...s(17, 700), color: '#fff' }}>{empresa}</span>
+                {tagline ? (
+                  <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.45)', textTransform: 'none' }}>
+                    {tagline}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <img
+                src={logoInfo.url}
+                alt={empresa}
+                style={{ height: 38, maxWidth: 220, objectFit: 'contain' }}
+              />
+            </div>
+          )
+        ) : (
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {ajustes?.logo_url ? (
+                <img src={ajustes.logo_url} alt="Logo" style={{ width: 26, height: 26, borderRadius: 3, objectFit: 'contain' }} />
+              ) : null}
+              <span style={{ ...s(17, 700), color: '#fff' }}>{empresa}</span>
+            </div>
+            <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.45)', textTransform: 'none' }}>
+              {tagline}
+            </span>
+          </>
+        )}
       </div>
 
       {/* Contact */}

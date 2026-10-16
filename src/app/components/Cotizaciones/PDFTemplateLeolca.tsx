@@ -1,6 +1,7 @@
 import { Cotizacion, Cliente, Producto, Ajustes } from '../../types';
 import { formatearMoneda, formatearFecha, calcularTotalesCotizacion } from '../../utils/calculations';
 import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
+import { decidirLogoEncabezado } from '../../utils/logo';
 
 interface PDFTemplateLeolcaProps {
   cotizacion: Cotizacion;
@@ -11,15 +12,41 @@ interface PDFTemplateLeolcaProps {
 
 export function PDFTemplateLeolca({ cotizacion, cliente, productos, ajustes }: PDFTemplateLeolcaProps) {
   const totales = calcularTotalesCotizacion(cotizacion.items, productos, cotizacion.con_factura ? ajustes.iva_por_defecto : 0);
+  const logoInfo = decidirLogoEncabezado(ajustes, 'claro');
 
   return (
     <div className="bg-white min-h-[1056px] w-[816px] mx-auto text-black font-sans shadow-lg" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
       {/* HEADER CORPORATIVO LEOLCA */}
       <div className="flex justify-between items-start border-b-4 border-red-700 pb-6 mb-6 pt-10 px-10">
         <div>
-          {/* Logo Placeholder - En el futuro se puede inyectar el SVG/IMG de Leolca */}
-          <h1 className="text-4xl font-black text-red-700 tracking-tighter">LEOLCA</h1>
-          <p className="text-sm font-semibold tracking-widest text-gray-500 mt-1 uppercase">Remolques y Carrocerías</p>
+          {logoInfo.url ? (
+            <div>
+              <div className="flex items-center gap-4">
+                <div className={logoInfo.usarContenedorNegro ? "p-2 bg-black rounded-md inline-flex items-center justify-center" : "inline-flex items-center"}>
+                  <img
+                    src={logoInfo.url}
+                    alt={ajustes.nombre_empresa || 'LEOLCA'}
+                    style={{ height: 44, maxWidth: 220, objectFit: 'contain' }}
+                  />
+                </div>
+                {logoInfo.mostrarNombre && (
+                  <div>
+                    <h1 className="text-3xl font-black text-red-700 tracking-tighter">{ajustes.nombre_empresa || 'LEOLCA'}</h1>
+                    <p className="text-xs font-semibold tracking-widest text-gray-500 mt-0.5 uppercase">{ajustes.tagline || 'Remolques y Carrocerías'}</p>
+                  </div>
+                )}
+              </div>
+              {!logoInfo.mostrarNombre && (
+                <p className="text-xs font-semibold tracking-widest text-gray-500 mt-2 uppercase">{ajustes.tagline || 'Remolques y Carrocerías'}</p>
+              )}
+            </div>
+          ) : (
+            <div>
+              {/* Logo Placeholder - En el futuro se puede inyectar el SVG/IMG de Leolca */}
+              <h1 className="text-4xl font-black text-red-700 tracking-tighter">LEOLCA</h1>
+              <p className="text-sm font-semibold tracking-widest text-gray-500 mt-1 uppercase">Remolques y Carrocerías</p>
+            </div>
+          )}
         </div>
         <div className="text-right">
           <h2 className="text-3xl font-light text-gray-400 mb-2">COTIZACIÓN</h2>
