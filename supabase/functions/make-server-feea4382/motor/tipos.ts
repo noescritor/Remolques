@@ -173,6 +173,9 @@ export interface DatosCosteo {
     escala: string;
     costo_unitario: number;
     fuente?: string;
+    producto_id?: string | null;
+    costo_desde_producto?: boolean;
+    producto_costo?: number | null;
   }[];
   grupos: GrupoOpcion[];
   ganancia: number | null;

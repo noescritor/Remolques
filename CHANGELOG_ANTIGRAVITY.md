@@ -3,6 +3,51 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-15 - Sub-bloque 2R-7: Catálogo de costos administrable ligado a productos
+**Herramienta:** Antigravity  
+**Tipo:** feat (migración, motor, backend, frontend, ui)  
+**Archivos tocados:**  
+- `supabase/migrations/20261016_01_catalogo_costos.sql`
+- `scripts/generar_catalogo_costos_sql.cjs`
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+- `supabase/functions/make-server-feea4382/motor/cargar_costos.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.test.ts`
+- `supabase/functions/make-server-feea4382/motor/catalogo_costos.ts`
+- `supabase/functions/make-server-feea4382/motor/catalogo_costos.test.ts`
+- `supabase/functions/make-server-feea4382/index.ts`
+- `src/app/utils/catalogoCostos.ts`
+- `src/app/utils/catalogoCostos.test.ts`
+- `src/app/components/CatalogoCostos/CatalogoCostosMain.tsx`
+- `src/app/components/ModernLayout.tsx`
+- `src/app/components/Layout.tsx`
+- `src/app/App.tsx`
+- `docs/importacion/verificacion_2R7.sql`
+- `docs/importacion/INFORME_2R7.md`
+**Qué cambió y por qué:**  
+- **Parte A (Migración e integración con productos):**  
+  - Se añadieron las columnas `producto_id text REFERENCES productos(id) ON DELETE SET NULL` y `costo_desde_producto boolean NOT NULL DEFAULT false` a `opcion_costos` con índice en `producto_id`.
+  - Se creó la tabla `costos_historial` con auditoría de cambios en costos (`opcion_costos`, `costos_modelo`, `procesos_manufactura`, `parametros_costeo`), con RLS habilitado y política `org_costos_historial_policy` (`organizacion_id = get_current_org_id()`).
+  - Se ligaron 8 opciones de llantas a sus productos de materia prima homónimos (`cerex`, `bf_goodrich`, `eudemon`, `amulet`, `chinas`, `royal_black`, `valiant`, `firestone`) en plataforma, dolly y góndola (24 ligas en total), manteniendo `costo_desde_producto = false` para preservar intactos los costos vigentes.
+- **Parte B (Motor de costeo):**  
+  - En `motor/cargar_costos.ts`, se incorporó la lectura embebida de `productos(costo)` junto con las nuevas columnas.
+  - En `motor/costeo.ts`, cuando `costo_desde_producto = true`, se adopta el costo dinámico de `productos.costo` (o se genera pendiente `sin_precio` si es 0 o nulo); con `false`, mantiene el cálculo habitual.
+  - Se refinó la regla de pendientes `costo_no_factura` para marcar únicamente fuentes `Tarifario` y `Supuesto…`. Las fuentes `Factura Leolca…`, `Producto` y `Manual…` ya no generan pendiente.
+  - Las 4 pruebas doradas de costeo continúan pasando sin ninguna alteración.
+- **Parte C (API y permisos):**  
+  - Módulo `motor/catalogo_costos.ts` con cliente inyectable y rutas delgadas en `index.ts`.
+  - Endpoints de lectura `/catalogo-costos/resumen`, `/catalogo-costos/modelos/:modeloId`, `/catalogo-costos/parametros`, `/catalogo-costos/historial`.
+  - Endpoints de edición con restricción estricta de permisos: consulta `perfiles_organizacion` con service client y arroja `403` si el rol no es `propietario` ni `admin`.
+  - Cada actualización registra granularmente una fila por campo modificado en `costos_historial`.
+- **Parte D (Frontend y pantalla Catálogo de Costos):**  
+  - Pantalla modular `CatalogoCostosMain.tsx` con 5 pestañas: Opciones (edición en línea, insignias de fuente, selector y enlace a productos), Kits y Mano de Obra, Utilidad, Cobertura e Historial.
+  - Estado de solo lectura con advertencia si el usuario no tiene permisos administrativos.
+  - Tokens semánticos Tailwind (claro/oscuro) y navegación en `Layout.tsx`, `ModernLayout.tsx` y `App.tsx`.
+  - Utilidad desacoplada `src/app/utils/catalogoCostos.ts` con pruebas unitarias.
+**Acciones manuales pendientes:**  
+- Correr la migración `supabase/migrations/20261016_01_catalogo_costos.sql` en el SQL Editor de Supabase.
+- Hacer Rebuild del backend en EasyPanel una vez desplegado.
+
 ## 2026-10-15 - Corrección 2R-4b: Separación de presupuesto al aprobar (camino PUT vs. portal)
 **Herramienta:** Antigravity  
 **Tipo:** fix (backend, motor)  

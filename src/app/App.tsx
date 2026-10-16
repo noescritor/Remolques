@@ -23,6 +23,7 @@ import { PresupuestosList } from './components/Presupuestos/PresupuestosList';
 import { ClientesList } from './components/Clientes/ClientesList';
 import { CalculadoraPage } from './components/Calculadora/CalculadoraPage';
 import { ProductosList } from './components/Productos/ProductosList';
+import { CatalogoCostosMain } from './components/CatalogoCostos/CatalogoCostosMain';
 import { InventarioList } from './components/Inventario/InventarioList';
 import { AjustesForm } from './components/Ajustes/AjustesForm';
 import { PlantillasList } from './components/Plantillas/PlantillasList';
@@ -445,6 +446,7 @@ export default function App() {
     if (path.startsWith('/cxp')) return 'cxp';
     if (path.startsWith('/trazabilidad')) return 'trazabilidad';
     if (path.startsWith('/productos')) return 'productos';
+    if (path.startsWith('/catalogo-costos')) return 'catalogo-costos';
     if (path.startsWith('/ajustes')) return 'ajustes';
     if (path.startsWith('/plantillas')) return 'plantillas';
     if (path.startsWith('/equipo')) return 'equipo';
@@ -681,6 +683,10 @@ export default function App() {
             onActualizarCategoria={actualizarCategoriaProducto}
             onEliminarCategoria={eliminarCategoriaProducto}
           />
+        } />
+
+        <Route path="/catalogo-costos" element={
+          <CatalogoCostosMain session={session} organizacion={organizacion} />
         } />
 
         <Route path="/calculadora" element={<CalculadoraPage />} />

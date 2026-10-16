@@ -12,6 +12,17 @@ import { cargarDatosCosteo } from "./motor/cargar_costos.ts";
 import { costear, validarAjustes } from "./motor/costeo.ts";
 import { generarPresupuestoDesdeCosteo } from "./motor/presupuesto_desde_costeo.ts";
 import { generarPresupuestoDeCotizacion, ejecutarAprobacionCotizacion, generarPresupuestoAlAprobar } from "./motor/generar_presupuesto_cotizacion.ts";
+import {
+  obtenerResumenCatalogo,
+  guardarOpcionCosto,
+  obtenerCostosModeloYProcesos,
+  guardarKitCosto,
+  guardarProcesoManufactura,
+  obtenerParametrosCosteo,
+  guardarParametrosCosteo,
+  obtenerHistorialCostos,
+  verificarPermisoEdicion
+} from "./motor/catalogo_costos.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -525,6 +536,145 @@ app.post("/configuracion/costear", async (c) => {
       if (e.message === "Modelo no encontrado") return c.json({ error: e.message }, 404);
       throw e;
     }
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// --- CATÁLOGO DE COSTOS ADMINISTRABLE (2R-7) ---
+
+app.get("/catalogo-costos/resumen", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const tipoModelo = c.req.query("tipo_modelo");
+    if (!tipoModelo) {
+      return c.json({ error: "Parámetro tipo_modelo requerido" }, 400);
+    }
+    const data = await obtenerResumenCatalogo(supabase, orgId, tipoModelo);
+    return c.json(data);
+  } catch (error: any) {
+    const es400 = error.message.includes("inválid");
+    return c.json({ error: error.message }, es400 ? 400 : 500);
+  }
+});
+
+app.put("/catalogo-costos/opciones/:opcionId", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+    const autorizado = await verificarPermisoEdicion(adminClient, orgId, user?.id);
+    if (!autorizado) {
+      return c.json({ error: "No tienes permiso para editar costos" }, 403);
+    }
+
+    const opcionId = c.req.param("opcionId");
+    const body = await c.req.json();
+    const res = await guardarOpcionCosto(adminClient, orgId, user.id, opcionId, body);
+    return c.json(res);
+  } catch (error: any) {
+    const es400 =
+      error.message.includes("inválid") ||
+      error.message.includes("debe ser") ||
+      error.message.includes("no existe");
+    return c.json({ error: error.message }, es400 ? 400 : 500);
+  }
+});
+
+app.get("/catalogo-costos/modelos/:modeloId", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const modeloId = c.req.param("modeloId");
+    const data = await obtenerCostosModeloYProcesos(supabase, orgId, modeloId);
+    return c.json(data);
+  } catch (error: any) {
+    if (error.message === "Modelo no encontrado") return c.json({ error: error.message }, 404);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.put("/catalogo-costos/modelos/:modeloId/kits/:id", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+    const autorizado = await verificarPermisoEdicion(adminClient, orgId, user?.id);
+    if (!autorizado) {
+      return c.json({ error: "No tienes permiso para editar costos" }, 403);
+    }
+
+    const modeloId = c.req.param("modeloId");
+    const kitId = c.req.param("id");
+    const body = await c.req.json();
+    const res = await guardarKitCosto(adminClient, orgId, user.id, modeloId, kitId, body);
+    return c.json(res);
+  } catch (error: any) {
+    const es400 = error.message.includes("inválid") || error.message.includes("debe ser");
+    const es404 = error.message.includes("no encontrado");
+    return c.json({ error: error.message }, es404 ? 404 : es400 ? 400 : 500);
+  }
+});
+
+app.put("/catalogo-costos/procesos/:id", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+    const autorizado = await verificarPermisoEdicion(adminClient, orgId, user?.id);
+    if (!autorizado) {
+      return c.json({ error: "No tienes permiso para editar costos" }, 403);
+    }
+
+    const procesoId = c.req.param("id");
+    const body = await c.req.json();
+    const res = await guardarProcesoManufactura(adminClient, orgId, user.id, procesoId, body);
+    return c.json(res);
+  } catch (error: any) {
+    const es400 = error.message.includes("inválid") || error.message.includes("debe ser");
+    const es404 = error.message.includes("no encontrado");
+    return c.json({ error: error.message }, es404 ? 404 : es400 ? 400 : 500);
+  }
+});
+
+app.get("/catalogo-costos/parametros", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const data = await obtenerParametrosCosteo(supabase, orgId);
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.put("/catalogo-costos/parametros", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+    const autorizado = await verificarPermisoEdicion(adminClient, orgId, user?.id);
+    if (!autorizado) {
+      return c.json({ error: "No tienes permiso para editar costos" }, 403);
+    }
+
+    const body = await c.req.json();
+    const res = await guardarParametrosCosteo(adminClient, orgId, user.id, body);
+    return c.json(res);
+  } catch (error: any) {
+    const es400 = error.message.includes("requerid") || error.message.includes("debe ser");
+    return c.json({ error: error.message }, es400 ? 400 : 500);
+  }
+});
+
+app.get("/catalogo-costos/historial", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const limite = Number(c.req.query("limite")) || 100;
+    const data = await obtenerHistorialCostos(supabase, orgId, limite);
+    return c.json(data);
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
   }

@@ -70,7 +70,10 @@ export async function cargarDatosCosteo(supabase: any, modeloId: string): Promis
       costo_unitario,
       tipo_modelo,
       fuente,
-      opciones_configuracion (clave, grupo_id)
+      producto_id,
+      costo_desde_producto,
+      opciones_configuracion (clave, grupo_id),
+      productos (costo)
     `)
     .eq("tipo_modelo", modeloMapeado.tipo);
 
@@ -122,13 +125,20 @@ export async function cargarDatosCosteo(supabase: any, modeloId: string): Promis
     })),
     opcion_costos: (opcion_costos_raw || []).map((oc: any) => {
       const grupo = gruposList.find((g: any) => g.id === oc.opciones_configuracion?.grupo_id);
+      const prodCosto =
+        oc.productos?.costo !== null && oc.productos?.costo !== undefined
+          ? Number(oc.productos.costo)
+          : null;
       return {
         grupo_clave: grupo ? grupo.clave : "",
         opcion_clave: oc.opciones_configuracion?.clave || "",
         cantidad_base: Number(oc.cantidad_base),
         escala: oc.escala || "fija",
         costo_unitario: Number(oc.costo_unitario),
-        fuente: oc.fuente || undefined
+        fuente: oc.fuente || undefined,
+        producto_id: oc.producto_id || null,
+        costo_desde_producto: Boolean(oc.costo_desde_producto),
+        producto_costo: prodCosto
       };
     }),
     grupos: gruposList,
