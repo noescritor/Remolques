@@ -74,21 +74,31 @@ Deno.test("logo utils - sanearSvg: acepta estructura válida estilo Leolca y rec
   assertEquals(sanearSvg(noSvg).valido, false);
 });
 
-Deno.test("logo utils - calcularDimensionesLogo: no agranda y escala a ancho máximo respetando proporción", () => {
+Deno.test("logo utils - calcularDimensionesLogo: respeta proporción, no agranda rasters y escala SVG con permitirAgrandar", () => {
   // Proporción 4:1 (ej. 1600 × 400) -> a máx 1200 px da exactamente 1200 × 300
   const dimGrande = calcularDimensionesLogo(1600, 400, 1200);
   assertEquals(dimGrande.width, 1200);
   assertEquals(dimGrande.height, 300);
 
-  // Proporción de Leolca (~443 × 110) a máx 1200: no se agranda
-  const dimLeolca = calcularDimensionesLogo(443, 110, 1200);
-  assertEquals(dimLeolca.width, 443);
-  assertEquals(dimLeolca.height, 110);
+  // Proporción de Leolca (443 × 110): sin permitirAgrandar sigue 443 × 110
+  const dimLeolcaSinAgrandar = calcularDimensionesLogo(443, 110, 1200);
+  assertEquals(dimLeolcaSinAgrandar.width, 443);
+  assertEquals(dimLeolcaSinAgrandar.height, 110);
 
-  // Imagen angosta (800 × 200) con tope 1200: se mantiene
+  // Proporción de Leolca (443 × 110): con permitirAgrandar escala a 1200 × 298
+  const dimLeolcaConAgrandar = calcularDimensionesLogo(443, 110, 1200, true);
+  assertEquals(dimLeolcaConAgrandar.width, 1200);
+  assertEquals(dimLeolcaConAgrandar.height, 298);
+
+  // Imagen angosta (800 × 200) con tope 1200 sin permitirAgrandar: se mantiene
   const dimMenor = calcularDimensionesLogo(800, 200, 1200);
   assertEquals(dimMenor.width, 800);
   assertEquals(dimMenor.height, 200);
+
+  // SVG con reducción a 800 px: 443 × 110 con permitirAgrandar a 800 -> 800 × 199
+  const dimReducidoSvg = calcularDimensionesLogo(443, 110, 800, true);
+  assertEquals(dimReducidoSvg.width, 800);
+  assertEquals(dimReducidoSvg.height, 199);
 
   // Imagen grande con tope 800 (paso de reducción): 1600 × 400 -> 800 × 200
   const dimReducido = calcularDimensionesLogo(1600, 400, 800);

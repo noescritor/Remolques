@@ -92,8 +92,8 @@ export function AjustesForm({ ajustes, onActualizarAjustes }: AjustesFormProps) 
       const origWidth = naturalW > 0 ? naturalW : img.naturalWidth || img.width || 1200;
       const origHeight = naturalH > 0 ? naturalH : img.naturalHeight || img.height || 300;
 
-      // Paso 1: Escalar a máximo 1200 px de ancho sin agrandar
-      const dim1200 = calcularDimensionesLogo(origWidth, origHeight, ANCHO_MAX_NORMALIZADO);
+      // Paso 1: Escalar a máximo 1200 px de ancho (SVG siempre se escala a ancho máximo; rasters no se agrandan)
+      const dim1200 = calcularDimensionesLogo(origWidth, origHeight, ANCHO_MAX_NORMALIZADO, isSvg);
       let canvas = document.createElement('canvas');
       canvas.width = dim1200.width;
       canvas.height = dim1200.height;
@@ -107,7 +107,7 @@ export function AjustesForm({ ajustes, onActualizarAjustes }: AjustesFormProps) 
 
       // Paso 2: Si excede 400 KB, reintentar a 800 px
       if (tamanoBytes > TAMANO_MAX_PNG_BYTES) {
-        const dim800 = calcularDimensionesLogo(origWidth, origHeight, ANCHO_REDUCIDO_NORMALIZADO);
+        const dim800 = calcularDimensionesLogo(origWidth, origHeight, ANCHO_REDUCIDO_NORMALIZADO, isSvg);
         canvas = document.createElement('canvas');
         canvas.width = dim800.width;
         canvas.height = dim800.height;

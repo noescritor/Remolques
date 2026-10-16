@@ -97,18 +97,21 @@ export function sanearSvg(svgString: string): { valido: boolean; error?: string 
 }
 
 /**
- * Calcula dimensiones de salida respetando proporción y tope máximo de ancho sin agrandar.
+ * Calcula dimensiones de salida respetando proporción y tope máximo de ancho.
+ * Para formatos rasterizados no se agranda (permitirAgrandar = false).
+ * Para formatos vectoriales (SVG) se escala al ancho máximo solicitado (permitirAgrandar = true).
  */
 export function calcularDimensionesLogo(
   origWidth: number,
   origHeight: number,
-  maxAncho: number = ANCHO_MAX_NORMALIZADO
+  maxAncho: number = ANCHO_MAX_NORMALIZADO,
+  permitirAgrandar: boolean = false
 ): { width: number; height: number } {
   if (origWidth <= 0 || origHeight <= 0 || !Number.isFinite(origWidth) || !Number.isFinite(origHeight)) {
     return { width: maxAncho, height: Math.round(maxAncho / 4) };
   }
 
-  if (origWidth <= maxAncho) {
+  if (!permitirAgrandar && origWidth <= maxAncho) {
     return {
       width: Math.round(origWidth),
       height: Math.round(origHeight)

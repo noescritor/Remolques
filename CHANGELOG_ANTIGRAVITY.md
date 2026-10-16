@@ -3,6 +3,22 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-16 - Ajuste 2R-9: Escalar SVG a ancho completo (1,200 px) en calcularDimensionesLogo
+**Herramienta:** Antigravity  
+**Tipo:** fix (frontend, utils, pruebas)  
+**Archivos tocados:**  
+- `src/app/utils/logo.ts`
+- `src/app/utils/logo.test.ts`
+- `src/app/components/Ajustes/AjustesForm.tsx`
+**Qué cambió y por qué:**  
+- **Escalado de SVG vectorial a resolución completa para impresión:**  
+  - Se agregó el parámetro `permitirAgrandar` (por defecto `false`) a `calcularDimensionesLogo(origWidth, origHeight, maxAncho, permitirAgrandar)`.  
+  - En `AjustesForm.tsx`, se pasa `isSvg` en dicho parámetro para que los archivos vectoriales SVG siempre se rastericen a ancho completo (`ANCHO_MAX_NORMALIZADO` = 1,200 px, o 800 px si excede 400 KB) manteniendo la proporción original, garantizando alta fidelidad al imprimir o generar PDF.  
+  - Los formatos rasterizados (PNG, JPG, WebP) conservan la restricción de no agrandarse si sus dimensiones naturales son menores a 1,200 px.  
+- **Pruebas unitarias actualizadas:**  
+  - Se verificó que una imagen vectorial con dimensiones naturales de 443×110 px (como `Logo/Leolca.svg`) se rasteriza a 1200×298 px con `permitirAgrandar = true`, mientras que sin dicho parámetro se preserva en 443×110 px.  
+**Acciones manuales pendientes:** Ninguna.
+
 ## 2026-10-16 - Sub-bloque 2R-9: Logo de la empresa en cotizaciones (Ajustes y encabezado PDF)
 **Herramienta:** Antigravity  
 **Tipo:** feat (frontend, ui, tipos)  
