@@ -1,5 +1,6 @@
 import { Cotizacion, Cliente, Producto, Ajustes } from '../../types';
 import { formatearMoneda, formatearFecha, calcularTotalesCotizacion } from '../../utils/calculations';
+import { decidirLogoEncabezado } from '../../utils/logo';
 import svgPaths from "../../imports/svg-pqfvhu2ekl";
 
 interface PDFTemplateModernProps {
@@ -9,7 +10,35 @@ interface PDFTemplateModernProps {
   ajustes: Ajustes;
 }
 
-function LogoSection() {
+function LogoSection({ ajustes }: { ajustes?: Ajustes }) {
+  const logoInfo = decidirLogoEncabezado(ajustes, 'claro');
+
+  if (logoInfo.url) {
+    return (
+      <div className="flex items-center gap-4">
+        <div className={logoInfo.usarContenedorNegro ? "p-2 bg-black rounded-md inline-flex items-center justify-center" : "inline-flex items-center"}>
+          <img
+            src={logoInfo.url}
+            alt={ajustes?.nombre_empresa || 'Logo'}
+            style={{ height: 48, maxWidth: 200, objectFit: 'contain' }}
+          />
+        </div>
+        {logoInfo.mostrarNombre && (
+          <div className="flex flex-col">
+            <div className="font-black text-2xl tracking-wider uppercase">
+              {ajustes?.nombre_empresa || 'NOCTURNO'}
+            </div>
+            {ajustes?.tagline && (
+              <div className="font-normal text-sm tracking-wider text-gray-500">
+                {ajustes.tagline}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center gap-4">
       {/* Logo SVG */}
@@ -42,7 +71,7 @@ function Header({ cotizacion, ajustes }: { cotizacion: Cotizacion; ajustes: Ajus
         
         {/* Logo */}
         <div className="col-span-1">
-          <LogoSection />
+          <LogoSection ajustes={ajustes} />
         </div>
 
         {/* Title */}

@@ -258,6 +258,10 @@ export interface Ajustes {
   email?: string;
   sitio_web?: string;
   cuenta_bancaria?: string;
+  // Logo de la empresa (Sub-bloque 2R-9)
+  logo?: string; // data URL PNG para fondo oscuro (o logo general)
+  logo_claro?: string; // data URL PNG opcional para fondo claro
+  logo_mostrar_nombre?: boolean; // mostrar el nombre de la empresa junto al logo (por defecto false cuando hay logo)
   // Configuración de emails
   email_envio?: string; // Email desde el que se enviarán las cotizaciones (debe estar verificado en Resend)
   // Textos personalizables del resumen de servicios

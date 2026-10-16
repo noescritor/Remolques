@@ -3,6 +3,35 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-16 - Sub-bloque 2R-9: Logo de la empresa en cotizaciones (Ajustes y encabezado PDF)
+**Herramienta:** Antigravity  
+**Tipo:** feat (frontend, ui, tipos)  
+**Archivos tocados:**  
+- `src/app/types/index.ts`
+- `src/app/utils/logo.ts`
+- `src/app/utils/logo.test.ts`
+- `src/app/components/Ajustes/AjustesForm.tsx`
+- `src/app/components/Cotizaciones/PDFTemplateMoodboard.tsx`
+- `src/app/components/Cotizaciones/PDFTemplateCompact.tsx`
+- `src/app/components/Cotizaciones/PDFTemplateLeolca.tsx`
+- `src/app/components/Cotizaciones/PDFTemplateModern.tsx`
+**Qué cambió y por qué:**  
+- **Parte A (Tipos y persistencia en Ajustes):**  
+  - Se agregaron los campos opcionales `logo?: string` (data URL PNG fondo oscuro/general), `logo_claro?: string` (data URL PNG fondo claro) y `logo_mostrar_nombre?: boolean` (mostrar nombre de empresa junto al logo) a la interfaz `Ajustes`.
+  - La persistencia en `PUT /ajustes` y la lectura en `GET /ajustes` y `GET /portal/:token` opera sobre el JSON `ajustes.data` sin requerir migraciones SQL. `normalizarAjustes` preserva íntegramente las nuevas propiedades.
+- **Parte B (Utilidades puras y validación en `logo.ts`):**  
+  - Se creó `src/app/utils/logo.ts` con funciones portables: `validarArchivoLogo` (SVG, PNG, JPG, WebP hasta 2 MB), `sanearSvg` (bloqueo estricto de `<script>`, `<foreignObject>`, atributos inline `on*` y referencias externas `href`/`xlink:href`), `calcularDimensionesLogo` (escalado máximo a 1,200 px manteniendo proporción sin agrandar), `calcularTamanoDataUrl` y `decidirLogoEncabezado` (resolución según fondo oscuro/claro y contenedor oscuro para logos blancos en fondos claros).
+- **Parte C (Interfaz de carga y previsualización en `AjustesForm.tsx`):**  
+  - Se añadió la tarjeta "Logo de la Empresa" con zonas de carga independientes para logo sobre fondo oscuro y logo para fondo claro.
+  - Normalización en navegador en canvas transparente: SVG y rasters se exportan a PNG de máximo 1,200 px de ancho (con reducción automática a 800 px si supera 400 KB).
+  - Vistas previas en vivo simulando encabezados oscuro (Moodboard/Portal) y claro (Compacta/Leolca/Moderna), botones para quitar logo e interruptor para mostrar u ocultar el nombre de la empresa.
+- **Parte D (Plantillas de cotización y portal):**  
+  - `PDFTemplateMoodboard` (usado por cotizador y portal `PortalPDF.tsx`): muestra el logo oscuro a 36-38 px de alto sin deformación en el encabezado negro.
+  - `PDFTemplateCompact`, `PDFTemplateLeolca`, `PDFTemplateModern`: adaptan el logo a fondo claro, utilizando `logo_claro` o envolviendo el logo blanco en contenedor oscuro redondeado.
+  - Sin logo configurado, todas las plantillas preservan al 100% el comportamiento y renderizado previo.
+- **Pruebas:** 4 pruebas unitarias en `src/app/utils/logo.test.ts` pasando al 100% bajo Deno.
+**Acciones manuales pendientes:** Ninguna.
+
 ## 2026-10-15 - Corrección de seguridad 2R-7: Validación de pertenencia organizacional en guardarOpcionCosto
 **Herramienta:** Antigravity  
 **Tipo:** fix (seguridad, backend)  
