@@ -169,13 +169,17 @@ export function costear(
       );
 
       if (optCosto) {
-        if (optCosto.fuente && !optCosto.fuente.startsWith("Factura")) {
-          const lista = noFacturaPorFuente.get(optCosto.fuente) || [];
+        const esFuentePendiente =
+          Boolean(optCosto.fuente) &&
+          (optCosto.fuente!.startsWith("Tarifario") || optCosto.fuente!.startsWith("Supuesto"));
+
+        if (esFuentePendiente) {
+          const lista = noFacturaPorFuente.get(optCosto.fuente!) || [];
           const optStr = `${grupoClave}/${oClave}`;
           if (!lista.includes(optStr)) {
             lista.push(optStr);
           }
-          noFacturaPorFuente.set(optCosto.fuente, lista);
+          noFacturaPorFuente.set(optCosto.fuente!, lista);
         }
 
         let qty: number;
@@ -193,8 +197,27 @@ export function costear(
           qty = optCosto.cantidad_base * factor;
         }
 
-        const cu = optCosto.costo_unitario;
-        const imp = qty * cu;
+        let cu = optCosto.costo_unitario;
+        let sinPrecioProducto = false;
+
+        if (optCosto.costo_desde_producto && optCosto.producto_id) {
+          if (
+            optCosto.producto_costo === null ||
+            optCosto.producto_costo === undefined ||
+            optCosto.producto_costo === 0
+          ) {
+            sinPrecioProducto = true;
+            cu = 0;
+            pendientes.push({
+              tipo: "sin_precio",
+              detalle: `Opción con producto sin precio: ${grupoClave}/${oClave}`
+            });
+          } else {
+            cu = optCosto.producto_costo;
+          }
+        }
+
+        const imp = sinPrecioProducto ? 0 : qty * cu;
         sumOpciones += imp;
 
         lineasOpciones.push({

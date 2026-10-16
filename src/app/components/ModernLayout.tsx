@@ -77,6 +77,7 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading
     { id: 'plantillas',   label: 'Plantillas',    icon: BookTemplate,    isActive: currentPage === 'plantillas', visible: modulos.cotizaciones !== false },
     { id: 'clientes',     label: 'Clientes',      icon: Users,           isActive: currentPage === 'clientes', visible: modulos.clientes !== false },
     { id: 'productos',    label: 'Productos',     icon: Package,         isActive: currentPage === 'productos', visible: modulos.productos !== false },
+    { id: 'catalogo-costos', label: 'Catálogo Costos', icon: DollarSign, isActive: currentPage === 'catalogo-costos' },
     { id: 'proveedores',  label: 'Proveedores',   icon: Users,           isActive: currentPage === 'proveedores' },
     { id: 'compras',      label: 'Compras Prov.', icon: Package,         isActive: currentPage === 'compras' },
     { id: 'cxc',          label: 'Cuentas x Cobrar', icon: DollarSign,   isActive: currentPage === 'cxc' },

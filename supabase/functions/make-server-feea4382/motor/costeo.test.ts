@@ -587,5 +587,135 @@ Deno.test("Sub-bloque 2R-1g: (6) Matracas corrediza suma 12 × 307.40 = 3,688.80
   assertEquals(pendNoFactura, undefined);
 });
 
+Deno.test("Sub-bloque 2R-7: opción con costo_desde_producto=true toma costo del producto y reacciona a cambios", () => {
+  const datosTest: DatosCosteo = JSON.parse(JSON.stringify(datosBase));
+  // Añadimos una opción ligada a producto
+  datosTest.opcion_costos.push({
+    grupo_clave: "llantas",
+    opcion_clave: "cerex",
+    cantidad_base: 8,
+    escala: "fija",
+    costo_unitario: 3586,
+    fuente: "Producto",
+    producto_id: "prod-cerex-123",
+    costo_desde_producto: true,
+    producto_costo: 3800
+  });
+
+  const config: Configuracion = {
+    grupos: {
+      llantas: "cerex"
+    }
+  };
+
+  const res1 = costear(datosTest, config);
+  const linea1 = res1.secciones.opciones.lineas.find(l => l.concepto === "llantas: cerex");
+  assert(linea1 !== undefined);
+  assertEquals(linea1.costo_unitario, 3800);
+  assertEquals(linea1.importe, 8 * 3800);
+
+  // Si cambia el costo del producto, cambia el resultado
+  const opt = datosTest.opcion_costos.find(o => o.opcion_clave === "cerex")!;
+  opt.producto_costo = 4200;
+  const res2 = costear(datosTest, config);
+  const linea2 = res2.secciones.opciones.lineas.find(l => l.concepto === "llantas: cerex");
+  assert(linea2 !== undefined);
+  assertEquals(linea2.costo_unitario, 4200);
+  assertEquals(linea2.importe, 8 * 4200);
+
+  // Con costo_desde_producto=false, usa costo_unitario original
+  opt.costo_desde_producto = false;
+  const res3 = costear(datosTest, config);
+  const linea3 = res3.secciones.opciones.lineas.find(l => l.concepto === "llantas: cerex");
+  assert(linea3 !== undefined);
+  assertEquals(linea3.costo_unitario, 3586);
+  assertEquals(linea3.importe, 8 * 3586);
+});
+
+Deno.test("Sub-bloque 2R-7: opción con costo_desde_producto=true y producto en 0 o nulo genera sin_precio y suma 0", () => {
+  const datosTest: DatosCosteo = JSON.parse(JSON.stringify(datosBase));
+  datosTest.opcion_costos.push({
+    grupo_clave: "llantas",
+    opcion_clave: "cerex",
+    cantidad_base: 8,
+    escala: "fija",
+    costo_unitario: 3586,
+    fuente: "Producto",
+    producto_id: "prod-cerex-123",
+    costo_desde_producto: true,
+    producto_costo: 0
+  });
+
+  const config: Configuracion = {
+    grupos: {
+      llantas: "cerex"
+    }
+  };
+
+  const res = costear(datosTest, config);
+  const linea = res.secciones.opciones.lineas.find(l => l.concepto === "llantas: cerex");
+  assert(linea !== undefined);
+  assertEquals(linea.costo_unitario, 0);
+  assertEquals(linea.importe, 0);
+
+  const pendSinPrecio = res.pendientes.find(p => p.tipo === "sin_precio" && p.detalle.includes("llantas/cerex"));
+  assert(pendSinPrecio !== undefined);
+});
+
+Deno.test("Sub-bloque 2R-7: fuentes 'Manual (usuario)' y 'Producto' NO generan costo_no_factura, mientras 'Tarifario' SÍ", () => {
+  const datosTest: DatosCosteo = {
+    ...datosBase,
+    opcion_costos: [
+      {
+        grupo_clave: "llantas",
+        opcion_clave: "opcion_manual_test",
+        cantidad_base: 8,
+        escala: "fija",
+        costo_unitario: 3586,
+        fuente: "Manual (usuario)"
+      },
+      {
+        grupo_clave: "rines",
+        opcion_clave: "opcion_producto_test",
+        cantidad_base: 8,
+        escala: "fija",
+        costo_unitario: 1200,
+        fuente: "Producto"
+      },
+      {
+        grupo_clave: "gancho",
+        opcion_clave: "opcion_tarifario_test",
+        cantidad_base: 1,
+        escala: "fija",
+        costo_unitario: 8000,
+        fuente: "Tarifario"
+      }
+    ]
+  };
+
+  const config: Configuracion = {
+    grupos: {
+      llantas: "opcion_manual_test",
+      rines: "opcion_producto_test",
+      gancho: "opcion_tarifario_test"
+    }
+  };
+
+  const res = costear(datosTest, config);
+
+  // Manual no genera
+  const pendManual = res.pendientes.find(p => p.tipo === "costo_no_factura" && p.detalle.includes("Manual"));
+  assertEquals(pendManual, undefined);
+
+  // Producto no genera
+  const pendProd = res.pendientes.find(p => p.tipo === "costo_no_factura" && p.detalle.includes("Producto"));
+  assertEquals(pendProd, undefined);
+
+  // Tarifario sí genera
+  const pendTarifario = res.pendientes.find(p => p.tipo === "costo_no_factura" && p.detalle.includes("Tarifario"));
+  assert(pendTarifario !== undefined);
+  assert(pendTarifario.detalle.includes("gancho/opcion_tarifario_test"));
+});
+
 
 

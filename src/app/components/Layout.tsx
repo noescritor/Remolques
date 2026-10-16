@@ -19,6 +19,7 @@ const navigationItems = [
   { id: 'cotizaciones', label: 'Cotizaciones', icon: FileText },
   { id: 'clientes', label: 'Clientes', icon: Users },
   { id: 'productos', label: 'Productos', icon: Package },
+  { id: 'catalogo-costos', label: 'Catálogo Costos', icon: Package },
   { id: 'ajustes', label: 'Ajustes', icon: Settings }
 ];
 
