@@ -3,6 +3,21 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-15 - Corrección de seguridad 2R-7: Validación de pertenencia organizacional en guardarOpcionCosto
+**Herramienta:** Antigravity  
+**Tipo:** fix (seguridad, backend)  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/catalogo_costos.ts`
+- `supabase/functions/make-server-feea4382/motor/catalogo_costos.test.ts`
+**Qué cambió y por qué:**  
+- **Validación de pertenencia organizacional antes de mutar `opcion_costos`:**  
+  - En `motor/catalogo_costos.ts`, `guardarOpcionCosto` se ejecuta con el cliente de servicio (`adminClient`, sin RLS). Previamente se consultaba `opciones_configuracion` únicamente por `id` sin filtrar por `organizacion_id`.
+  - Se agregó la verificación explícita `.eq("id", opcionId).eq("organizacion_id", orgId)`. Si la opción no pertenece a la organización solicitante o no existe, se arroja el error `"La opción no existe en la organización"`, el cual es capturado en `index.ts` y retornado como `400 Bad Request`.
+  - Se verificó que `guardarKitCosto`, `guardarProcesoManufactura` y `guardarParametrosCosteo` ya contaban con filtro estricto por `organizacion_id`.
+- **Prueba unitaria de seguridad agregada:**  
+  - En `motor/catalogo_costos.test.ts`, se incorporó la prueba `Catálogo Costos - seguridad: opción de OTRA organización devuelve error y no inserta fila ni historial`, comprobando que ante un intento de mutar una opción de otra organización se rechaza la llamada con el error esperado y el estado de `opcion_costos` y `costos_historial` se mantiene intacto (longitud 0).
+**Acciones manuales pendientes:** Ninguna.
+
 ## 2026-10-15 - Sub-bloque 2R-7: Catálogo de costos administrable ligado a productos
 **Herramienta:** Antigravity  
 **Tipo:** feat (migración, motor, backend, frontend, ui)  

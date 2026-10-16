@@ -260,16 +260,21 @@ export async function guardarOpcionCosto(
     }
   }
 
-  // 2. Obtener concepto de la opción para el historial
-  const { data: optInfo } = await supabase
+  // 2. Verificar que la opción pertenezca a la organización y obtener concepto para el historial
+  const { data: optInfo, error: errOpt } = await supabase
     .from("opciones_configuracion")
-    .select("clave, nombre, grupo:grupos_configuracion(clave, nombre)")
+    .select("id, clave, nombre, grupo:grupos_configuracion(clave, nombre)")
     .eq("id", opcionId)
+    .eq("organizacion_id", orgId)
     .maybeSingle();
 
-  const conceptoOpcion = optInfo
-    ? `${optInfo.grupo?.nombre || optInfo.grupo?.clave || "Opción"}: ${optInfo.nombre || optInfo.clave} (${body.tipo_modelo})`
-    : `Opción ${opcionId} (${body.tipo_modelo})`;
+  if (errOpt || !optInfo) {
+    throw new Error("La opción no existe en la organización");
+  }
+
+  const conceptoOpcion = optInfo.grupo?.nombre || optInfo.grupo?.clave
+    ? `${optInfo.grupo?.nombre || optInfo.grupo?.clave}: ${optInfo.nombre || optInfo.clave} (${body.tipo_modelo})`
+    : `Opción: ${optInfo.nombre || optInfo.clave} (${body.tipo_modelo})`;
 
   // 3. Buscar fila existente en opcion_costos
   const { data: existing, error: errExist } = await supabase

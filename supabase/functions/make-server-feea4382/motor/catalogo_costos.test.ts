@@ -234,7 +234,7 @@ Deno.test("Catálogo Costos - historial registra una fila por cada campo cambiad
       }
     ],
     opciones_configuracion: [
-      { id: "opt-1", clave: "cerex", nombre: "Cerex", grupo_id: "g-1" }
+      { id: "opt-1", organizacion_id: "org-1", clave: "cerex", nombre: "Cerex", grupo_id: "g-1" }
     ],
     grupos_configuracion: [
       { id: "g-1", clave: "llantas", nombre: "Llantas" }
@@ -289,7 +289,7 @@ Deno.test("Catálogo Costos - confirmar sin cambiar números cambia fuente a 'Ma
       }
     ],
     opciones_configuracion: [
-      { id: "opt-2", clave: "opt_prueba", nombre: "Opción Prueba" }
+      { id: "opt-2", organizacion_id: "org-1", clave: "opt_prueba", nombre: "Opción Prueba" }
     ]
   });
 
@@ -314,7 +314,7 @@ Deno.test("Catálogo Costos - crear fila nueva si no existe la opción para ese 
   const mockClient = createMockSupabase({
     opcion_costos: [],
     opciones_configuracion: [
-      { id: "opt-nueva", clave: "nueva", nombre: "Opción Nueva" }
+      { id: "opt-nueva", organizacion_id: "org-1", clave: "nueva", nombre: "Opción Nueva" }
     ]
   });
 
@@ -360,7 +360,7 @@ Deno.test("Catálogo Costos - editar una opción para plataforma NO afecta a dol
       }
     ],
     opciones_configuracion: [
-      { id: "opt-compartida", clave: "compartida", nombre: "Compartida" }
+      { id: "opt-compartida", organizacion_id: "org-1", clave: "compartida", nombre: "Compartida" }
     ]
   });
 
@@ -378,6 +378,32 @@ Deno.test("Catálogo Costos - editar una opción para plataforma NO afecta a dol
   assertEquals(plat.costo_unitario, 1800);
   assertEquals(dolly.costo_unitario, 1000);
   assertEquals(dolly.fuente, "Factura Leolca");
+});
+
+Deno.test("Catálogo Costos - seguridad: opción de OTRA organización devuelve error y no inserta fila ni historial", async () => {
+  const mockClient = createMockSupabase({
+    opciones_configuracion: [
+      { id: "opt-otra-org", organizacion_id: "org-2", clave: "cerex", nombre: "Cerex" }
+    ],
+    opcion_costos: [],
+    costos_historial: []
+  });
+
+  await assertRejects(
+    async () => {
+      await guardarOpcionCosto(mockClient, "org-1", "u-admin", "opt-otra-org", {
+        tipo_modelo: "plataforma",
+        cantidad_base: 1,
+        escala: "fija",
+        costo_unitario: 1000
+      });
+    },
+    Error,
+    "La opción no existe en la organización"
+  );
+
+  assertEquals(mockClient._state.opcion_costos.length, 0);
+  assertEquals(mockClient._state.costos_historial.length, 0);
 });
 
 Deno.test("Catálogo Costos - kits y procesos: validaciones y guardado con historial", async () => {
