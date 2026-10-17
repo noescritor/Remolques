@@ -40,3 +40,23 @@ Deno.test("armarConfiguracionModelo", () => {
   assertEquals(!!pisoL, true);
   assertEquals(pisoL!.tiene_receta, false);
 });
+
+Deno.test("armarConfiguracionModelo - calcula max_piezas según regla (por_eje o fija)", () => {
+  const modelo2Ejes = { tipo: "plataforma", num_ejes: 2 };
+  const modelo3Ejes = { tipo: "plataforma", num_ejes: 3 };
+
+  const gruposConReglas = [
+    { id: "g1", clave: "rines", nombre: "Rines", regla: { max_total: { por_eje: 4 } }, orden: 1 },
+    { id: "g2", clave: "matracas", nombre: "Matracas", regla: JSON.stringify({ max_total: { fija: 12 } }), orden: 2 },
+    { id: "g3", clave: "eje", nombre: "Ejes", regla: null, orden: 3 }
+  ];
+
+  const res2 = armarConfiguracionModelo(modelo2Ejes, gruposConReglas, [], []);
+  assertEquals(res2.grupos.find(g => g.clave === "rines")?.max_piezas, 8);
+  assertEquals(res2.grupos.find(g => g.clave === "matracas")?.max_piezas, 12);
+  assertEquals(res2.grupos.find(g => g.clave === "eje")?.max_piezas, undefined);
+
+  const res3 = armarConfiguracionModelo(modelo3Ejes, gruposConReglas, [], []);
+  assertEquals(res3.grupos.find(g => g.clave === "rines")?.max_piezas, 12);
+  assertEquals(res3.grupos.find(g => g.clave === "matracas")?.max_piezas, 12);
+});

@@ -1,4 +1,5 @@
 import { Modelo, Configuracion, GrupoOpcion, Opcion } from './tipos.ts';
+import { fusionarFilasConfig } from './reglas_compatibilidad.ts';
 
 const ORDEN_TEXTO = [
   'suspension',
@@ -11,6 +12,7 @@ const ORDEN_TEXTO = [
   'frente',
   'redilas',
   'piso',
+  'matracas',
   'pintura',
   'rines',
   'llantas'
@@ -26,6 +28,7 @@ const ORDEN_RESUMEN = [
   'Frente',
   'Redilas',
   'Piso',
+  'Matracas / winches',
   'Pintura',
   'Rines',
   'Llantas'
@@ -46,6 +49,15 @@ const limpiarNombre = (nombre: string, grupoNombre?: string) => {
   }
   return limpio;
 };
+
+function unirConY(frases: string[]): string {
+  if (frases.length === 0) return '';
+  if (frases.length === 1) return frases[0];
+  if (frases.length === 2) return `${frases[0]} Y ${frases[1]}`;
+  const ult = frases[frases.length - 1];
+  const anteriores = frases.slice(0, -1).join(', ');
+  return `${anteriores} Y ${ult}`;
+}
 
 const TABLA_PLANTILLAS: Record<string, PlantillaGrupo> = {
   'eje': {
@@ -88,6 +100,14 @@ const TABLA_PLANTILLAS: Record<string, PlantillaGrupo> = {
     etiqueta: 'Piso',
     plantilla: (o) => `PISO ${limpiarNombre(o.nombre)}`
   },
+  'matracas': {
+    etiqueta: 'Matracas / winches',
+    plantilla: (o, v) => {
+      const qty = typeof v === 'object' && v?.cantidad ? v.cantidad : 12;
+      const desc = o.clave === 'corrediza' ? 'CORREDIZAS' : o.clave === 'soldable' ? 'SOLDABLES' : limpiarNombre(o.nombre, 'Matraca');
+      return `${qty} MATRACAS ${desc}`;
+    }
+  },
   'pintura': {
     etiqueta: 'Pintura',
     plantilla: (o) => `PINTURA ${limpiarNombre(o.nombre)}`
@@ -95,15 +115,18 @@ const TABLA_PLANTILLAS: Record<string, PlantillaGrupo> = {
   'rines': {
     etiqueta: 'Rines',
     plantilla: (o, v, m) => {
-      const qty = v?.cantidad || (m.num_ejes * 4);
+      const qty = typeof v === 'object' && v?.cantidad ? v.cantidad : (m.num_ejes * 4);
       const marca = v?.marca ? ` MARCA ${v.marca.toUpperCase()}` : '';
+      if (o.clave === 'cliente') {
+        return `${qty} RINES PROPORCIONADOS POR EL CLIENTE`;
+      }
       return `${qty} RINES DE ${limpiarNombre(o.nombre, 'Rines de')}${marca}`;
     }
   },
   'llantas': {
     etiqueta: 'Llantas',
     plantilla: (o, v, m) => {
-      const qty = v?.cantidad || (m.num_ejes * 4);
+      const qty = typeof v === 'object' && v?.cantidad ? v.cantidad : (m.num_ejes * 4);
       return `${qty} LLANTAS ${limpiarNombre(o.nombre)}`;
     }
   }
@@ -142,7 +165,12 @@ export function generarEspecificacion(
     if (!configValue) return;
     
     // Arrays para grupos múltiples
-    const values = Array.isArray(configValue) ? configValue : [configValue];
+    const rawValues = Array.isArray(configValue) ? configValue : [configValue];
+    const values = fusionarFilasConfig(rawValues);
+
+    const frasesGrupo: string[] = [];
+    const resumenGrupo: string[] = [];
+    let etiquetaGrupo = '';
 
     for (const val of values) {
       const opcionClave = typeof val === 'string' ? val : val.opcion;
@@ -152,28 +180,45 @@ export function generarEspecificacion(
       const opcion = opciones.find(o => o.grupo_id === grupo?.id && o.clave === opcionClave);
 
       if (grupo && opcion) {
+        etiquetaGrupo = grupo.nombre;
         const plantillaDef = TABLA_PLANTILLAS[claveGrupo];
         let frase = '';
-        let etiqueta = grupo.nombre;
         let valorResumen = limpiarNombre(opcion.nombre);
 
         if (plantillaDef) {
           frase = plantillaDef.plantilla(opcion, val, modelo);
-          etiqueta = plantillaDef.etiqueta;
+          etiquetaGrupo = plantillaDef.etiqueta;
           
-          if (claveGrupo === 'rines' || claveGrupo === 'llantas') {
-             const qty = typeof val === 'object' && val.cantidad ? val.cantidad : (modelo.num_ejes * 4);
-             const marca = typeof val === 'object' && val.marca ? ` ${val.marca.toUpperCase()}` : '';
-             const baseObj = limpiarNombre(opcion.nombre, claveGrupo === 'rines' ? 'Rines de' : '');
-             valorResumen = `${qty} ${baseObj}${marca}`.trim();
+          if (claveGrupo === 'rines') {
+            const qty = typeof val === 'object' && val.cantidad ? val.cantidad : (modelo.num_ejes * 4);
+            const marca = typeof val === 'object' && val.marca ? ` ${val.marca.toUpperCase()}` : '';
+            const baseObj = opcion.clave === 'cliente' ? 'PROPORCIONADOS POR CLIENTE' : limpiarNombre(opcion.nombre, 'Rines de');
+            valorResumen = `${qty} ${baseObj}${marca}`.trim();
+          } else if (claveGrupo === 'llantas') {
+            const qty = typeof val === 'object' && val.cantidad ? val.cantidad : (modelo.num_ejes * 4);
+            valorResumen = `${qty} ${limpiarNombre(opcion.nombre)}`.trim();
+          } else if (claveGrupo === 'matracas') {
+            const qty = typeof val === 'object' && val.cantidad ? val.cantidad : 12;
+            const plural = qty > 1;
+            const baseObj = opcion.clave === 'corrediza' 
+              ? (plural ? 'CORREDIZAS' : 'CORREDIZA') 
+              : opcion.clave === 'soldable' 
+              ? (plural ? 'SOLDABLES' : 'SOLDABLE') 
+              : limpiarNombre(opcion.nombre, 'Matraca');
+            valorResumen = `${qty} ${baseObj}`.trim();
           }
         } else {
           frase = `${grupo.nombre.toUpperCase()} ${limpiarNombre(opcion.nombre, grupo.nombre)}`;
         }
 
-        frases.push(frase);
-        resumen_lineas.push({ etiqueta, valor: valorResumen });
+        frasesGrupo.push(frase);
+        resumenGrupo.push(valorResumen);
       }
+    }
+
+    if (frasesGrupo.length > 0) {
+      frases.push(unirConY(frasesGrupo));
+      resumen_lineas.push({ etiqueta: etiquetaGrupo, valor: resumenGrupo.join(', ') });
     }
   };
 

@@ -17,6 +17,15 @@ import {
   textoConfianza, 
   traducirTipoPendiente 
 } from '../../utils/costeo';
+import {
+  FilaSeleccionMixta,
+  normalizarFilas,
+  calcularSumaPiezas,
+  calcularFaltantes,
+  calcularMaxPiezasGrupo,
+  siguienteCantidad,
+  completarConEstaOpcion
+} from '../../utils/seleccionMixta';
 
 export interface ConfiguracionModelo {
   modelo: any;
@@ -330,9 +339,134 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
   const grupoActual = gruposAplicables.find((g: any) => g.clave === grupoActivo);
   const opcionesActuales = datosModelo?.opciones?.filter((o: any) => o.grupo_id === grupoActual?.id) || [];
 
+  const maxPiezas = grupoActual ? (grupoActual.max_piezas ?? calcularMaxPiezasGrupo(grupoActual, datosModelo?.modelo)) : undefined;
+  const esGrupoConMaxPiezas = typeof maxPiezas === 'number' && maxPiezas > 0;
+
+  const filasActuales = (esGrupoConMaxPiezas && grupoActual)
+    ? normalizarFilas(configuracion.grupos[grupoActual.clave], maxPiezas)
+    : [];
+  const sumaPiezasActual = calcularSumaPiezas(filasActuales);
+  const faltantesActual = esGrupoConMaxPiezas ? Math.max(0, maxPiezas - sumaPiezasActual) : 0;
+  const excesoActual = esGrupoConMaxPiezas ? sumaPiezasActual > maxPiezas : false;
+
+  const hayExcesoPiezas = gruposAplicables.some((g: any) => {
+    const max = g.max_piezas ?? calcularMaxPiezasGrupo(g, datosModelo?.modelo);
+    if (typeof max === 'number' && max > 0) {
+      const sum = calcularSumaPiezas(normalizarFilas(configuracion.grupos[g.clave], max));
+      return sum > max;
+    }
+    return false;
+  });
+
   const isIncompleta = resultado && (!resultado.completo || resultado.secciones_pendientes?.length > 0 || resultado.sin_precio?.length > 0);
-  const faltanObligatorios = gruposAplicables.some((g: any) => g.seleccion.startsWith('unica') && !configuracion.grupos[g.clave]);
-  const disableConfirm = (resultado?.errores?.length > 0) || faltanObligatorios;
+  const faltanObligatorios = gruposAplicables.some((g: any) => {
+    const esObligatorio = g.seleccion?.startsWith('unica') || ['suspension', 'eje', 'patin', 'rines', 'llantas'].includes(g.clave);
+    if (!esObligatorio) return false;
+    const val = configuracion.grupos[g.clave];
+    if (val === undefined || val === null) return true;
+    if (Array.isArray(val)) return val.length === 0;
+    if (typeof val === 'string') return val.trim() === '';
+    if (typeof val === 'object') return !val.opcion;
+    return false;
+  });
+  const disableConfirm = (resultado?.errores?.length > 0) || faltanObligatorios || hayExcesoPiezas;
+
+  const handleActualizarFilasGrupo = (nuevasFilas: FilaSeleccionMixta[]) => {
+    if (!grupoActual) return;
+    const newConfig = {
+      ...configuracion,
+      grupos: {
+        ...configuracion.grupos,
+        [grupoActual.clave]: nuevasFilas
+      }
+    };
+    handleConfigChange(newConfig);
+  };
+
+  const handleSeleccionarPrimeraOpcion = (opt: any) => {
+    if (!grupoActual) return;
+    const max = maxPiezas ?? 1;
+    const defaultMarca = opt.marcas && opt.marcas.length > 0 ? opt.marcas[0] : undefined;
+    const defaultMedida = opt.medidas && Object.keys(opt.medidas).length > 0 ? Object.keys(opt.medidas)[0] : undefined;
+    const nuevaFila: FilaSeleccionMixta = {
+      opcion: opt.clave,
+      ...(defaultMarca ? { marca: defaultMarca } : {}),
+      ...(defaultMedida ? { medida: defaultMedida } : {}),
+      cantidad: opt.clave.startsWith('sin_') ? 1 : max
+    };
+    handleActualizarFilasGrupo([nuevaFila]);
+  };
+
+  const handleCambiarOpcionFila = (index: number, nuevaOpcionClave: string) => {
+    if (!grupoActual) return;
+    const optNueva = opcionesActuales.find((o: any) => o.clave === nuevaOpcionClave);
+    const defaultMarca = optNueva?.marcas && optNueva.marcas.length > 0 ? optNueva.marcas[0] : undefined;
+    const defaultMedida = optNueva?.medidas && Object.keys(optNueva.medidas).length > 0 ? Object.keys(optNueva.medidas)[0] : undefined;
+
+    const nuevas = filasActuales.map((f, i) => {
+      if (i !== index) return f;
+      return {
+        ...f,
+        opcion: nuevaOpcionClave,
+        marca: defaultMarca,
+        medida: defaultMedida,
+        cantidad: nuevaOpcionClave.startsWith('sin_') ? 1 : f.cantidad
+      };
+    });
+    handleActualizarFilasGrupo(nuevas);
+  };
+
+  const handleCambiarMarcaFila = (index: number, marca: string) => {
+    const nuevas = filasActuales.map((f, i) => (i === index ? { ...f, marca } : f));
+    handleActualizarFilasGrupo(nuevas);
+  };
+
+  const handleCambiarMedidaFila = (index: number, medida: string) => {
+    const nuevas = filasActuales.map((f, i) => (i === index ? { ...f, medida } : f));
+    handleActualizarFilasGrupo(nuevas);
+  };
+
+  const handleActualizarCantidadFila = (index: number, cantidad: number) => {
+    const cantValida = Math.max(1, Math.floor(cantidad));
+    const nuevas = filasActuales.map((f, i) => (i === index ? { ...f, cantidad: cantValida } : f));
+    handleActualizarFilasGrupo(nuevas);
+  };
+
+  const handleCompletarFila = (index: number) => {
+    if (!maxPiezas) return;
+    const nuevas = completarConEstaOpcion(filasActuales, index, maxPiezas);
+    handleActualizarFilasGrupo(nuevas);
+  };
+
+  const handleEliminarFila = (index: number) => {
+    const nuevas = filasActuales.filter((_, i) => i !== index);
+    handleActualizarFilasGrupo(nuevas);
+  };
+
+  const handleAgregarCombinacion = () => {
+    if (!grupoActual || !maxPiezas) return;
+    const { cantidadSugerida, yaLlegoAlMaximo } = siguienteCantidad(maxPiezas, filasActuales);
+    if (yaLlegoAlMaximo) return;
+
+    const opcionesUsadas = new Set(filasActuales.map(f => f.opcion));
+    const candidata = opcionesActuales.find((o: any) => !o.clave.startsWith('sin_') && !opcionesUsadas.has(o.clave))
+      || opcionesActuales.find((o: any) => !o.clave.startsWith('sin_'))
+      || opcionesActuales[0];
+
+    if (!candidata) return;
+
+    const defaultMarca = candidata.marcas && candidata.marcas.length > 0 ? candidata.marcas[0] : undefined;
+    const defaultMedida = candidata.medidas && Object.keys(candidata.medidas).length > 0 ? Object.keys(candidata.medidas)[0] : undefined;
+
+    const nuevaFila: FilaSeleccionMixta = {
+      opcion: candidata.clave,
+      ...(defaultMarca ? { marca: defaultMarca } : {}),
+      ...(defaultMedida ? { medida: defaultMedida } : {}),
+      cantidad: cantidadSugerida
+    };
+
+    handleActualizarFilasGrupo([...filasActuales, nuevaFila]);
+  };
 
   const getPrecioRef = () => {
     if (!datosModelo) return 0;
@@ -381,8 +515,16 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                 <div className="p-4 space-y-1">
                   {gruposAplicables.map((g: any) => {
                     const value = configuracion.grupos[g.clave];
-                    const hasValue = Array.isArray(value) ? value.length > 0 : !!value;
-                    const isMandatory = g.seleccion.startsWith('unica');
+                    const isMandatory = g.seleccion?.startsWith('unica') || ['suspension', 'eje', 'patin', 'rines', 'llantas'].includes(g.clave);
+                    const hasValue = (() => {
+                      if (value === undefined || value === null) return false;
+                      if (Array.isArray(value)) {
+                        return value.length > 0 && value.some((x: any) => x && (typeof x === 'string' ? x.trim() : x.opcion));
+                      }
+                      if (typeof value === 'object') return !!value.opcion;
+                      if (typeof value === 'string') return value.trim() !== '';
+                      return false;
+                    })();
                     return (
                       <button
                         key={g.id}
@@ -403,85 +545,329 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
             <div className="md:flex-1 flex flex-col bg-background relative min-w-0 md:min-h-0">
               <ScrollArea className="h-[260px] shrink-0 md:h-auto md:shrink md:flex-1 md:min-h-0">
                 <div className="p-6">
-                  <h3 className="text-lg font-medium mb-4 text-foreground">{grupoActual?.nombre}</h3>
-                  <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(100%,240px),1fr))]">
-                    {opcionesActuales.map((o: any) => {
-                      const value = configuracion.grupos[grupoActual?.clave || ''];
-                      const isMultiple = isMultipleLike(grupoActual);
-                      
-                      let isSelected = false;
-                      let objVal: any = null;
-                      
-                      if (isMultiple) {
-                        const arr = Array.isArray(value) ? value : [];
-                        objVal = arr.find((x: any) => x.opcion === o.clave);
-                        isSelected = !!objVal;
-                      } else {
-                        isSelected = typeof value === 'object' ? value?.opcion === o.clave : value === o.clave;
-                        objVal = typeof value === 'object' ? value : null;
-                      }
-                      
-                      const isSugerida = datosModelo?.modelo.largo_ft === 40 && datosModelo?.modelo.num_ejes === 2 && 
-                        ['fleet_master', 'hj'].includes(o.clave) && ['eje','suspension','patin'].includes(grupoActual?.clave || '');
-                      
-                      return (
-                        <div key={o.id} className={`p-4 border rounded-md transition-colors relative ${isSelected ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}>
-                          <div 
-                            className={`flex justify-between items-start mb-2 cursor-pointer ${!o.activo ? 'opacity-50 pointer-events-none' : ''}`}
-                            onClick={() => handleOptionSelect(grupoActual, o, !isSelected)}
-                          >
-                            <span className="font-medium text-foreground flex items-center gap-2">
-                              {isMultiple && <input type="checkbox" checked={isSelected} readOnly />}
-                              {o.nombre}
-                            </span>
-                            {isSelected && !isMultiple && <Check className="w-4 h-4 text-primary" />}
-                          </div>
-                          
-                          <div className="flex gap-2 flex-wrap mb-2">
-                            {isSugerida && <Badge variant="secondary" className="text-[10px]">Sugerida</Badge>}
-                            {!o.tiene_receta && <Badge variant="outline" className="text-[10px] text-muted-foreground">Sin receta</Badge>}
-                          </div>
-                          
-                          {isSelected && (grupoActual?.seleccion.includes('con_cantidad') || grupoActual?.seleccion === 'cantidad') && (
-                            <div className="mt-3 p-3 bg-background border rounded-md">
-                              <label className="block text-xs font-medium text-muted-foreground mb-1">Cantidad</label>
-                              <input 
-                                type="number" 
-                                className="w-full px-2 py-1 text-sm rounded-md border"
-                                value={objVal?.cantidad || ''}
-                                placeholder={(datosModelo?.modelo?.num_ejes * 4).toString()}
-                                onChange={(e) => handleObjProp(grupoActual!.clave, isMultiple, o.clave, 'cantidad', parseInt(e.target.value))}
-                              />
-                            </div>
-                          )}
-
-                          {isSelected && grupoActual?.seleccion === 'unica_con_medida' && o.medidas && Object.keys(o.medidas).length > 0 && (
-                            <div className="mt-3 p-3 bg-background border rounded-md">
-                              <label className="block text-xs font-medium text-muted-foreground mb-1">Medida</label>
-                              <Select value={objVal?.medida || ''} onValueChange={(val) => handleObjProp(grupoActual!.clave, false, o.clave, 'medida', val)}>
-                                <SelectTrigger className="h-8"><SelectValue placeholder="Elegir medida..." /></SelectTrigger>
-                                <SelectContent>
-                                  {Object.keys(o.medidas).map((m: string) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          )}
-
-                          {isSelected && grupoActual?.clave === 'rines' && o.marcas && o.marcas.length > 0 && (
-                            <div className="mt-3 p-3 bg-background border rounded-md">
-                              <label className="block text-xs font-medium text-muted-foreground mb-1">Marca (Obligatoria)</label>
-                              <Select value={objVal?.marca || ''} onValueChange={(val) => handleObjProp(grupoActual!.clave, false, o.clave, 'marca', val)}>
-                                <SelectTrigger className="h-8 uppercase"><SelectValue placeholder="Elegir marca..." /></SelectTrigger>
-                                <SelectContent>
-                                  {o.marcas.map((m: string) => <SelectItem key={m} value={m} className="uppercase">{m}</SelectItem>)}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          )}
+                  {esGrupoConMaxPiezas ? (
+                    <div className="space-y-4">
+                      {/* Encabezado del grupo con contador de piezas */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-border">
+                        <div>
+                          <h3 className="text-lg font-medium text-foreground">{grupoActual?.nombre}</h3>
+                          <p className="text-xs text-muted-foreground">
+                            {grupoActual?.descripcion || `Selección de piezas (máximo ${maxPiezas} para este modelo)`}
+                          </p>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${
+                              sumaPiezasActual === maxPiezas
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                                : excesoActual
+                                ? 'bg-red-50 text-red-700 border-red-300 dark:bg-red-950/40 dark:text-red-300 dark:border-red-800'
+                                : 'bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
+                            }`}
+                          >
+                            Piezas: {sumaPiezasActual} de {maxPiezas}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Avisos contextuales */}
+                      {excesoActual && (
+                        <div className="p-2.5 rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 text-xs flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 shrink-0" />
+                          <span>
+                            {grupoActual?.nombre.toLowerCase().startsWith('llanta') || grupoActual?.nombre.toLowerCase().startsWith('matraca') ? 'Las' : 'Los'}{' '}
+                            {grupoActual?.nombre.toLowerCase()} suman {sumaPiezasActual} piezas y el máximo para este modelo es {maxPiezas}
+                          </span>
+                        </div>
+                      )}
+                      {!excesoActual && faltantesActual > 0 && sumaPiezasActual > 0 && (
+                        <div className="p-2.5 rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-300 text-xs flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 shrink-0" />
+                          <span>Faltan {faltantesActual} {grupoActual?.nombre.toLowerCase()} por definir</span>
+                        </div>
+                      )}
+
+                      {/* Filas de combinaciones */}
+                      {filasActuales.length === 0 ? (
+                        <div className="p-6 text-center border border-dashed border-border rounded-lg bg-card/50 space-y-4">
+                          <div className="space-y-1">
+                            <h4 className="text-sm font-medium text-foreground">Sin opciones seleccionadas</h4>
+                            <p className="text-xs text-muted-foreground">
+                              Elige una opción para comenzar (se asignarán {maxPiezas} piezas automáticamente):
+                            </p>
+                          </div>
+                          <div className="flex flex-wrap justify-center gap-2 max-w-lg mx-auto">
+                            {opcionesActuales.map((opt: any) => (
+                              <Button
+                                key={opt.id}
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="text-xs"
+                                onClick={() => handleSeleccionarPrimeraOpcion(opt)}
+                              >
+                                <Plus className="w-3.5 h-3.5 mr-1" />
+                                {opt.nombre}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {filasActuales.map((fila, idx) => {
+                            const optActual = opcionesActuales.find((o: any) => o.clave === fila.opcion);
+                            const tieneMarcas = optActual?.marcas && optActual.marcas.length > 0;
+                            const tieneMedidas = optActual?.medidas && Object.keys(optActual.medidas).length > 0;
+
+                            return (
+                              <div
+                                key={`${fila.opcion}_${idx}`}
+                                className="p-3 sm:p-4 rounded-lg border border-border bg-card space-y-3 shadow-sm"
+                              >
+                                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                                  {/* Opción */}
+                                  <div className="flex-1 min-w-0">
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                      Opción
+                                    </label>
+                                    <Select
+                                      value={fila.opcion}
+                                      onValueChange={(val) => handleCambiarOpcionFila(idx, val)}
+                                    >
+                                      <SelectTrigger className="h-9">
+                                        <SelectValue placeholder="Seleccionar opción..." />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {opcionesActuales.map((opt: any) => (
+                                          <SelectItem key={opt.id} value={opt.clave}>
+                                            {opt.nombre}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+
+                                  {/* Marca (si aplica) */}
+                                  {tieneMarcas && (
+                                    <div className="w-full sm:w-44">
+                                      <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                        Marca <span className="text-destructive">*</span>
+                                      </label>
+                                      <Select
+                                        value={fila.marca || ''}
+                                        onValueChange={(val) => handleCambiarMarcaFila(idx, val)}
+                                      >
+                                        <SelectTrigger className="h-9 uppercase">
+                                          <SelectValue placeholder="Elegir marca..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {optActual.marcas.map((m: string) => (
+                                            <SelectItem key={m} value={m} className="uppercase">
+                                              {m}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  )}
+
+                                  {/* Medida (si aplica) */}
+                                  {tieneMedidas && (
+                                    <div className="w-full sm:w-40">
+                                      <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                        Medida
+                                      </label>
+                                      <Select
+                                        value={fila.medida || ''}
+                                        onValueChange={(val) => handleCambiarMedidaFila(idx, val)}
+                                      >
+                                        <SelectTrigger className="h-9">
+                                          <SelectValue placeholder="Elegir medida..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {Object.keys(optActual.medidas).map((m: string) => (
+                                            <SelectItem key={m} value={m}>
+                                              {m}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  )}
+
+                                  {/* Cantidad con stepper */}
+                                  <div className="w-full sm:w-36">
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                      Cantidad
+                                    </label>
+                                    <div className="flex items-center">
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-9 w-9 p-0 rounded-r-none border-r-0 shrink-0"
+                                        onClick={() => handleActualizarCantidadFila(idx, Math.max(1, (fila.cantidad || 1) - 1))}
+                                        disabled={fila.cantidad <= 1}
+                                      >
+                                        -
+                                      </Button>
+                                      <input
+                                        type="number"
+                                        min="1"
+                                        className="h-9 w-16 text-center text-sm font-medium border border-input bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                                        value={fila.cantidad || ''}
+                                        onChange={(e) => {
+                                          const v = parseInt(e.target.value, 10);
+                                          handleActualizarCantidadFila(idx, isNaN(v) ? 1 : v);
+                                        }}
+                                      />
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-9 w-9 p-0 rounded-l-none border-l-0 shrink-0"
+                                        onClick={() => handleActualizarCantidadFila(idx, (fila.cantidad || 0) + 1)}
+                                      >
+                                        +
+                                      </Button>
+                                    </div>
+                                  </div>
+
+                                  {/* Acciones de la fila */}
+                                  <div className="flex items-center gap-2 pt-1 sm:pt-0">
+                                    {faltantesActual > 0 && !fila.opcion.startsWith('sin_') && (
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-9 text-xs whitespace-nowrap"
+                                        onClick={() => handleCompletarFila(idx)}
+                                        title={`Asignar ${fila.cantidad + faltantesActual} piezas a esta opción`}
+                                      >
+                                        Completar con esta opción
+                                      </Button>
+                                    )}
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-9 w-9 p-0 text-muted-foreground hover:text-destructive shrink-0"
+                                      onClick={() => handleEliminarFila(idx)}
+                                      title="Quitar combinación"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+
+                          {/* Botón agregar otra combinación */}
+                          <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-9 text-xs flex items-center gap-1.5"
+                              disabled={faltantesActual <= 0}
+                              onClick={handleAgregarCombinacion}
+                            >
+                              <Plus className="w-4 h-4" /> Agregar otra combinación
+                            </Button>
+
+                            {faltantesActual <= 0 && sumaPiezasActual >= maxPiezas && (
+                              <span className="text-xs text-muted-foreground">
+                                Ya llegaste al máximo de {maxPiezas} piezas; reduce otra fila para agregar.
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
+                      <h3 className="text-lg font-medium mb-4 text-foreground">{grupoActual?.nombre}</h3>
+                      <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(100%,240px),1fr))]">
+                        {opcionesActuales.map((o: any) => {
+                          const value = configuracion.grupos[grupoActual?.clave || ''];
+                          const isMultiple = isMultipleLike(grupoActual);
+                          
+                          let isSelected = false;
+                          let objVal: any = null;
+                          
+                          if (isMultiple) {
+                            const arr = Array.isArray(value) ? value : [];
+                            objVal = arr.find((x: any) => x.opcion === o.clave);
+                            isSelected = !!objVal;
+                          } else {
+                            isSelected = typeof value === 'object' ? value?.opcion === o.clave : value === o.clave;
+                            objVal = typeof value === 'object' ? value : null;
+                          }
+                          
+                          const isSugerida = datosModelo?.modelo.largo_ft === 40 && datosModelo?.modelo.num_ejes === 2 && 
+                            ['fleet_master', 'hj'].includes(o.clave) && ['eje','suspension','patin'].includes(grupoActual?.clave || '');
+                          
+                          return (
+                            <div key={o.id} className={`p-4 border rounded-md transition-colors relative ${isSelected ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}>
+                              <div 
+                                className={`flex justify-between items-start mb-2 cursor-pointer ${!o.activo ? 'opacity-50 pointer-events-none' : ''}`}
+                                onClick={() => handleOptionSelect(grupoActual, o, !isSelected)}
+                              >
+                                <span className="font-medium text-foreground flex items-center gap-2">
+                                  {isMultiple && <input type="checkbox" checked={isSelected} readOnly />}
+                                  {o.nombre}
+                                </span>
+                                {isSelected && !isMultiple && <Check className="w-4 h-4 text-primary" />}
+                              </div>
+                              
+                              <div className="flex gap-2 flex-wrap mb-2">
+                                {isSugerida && <Badge variant="secondary" className="text-[10px]">Sugerida</Badge>}
+                                {!o.tiene_receta && <Badge variant="outline" className="text-[10px] text-muted-foreground">Sin receta</Badge>}
+                              </div>
+                              
+                              {isSelected && (grupoActual?.seleccion.includes('con_cantidad') || grupoActual?.seleccion === 'cantidad') && (
+                                <div className="mt-3 p-3 bg-background border rounded-md">
+                                  <label className="block text-xs font-medium text-muted-foreground mb-1">Cantidad</label>
+                                  <input 
+                                    type="number" 
+                                    className="w-full px-2 py-1 text-sm rounded-md border"
+                                    value={objVal?.cantidad || ''}
+                                    placeholder={(datosModelo?.modelo?.num_ejes * 4).toString()}
+                                    onChange={(e) => handleObjProp(grupoActual!.clave, isMultiple, o.clave, 'cantidad', parseInt(e.target.value))}
+                                  />
+                                </div>
+                              )}
+
+                              {isSelected && grupoActual?.seleccion === 'unica_con_medida' && o.medidas && Object.keys(o.medidas).length > 0 && (
+                                <div className="mt-3 p-3 bg-background border rounded-md">
+                                  <label className="block text-xs font-medium text-muted-foreground mb-1">Medida</label>
+                                  <Select value={objVal?.medida || ''} onValueChange={(val) => handleObjProp(grupoActual!.clave, false, o.clave, 'medida', val)}>
+                                    <SelectTrigger className="h-8"><SelectValue placeholder="Elegir medida..." /></SelectTrigger>
+                                    <SelectContent>
+                                      {Object.keys(o.medidas).map((m: string) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              )}
+
+                              {isSelected && grupoActual?.clave === 'rines' && o.marcas && o.marcas.length > 0 && (
+                                <div className="mt-3 p-3 bg-background border rounded-md">
+                                  <label className="block text-xs font-medium text-muted-foreground mb-1">Marca (Obligatoria)</label>
+                                  <Select value={objVal?.marca || ''} onValueChange={(val) => handleObjProp(grupoActual!.clave, false, o.clave, 'marca', val)}>
+                                    <SelectTrigger className="h-8 uppercase"><SelectValue placeholder="Elegir marca..." /></SelectTrigger>
+                                    <SelectContent>
+                                      {o.marcas.map((m: string) => <SelectItem key={m} value={m} className="uppercase">{m}</SelectItem>)}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </ScrollArea>
 
@@ -838,7 +1224,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                 ajustes: ajustesValidos,
                 texto_especificacion: resultado?.texto_especificacion || '',
                 resumen_lineas: resultado?.resumen_lineas || [],
-                resuelta: !resultado?.errores?.length && !faltanObligatorios,
+                resuelta: !resultado?.errores?.length && !faltanObligatorios && !hayExcesoPiezas,
                 completo: resultado?.completo || false,
                 resuelto_en: new Date().toISOString()
               };

@@ -7,6 +7,7 @@ import type {
   LineaCosteo,
   PendienteCosteo
 } from "./tipos.ts";
+import { fusionarFilasConfig } from "./reglas_compatibilidad.ts";
 
 function calcularCantidad(cantidadBase: number, escala: string, modelo: Modelo): number {
   if (escala === "por_eje") {
@@ -158,7 +159,8 @@ export function costear(
 
   for (const [grupoClave, valConfigRaw] of gruposEntries) {
     if (!valConfigRaw) continue;
-    const configVals = Array.isArray(valConfigRaw) ? valConfigRaw : [valConfigRaw];
+    const rawVals = Array.isArray(valConfigRaw) ? valConfigRaw : [valConfigRaw];
+    const configVals = fusionarFilasConfig(rawVals);
 
     for (const valConfig of configVals) {
       const oClave = typeof valConfig === "string" ? valConfig : valConfig.opcion;
@@ -194,7 +196,8 @@ export function costear(
               : optCosto.escala === "por_largo"
               ? modelo.largo_ft / 40.0
               : 1;
-          qty = optCosto.cantidad_base * factor;
+          const cantBase = optCosto.cantidad_base || (grupoClave === "matracas" ? 12 : (grupoClave === "rines" || grupoClave === "llantas") ? 4 : 1);
+          qty = cantBase * factor;
         }
 
         let cu = optCosto.costo_unitario;

@@ -41,7 +41,7 @@ export interface GrupoOpcion {
   clave: string;
   nombre: string;
   seleccion: string;
-  regla: string | null;
+  regla: string | Record<string, any> | any | null;
   aplica_a?: string[] | null;
   depende_de?: any | null;
   cantidad?: number | null;
