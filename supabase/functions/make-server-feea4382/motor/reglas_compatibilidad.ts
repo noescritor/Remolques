@@ -101,20 +101,42 @@ export function validarCompatibilidad(
     if (valConfigRaw === undefined || valConfigRaw === null) continue;
 
     const rawVals = Array.isArray(valConfigRaw) ? valConfigRaw : [valConfigRaw];
+    const tieneCant = (f: any) =>
+      typeof f === "object" && f !== null && typeof f.cantidad === "number" && !isNaN(f.cantidad);
+    const esSin = (f: any) => {
+      const op = typeof f === "string" ? f : f?.opcion;
+      return typeof op === "string" && op.startsWith("sin_");
+    };
+
+    const rawReales = rawVals.filter(f => f && !esSin(f));
+    if (rawReales.length === 0) continue;
+
+    // Si hay varias filas y alguna no tiene cantidad explícita -> error
+    if (rawReales.length > 1) {
+      const haySinCantidad = rawReales.some(f => !tieneCant(f));
+      if (haySinCantidad) {
+        errores.push(`Indica la cantidad de cada fila en ${grupo.nombre}.`);
+        continue;
+      }
+    }
+
+    // Una sola fila sin cantidad cuenta como el juego completo (maxPiezas), forma vieja
+    if (rawReales.length === 1 && !tieneCant(rawReales[0])) {
+      continue;
+    }
+
     const filasFusionadas = fusionarFilasConfig(rawVals);
 
     let suma = 0;
     for (const fila of filasFusionadas) {
-      const opClave = typeof fila === "string" ? fila : fila.opcion;
+      if (esSin(fila)) continue;
       const cant = typeof fila === "object" && typeof fila.cantidad === "number" ? fila.cantidad : 1;
 
       if (!Number.isInteger(cant) || cant < 1) {
         errores.push(`La cantidad de cada fila en ${grupo.nombre} debe ser un número entero mayor o igual a 1.`);
       }
 
-      if (typeof opClave === "string" && !opClave.startsWith("sin_")) {
-        suma += cant;
-      }
+      suma += cant;
     }
 
     const esPluralFemenino = grupo.nombre.toLowerCase().startsWith("llanta") || grupo.nombre.toLowerCase().startsWith("matraca");

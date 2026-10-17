@@ -199,7 +199,12 @@ export function generarEspecificacion(
             valorResumen = `${qty} ${limpiarNombre(opcion.nombre)}`.trim();
           } else if (claveGrupo === 'matracas') {
             const qty = typeof val === 'object' && val.cantidad ? val.cantidad : 12;
-            const baseObj = opcion.clave === 'corrediza' ? 'CORREDIZA' : opcion.clave === 'soldable' ? 'SOLDABLE' : limpiarNombre(opcion.nombre, 'Matraca');
+            const plural = qty > 1;
+            const baseObj = opcion.clave === 'corrediza' 
+              ? (plural ? 'CORREDIZAS' : 'CORREDIZA') 
+              : opcion.clave === 'soldable' 
+              ? (plural ? 'SOLDABLES' : 'SOLDABLE') 
+              : limpiarNombre(opcion.nombre, 'Matraca');
             valorResumen = `${qty} ${baseObj}`.trim();
           }
         } else {

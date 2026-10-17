@@ -3,6 +3,24 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-17 - Ajuste 2R-8: Filas sin cantidad en grupos max_total y pluralización de matracas
+**Herramienta:** Antigravity  
+**Tipo:** fix (motor, validaciones, textos, pruebas)  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/reglas_compatibilidad.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.test.ts`
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.ts`
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.test.ts`
+**Qué cambió y por qué:**  
+- **Validación de filas sin cantidad en Regla 3 (`reglas_compatibilidad.ts`):**  
+  - Para grupos con `max_total` (rines, llantas, matracas), una sola fila sin `cantidad` (configuración heredada guardada como string u objeto único) ahora se contabiliza como `maxPiezas` completo, alineando la validación de compatibilidad con `resolver_receta` y `costeo` (que aplican el juego completo por defecto) y evitando advertencias falsas de piezas faltantes en cotizaciones existentes.  
+  - Si se envían múltiples filas y alguna de ellas carece de cantidad explícita (dos filas sin cantidad o una con cantidad y otra sin cantidad), se emite el error `"Indica la cantidad de cada fila en {grupo}"`.  
+  - Se agregaron 4 casos de prueba en `resolver_receta.test.ts` (test 23) verificando string único y objeto único sin cantidad (sin error ni advertencia), dos filas sin cantidad (error), y combinación de fila con cantidad y fila sin cantidad (error).  
+- **Pluralización del resumen de especificación (`texto_especificacion.ts`):**  
+  - En `resumen_lineas`, para matracas con cantidad > 1 se pluraliza la descripción (ej. `"10 CORREDIZAS"` en lugar de `"10 CORREDIZA"`, `"10 SOLDABLES"` en lugar de `"10 SOLDABLE"`), manteniendo singular cuando cantidad es 1.  
+  - Actualizadas las aserciones en `texto_especificacion.test.ts`.  
+**Acciones manuales pendientes:** Ninguna.
+
 ## 2026-10-17 - Sub-bloque 2R-8: Rines, llantas y matracas con selección mixta y cantidad con tope de piezas
 **Herramienta:** Antigravity  
 **Tipo:** feat (catálogo, motor, frontend, ui)  

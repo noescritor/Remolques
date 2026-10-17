@@ -118,6 +118,7 @@ Deno.test("2R-8: Generar texto con 1, 2 y 3 filas (rines, llantas y matracas)", 
   assertEquals(res1.texto.includes("12 RINES DE ACERO MARCA AMPRO"), true);
   assertEquals(res1.texto.includes("12 LLANTAS FIRESTONE"), true);
   assertEquals(res1.texto.includes("10 MATRACAS CORREDIZAS"), true);
+  assertEquals(res1.resumen_lineas.find(r => r.etiqueta === "Matracas / winches")?.valor, "10 CORREDIZAS");
 
   // 2. Dos filas (ej. 8 acero + 4 aluminio, 6 firestone + 6 cerex)
   const config2 = {

@@ -1,5 +1,6 @@
 import { assertEquals, assert } from "https://deno.land/std@0.192.0/testing/asserts.ts";
 import { resolverReceta } from "./resolver_receta.ts";
+import { validarCompatibilidad } from "./reglas_compatibilidad.ts";
 import * as fixtureData from "./fixtures/datos_modelo.json" with { type: "json" };
 import type { DatosModelo, Configuracion, Opcion } from "./tipos.ts";
 
@@ -392,3 +393,70 @@ Deno.test("22. 2R-8: Opción cliente en rines no arroja advertencia de sin recet
   assert(!res.advertencias.some(a => a.includes("cliente")));
   assertEquals(res.errores.filter(e => e.toLowerCase().includes("rin")), []);
 });
+
+Deno.test("23. 2R-8: Regla 3 - Filas sin cantidad en grupos con max_total (retrocompatibilidad y validación)", () => {
+  const datos2Ejes = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  datos2Ejes.modelo.num_ejes = 2; // máx rines = 8
+
+  const grpRines = datos2Ejes.grupos.find(g => g.clave === "rines");
+  if (grpRines) {
+    grpRines.regla = { max_total: { por_eje: 4 } };
+    grpRines.seleccion = "multiple_con_cantidad";
+  }
+
+  // 1. String 'acero' sin cantidad en 2 ejes → sin error ni advertencia de piezas
+  const err1: string[] = [];
+  const adv1: string[] = [];
+  validarCompatibilidad({ grupos: { rines: "acero" } }, datos2Ejes, err1, adv1);
+  assertEquals(err1, []);
+  assertEquals(adv1, []);
+
+  // 2. { opcion: "acero", marca: "Ampro" } sin cantidad en 2 ejes → sin error ni advertencia
+  const err2: string[] = [];
+  const adv2: string[] = [];
+  validarCompatibilidad({ grupos: { rines: { opcion: "acero", marca: "Ampro" } } }, datos2Ejes, err2, adv2);
+  assertEquals(err2, []);
+  assertEquals(adv2, []);
+
+  // También probado a través de resolverReceta completo
+  const resObj = resolverReceta(datos2Ejes, {
+    grupos: {
+      suspension: "alta_hendrickson",
+      retractil: "grande",
+      eje: "hendrickson",
+      patin: "hj",
+      rines: { opcion: "acero", marca: "Ampro" }
+    }
+  });
+  assertEquals(resObj.errores.filter(e => e.toLowerCase().includes("rin")), []);
+  assertEquals(resObj.advertencias.filter(a => a.toLowerCase().includes("rin")), []);
+
+  // 3. Dos filas sin cantidad → error "Indica la cantidad de cada fila"
+  const err3: string[] = [];
+  const adv3: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      rines: [
+        { opcion: "acero", marca: "Ampro" },
+        { opcion: "aluminio", marca: "Ampro" }
+      ]
+    }
+  }, datos2Ejes, err3, adv3);
+  assertEquals(err3.length, 1);
+  assert(err3[0].toLowerCase().includes("indica la cantidad de cada fila"));
+
+  // 4. Una fila con cantidad 4 y otra sin cantidad → error "Indica la cantidad de cada fila"
+  const err4: string[] = [];
+  const adv4: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      rines: [
+        { opcion: "acero", marca: "Ampro", cantidad: 4 },
+        { opcion: "aluminio", marca: "Ampro" }
+      ]
+    }
+  }, datos2Ejes, err4, adv4);
+  assertEquals(err4.length, 1);
+  assert(err4[0].toLowerCase().includes("indica la cantidad de cada fila"));
+});
+
