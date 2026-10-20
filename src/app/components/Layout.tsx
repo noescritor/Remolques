@@ -6,7 +6,8 @@ import {
   Users, 
   Package, 
   Settings,
-  Menu
+  Menu,
+  Factory
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -17,6 +18,7 @@ interface LayoutProps {
 
 const navigationItems = [
   { id: 'cotizaciones', label: 'Cotizaciones', icon: FileText },
+  { id: 'produccion', label: 'Órdenes de trabajo', icon: Factory },
   { id: 'clientes', label: 'Clientes', icon: Users },
   { id: 'productos', label: 'Productos', icon: Package },
   { id: 'catalogo-costos', label: 'Catálogo Costos', icon: Package },

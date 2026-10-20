@@ -444,6 +444,9 @@ export default function App() {
 
     if (path.startsWith('/cxc')) return 'cxc';
     if (path.startsWith('/cxp')) return 'cxp';
+    if (path.startsWith('/produccion') || path.startsWith('/ordenes-trabajo')) return 'produccion';
+    if (path.startsWith('/tablero-produccion')) return 'tablero-produccion';
+    if (path.startsWith('/presupuestos')) return 'presupuestos';
     if (path.startsWith('/trazabilidad')) return 'trazabilidad';
     if (path.startsWith('/productos')) return 'productos';
     if (path.startsWith('/catalogo-costos')) return 'catalogo-costos';
@@ -653,6 +656,17 @@ export default function App() {
             clientes={clientes}
             loading={loading}
             onActualizarOrden={actualizarOrdenTrabajo}
+            ajustes={ajustes}
+          />
+        } />
+
+        <Route path="/ordenes-trabajo" element={
+          <OrdenesTrabajoList
+            ordenes={ordenesTrabajo}
+            clientes={clientes}
+            loading={loading}
+            onActualizarOrden={actualizarOrdenTrabajo}
+            ajustes={ajustes}
           />
         } />
                   <Route path="/tablero-produccion" element={
