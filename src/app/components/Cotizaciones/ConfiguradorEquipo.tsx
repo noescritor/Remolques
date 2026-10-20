@@ -23,6 +23,7 @@ import {
   calcularSumaPiezas,
   calcularFaltantes,
   calcularMaxPiezasGrupo,
+  obtenerCantidadDefecto,
   siguienteCantidad,
   completarConEstaOpcion
 } from '../../utils/seleccionMixta';
@@ -342,8 +343,9 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
   const maxPiezas = grupoActual ? (grupoActual.max_piezas ?? calcularMaxPiezasGrupo(grupoActual, datosModelo?.modelo)) : undefined;
   const esGrupoConMaxPiezas = typeof maxPiezas === 'number' && maxPiezas > 0;
 
+  const cantDefectoActual = grupoActual ? obtenerCantidadDefecto(grupoActual, maxPiezas ?? 1) : (maxPiezas ?? 1);
   const filasActuales = (esGrupoConMaxPiezas && grupoActual)
-    ? normalizarFilas(configuracion.grupos[grupoActual.clave], maxPiezas)
+    ? normalizarFilas(configuracion.grupos[grupoActual.clave], cantDefectoActual)
     : [];
   const sumaPiezasActual = calcularSumaPiezas(filasActuales);
   const faltantesActual = esGrupoConMaxPiezas ? Math.max(0, maxPiezas - sumaPiezasActual) : 0;
@@ -352,7 +354,8 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
   const hayExcesoPiezas = gruposAplicables.some((g: any) => {
     const max = g.max_piezas ?? calcularMaxPiezasGrupo(g, datosModelo?.modelo);
     if (typeof max === 'number' && max > 0) {
-      const sum = calcularSumaPiezas(normalizarFilas(configuracion.grupos[g.clave], max));
+      const cantDef = obtenerCantidadDefecto(g, max);
+      const sum = calcularSumaPiezas(normalizarFilas(configuracion.grupos[g.clave], cantDef));
       return sum > max;
     }
     return false;
@@ -386,13 +389,14 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
   const handleSeleccionarPrimeraOpcion = (opt: any) => {
     if (!grupoActual) return;
     const max = maxPiezas ?? 1;
+    const cantInicial = opt.clave.startsWith('sin_') ? 1 : obtenerCantidadDefecto(grupoActual, max);
     const defaultMarca = opt.marcas && opt.marcas.length > 0 ? opt.marcas[0] : undefined;
     const defaultMedida = opt.medidas && Object.keys(opt.medidas).length > 0 ? Object.keys(opt.medidas)[0] : undefined;
     const nuevaFila: FilaSeleccionMixta = {
       opcion: opt.clave,
       ...(defaultMarca ? { marca: defaultMarca } : {}),
       ...(defaultMedida ? { medida: defaultMedida } : {}),
-      cantidad: opt.clave.startsWith('sin_') ? 1 : max
+      cantidad: cantInicial
     };
     handleActualizarFilasGrupo([nuevaFila]);
   };

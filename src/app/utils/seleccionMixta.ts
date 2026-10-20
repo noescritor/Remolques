@@ -139,6 +139,31 @@ export interface ResultadoValidacionSeleccionMixta {
 }
 
 /**
+ * Obtiene la cantidad por defecto para un grupo según su regla/columna cantidad_defecto.
+ * - "max": equivale al tope de piezas (maxPiezas).
+ * - número: ese número específico (ej. 12 para matracas, 1 para retractil).
+ * - por defecto / omitido: maxPiezas.
+ */
+export function obtenerCantidadDefecto(grupo: any, maxPiezas: number = 1): number {
+  if (!grupo) return maxPiezas;
+  let cd = grupo.cantidad_defecto;
+  if (cd === undefined) {
+    let regla = grupo.regla;
+    if (typeof regla === 'string') {
+      try {
+        regla = JSON.parse(regla);
+      } catch {
+        regla = null;
+      }
+    }
+    cd = regla?.cantidad_defecto;
+  }
+  if (cd === 'max') return maxPiezas;
+  if (typeof cd === 'number' && !isNaN(cd)) return cd;
+  return maxPiezas;
+}
+
+/**
  * Valida la selección de filas contra el tope máximo del grupo.
  */
 export function validarFilasSeleccionMixta(
@@ -161,12 +186,15 @@ export function validarFilasSeleccionMixta(
   const suma = calcularSumaPiezas(filasFusionadas);
   const esPluralFemenino = nombreGrupo.toLowerCase().startsWith('llanta') || nombreGrupo.toLowerCase().startsWith('matraca');
   const articulo = esPluralFemenino ? 'Las' : 'Los';
+  const nombreSujeto = (nombreGrupo.toLowerCase().includes('retráctil') || nombreGrupo.toLowerCase().includes('retractil'))
+    ? 'retráctiles'
+    : nombreGrupo.toLowerCase();
 
   if (suma > maxPiezas) {
-    errores.push(`${articulo} ${nombreGrupo.toLowerCase()} suman ${suma} piezas y el máximo para este modelo es ${maxPiezas}`);
+    errores.push(`${articulo} ${nombreSujeto} suman ${suma} piezas y el máximo para este modelo es ${maxPiezas}`);
   } else if (suma < maxPiezas && suma > 0) {
     const faltan = maxPiezas - suma;
-    advertencias.push(`Faltan ${faltan} ${nombreGrupo.toLowerCase()} por definir`);
+    advertencias.push(`Faltan ${faltan} ${nombreSujeto} por definir`);
   }
 
   return {

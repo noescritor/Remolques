@@ -1,6 +1,6 @@
 import { assertEquals, assert } from "https://deno.land/std@0.192.0/testing/asserts.ts";
 import { resolverReceta } from "./resolver_receta.ts";
-import { validarCompatibilidad } from "./reglas_compatibilidad.ts";
+import { validarCompatibilidad, obtenerRetractilesDeClaveAbs, RETRACTILES_POR_ABS } from "./reglas_compatibilidad.ts";
 import * as fixtureData from "./fixtures/datos_modelo.json" with { type: "json" };
 import type { DatosModelo, Configuracion, Opcion } from "./tipos.ts";
 
@@ -459,4 +459,181 @@ Deno.test("23. 2R-8: Regla 3 - Filas sin cantidad en grupos con max_total (retro
   assertEquals(err4.length, 1);
   assert(err4[0].toLowerCase().includes("indica la cantidad de cada fila"));
 });
+
+Deno.test("24. 2R-10: Regla 3 con cantidad_defecto en retractil (1 pieza, tope por eje y validación)", () => {
+  const datos2Ejes = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  datos2Ejes.modelo.num_ejes = 2; // máx retráctiles = 2 (1 por eje)
+
+  const grpRetr = datos2Ejes.grupos.find(g => g.clave === "retractil");
+  if (grpRetr) {
+    grpRetr.regla = { max_total: { por_eje: 1 }, cantidad_defecto: 1 };
+    grpRetr.seleccion = "multiple_con_cantidad";
+  }
+  const grpRines = datos2Ejes.grupos.find(g => g.clave === "rines");
+  if (grpRines) {
+    grpRines.regla = { max_total: { por_eje: 4 }, cantidad_defecto: "max" };
+    grpRines.seleccion = "multiple_con_cantidad";
+  }
+
+  // 1. rines: 'acero' sin cantidad sigue siendo el juego completo (8 en 2 ejes), sin error ni advertencia
+  const errRin: string[] = [];
+  const advRin: string[] = [];
+  validarCompatibilidad({ grupos: { rines: "acero" } }, datos2Ejes, errRin, advRin);
+  assertEquals(errRin, []);
+  assertEquals(advRin, []);
+
+  // 2. retractil: 'chico' (texto, forma vieja) vale 1 pieza y no genera advertencias ni errores
+  const errRetr1: string[] = [];
+  const advRetr1: string[] = [];
+  validarCompatibilidad({ grupos: { retractil: "chico" } }, datos2Ejes, errRetr1, advRetr1);
+  assertEquals(errRetr1, []);
+  assertEquals(advRetr1, []);
+
+  // 3. retractil: [{ chico ×1 }, { grande ×1 }] en 2 ejes = 2 (válido)
+  const errRetr2: string[] = [];
+  const advRetr2: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      retractil: [
+        { opcion: "chico", cantidad: 1 },
+        { opcion: "grande", cantidad: 1 }
+      ]
+    }
+  }, datos2Ejes, errRetr2, advRetr2);
+  assertEquals(errRetr2, []);
+  assertEquals(advRetr2, []);
+
+  // 4. 3 retráctiles en 2 ejes → error "Los retráctiles suman 3 piezas y el máximo para este modelo es 2"
+  const errRetr3: string[] = [];
+  const advRetr3: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      retractil: [
+        { opcion: "chico", cantidad: 3 }
+      ]
+    }
+  }, datos2Ejes, errRetr3, advRetr3);
+  assertEquals(errRetr3, [
+    "Los retráctiles suman 3 piezas y el máximo para este modelo es 2"
+  ]);
+});
+
+Deno.test("25. 2R-10: resolverReceta / BOM genera líneas para 2 filas de retractil con sus cantidades", () => {
+  const datos2Ejes = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  datos2Ejes.modelo.num_ejes = 2;
+
+  const grpRetr = datos2Ejes.grupos.find(g => g.clave === "retractil");
+  if (grpRetr) {
+    grpRetr.regla = { max_total: { por_eje: 1 }, cantidad_defecto: 1 };
+    grpRetr.seleccion = "multiple_con_cantidad";
+  }
+
+  const config: Configuracion = {
+    grupos: {
+      suspension: "alta_hendrickson",
+      eje: "hendrickson",
+      patin: "hj",
+      abs: "3e_2_retractil", // 2 retráctiles contemplados
+      retractil: [
+        { opcion: "grande", cantidad: 1 },
+        { opcion: "chico", cantidad: 1 }
+      ]
+    }
+  };
+
+  const res = resolverReceta(datos2Ejes, config);
+  const lineasGrande = res.lineas.filter(l => l.nombre.includes("SISTEMA RETRACTIL GRANDE"));
+  const lineasChico = res.lineas.filter(l => l.nombre.includes("SISTEMA RETRACTIL CHICO"));
+
+  assertEquals(lineasGrande.length, 1);
+  assertEquals(lineasGrande[0].cantidad, 1);
+  assertEquals(lineasChico.length, 1);
+  assertEquals(lineasChico[0].cantidad, 1);
+
+  // Opción sin receta (ej. paleta o una opción ficticia sin componentes) genera advertencia habitual
+  const datosConSinReceta = JSON.parse(JSON.stringify(datos2Ejes)) as DatosModelo;
+  datosConSinReceta.opciones.push({
+    id: "opt-retractil-sin-receta",
+    grupo_id: grpRetr!.id,
+    clave: "retractil_custom",
+    nombre: "Retráctil Custom",
+    activo: true,
+    precio_venta: 15000,
+    clase: "normal"
+  });
+  const resSinReceta = resolverReceta(datosConSinReceta, {
+    grupos: {
+      suspension: "alta_hendrickson",
+      eje: "hendrickson",
+      patin: "hj",
+      retractil: "retractil_custom"
+    }
+  });
+  assert(resSinReceta.advertencias.some(a => a.includes("Retráctil Custom no tiene receta configurada")));
+});
+
+Deno.test("26. 2R-10: Coherencia con el kit de aire (abs) y cantidad de retráctiles", () => {
+  // 1. Diccionario explícito de claves actuales
+  assertEquals(RETRACTILES_POR_ABS["2e_sin_retractil"], 0);
+  assertEquals(RETRACTILES_POR_ABS["2e_1_retractil"], 1);
+  assertEquals(RETRACTILES_POR_ABS["3e_sin_retractil"], 0);
+  assertEquals(RETRACTILES_POR_ABS["3e_1_retractil"], 1);
+  assertEquals(RETRACTILES_POR_ABS["3e_2_retractil"], 2);
+
+  // 2. Función pura obtenerRetractilesDeClaveAbs
+  assertEquals(obtenerRetractilesDeClaveAbs("2e_sin_retractil"), 0);
+  assertEquals(obtenerRetractilesDeClaveAbs("2e_1_retractil"), 1);
+  assertEquals(obtenerRetractilesDeClaveAbs("3e_1_retractil"), 1);
+  assertEquals(obtenerRetractilesDeClaveAbs("3e_2_retractil"), 2);
+  assertEquals(obtenerRetractilesDeClaveAbs("clave_desconocida_xyz"), null);
+
+  // 3. Advertencia cuando el kit de aire es para 1 retráctil y se eligen 2
+  const datos2Ejes = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  datos2Ejes.modelo.num_ejes = 2;
+  const grpRetr = datos2Ejes.grupos.find(g => g.clave === "retractil");
+  if (grpRetr) {
+    grpRetr.regla = { max_total: { por_eje: 1 }, cantidad_defecto: 1 };
+    grpRetr.seleccion = "multiple_con_cantidad";
+  }
+
+  const errAdv: string[] = [];
+  const advLista: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      abs: "2e_1_retractil", // contempla 1 retráctil
+      retractil: [
+        { opcion: "grande", cantidad: 1 },
+        { opcion: "chico", cantidad: 1 }
+      ] // suman 2
+    }
+  }, datos2Ejes, errAdv, advLista);
+
+  assertEquals(errAdv, []);
+  assertEquals(advLista, [
+    "El kit de aire elegido es para 1 retráctil y elegiste 2; revisa el kit de aire (no hay precio para esa combinación)"
+  ]);
+
+  // 4. Sin advertencia cuando coincide (ej. 2e_1_retractil y 1 retráctil)
+  const advCoincide: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      abs: "2e_1_retractil",
+      retractil: "chico" // vale 1
+    }
+  }, datos2Ejes, [], advCoincide);
+  assertEquals(advCoincide, []);
+
+  // 5. Clave desconocida nueva no encaja -> no advertir
+  const advDesconocida: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      abs: "clave_nueva_especial",
+      retractil: [
+        { opcion: "chico", cantidad: 2 }
+      ]
+    }
+  }, datos2Ejes, [], advDesconocida);
+  assertEquals(advDesconocida, []);
+});
+
 

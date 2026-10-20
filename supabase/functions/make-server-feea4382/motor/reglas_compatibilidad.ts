@@ -28,6 +28,33 @@ export function fusionarFilasConfig(vals: any[]): any[] {
   return Array.from(map.values());
 }
 
+export const RETRACTILES_POR_ABS: Record<string, number> = {
+  "2e_sin_retractil": 0,
+  "2e_1_retractil": 1,
+  "3e_sin_retractil": 0,
+  "3e_1_retractil": 1,
+  "3e_2_retractil": 2,
+};
+
+/**
+ * Obtiene el número de retráctiles contemplados por una opción de kit de aire (abs).
+ * Retorna un número (0, 1, 2, ...) o null si la clave no encaja en el patrón.
+ */
+export function obtenerRetractilesDeClaveAbs(claveAbs: string): number | null {
+  if (typeof claveAbs !== "string") return null;
+  if (claveAbs in RETRACTILES_POR_ABS) {
+    return RETRACTILES_POR_ABS[claveAbs];
+  }
+  if (claveAbs.includes("sin_retractil")) {
+    return 0;
+  }
+  const match = claveAbs.match(/(\d+)_retractil(?:es)?/);
+  if (match) {
+    return parseInt(match[1], 10);
+  }
+  return null;
+}
+
 export function validarCompatibilidad(
   config: Configuracion,
   datos: DatosModelo,
@@ -47,16 +74,21 @@ export function validarCompatibilidad(
     }
   }
 
-  // Regla 1: Suspensión vs Retráctil
+  // Regla 1: Suspensión vs Retráctil (soporta string, objeto o arreglo de retráctiles)
   const susp = selectedOptions.get("suspension");
-  const retr = selectedOptions.get("retractil");
+  const grpRetractil = datos.grupos.find((g) => g.clave === "retractil");
+  const retrRaw = config.grupos?.["retractil"];
+  const retrList = retrRaw ? (Array.isArray(retrRaw) ? retrRaw : [retrRaw]) : [];
 
-  if (susp && retr) {
-    if (retr.clave !== "sin_retractil" && retr.clave !== "paleta") {
-      if (susp.clase === "alta" && retr.clave !== "grande") {
-        errores.push(`Incompatibilidad: La suspensión de clase alta requiere un retráctil grande (seleccionado: ${retr.nombre}).`);
-      } else if (susp.clase === "normal" && retr.clave !== "chico") {
-        errores.push(`Incompatibilidad: La suspensión de clase normal requiere un retráctil chico (seleccionado: ${retr.nombre}).`);
+  for (const r of retrList) {
+    const oClave = typeof r === "string" ? r : r?.opcion;
+    if (!oClave) continue;
+    const opcion = datos.opciones.find((o) => o.grupo_id === grpRetractil?.id && o.clave === oClave);
+    if (susp && opcion && opcion.clave !== "sin_retractil" && opcion.clave !== "paleta") {
+      if (susp.clase === "alta" && opcion.clave !== "grande") {
+        errores.push(`Incompatibilidad: La suspensión de clase alta requiere un retráctil grande (seleccionado: ${opcion.nombre}).`);
+      } else if (susp.clase === "normal" && opcion.clave !== "chico") {
+        errores.push(`Incompatibilidad: La suspensión de clase normal requiere un retráctil chico (seleccionado: ${opcion.nombre}).`);
       }
     }
   }
@@ -77,7 +109,7 @@ export function validarCompatibilidad(
     }
   }
 
-  // Regla 3: Grupos con max_total (rines, llantas, matracas)
+  // Regla 3: Grupos con max_total (rines, llantas, matracas, retractil)
   for (const grupo of datos.grupos || []) {
     let regla: any = grupo.regla;
     if (typeof regla === "string") {
@@ -120,17 +152,29 @@ export function validarCompatibilidad(
       }
     }
 
-    // Una sola fila sin cantidad cuenta como el juego completo (maxPiezas), forma vieja
-    if (rawReales.length === 1 && !tieneCant(rawReales[0])) {
-      continue;
+    let cantDef: number;
+    if (regla.cantidad_defecto === "max") {
+      cantDef = maxPiezas;
+    } else if (typeof regla.cantidad_defecto === "number") {
+      cantDef = regla.cantidad_defecto;
+    } else {
+      cantDef = maxPiezas;
     }
 
-    const filasFusionadas = fusionarFilasConfig(rawVals);
+    // Si es una sola fila sin cantidad, asignamos cantDef (retrocompatibilidad)
+    const valsConDefecto = rawVals.map(f => {
+      if (f && !esSin(f) && !tieneCant(f)) {
+        return typeof f === "object" ? { ...f, cantidad: cantDef } : { opcion: f, cantidad: cantDef };
+      }
+      return f;
+    });
+
+    const filasFusionadas = fusionarFilasConfig(valsConDefecto);
 
     let suma = 0;
     for (const fila of filasFusionadas) {
       if (esSin(fila)) continue;
-      const cant = typeof fila === "object" && typeof fila.cantidad === "number" ? fila.cantidad : 1;
+      const cant = typeof fila === "object" && typeof fila.cantidad === "number" ? fila.cantidad : cantDef;
 
       if (!Number.isInteger(cant) || cant < 1) {
         errores.push(`La cantidad de cada fila en ${grupo.nombre} debe ser un número entero mayor o igual a 1.`);
@@ -141,13 +185,34 @@ export function validarCompatibilidad(
 
     const esPluralFemenino = grupo.nombre.toLowerCase().startsWith("llanta") || grupo.nombre.toLowerCase().startsWith("matraca");
     const articulo = esPluralFemenino ? "Las" : "Los";
+    const nombreSujeto = grupo.clave === "retractil" ? "retráctiles" : grupo.nombre.toLowerCase();
 
     if (suma > maxPiezas) {
-      errores.push(`${articulo} ${grupo.nombre.toLowerCase()} suman ${suma} piezas y el máximo para este modelo es ${maxPiezas}`);
-    } else if (suma < maxPiezas && suma > 0) {
+      errores.push(`${articulo} ${nombreSujeto} suman ${suma} piezas y el máximo para este modelo es ${maxPiezas}`);
+    } else if (suma < maxPiezas && suma > 0 && (regla.cantidad_defecto === "max" || regla.cantidad_defecto === undefined)) {
       const faltan = maxPiezas - suma;
       if (advertencias) {
-        advertencias.push(`Faltan ${faltan} ${grupo.nombre.toLowerCase()} por definir`);
+        advertencias.push(`Faltan ${faltan} ${nombreSujeto} por definir`);
+      }
+    }
+  }
+
+  const absVal = config.grupos?.["abs"];
+  const absClave = typeof absVal === "string" ? absVal : (!Array.isArray(absVal) && typeof absVal === "object" && absVal ? (absVal as any).opcion : undefined);
+  if (absClave) {
+    const esperado = obtenerRetractilesDeClaveAbs(absClave);
+    if (esperado !== null && advertencias) {
+      let totalRetractiles = 0;
+      for (const r of retrList) {
+        const op = typeof r === "string" ? r : r?.opcion;
+        if (!op || op.startsWith("sin_")) continue;
+        const cant = typeof r === "object" && typeof r.cantidad === "number" && !isNaN(r.cantidad) ? r.cantidad : 1;
+        totalRetractiles += cant;
+      }
+
+      if (totalRetractiles !== esperado) {
+        const espStr = esperado === 1 ? "1 retráctil" : `${esperado} retráctiles`;
+        advertencias.push(`El kit de aire elegido es para ${espStr} y elegiste ${totalRetractiles}; revisa el kit de aire (no hay precio para esa combinación)`);
       }
     }
   }

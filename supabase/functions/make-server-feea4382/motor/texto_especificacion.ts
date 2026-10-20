@@ -168,6 +168,23 @@ export function generarEspecificacion(
     const rawValues = Array.isArray(configValue) ? configValue : [configValue];
     const values = fusionarFilasConfig(rawValues);
 
+    if (claveGrupo === 'retractil') {
+      const reales = values.filter(v => {
+        const op = typeof v === 'string' ? v : v?.opcion;
+        return op && !op.startsWith('sin_');
+      });
+      const totalQty = reales.reduce((sum, v) => {
+        const c = typeof v === 'object' && typeof v?.cantidad === 'number' && !isNaN(v.cantidad) ? v.cantidad : 1;
+        return sum + c;
+      }, 0);
+
+      if (totalQty > 1) {
+        frases.push(`${totalQty} SISTEMAS RETRÁCTILES`);
+        resumen_lineas.push({ etiqueta: 'Retráctil', valor: `${totalQty} SISTEMAS RETRÁCTILES` });
+        return;
+      }
+    }
+
     const frasesGrupo: string[] = [];
     const resumenGrupo: string[] = [];
     let etiquetaGrupo = '';

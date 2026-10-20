@@ -6,6 +6,7 @@ import {
   calcularFaltantes,
   fusionarDuplicados,
   calcularMaxPiezasGrupo,
+  obtenerCantidadDefecto,
   validarFilasSeleccionMixta,
   siguienteCantidad,
   completarConEstaOpcion
@@ -152,3 +153,56 @@ Deno.test("seleccionMixta - siguienteCantidad y completarConEstaOpcion: comporta
   assertEquals(completadas[1].cantidad, 2);
   assertEquals(calcularSumaPiezas(completadas), 12);
 });
+
+Deno.test("seleccionMixta - 2R-10: obtenerCantidadDefecto y normalización para grupo con cantidad_defecto: 1 (retractil)", () => {
+  // Grupo retractil: cantidad_defecto = 1
+  const grupoRetractil = {
+    clave: "retractil",
+    nombre: "Sistema retráctil",
+    regla: { max_total: { por_eje: 1 }, cantidad_defecto: 1 }
+  };
+  const modelo2Ejes = { num_ejes: 2 };
+  const maxRetractil = calcularMaxPiezasGrupo(grupoRetractil, modelo2Ejes); // 2
+  assertEquals(maxRetractil, 2);
+
+  const cantDefRetractil = obtenerCantidadDefecto(grupoRetractil, maxRetractil);
+  assertEquals(cantDefRetractil, 1);
+
+  // Al reabrir equipo guardado con string viejo "chico", se normaliza con cantidad_defecto = 1
+  const filasReabiertas = normalizarFilas("chico", cantDefRetractil);
+  assertEquals(filasReabiertas, [{ opcion: "chico", cantidad: 1 }]);
+
+  // Grupo matracas: cantidad_defecto = 12
+  const grupoMatracas = {
+    clave: "matracas",
+    nombre: "Matracas",
+    regla: JSON.stringify({ max_total: { fija: 20 }, cantidad_defecto: 12 })
+  };
+  const cantDefMatracas = obtenerCantidadDefecto(grupoMatracas, 20);
+  assertEquals(cantDefMatracas, 12);
+
+  const filasMatracas = normalizarFilas("corrediza", cantDefMatracas);
+  assertEquals(filasMatracas, [{ opcion: "corrediza", cantidad: 12 }]);
+
+  // Grupo rines: cantidad_defecto = 'max'
+  const grupoRines = {
+    clave: "rines",
+    nombre: "Rines",
+    regla: { max_total: { por_eje: 4 }, cantidad_defecto: "max" }
+  };
+  const cantDefRines = obtenerCantidadDefecto(grupoRines, 8);
+  assertEquals(cantDefRines, 8);
+
+  const filasRines = normalizarFilas("acero", cantDefRines);
+  assertEquals(filasRines, [{ opcion: "acero", cantidad: 8 }]);
+
+  // Validación de exceso en retráctiles (3 en 2 ejes -> error con nombre pluralizado)
+  const filasExcesoRetractil = [
+    { opcion: "chico", cantidad: 2 },
+    { opcion: "grande", cantidad: 1 }
+  ];
+  const resValRetractil = validarFilasSeleccionMixta(filasExcesoRetractil, 2, "Sistema retráctil");
+  assertEquals(resValRetractil.valido, false);
+  assertEquals(resValRetractil.errores[0], "Los retráctiles suman 3 piezas y el máximo para este modelo es 2");
+});
+

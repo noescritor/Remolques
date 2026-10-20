@@ -6,6 +6,7 @@ export function armarConfiguracionModelo(modelo: any, gruposRaw: any[], opciones
     .sort((a: any, b: any) => (a.orden || 0) - (b.orden || 0))
     .map((g: any) => {
       let max_piezas: number | undefined = undefined;
+      let cantidad_defecto: number | "max" | undefined = undefined;
       let regla = g.regla;
       if (typeof regla === 'string') {
         try {
@@ -20,10 +21,14 @@ export function armarConfiguracionModelo(modelo: any, gruposRaw: any[], opciones
         } else if (typeof regla.max_total?.fija === 'number') {
           max_piezas = regla.max_total.fija;
         }
+        if (regla.cantidad_defecto !== undefined) {
+          cantidad_defecto = regla.cantidad_defecto;
+        }
       }
       return {
         ...g,
-        ...(max_piezas !== undefined ? { max_piezas } : {})
+        ...(max_piezas !== undefined ? { max_piezas } : {}),
+        ...(cantidad_defecto !== undefined ? { cantidad_defecto } : {})
       };
     });
 
