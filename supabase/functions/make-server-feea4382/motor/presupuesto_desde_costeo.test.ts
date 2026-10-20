@@ -490,3 +490,55 @@ Deno.test("Sub-bloque 2R-8: Presupuesto con rines y llantas mixtos genera una l�
   // Total de la sección rines suma exactamente 108,116 (12,400 + 22,000 + 52,200 + 21,516)
   assertEquals(res.datos.rines.total, 108116);
 });
+
+Deno.test("Sub-bloque 2R-10: Presupuesto con 2 retráctiles - caen en truckzone y total igual al costeo", () => {
+  const datosConRetractil: DatosCosteo = {
+    ...datosCosteoBase,
+    opcion_costos: [
+      ...datosCosteoBase.opcion_costos,
+      { grupo_clave: "retractil", opcion_clave: "chico", cantidad_base: 1, escala: "fija", costo_unitario: 15000, fuente: "Tarifario" },
+      { grupo_clave: "retractil", opcion_clave: "grande", cantidad_base: 1, escala: "fija", costo_unitario: 15000, fuente: "Tarifario" }
+    ]
+  };
+
+  const config2Retr: Configuracion = {
+    grupos: {
+      ...configExcel.grupos,
+      suspension: "alta_hendrickson",
+      abs: "3e_2_retractil",
+      retractil: [
+        { opcion: "grande", cantidad: 2 }
+      ]
+    }
+  };
+
+  const costeoRes = costear(datosConRetractil, config2Retr, ajustesExcel);
+  const bomRes = resolverReceta(datosModeloBase, config2Retr);
+
+  const res = generarPresupuestoDesdeCosteo([
+    {
+      item: {
+        descripcion: "Plataforma 40 ft / 2 ejes (con 2 retráctiles)",
+        cantidad: 1,
+        modelo_id: "mod-plat-40-2"
+      },
+      costeo: costeoRes,
+      bom: bomRes
+    }
+  ], {
+    cotizacion_id: "cot-test-2r10"
+  });
+
+  // El total coincide exactamente con el costeo
+  assertEquals(res.total_costo, costeoRes.costo);
+
+  // La sección truckzone contiene la línea de los 2 retráctiles
+  const itemsTruckzone = res.datos.truckzone.items;
+  const retrGrande = itemsTruckzone.find(i => i.material.includes("retractil: grande"));
+
+  assert(retrGrande !== undefined);
+  assertEquals(retrGrande.pzas, 2);
+  assertEquals(retrGrande.cu, 15000);
+  assertEquals(retrGrande.importe, 30000);
+});
+

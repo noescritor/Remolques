@@ -3,6 +3,54 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-20 - Sub-bloque 2R-10: Matracas hasta 20 piezas y varios sistemas retráctiles por equipo
+**Herramienta:** Antigravity  
+**Tipo:** feat (catálogo, motor, validaciones, frontend, ui)  
+**Archivos tocados:**  
+- `scripts/generar_matracas_retractiles_sql.cjs`
+- `supabase/migrations/20261020_01_matracas_retractiles.sql`
+- `docs/importacion/verificacion_2R10.sql`
+- `src/app/utils/seleccionMixta.ts`
+- `src/app/utils/seleccionMixta.test.ts`
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`
+- `supabase/functions/make-server-feea4382/motor/armar_configuracion.ts`
+- `supabase/functions/make-server-feea4382/motor/armar_configuracion.test.ts`
+- `supabase/functions/make-server-feea4382/motor/reglas_compatibilidad.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.ts`
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.test.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.test.ts`
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.test.ts`
+**Qué cambió y por qué:**  
+- **Catálogo y Migración (`20261020_01_matracas_retractiles.sql`):**  
+  - Grupo `matracas`: tope sube a 20 piezas fijas (`regla = {"max_total":{"fija":20},"cantidad_defecto":12}`), `cantidad = 'Hasta 20 piezas fijas'`.  
+  - Grupo `retractil`: pasa a `seleccion = 'multiple_con_cantidad'` con `regla = {"max_total":{"por_eje":1},"cantidad_defecto":1}`, constante nombrada `RETRACTIL_POR_EJE = 1` en el generador.  
+  - Nueva clave `cantidad_defecto` en `regla` explícita para los 4 grupos: `"max"` para `rines` y `llantas`, `12` para `matracas` y `1` para `retractil`.  
+  - Notas de migración exactas `'import-2r10'` con guardias de coherencia de existencia única por organización.  
+  - Creado script de verificación `docs/importacion/verificacion_2R10.sql`.  
+- **Motor Backend:**  
+  - `armar_configuracion.ts`: expone `cantidad_defecto` del grupo calculada a partir de su regla.  
+  - `reglas_compatibilidad.ts`:  
+    - Regla 3: contabiliza filas únicas sin cantidad con `cantidad_defecto` (`"max"` -> `maxPiezas`, número -> ese número, por defecto `maxPiezas`).  
+    - En caso de exceder el tope, emite mensaje con pluralización adecuada (`"Los retráctiles suman {N} piezas y el máximo para este modelo es {M}"`).  
+    - Advertencia de piezas faltantes (`Faltan ... por definir`) solo aplica a grupos con `cantidad_defecto === "max"` (rines, llantas).  
+    - Regla 4: advertencia pura de coherencia entre kit de aire (`abs`) y total de retráctiles elegidos: `"El kit de aire elegido es para {X} retráctil{es} y elegiste {Y}; revisa el kit de aire (no hay precio para esa combinación)"` soportada por diccionario explícito `RETRACTILES_POR_ABS` y función pura `obtenerRetractilesDeClaveAbs`.  
+  - `costeo.ts`: eliminada la condición por nombre de grupo (`matracas`/`rines`/`llantas`), unificando el cálculo de cantidad por defecto a `opcion_costos.cantidad_base * factor`. Todas las pruebas doradas se conservan 100% pasando sin modificaciones.  
+  - `texto_especificacion.ts`: cuando se eligen múltiples retráctiles genera `"{N} SISTEMAS RETRÁCTILES"` tanto en el texto general como en `resumen_lineas`. Una sola opción de 1 pieza se conserva sin cambios (`"SISTEMA RETRÁCTIL {nombre}"`), y `sin_retractil` se omite.  
+- **Frontend y UI (`ConfiguradorEquipo.tsx` & `seleccionMixta.ts`):**  
+  - Función utilitaria pura `obtenerCantidadDefecto(grupo, maxPiezas)`.  
+  - Al reabrir configuraciones con retráctil en formato heredado (string u objeto), se normaliza con cantidad 1 (`cantidad_defecto: 1`).  
+  - Reutilización directa del editor de filas de 2R-8 para `retractil` con contador visible y comportamiento guiado.  
+- **Pruebas:**  
+  - Nuevas pruebas en `seleccionMixta.test.ts` (normalización y validación con `cantidad_defecto: 1`).  
+  - Nuevas pruebas en `armar_configuracion.test.ts` (extracción de `cantidad_defecto`).  
+  - Nuevas pruebas en `texto_especificacion.test.ts` (1, 2 retráctiles y `sin_retractil`).  
+  - Nuevas pruebas 24, 25 y 26 en `resolver_receta.test.ts` (regla 3 con `cantidad_defecto`, BOM con múltiples retráctiles, y coherencia ABS).  
+  - Nueva prueba en `presupuesto_desde_costeo.test.ts` (presupuesto con 2 retráctiles en truckzone igual al costeo).  
+**Acciones manuales pendientes:**  
+- Ejecutar migración `supabase/migrations/20261020_01_matracas_retractiles.sql` en Supabase / Postgres local.  
+- Rebuild del servicio API en EasyPanel tras deploy.
+
 ## 2026-10-17 - Ajuste 2R-8: Filas sin cantidad en grupos max_total y pluralización de matracas
 **Herramienta:** Antigravity  
 **Tipo:** fix (motor, validaciones, textos, pruebas)  

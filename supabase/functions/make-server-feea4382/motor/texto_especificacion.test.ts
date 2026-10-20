@@ -161,3 +161,41 @@ Deno.test("2R-8: Generar texto con 1, 2 y 3 filas (rines, llantas y matracas)", 
     true
   );
 });
+
+Deno.test("2R-10: Texto de especificación con 1, 2 retráctiles y sin_retractil", () => {
+  const { modelo, grupos, opciones } = fixtures.default as any;
+
+  // 1. Una sola fila de 1 retráctil (como hoy) -> SISTEMA RETRÁCTIL CHICO
+  const config1 = {
+    grupos: {
+      retractil: { opcion: "chico", cantidad: 1 }
+    }
+  };
+  const res1 = generarEspecificacion(modelo, config1, grupos, opciones);
+  assertEquals(res1.texto.includes("SISTEMA RETRÁCTIL CHICO"), true);
+  assertEquals(res1.resumen_lineas.find(r => r.etiqueta === "Retráctil")?.valor, "RETRÁCTIL CHICO");
+
+  // 2. Dos filas distintas de retráctiles (chico × 1, grande × 1) -> 2 SISTEMAS RETRÁCTILES
+  const config2 = {
+    grupos: {
+      retractil: [
+        { opcion: "chico", cantidad: 1 },
+        { opcion: "grande", cantidad: 1 }
+      ]
+    }
+  };
+  const res2 = generarEspecificacion(modelo, config2, grupos, opciones);
+  assertEquals(res2.texto.includes("2 SISTEMAS RETRÁCTILES"), true);
+  assertEquals(res2.resumen_lineas.find(r => r.etiqueta === "Retráctil")?.valor, "2 SISTEMAS RETRÁCTILES");
+
+  // 3. sin_retractil -> no aparece en texto ni en resumen_lineas
+  const configSin = {
+    grupos: {
+      retractil: "sin_retractil"
+    }
+  };
+  const resSin = generarEspecificacion(modelo, configSin, grupos, opciones);
+  assertEquals(resSin.texto.includes("RETRÁCTIL"), false);
+  assertEquals(resSin.resumen_lineas.find(r => r.etiqueta === "Retráctil"), undefined);
+});
+

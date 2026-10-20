@@ -196,7 +196,9 @@ export function costear(
               : optCosto.escala === "por_largo"
               ? modelo.largo_ft / 40.0
               : 1;
-          const cantBase = optCosto.cantidad_base || (grupoClave === "matracas" ? 12 : (grupoClave === "rines" || grupoClave === "llantas") ? 4 : 1);
+          const cantBase = (optCosto.cantidad_base !== undefined && optCosto.cantidad_base !== null)
+            ? optCosto.cantidad_base
+            : 1;
           qty = cantBase * factor;
         }
 
