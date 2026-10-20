@@ -1,5 +1,10 @@
 import { assertEquals, assertRejects } from "https://deno.land/std@0.192.0/testing/asserts.ts";
-import { generarOrdenesDeCotizacion } from "./generar_ordenes_cotizacion.ts";
+import {
+  generarOrdenesDeCotizacion,
+  actualizarOrdenTrabajoSegura,
+  regenerarFichaDeOrden,
+  sanitizarPayloadOrdenTrabajo,
+} from "./generar_ordenes_cotizacion.ts";
 
 function createMockSupabase(opciones: {
   cotizacionExiste?: boolean;
@@ -83,14 +88,90 @@ function createMockSupabase(opciones: {
 
       if (table === "ordenes_trabajo") {
         return {
-          select: () => ({
-            eq: (_c1: string, _v1: string) => ({
-              eq: (_c2: string, _v2: string) => {
-                return Promise.resolve({
-                  data: ordenesEnDb.length > 0 ? ordenesEnDb : null,
-                  error: null
+          select: (_cols?: string) => ({
+            eq: (c1: string, v1: string) => ({
+              eq: (c2: string, v2: string) => {
+                const match = ordenesEnDb.find((o) => {
+                  const match1 = c1 === "id" ? o.id === v1 : c1 === "cotizacion_id" ? o.cotizacion_id === v1 : o[c1] === v1;
+                  const match2 = c2 === "organizacion_id" ? o.organizacion_id === v2 : o[c2] === v2;
+                  return match1 && match2;
                 });
+                return {
+                  single: () => {
+                    if (!match) return Promise.resolve({ data: null, error: { message: "No encontrada" } });
+                    const cotData = opciones.cotizacionExiste === false ? null : {
+                      id: "cot-123",
+                      folio: "COT-2026-0001",
+                      cliente_id: "cli-1",
+                      organizacion_id: "org-1",
+                      descripcion: "Plana #2",
+                      estado: opciones.estadoCotizacion || "Aprobada",
+                      cliente: {
+                        id: "cli-1",
+                        nombre_razon_social: "AGUSTIN ANDRADE",
+                        telefono: "775 144 0407",
+                        correo: "agustin@test.com"
+                      },
+                      items: opciones.items !== undefined ? opciones.items : [
+                        {
+                          id: "item-1",
+                          producto_id: "prod-plat",
+                          cantidad: 2,
+                          descripcion: "Plataforma 40 ft 2 ejes",
+                          configuracion: {
+                            modelo_id: "prod-plat",
+                            grupos: {
+                              eje: "fleet_master",
+                              suspension: "fleet_master",
+                              patin: "hj",
+                              color: "rojo"
+                            }
+                          }
+                        }
+                      ]
+                    };
+                    return Promise.resolve({
+                      data: {
+                        ...match,
+                        cliente: match.cliente || cotData?.cliente,
+                        cotizacion: match.cotizacion || cotData
+                      },
+                      error: null
+                    });
+                  },
+                  then: (resolve: any) => resolve({
+                    data: ordenesEnDb.length > 0 ? ordenesEnDb : null,
+                    error: null
+                  })
+                };
               }
+            })
+          }),
+          update: (payload: any) => ({
+            eq: (c1: string, v1: string) => ({
+              eq: (c2: string, v2: string) => ({
+                select: () => ({
+                  single: () => {
+                    const idx = ordenesEnDb.findIndex((o) => {
+                      const match1 = c1 === "id" ? o.id === v1 : o[c1] === v1;
+                      const match2 = c2 === "organizacion_id" ? o.organizacion_id === v2 : o[c2] === v2;
+                      return match1 && match2;
+                    });
+                    if (idx === -1) return Promise.resolve({ data: null, error: { message: "No encontrada" } });
+                    ordenesEnDb[idx] = { ...ordenesEnDb[idx], ...payload };
+                    return Promise.resolve({ data: ordenesEnDb[idx], error: null });
+                  }
+                }),
+                then: (resolve: any) => {
+                  const idx = ordenesEnDb.findIndex((o) => {
+                    const match1 = c1 === "id" ? o.id === v1 : o[c1] === v1;
+                    const match2 = c2 === "organizacion_id" ? o.organizacion_id === v2 : o[c2] === v2;
+                    return match1 && match2;
+                  });
+                  if (idx >= 0) ordenesEnDb[idx] = { ...ordenesEnDb[idx], ...payload };
+                  return resolve({ data: ordenesEnDb[idx] || null, error: null });
+                }
+              })
             })
           }),
           insert: (nuevas: any[]) => {
@@ -322,5 +403,179 @@ Deno.test("Ignora conceptos que no son equipos", async () => {
     },
     Error,
     "No se encontraron equipos (productos terminados) en la cotización."
+  );
+});
+
+Deno.test("Seguridad: un payload con organizacion_id ajeno NO cambia la organización ni campos protegidos", async () => {
+  const mockSupabase = createMockSupabase({});
+  mockSupabase.ordenesEnDb.push({
+    id: "ord-sec-1",
+    organizacion_id: "org-1",
+    cotizacion_id: "cot-123",
+    cliente_id: "cli-1",
+    nomenclatura_id: "NOM-100",
+    niv: "NIV-OLD",
+    estado: "Pendiente",
+    caracteristicas: { color: "blanco" }
+  });
+
+  const rawPayload = {
+    id: "ord-hacker",
+    organizacion_id: "org-hacker-maliciosa",
+    cotizacion_id: "cot-hacker",
+    cliente_id: "cli-hacker",
+    nomenclatura_id: "NOM-HACKER",
+    created_at: "2020-01-01",
+    niv: "NIV-NEW-123",
+    estado: "En proceso"
+  };
+
+  // Sanitizador ignora organizacion_id y campos ajenos
+  const limpio = sanitizarPayloadOrdenTrabajo(rawPayload);
+  assertEquals(limpio.organizacion_id, undefined);
+  assertEquals(limpio.id, undefined);
+  assertEquals(limpio.cotizacion_id, undefined);
+  assertEquals(limpio.cliente_id, undefined);
+  assertEquals(limpio.nomenclatura_id, undefined);
+  assertEquals(limpio.created_at, undefined);
+  assertEquals(limpio.niv, "NIV-NEW-123");
+  assertEquals(limpio.estado, "En proceso");
+
+  // Al actualizar con cliente falso, organizacion_id en BD no cambia
+  await actualizarOrdenTrabajoSegura(mockSupabase, {
+    id: "ord-sec-1",
+    orgId: "org-1",
+    rawPayload
+  });
+
+  const enDb = mockSupabase.ordenesEnDb.find((o) => o.id === "ord-sec-1");
+  assertEquals(enDb.organizacion_id, "org-1");
+  assertEquals(enDb.cotizacion_id, "cot-123");
+  assertEquals(enDb.cliente_id, "cli-1");
+  assertEquals(enDb.nomenclatura_id, "NOM-100");
+  assertEquals(enDb.niv, "NIV-NEW-123");
+  assertEquals(enDb.estado, "En proceso");
+});
+
+Deno.test("Regenerar ficha: orden con item_id correcto usa ese concepto exacto", async () => {
+  const mockSupabase = createMockSupabase({
+    items: [
+      {
+        id: "item-plat-1",
+        producto_id: "prod-plat",
+        cantidad: 1,
+        descripcion: "Plataforma 40 ft 2 ejes",
+        configuracion: { modelo_id: "prod-plat", grupos: { eje: "fleet_master", color: "azul" } }
+      },
+      {
+        id: "item-gondola-2",
+        producto_id: "prod-gondola",
+        cantidad: 1,
+        descripcion: "Góndola 30 ft 3 ejes",
+        configuracion: { modelo_id: "prod-plat", grupos: { eje: "fleet_master", color: "rojo" } }
+      }
+    ]
+  });
+
+  mockSupabase.ordenesEnDb.push({
+    id: "ord-con-item-id",
+    organizacion_id: "org-1",
+    cotizacion_id: "cot-123",
+    caracteristicas: {
+      item_id: "item-gondola-2",
+      unidad: 1,
+      color: "rojo"
+    }
+  });
+
+  const res = await regenerarFichaDeOrden(mockSupabase, {
+    id: "ord-con-item-id",
+    orgId: "org-1"
+  });
+
+  assertEquals(res.ok, true);
+  assertEquals(res.orden.caracteristicas.item_id, "item-gondola-2");
+  assertEquals(res.orden.caracteristicas.ficha.caracteristicas.find((c: any) => c.etiqueta === "COLOR")?.valor, "Rojo");
+});
+
+Deno.test("Regenerar ficha: orden vieja sin item_id con 1 solo equipo en la cotización regenera con éxito", async () => {
+  const mockSupabase = createMockSupabase({
+    items: [
+      {
+        id: "item-unico",
+        producto_id: "prod-plat",
+        cantidad: 1,
+        descripcion: "Plataforma 40 ft 2 ejes",
+        configuracion: { modelo_id: "prod-plat", grupos: { eje: "fleet_master", color: "verde" } }
+      },
+      {
+        id: "item-flete",
+        producto_id: "prod-serv-flete",
+        cantidad: 1,
+        descripcion: "Flete de traslado",
+        configuracion: null
+      }
+    ]
+  });
+
+  mockSupabase.ordenesEnDb.push({
+    id: "ord-vieja-1-equipo",
+    organizacion_id: "org-1",
+    cotizacion_id: "cot-123",
+    caracteristicas: {
+      // Sin item_id
+      color: "verde"
+    }
+  });
+
+  const res = await regenerarFichaDeOrden(mockSupabase, {
+    id: "ord-vieja-1-equipo",
+    orgId: "org-1"
+  });
+
+  assertEquals(res.ok, true);
+  assertEquals(res.orden.caracteristicas.item_id, "item-unico");
+  assertEquals(res.orden.caracteristicas.ficha.caracteristicas.find((c: any) => c.etiqueta === "COLOR")?.valor, "Verde");
+});
+
+Deno.test("Regenerar ficha: orden vieja sin item_id con 2 equipos en la cotización responde 409", async () => {
+  const mockSupabase = createMockSupabase({
+    items: [
+      {
+        id: "item-equipo-a",
+        producto_id: "prod-plat",
+        cantidad: 1,
+        descripcion: "Plataforma 40 ft 2 ejes",
+        configuracion: { modelo_id: "prod-plat" }
+      },
+      {
+        id: "item-equipo-b",
+        producto_id: "prod-dolly",
+        cantidad: 1,
+        descripcion: "Dolly 2 ejes",
+        configuracion: { modelo_id: "prod-dolly" }
+      }
+    ]
+  });
+
+  mockSupabase.ordenesEnDb.push({
+    id: "ord-vieja-2-equipos",
+    organizacion_id: "org-1",
+    cotizacion_id: "cot-123",
+    caracteristicas: {
+      // Sin item_id y cotización tiene 2 equipos
+      color: "amarillo"
+    }
+  });
+
+  await assertRejects(
+    async () => {
+      await regenerarFichaDeOrden(mockSupabase, {
+        id: "ord-vieja-2-equipos",
+        orgId: "org-1"
+      });
+    },
+    Error,
+    "No se puede determinar el concepto de esta orden; regenérala desde la cotización"
   );
 });

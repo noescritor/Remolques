@@ -157,6 +157,52 @@ function obtenerAdicionales(configuracion: any): any[] {
   return fusionarFilasConfig(lista);
 }
 
+export const APLICA_A_DEFECTO: Record<string, string[]> = {
+  piso: ["plataforma"],
+  riel: ["plataforma"],
+  frente: ["plataforma"],
+  redilas: ["plataforma"],
+  gancho: ["plataforma"],
+  patin: ["plataforma", "gondola", "jaula", "caja_seca"],
+  eje: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
+  suspension: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
+  abs: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
+  retractil: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
+  rines: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
+  llantas: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
+  color: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
+  pintura: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
+};
+
+export function grupoAplicaAlTipo(
+  claveGrupo: string,
+  tipoModelo: string,
+  gruposCat: GrupoOpcion[] = []
+): boolean {
+  if (!tipoModelo) return true;
+  const tipoNorm = tipoModelo.toLowerCase().trim();
+
+  // 1. Buscar en el catálogo inyectado
+  const grupo = gruposCat.find((g) => g.clave === claveGrupo);
+  if (grupo && grupo.aplica_a !== undefined && grupo.aplica_a !== null) {
+    if (Array.isArray(grupo.aplica_a)) {
+      if (grupo.aplica_a.length === 0) return true;
+      return grupo.aplica_a.map((t: string) => t.toLowerCase().trim()).includes(tipoNorm);
+    }
+    if (typeof grupo.aplica_a === "string") {
+      return (grupo.aplica_a as string).toLowerCase().trim() === tipoNorm;
+    }
+  }
+
+  // 2. Diccionario de respaldo con los grupos del catálogo oficial
+  const def = APLICA_A_DEFECTO[claveGrupo];
+  if (def) {
+    return def.includes(tipoNorm);
+  }
+
+  return true;
+}
+
 export function construirFichaOrdenTrabajo(
   params: ParametrosConstruirFicha
 ): FichaOrdenTrabajo {
@@ -168,8 +214,20 @@ export function construirFichaOrdenTrabajo(
   const gruposCat: GrupoOpcion[] = datosModelo?.grupos || [];
   const opcionesCat: Opcion[] = datosModelo?.opciones || [];
 
-  const tipoModelo = (modelo.tipo || "").toLowerCase();
+  let tipoModelo = (modelo.tipo || "").toLowerCase().trim();
+  if (!tipoModelo && item?.descripcion) {
+    const desc = item.descripcion.toLowerCase();
+    if (desc.includes("dolly")) tipoModelo = "dolly";
+    else if (desc.includes("gondola") || desc.includes("góndola")) tipoModelo = "gondola";
+    else if (desc.includes("plataforma") || desc.includes("plana")) tipoModelo = "plataforma";
+    else if (desc.includes("jaula")) tipoModelo = "jaula";
+    else if (desc.includes("cama baja")) tipoModelo = "cama_baja";
+    else if (desc.includes("multimodal")) tipoModelo = "multimodal";
+    else if (desc.includes("porta")) tipoModelo = "portacontenedor";
+    else if (desc.includes("seca")) tipoModelo = "caja_seca";
+  }
   const esDolly = tipoModelo === "dolly";
+  const aplicaGrupo = (clave: string) => grupoAplicaAlTipo(clave, tipoModelo, gruposCat);
 
   // Buscar opción en catálogo por grupo y clave
   const buscarOpcion = (claveGrupo: string, claveOpcion: string): Opcion | undefined => {
@@ -205,152 +263,168 @@ export function construirFichaOrdenTrabajo(
 
   // 3. CARACTERÍSTICAS
   // EJES
-  let valorEjes = "Por definir";
-  const filasEjes = obtenerFilasGrupo(gruposConfig, "eje");
-  if (filasEjes.length > 0) {
-    const primerEje = filasEjes[0];
-    const opClave = typeof primerEje === "string" ? primerEje : primerEje?.opcion;
-    if (opClave?.startsWith("sin_")) {
-      valorEjes = "No aplica";
-    } else {
-      const opt = buscarOpcion("eje", opClave);
-      let nom = opt ? limpiarTextoOpcion(opt.nombre, "Eje") : opClave || "Por definir";
-      if (primerEje?.marca && !nom.toLowerCase().includes(primerEje.marca.toLowerCase())) {
-        nom = `${nom} ${primerEje.marca}`;
+  let valorEjes = aplicaGrupo("eje") ? "Por definir" : "No aplica";
+  if (aplicaGrupo("eje")) {
+    const filasEjes = obtenerFilasGrupo(gruposConfig, "eje");
+    if (filasEjes.length > 0) {
+      const primerEje = filasEjes[0];
+      const opClave = typeof primerEje === "string" ? primerEje : primerEje?.opcion;
+      if (opClave?.startsWith("sin_")) {
+        valorEjes = "No aplica";
+      } else {
+        const opt = buscarOpcion("eje", opClave);
+        let nom = opt ? limpiarTextoOpcion(opt.nombre, "Eje") : opClave || "Por definir";
+        if (primerEje?.marca && !nom.toLowerCase().includes(primerEje.marca.toLowerCase())) {
+          nom = `${nom} ${primerEje.marca}`;
+        }
+        valorEjes = nom;
       }
-      valorEjes = nom;
     }
   }
 
   // SUSPENSIÓN
-  let valorSuspension = "Por definir";
-  const filasSusp = obtenerFilasGrupo(gruposConfig, "suspension");
-  if (filasSusp.length > 0) {
-    const primerSusp = filasSusp[0];
-    const opClave = typeof primerSusp === "string" ? primerSusp : primerSusp?.opcion;
-    if (opClave?.startsWith("sin_")) {
-      valorSuspension = "No aplica";
-    } else {
-      const opt = buscarOpcion("suspension", opClave);
-      let nom = opt ? limpiarTextoOpcion(opt.nombre, "Suspensión") : opClave || "Por definir";
-      if (primerSusp?.marca && !nom.toLowerCase().includes(primerSusp.marca.toLowerCase())) {
-        nom = `${nom} ${primerSusp.marca}`;
+  let valorSuspension = aplicaGrupo("suspension") ? "Por definir" : "No aplica";
+  if (aplicaGrupo("suspension")) {
+    const filasSusp = obtenerFilasGrupo(gruposConfig, "suspension");
+    if (filasSusp.length > 0) {
+      const primerSusp = filasSusp[0];
+      const opClave = typeof primerSusp === "string" ? primerSusp : primerSusp?.opcion;
+      if (opClave?.startsWith("sin_")) {
+        valorSuspension = "No aplica";
+      } else {
+        const opt = buscarOpcion("suspension", opClave);
+        let nom = opt ? limpiarTextoOpcion(opt.nombre, "Suspensión") : opClave || "Por definir";
+        if (primerSusp?.marca && !nom.toLowerCase().includes(primerSusp.marca.toLowerCase())) {
+          nom = `${nom} ${primerSusp.marca}`;
+        }
+        valorSuspension = nom;
       }
-      valorSuspension = nom;
     }
   }
 
   // PATINES
-  let valorPatines = esDolly ? "No aplica" : "Por definir";
-  const filasPatin = obtenerFilasGrupo(gruposConfig, "patin");
-  if (filasPatin.length > 0) {
-    const primerPatin = filasPatin[0];
-    const opClave = typeof primerPatin === "string" ? primerPatin : primerPatin?.opcion;
-    if (opClave?.startsWith("sin_")) {
-      valorPatines = "No aplica";
-    } else {
-      const opt = buscarOpcion("patin", opClave);
-      const nom = opt ? limpiarTextoOpcion(opt.nombre, "Patines") : opClave || "Por definir";
-      const cant = typeof primerPatin === "object" && primerPatin?.cantidad ? primerPatin.cantidad : 2;
-      valorPatines = `${numeroAPalabras(cant)} ${nom}`;
+  let valorPatines = aplicaGrupo("patin") ? "Por definir" : "No aplica";
+  if (aplicaGrupo("patin")) {
+    const filasPatin = obtenerFilasGrupo(gruposConfig, "patin");
+    if (filasPatin.length > 0) {
+      const primerPatin = filasPatin[0];
+      const opClave = typeof primerPatin === "string" ? primerPatin : primerPatin?.opcion;
+      if (opClave?.startsWith("sin_")) {
+        valorPatines = "No aplica";
+      } else {
+        const opt = buscarOpcion("patin", opClave);
+        const nom = opt ? limpiarTextoOpcion(opt.nombre, "Patines") : opClave || "Por definir";
+        const cant = typeof primerPatin === "object" && primerPatin?.cantidad ? primerPatin.cantidad : 2;
+        valorPatines = `${numeroAPalabras(cant)} ${nom}`;
+      }
     }
   }
 
   // PISO
-  let valorPiso = esDolly ? "No aplica" : "Por definir";
-  const filasPiso = obtenerFilasGrupo(gruposConfig, "piso");
-  if (filasPiso.length > 0) {
-    const primerPiso = filasPiso[0];
-    const opClave = typeof primerPiso === "string" ? primerPiso : primerPiso?.opcion;
-    if (opClave?.startsWith("sin_")) {
-      valorPiso = "No aplica";
-    } else {
-      const opt = buscarOpcion("piso", opClave);
-      valorPiso = opt ? opt.nombre : aOracion(opClave || "Por definir");
+  let valorPiso = aplicaGrupo("piso") ? "Por definir" : "No aplica";
+  if (aplicaGrupo("piso")) {
+    const filasPiso = obtenerFilasGrupo(gruposConfig, "piso");
+    if (filasPiso.length > 0) {
+      const primerPiso = filasPiso[0];
+      const opClave = typeof primerPiso === "string" ? primerPiso : primerPiso?.opcion;
+      if (opClave?.startsWith("sin_")) {
+        valorPiso = "No aplica";
+      } else {
+        const opt = buscarOpcion("piso", opClave);
+        valorPiso = opt ? opt.nombre : aOracion(opClave || "Por definir");
+      }
     }
   }
 
   // RIEL
   let valorRiel = "No aplica";
-  const filasRiel = obtenerFilasGrupo(gruposConfig, "riel");
-  if (filasRiel.length > 0) {
-    const primerRiel = filasRiel[0];
-    const opClave = typeof primerRiel === "string" ? primerRiel : primerRiel?.opcion;
-    if (opClave && !opClave.startsWith("sin_")) {
-      // Sumar piezas de matracas
-      const filasMatracas = obtenerFilasGrupo(gruposConfig, "matracas");
-      let totalMatracas = 0;
-      for (const m of filasMatracas) {
-        const mClave = typeof m === "string" ? m : m?.opcion;
-        if (mClave && !mClave.startsWith("sin_")) {
-          const c = typeof m === "object" && typeof m?.cantidad === "number" ? m.cantidad : (filasMatracas.length === 1 ? 10 : 1);
-          totalMatracas += c;
+  if (aplicaGrupo("riel")) {
+    const filasRiel = obtenerFilasGrupo(gruposConfig, "riel");
+    if (filasRiel.length > 0) {
+      const primerRiel = filasRiel[0];
+      const opClave = typeof primerRiel === "string" ? primerRiel : primerRiel?.opcion;
+      if (opClave && !opClave.startsWith("sin_")) {
+        // Sumar piezas de matracas
+        const filasMatracas = obtenerFilasGrupo(gruposConfig, "matracas");
+        let totalMatracas = 0;
+        for (const m of filasMatracas) {
+          const mClave = typeof m === "string" ? m : m?.opcion;
+          if (mClave && !mClave.startsWith("sin_")) {
+            const c = typeof m === "object" && typeof m?.cantidad === "number" ? m.cantidad : (filasMatracas.length === 1 ? 10 : 1);
+            totalMatracas += c;
+          }
         }
-      }
-      if (totalMatracas > 0) {
-        valorRiel = `Con ${totalMatracas} winches`;
-      } else {
-        valorRiel = "Con riel";
+        if (totalMatracas > 0) {
+          valorRiel = `Con ${totalMatracas} winches`;
+        } else {
+          valorRiel = "Con riel";
+        }
       }
     }
   }
 
   // GANCHO
   let valorGancho = "No aplica";
-  const filasGancho = obtenerFilasGrupo(gruposConfig, "gancho");
-  if (filasGancho.length > 0) {
-    const primerGancho = filasGancho[0];
-    const opClave = typeof primerGancho === "string" ? primerGancho : primerGancho?.opcion;
-    if (opClave && !opClave.startsWith("sin_")) {
-      const opt = buscarOpcion("gancho", opClave);
-      let nom = opt ? opt.nombre : opClave;
-      // Limpiar "(...)" y "8/10 barrenos", etc.
-      nom = nom.replace(/\s*\(.*?\)\s*/g, "").replace(/\s*(\d+\/\d+|\d+)\s*barrenos/i, "").trim();
-      valorGancho = nom;
+  if (aplicaGrupo("gancho")) {
+    const filasGancho = obtenerFilasGrupo(gruposConfig, "gancho");
+    if (filasGancho.length > 0) {
+      const primerGancho = filasGancho[0];
+      const opClave = typeof primerGancho === "string" ? primerGancho : primerGancho?.opcion;
+      if (opClave && !opClave.startsWith("sin_")) {
+        const opt = buscarOpcion("gancho", opClave);
+        let nom = opt ? opt.nombre : opClave;
+        // Limpiar "(...)" y "8/10 barrenos", etc.
+        nom = nom.replace(/\s*\(.*?\)\s*/g, "").replace(/\s*(\d+\/\d+|\d+)\s*barrenos/i, "").trim();
+        valorGancho = nom;
+      }
     }
   }
 
   // FRENTE
   let valorFrente = "No aplica";
-  const filasFrente = obtenerFilasGrupo(gruposConfig, "frente");
-  if (filasFrente.length > 0 && !esDolly) {
-    const primerFrente = filasFrente[0];
-    const opClave = typeof primerFrente === "string" ? primerFrente : primerFrente?.opcion;
-    if (opClave && !opClave.startsWith("sin_")) {
-      const opt = buscarOpcion("frente", opClave);
-      let baseNom = opt ? opt.nombre : opClave;
-      if (baseNom.toLowerCase().startsWith("concha")) {
-        baseNom = "Concha";
-      } else if (baseNom.toLowerCase().startsWith("burro")) {
-        baseNom = "Burro";
-      } else {
-        baseNom = limpiarTextoOpcion(baseNom, "Frente");
-      }
-      const medida = typeof primerFrente === "object" ? primerFrente?.medida : undefined;
-      if (medida) {
-        const medStr = String(medida).trim();
-        const sufijo = medStr.includes("m") ? "" : " mts.";
-        valorFrente = `${baseNom} a ${medStr}${sufijo}`;
-      } else {
-        valorFrente = baseNom;
+  if (aplicaGrupo("frente")) {
+    const filasFrente = obtenerFilasGrupo(gruposConfig, "frente");
+    if (filasFrente.length > 0) {
+      const primerFrente = filasFrente[0];
+      const opClave = typeof primerFrente === "string" ? primerFrente : primerFrente?.opcion;
+      if (opClave && !opClave.startsWith("sin_")) {
+        const opt = buscarOpcion("frente", opClave);
+        let baseNom = opt ? opt.nombre : opClave;
+        if (baseNom.toLowerCase().startsWith("concha")) {
+          baseNom = "Concha";
+        } else if (baseNom.toLowerCase().startsWith("burro")) {
+          baseNom = "Burro";
+        } else {
+          baseNom = limpiarTextoOpcion(baseNom, "Frente");
+        }
+        const medida = typeof primerFrente === "object" ? primerFrente?.medida : undefined;
+        if (medida) {
+          const medStr = String(medida).trim();
+          const sufijo = medStr.includes("m") ? "" : " mts.";
+          valorFrente = `${baseNom} a ${medStr}${sufijo}`;
+        } else {
+          valorFrente = baseNom;
+        }
       }
     }
   }
 
   // RETRÁCTIL
   let valorRetractil = "No aplica";
-  const filasRetractil = obtenerFilasGrupo(gruposConfig, "retractil");
-  if (filasRetractil.length > 0) {
-    let cantRetractil = 0;
-    for (const r of filasRetractil) {
-      const opClave = typeof r === "string" ? r : r?.opcion;
-      if (opClave && !opClave.startsWith("sin_")) {
-        const c = typeof r === "object" && typeof r?.cantidad === "number" ? r.cantidad : 1;
-        cantRetractil += c;
+  if (aplicaGrupo("retractil")) {
+    const filasRetractil = obtenerFilasGrupo(gruposConfig, "retractil");
+    if (filasRetractil.length > 0) {
+      let cantRetractil = 0;
+      for (const r of filasRetractil) {
+        const opClave = typeof r === "string" ? r : r?.opcion;
+        if (opClave && !opClave.startsWith("sin_")) {
+          const c = typeof r === "object" && typeof r?.cantidad === "number" ? r.cantidad : 1;
+          cantRetractil += c;
+        }
       }
-    }
-    if (cantRetractil > 0) {
-      valorRetractil = numeroAPalabras(cantRetractil);
+      if (cantRetractil > 0) {
+        valorRetractil = numeroAPalabras(cantRetractil);
+      }
     }
   }
 
@@ -389,28 +463,30 @@ export function construirFichaOrdenTrabajo(
   const valorLoderas = "Un par";
 
   // COLOR
-  let valorColor = "Por definir";
-  const filasColor = obtenerFilasGrupo(gruposConfig, "color");
-  if (filasColor.length > 0) {
-    const primerColor = filasColor[0];
-    const opClave = typeof primerColor === "string" ? primerColor : primerColor?.opcion;
-    const opt = buscarOpcion("color", opClave);
-    let colorNom = opt ? opt.nombre : aOracion(opClave || "Por definir");
+  let valorColor = aplicaGrupo("color") ? "Por definir" : "No aplica";
+  if (aplicaGrupo("color")) {
+    const filasColor = obtenerFilasGrupo(gruposConfig, "color");
+    if (filasColor.length > 0) {
+      const primerColor = filasColor[0];
+      const opClave = typeof primerColor === "string" ? primerColor : primerColor?.opcion;
+      const opt = buscarOpcion("color", opClave);
+      let colorNom = opt ? opt.nombre : aOracion(opClave || "Por definir");
 
-    // Marca de pintura
-    const filasPintura = obtenerFilasGrupo(gruposConfig, "pintura");
-    if (filasPintura.length > 0) {
-      const p = filasPintura[0];
-      const pClave = typeof p === "string" ? p : p?.opcion;
-      if (pClave && !pClave.startsWith("sin_")) {
-        const optP = buscarOpcion("pintura", pClave);
-        const marcaPintura = optP ? optP.nombre : pClave;
-        if (marcaPintura) {
-          colorNom = `${colorNom}, ${marcaPintura}`;
+      // Marca de pintura
+      const filasPintura = obtenerFilasGrupo(gruposConfig, "pintura");
+      if (filasPintura.length > 0) {
+        const p = filasPintura[0];
+        const pClave = typeof p === "string" ? p : p?.opcion;
+        if (pClave && !pClave.startsWith("sin_")) {
+          const optP = buscarOpcion("pintura", pClave);
+          const marcaPintura = optP ? optP.nombre : pClave;
+          if (marcaPintura) {
+            colorNom = `${colorNom}, ${marcaPintura}`;
+          }
         }
       }
+      valorColor = colorNom;
     }
-    valorColor = colorNom;
   }
 
   // CANASTILLA O POLINERA

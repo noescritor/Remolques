@@ -49,8 +49,12 @@ Formato: entradas nuevas **arriba**.
   - Acción visible y directa para cotizaciones con estado "Aprobada".
   - Feedback guiado con toasts informativos: éxito con botón "Ver órdenes", aviso de órdenes ya existentes, validación si no está aprobada y reintento con mensaje claro si falla la conexión.
 - **Pruebas Automatizadas:**
-  - `ficha_orden_trabajo.test.ts`: 6 pruebas unitarias cubriendo Plana #2 real de referencia, Dolly con exclusiones ("No aplica"), Góndola 3 ejes con selección mixta de rines y llantas, fallback de opciones no configuradas ("Por definir"), compatibilidad con strings planos, y `formatearCantidadTexto`.
-  - `generar_ordenes_cotizacion.test.ts`: 4 pruebas unitarias cubriendo rechazo de cotización no aprobada, generación de N órdenes para cantidad N con ficha congelada, idempotencia, e ignorado de ítems que no son remolques.
+  - `ficha_orden_trabajo.test.ts`: 7 pruebas unitarias cubriendo Plana #2 real de referencia, Dolly con exclusiones ("No aplica"), Góndola 3 ejes con selección mixta de rines y llantas, validación de `aplica_a` por tipo de equipo (Dolly con ejes/suspensión en 'Por definir' y patines/piso/riel/gancho/frente en 'No aplica'; Góndola con piso/riel/gancho/frente en 'No aplica'), fallback de opciones no configuradas ("Por definir"), compatibilidad con strings planos, y `formatearCantidadTexto`.
+  - `generar_ordenes_cotizacion.test.ts`: 8 pruebas unitarias cubriendo rechazo de cotización no aprobada, generación de N órdenes para cantidad N con ficha congelada e `item_id`/`unidad` guardados, idempotencia, ignorado de conceptos no equipo, seguridad de PUT con campos ajenos / `organizacion_id` inmutable, regeneración con `item_id` exacto, regeneración legacy con 1 equipo y respuesta 409 con 2 equipos.
+- **Ajustes de Seguridad y Consistencia (Pre-merge):**
+  - `PUT /ordenes-trabajo/:id` filtrado por lista blanca estricta (`CAMPOS_PERMITIDOS_ORDEN_TRABAJO`), descartando `organizacion_id`, `id`, `cotizacion_id`, etc.
+  - `regenerarFichaDeOrden` almacena y consulta `item_id` y `unidad`. Órdenes legadas con múltiples equipos devuelven error 409 en vez de seleccionar el primero por defecto.
+  - `ficha_orden_trabajo.ts` evalúa `aplica_a` de los grupos de catálogo para distinguir entre "No aplica" (el grupo no corresponde al tipo de remolque) y "Por definir" (aplica pero no se configuró).
 **Acciones manuales pendientes:**  
 - Rebuild del servicio API en EasyPanel tras deploy.
 

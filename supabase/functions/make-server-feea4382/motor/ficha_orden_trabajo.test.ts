@@ -182,10 +182,52 @@ Deno.test("Góndola 3 ejes con rines y llantas mixtos", () => {
 
   const mapaCar = Object.fromEntries(ficha.caracteristicas.map(c => [c.etiqueta, c.valor]));
   assertEquals(mapaCar["COLOR"].includes("Rojo claro"), true);
+  assertEquals(mapaCar["PISO"], "No aplica");
+  assertEquals(mapaCar["RIEL"], "No aplica");
+  assertEquals(mapaCar["GANCHO"], "No aplica");
+  assertEquals(mapaCar["FRENTE"], "No aplica");
 
   const mapaAcc = Object.fromEntries(ficha.accesorios_extra.map(a => [a.etiqueta, a.valor]));
   assertEquals(mapaAcc["RINES"], "8 de acero Ampro y 4 de aluminio Ampro");
   assertEquals(mapaAcc["LLANTAS"], "8 Cerex y 4 Firestone");
+});
+
+Deno.test("Dolly con ejes y suspensión no elegidos devuelve 'Por definir'", () => {
+  const datosDolly: DatosModelo = {
+    ...rawDatosModelo,
+    modelo: {
+      id: "mod-dolly",
+      tipo: "dolly",
+      largo_ft: 0,
+      num_ejes: 2,
+      nombre: "DOLLY 2 EJES"
+    }
+  };
+
+  const item = {
+    descripcion: "Dolly 2 ejes",
+    configuracion: {
+      grupos: {
+        color: "blanco"
+      }
+    }
+  };
+
+  const ficha = construirFichaOrdenTrabajo({
+    item,
+    cotizacion: { folio: "COT-101", descripcion: "Dolly sin ejes" },
+    cliente: { nombre_razon_social: "Transportes MX" },
+    datosModelo: datosDolly
+  });
+
+  const mapaCar = Object.fromEntries(ficha.caracteristicas.map(c => [c.etiqueta, c.valor]));
+  assertEquals(mapaCar["EJES"], "Por definir");
+  assertEquals(mapaCar["SUSPENSIÓN"], "Por definir");
+  assertEquals(mapaCar["PATINES"], "No aplica");
+  assertEquals(mapaCar["PISO"], "No aplica");
+  assertEquals(mapaCar["RIEL"], "No aplica");
+  assertEquals(mapaCar["GANCHO"], "No aplica");
+  assertEquals(mapaCar["FRENTE"], "No aplica");
 });
 
 Deno.test("Equipo sin configuración devuelve 'Por definir' sin romper", () => {

@@ -12,7 +12,11 @@ import { cargarDatosCosteo } from "./motor/cargar_costos.ts";
 import { costear, validarAjustes } from "./motor/costeo.ts";
 import { generarPresupuestoDesdeCosteo } from "./motor/presupuesto_desde_costeo.ts";
 import { generarPresupuestoDeCotizacion, ejecutarAprobacionCotizacion, generarPresupuestoAlAprobar } from "./motor/generar_presupuesto_cotizacion.ts";
-import { generarOrdenesDeCotizacion } from "./motor/generar_ordenes_cotizacion.ts";
+import {
+  generarOrdenesDeCotizacion,
+  actualizarOrdenTrabajoSegura,
+  regenerarFichaDeOrden
+} from "./motor/generar_ordenes_cotizacion.ts";
 import { construirFichaOrdenTrabajo } from "./motor/ficha_orden_trabajo.ts";
 import {
   obtenerResumenCatalogo,
@@ -2582,56 +2586,18 @@ app.put("/ordenes-trabajo/:id", async (c) => {
     const supabase = getServiceClient();
     const orgId = c.get("organizacionId");
     const id = c.req.param("id");
-    const payload = await c.req.json();
-    
-    // Si el payload incluye caracteristicas, fusionar en vez de sobreescribir
-    if (payload.caracteristicas) {
-      const { data: actual } = await supabase
-        .from("ordenes_trabajo")
-        .select("caracteristicas")
-        .eq("id", id)
-        .eq("organizacion_id", orgId)
-        .single();
-        
-      if (actual && actual.caracteristicas) {
-        const carActuales = actual.caracteristicas || {};
-        const carNuevas = payload.caracteristicas || {};
-        const fichaActual = carActuales.ficha || {};
-        const fichaNueva = carNuevas.ficha || {};
+    const rawPayload = await c.req.json().catch(() => ({}));
 
-        payload.caracteristicas = {
-          ...carActuales,
-          ...carNuevas,
-          ...(fichaNueva || fichaActual ? {
-            ficha: {
-              ...fichaActual,
-              ...fichaNueva,
-              cabecera: {
-                ...(fichaActual.cabecera || {}),
-                ...(fichaNueva.cabecera || {})
-              },
-              caracteristicas: fichaNueva.caracteristicas || fichaActual.caracteristicas,
-              accesorios_extra: fichaNueva.accesorios_extra || fichaActual.accesorios_extra,
-              nota: fichaNueva.nota !== undefined ? fichaNueva.nota : fichaActual.nota
-            }
-          } : {})
-        };
-      }
-    }
-    
-    const { data, error } = await supabase
-      .from("ordenes_trabajo")
-      .update(payload)
-      .eq("id", id)
-      .eq("organizacion_id", orgId)
-      .select()
-      .single();
-      
-    if (error) throw error;
+    const data = await actualizarOrdenTrabajoSegura(supabase, {
+      id,
+      orgId,
+      rawPayload,
+    });
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error updating orden_trabajo:", error);
-    return c.json({ error: error.message }, 500);
+    const status = error.status || (error.message.includes("no encontrada") ? 404 : 500);
+    return c.json({ error: error.message }, status);
   }
 });
 
@@ -2641,72 +2607,18 @@ app.post("/ordenes-trabajo/:id/regenerar-ficha", async (c) => {
     const orgId = c.get("organizacionId");
     const id = c.req.param("id");
 
-    const { data: orden, error: errOrd } = await supabase
-      .from("ordenes_trabajo")
-      .select("*, cliente:clientes(*), cotizacion:cotizaciones(*, items:items_cotizacion(*))")
-      .eq("id", id)
-      .eq("organizacion_id", orgId)
-      .single();
-
-    if (errOrd || !orden) {
-      return c.json({ error: "Orden de trabajo no encontrada" }, 404);
-    }
-
-    const items = orden.cotizacion?.items || [];
-    if (items.length === 0) {
-      return c.json({ error: "La cotización no contiene conceptos" }, 400);
-    }
-
-    let itemEncontrado = items.find((it: any) => {
-      const desc = it.descripcion || "";
-      const ordDesc = orden.caracteristicas?.descripcion_corta || "";
-      return (
-        (ordDesc && desc.toLowerCase() === ordDesc.toLowerCase()) ||
-        (orden.modelo && desc.toLowerCase().includes(orden.modelo.toLowerCase()))
-      );
-    });
-
-    if (!itemEncontrado) {
-      itemEncontrado = items[0];
-    }
-
-    const itemUnwrapped = itemEncontrado.configuracion ? itemEncontrado : desenvolverMetadata(itemEncontrado);
-    const modeloId = itemUnwrapped.configuracion?.modelo_id || itemEncontrado.producto_id;
-    let datosModelo: any = null;
-    if (modeloId) {
-      try {
-        datosModelo = await cargarDatosModelo(supabase, modeloId);
-      } catch (_e) {
-        // Fallback si no hay modelo en catálogo
-      }
-    }
-
-    const ficha = construirFichaOrdenTrabajo({
-      item: itemUnwrapped,
-      cotizacion: orden.cotizacion,
-      cliente: orden.cliente || orden.cotizacion?.cliente,
-      datosModelo
-    });
-
-    const nuevasCaracteristicas = {
-      ...(orden.caracteristicas || {}),
-      ficha
-    };
-
-    const { data: ordenActualizada, error: errUpd } = await supabase
-      .from("ordenes_trabajo")
-      .update({ caracteristicas: nuevasCaracteristicas })
-      .eq("id", id)
-      .eq("organizacion_id", orgId)
-      .select("*, cliente:clientes(*), cotizacion:cotizaciones(*), linea:lineas_producto(*), fase:fases_produccion(*)")
-      .single();
-
-    if (errUpd) throw errUpd;
-
-    return c.json({ ok: true, orden: ordenActualizada });
+    const resultado = await regenerarFichaDeOrden(supabase, { id, orgId });
+    return c.json(resultado);
   } catch (error: any) {
     console.error("[make-server] Error regenerando ficha:", error);
-    return c.json({ error: error.message }, 500);
+    const status =
+      error.status ||
+      (error.message.includes("no encontrada")
+        ? 404
+        : error.message.includes("No se puede determinar")
+        ? 409
+        : 500);
+    return c.json({ error: error.message }, status);
   }
 });
 
