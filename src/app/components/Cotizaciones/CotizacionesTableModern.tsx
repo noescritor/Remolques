@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
 import { Badge } from '../ui/badge';
-import { MoreVertical, Edit2, Copy, Trash2, FileText, ClipboardList } from 'lucide-react';
+import { MoreVertical, Edit2, Copy, Trash2, FileText, ClipboardList, Factory } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { formatearMoneda, formatearFecha } from '../../utils/calculations';
 import { Cotizacion, EstadoCotizacion } from '../../types';
@@ -15,6 +15,8 @@ interface CotizacionesTableModernProps {
   onEditarCotizacion?: (id: string) => void;
   onDuplicarCotizacion: (id: string) => void;
   onGenerarPresupuesto?: (cotizacion: Cotizacion) => void;
+  onGenerarOrdenesTrabajo?: (cotizacion: Cotizacion) => void;
+  generandoOrdenes?: boolean;
   onEliminarCotizacion: (id: string) => void;
 
 }
@@ -158,6 +160,8 @@ export function CotizacionesTableModern({
   onEditarCotizacion,
   onDuplicarCotizacion,
   onGenerarPresupuesto,
+  onGenerarOrdenesTrabajo,
+  generandoOrdenes,
   onEliminarCotizacion
 }: CotizacionesTableModernProps) {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
@@ -259,6 +263,15 @@ export function CotizacionesTableModern({
                       <DropdownMenuItem onClick={() => onGenerarPresupuesto(cotizacion)}>
                         <ClipboardList className="mr-2 h-4 w-4" />
                         Generar Presupuesto
+                      </DropdownMenuItem>
+                    )}
+                    {onGenerarOrdenesTrabajo && (
+                      <DropdownMenuItem
+                        disabled={generandoOrdenes}
+                        onClick={() => onGenerarOrdenesTrabajo(cotizacion)}
+                      >
+                        <Factory className="mr-2 h-4 w-4" />
+                        Generar Orden de Trabajo
                       </DropdownMenuItem>
                     )}
 <DropdownMenuItem onClick={() => onVerCotizacion(cotizacion.id)}>
@@ -467,6 +480,15 @@ export function CotizacionesTableModern({
                       <DropdownMenuItem onClick={() => onGenerarPresupuesto(cotizacion)}>
                         <ClipboardList className="mr-2 h-4 w-4" />
                         Generar Presupuesto
+                      </DropdownMenuItem>
+                    )}
+                    {onGenerarOrdenesTrabajo && (
+                      <DropdownMenuItem
+                        disabled={generandoOrdenes}
+                        onClick={() => onGenerarOrdenesTrabajo(cotizacion)}
+                      >
+                        <Factory className="mr-2 h-4 w-4" />
+                        Generar Orden de Trabajo
                       </DropdownMenuItem>
                     )}
 <DropdownMenuItem onClick={() => onVerCotizacion(cotizacion.id)}>

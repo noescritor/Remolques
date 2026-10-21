@@ -13,6 +13,12 @@ import { costear, validarAjustes } from "./motor/costeo.ts";
 import { generarPresupuestoDesdeCosteo } from "./motor/presupuesto_desde_costeo.ts";
 import { generarPresupuestoDeCotizacion, ejecutarAprobacionCotizacion, generarPresupuestoAlAprobar } from "./motor/generar_presupuesto_cotizacion.ts";
 import {
+  generarOrdenesDeCotizacion,
+  actualizarOrdenTrabajoSegura,
+  regenerarFichaDeOrden
+} from "./motor/generar_ordenes_cotizacion.ts";
+import { construirFichaOrdenTrabajo } from "./motor/ficha_orden_trabajo.ts";
+import {
   obtenerResumenCatalogo,
   guardarOpcionCosto,
   obtenerCostosModeloYProcesos,
@@ -2580,21 +2586,39 @@ app.put("/ordenes-trabajo/:id", async (c) => {
     const supabase = getServiceClient();
     const orgId = c.get("organizacionId");
     const id = c.req.param("id");
-    const payload = await c.req.json();
-    
-    const { data, error } = await supabase
-      .from("ordenes_trabajo")
-      .update(payload)
-      .eq("id", id)
-      .eq("organizacion_id", orgId)
-      .select()
-      .single();
-      
-    if (error) throw error;
+    const rawPayload = await c.req.json().catch(() => ({}));
+
+    const data = await actualizarOrdenTrabajoSegura(supabase, {
+      id,
+      orgId,
+      rawPayload,
+    });
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error updating orden_trabajo:", error);
-    return c.json({ error: error.message }, 500);
+    const status = error.status || (error.message.includes("no encontrada") ? 404 : 500);
+    return c.json({ error: error.message }, status);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/regenerar-ficha", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+
+    const resultado = await regenerarFichaDeOrden(supabase, { id, orgId });
+    return c.json(resultado);
+  } catch (error: any) {
+    console.error("[make-server] Error regenerando ficha:", error);
+    const status =
+      error.status ||
+      (error.message.includes("no encontrada")
+        ? 404
+        : error.message.includes("No se puede determinar")
+        ? 409
+        : 500);
+    return c.json({ error: error.message }, status);
   }
 });
 
@@ -2603,156 +2627,23 @@ app.post("/cotizaciones/:id/generar-ordenes", async (c) => {
     const supabase = getServiceClient();
     const orgId = c.get("organizacionId");
     const cotizacionId = c.req.param("id");
-    
     const body = await c.req.json().catch(() => ({}));
-    const force = !!body.force;
-    
-    // 1. Fetch cotizacion, check status Aprobada
-    const { data: cotizacion, error: cotError } = await supabase
-      .from("cotizaciones")
-      .select("*, cliente:clientes(*), items:items_cotizacion(*)")
-      .eq("id", cotizacionId)
-      .eq("organizacion_id", orgId)
-      .single();
-    if (cotError) throw cotError;
-    
-    if (cotizacion.estado !== 'Aprobada') {
-      return c.json({ error: "La cotización debe estar Aprobada para generar órdenes" }, 400);
-    }
-    
-    // Idempotency check: if orders already exist
-    const { data: existing } = await supabase.from("ordenes_trabajo").select("*").eq("cotizacion_id", cotizacionId).eq("organizacion_id", orgId);
-    if (existing && existing.length > 0) {
-      return c.json(existing);
-    }
-    
-    // Check missing materials unless forced
-    if (!force) {
-        const faltantes = await calcularRequisicion(supabase, cotizacionId, orgId);
-        
-        const unconfigured = faltantes.filter((f) => f.estado === 'sin_receta');
-        if (unconfigured.length > 0) {
-          return c.json({ 
-            error: "Aun faltan materiales para esta cotizacion (hay equipos sin configurar)", 
-            requiresForce: true,
-            faltantes: unconfigured
-          }, 409);
-        }
+    const user = c.get("user");
 
-        const totalFaltante = faltantes.reduce((sum, f) => sum + (f.faltante || 0), 0);
-        if (totalFaltante > 0) {
-        return c.json({ 
-          error: "Aún faltan materiales para esta cotización", 
-          requiresForce: true,
-          faltantes: faltantes.filter((f) => f.faltante > 0)
-        }, 409);
-      }
-    }
-    
-    // Fetch product mappings for determining if it's a "producto_terminado"
-    const productIds = cotizacion.items.map((i) => i.producto_id).filter(Boolean);
-    let productosTerminados = new Set();
-    if (productIds.length > 0) {
-      const { data: prods } = await supabase.from("productos").select("id, tipo_item").in("id", productIds);
-      if (prods) {
-        prods.filter((p) => p.tipo_item === 'producto_terminado').forEach((p) => productosTerminados.add(p.id));
-      }
-    }
-    
-    let advertenciaKeywords = false;
-    const ordenesToInsert = [];
-    let trailerCounter = 1;
-    
-    // Fetch lineas and fases to set up kanban
-    const { data: lineas } = await supabase.from("lineas_producto").select("id, nombre, prefijo").eq("organizacion_id", orgId);
-    const defaultLinea = lineas && lineas.length > 0 ? lineas[0] : null;
-    let defaultFaseId = null;
-    if (defaultLinea) {
-       const { data: fases } = await supabase.from("fases_produccion").select("id").eq("linea_id", defaultLinea.id).order("orden").limit(1);
-       if (fases && fases.length > 0) defaultFaseId = fases[0].id;
-    }
-    
-    // Initials
-    let iniciales = "CLI";
-    if (cotizacion.cliente) {
-      if (cotizacion.cliente.tipo === 'Empresa' || cotizacion.cliente.empresa) {
-        iniciales = (cotizacion.cliente.empresa || cotizacion.cliente.nombre).substring(0, 3).toUpperCase();
-      } else {
-        iniciales = cotizacion.cliente.nombre.split(' ').filter(Boolean).slice(0, 3).map((p) => p[0]).join('').toUpperCase();
-      }
-    }
-    
-    const mesStr = (new Date().getMonth() + 1).toString().padStart(2, '0');
-    const anio = new Date().getFullYear().toString().slice(-2);
-    
-    for (const item of cotizacion.items) {
-      let isEquipo = false;
-      let tipoEquipo = "01"; // default
-      let lineaId = defaultLinea?.id || null;
-      let faseId = defaultFaseId;
-      
-      if (item.producto_id && productosTerminados.has(item.producto_id)) {
-         isEquipo = true;
-      } else if (!item.producto_id) {
-         // Fallback keyword check
-         const desc = item.descripcion.toLowerCase();
-         if (desc.includes("dolly")) tipoEquipo = "02";
-         else if (desc.includes("gondola") || desc.includes("gándola") || desc.includes("góndola")) tipoEquipo = "03";
-         else if (desc.includes("jaula")) tipoEquipo = "04";
-         else if (desc.includes("cama baja")) tipoEquipo = "05";
-         else if (desc.includes("multimodal")) tipoEquipo = "06";
-         else if (desc.includes("porta")) tipoEquipo = "07";
-         else if (desc.includes("seca")) tipoEquipo = "08";
-         else if (desc.includes("traila")) tipoEquipo = "09";
-         else continue;
-         
-         isEquipo = true;
-         advertenciaKeywords = true;
-      }
-      
-      if (!isEquipo) continue;
-      
-      for (let i = 0; i < item.cantidad; i++) {
-        const { data: numResult, error: seqError } = await supabase.rpc('obtener_siguiente_produccion');
-        if (seqError) throw new Error("Fallo al obtener secuencia de producción: " + seqError.message);
-        
-        const nomenclatura = `${numResult}-${iniciales}${tipoEquipo}${mesStr}${anio}-${trailerCounter}`;
-        
-        ordenesToInsert.push({
-          organizacion_id: orgId,
-          cotizacion_id: cotizacionId,
-          cliente_id: cotizacion.cliente_id,
-          nomenclatura_id: nomenclatura,
-          tipo_equipo: tipoEquipo,
-          caracteristicas: { ...(item.configuracion || {}), descripcion_corta: item.descripcion },
-          estado: 'Pendiente',
-          linea_producto_id: lineaId,
-          fase_actual_id: faseId,
-          estado_kanban: 'pendiente'
-        });
-        
-        trailerCounter++;
-      }
-    }
-    
-    if (ordenesToInsert.length === 0) {
-      return c.json({ error: "No se encontraron equipos (productos terminados) en la cotización." }, 400);
-    }
-    
-    const { data: ordenes, error: insError } = await supabase.from("ordenes_trabajo").insert(ordenesToInsert).select();
-    if (insError) throw insError;
-    
-    await supabase.from("cotizaciones").update({ estado_produccion: 'En producción' }).eq("id", cotizacionId);
-    await registrarEvento(supabase, {
-      cotizacion_id: cotizacionId,
-      organizacion_id: orgId,
-      evento: `Órdenes de producción generadas (${ordenesToInsert.length} unidades). Estado: En producción`,
-      usuario_id: c.get("user")?.id || null
+    const resultado = await generarOrdenesDeCotizacion(supabase, {
+      cotizacionId,
+      orgId,
+      usuarioId: user?.id || null,
+      force: !!body.force
     });
-    
-    return c.json({ ordenes, advertenciaKeywords });
+
+    return c.json(resultado);
   } catch (error: any) {
-    return c.json({ error: error.message }, 500);
+    const msg = error?.message || "Error al generar órdenes de trabajo";
+    const esValidacion =
+      msg.includes("Aprueba la cotización") ||
+      msg.includes("No se encontraron equipos");
+    return c.json({ error: msg }, esValidacion ? 400 : 500);
   }
 });
 app.put("/produccion/ordenes/:id/mover", async (c) => {

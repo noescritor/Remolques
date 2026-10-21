@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -72,6 +73,8 @@ export function CotizacionDetalle({
   onGenerarOrdenesTrabajo
 }: CotizacionDetalleProps) {
 
+  const navigate = useNavigate();
+  const [generandoOrdenes, setGenerandoOrdenes] = useState(false);
   const [showRequisicion, setShowRequisicion] = useState(false);
   const [showProduccion, setShowProduccion] = useState(false);
 
@@ -88,12 +91,40 @@ export function CotizacionDetalle({
 
   
   const handleGenerarOrdenes = async () => {
-    if (!onGenerarOrdenesTrabajo) return;
+    if (!onGenerarOrdenesTrabajo || generandoOrdenes) return;
+    setGenerandoOrdenes(true);
     try {
-      await onGenerarOrdenesTrabajo(cotizacion.id);
-      alert('Órdenes de trabajo generadas exitosamente. Revisa el módulo de Producción.');
+      const data = await onGenerarOrdenesTrabajo(cotizacion.id);
+      const proy = cotizacion.descripcion || cotizacion.folio;
+      const numOrdenes = (data?.ordenes || []).length;
+      if (data?.ya_existian) {
+        toast.info(
+          `Esta cotización ya tiene ${numOrdenes} orden${numOrdenes === 1 ? '' : 'es'} de trabajo`,
+          {
+            action: {
+              label: 'Ver órdenes',
+              onClick: () => navigate('/ordenes-trabajo')
+            },
+            duration: 6000
+          }
+        );
+      } else {
+        const creadas = data?.creadas || numOrdenes || 1;
+        toast.success(
+          `Orden generada: ${creadas} unidad${creadas === 1 ? '' : 'es'} (${proy})`,
+          {
+            action: {
+              label: 'Ver órdenes',
+              onClick: () => navigate('/ordenes-trabajo')
+            },
+            duration: 6000
+          }
+        );
+      }
     } catch (e: any) {
-      alert('Error: ' + e.message);
+      toast.error(e?.message || 'Error al generar órdenes de trabajo');
+    } finally {
+      setGenerandoOrdenes(false);
     }
   };
 
@@ -327,6 +358,15 @@ export function CotizacionDetalle({
                 
                 {cotizacion.estado === 'Aprobada' && (
                   <>
+                    <Button
+                      size="sm"
+                      onClick={handleGenerarOrdenes}
+                      disabled={generandoOrdenes}
+                      className="bg-blue-600 hover:bg-blue-700 text-white ml-2"
+                    >
+                      <Factory className="w-4 h-4 mr-2" />
+                      {generandoOrdenes ? 'Generando...' : 'Generar Orden de Trabajo'}
+                    </Button>
                     <Button size="sm" onClick={() => setShowProduccion(true)} className="bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 ml-2">
                       <Factory className="w-4 h-4 mr-2" />
                       Enviar a Producción

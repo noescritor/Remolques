@@ -3,6 +3,61 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-20 - Sub-bloque 2R-11: Orden de trabajo para remolque generada desde la cotización
+**Herramienta:** Antigravity  
+**Tipo:** feat (motor, backend, frontend, pdf, ui)  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/ficha_orden_trabajo.ts`
+- `supabase/functions/make-server-feea4382/motor/ficha_orden_trabajo.test.ts`
+- `supabase/functions/make-server-feea4382/motor/generar_ordenes_cotizacion.ts`
+- `supabase/functions/make-server-feea4382/motor/generar_ordenes_cotizacion.test.ts`
+- `supabase/functions/make-server-feea4382/index.ts`
+- `src/app/components/OrdenesTrabajo/OrdenTrabajoPDF.tsx`
+- `src/app/components/OrdenesTrabajo/OrdenesTrabajoList.tsx`
+- `src/app/components/Cotizaciones/CotizacionesTableModern.tsx`
+- `src/app/components/Cotizaciones/CotizacionesList.tsx`
+- `src/app/components/Cotizaciones/CotizacionDetalle.tsx`
+- `src/app/components/ModernLayout.tsx`
+- `src/app/components/Layout.tsx`
+- `src/app/App.tsx`
+**Qué cambió y por qué:**  
+- **Motor de Ficha Técnica (`motor/ficha_orden_trabajo.ts`):**
+  - Implementada función pura e inmutable `construirFichaOrdenTrabajo(cotizacion, item, indexUnidad)` que congela la estructura (`Object.freeze`) con:
+    - Cabecera: `orden_compra` (prioriza OC del cliente, fallback a folio), `fecha_emision` (ISO), `cliente` (`nombre_razon_social`), `pedido_recibido_por`, `tipo_equipo` (nombre comercial limpio), `modelo_nomenclatura`, `unidad_numero` / `total_unidades` (en número y en texto con `formatearCantidadTexto`), `fecha_entrega_compromiso`.
+    - Características principales (14 filas) mapeadas al formato de taller: `color`, `capacidad` (con fallback de tonelaje o largo), `ancho`, `largo`, `cuello`, `pernos` (quinto rueda), `patines` (marca + modelo), `suspension` (marca + modelo + capacidad), `ejes` (cantidad, marca, capacidad, maza y birlos), `frenos` (tipo, ABS con retráctiles, matracas auto/mecánicas), `piso`, `rines` (resumen unificado / mixto), `llantas` (resumen unificado / mixto), `luces` (arnés y tipo).
+    - Accesorios y extras (4 filas): `porta_llantas`, `caja_herramientas`, `matracas` (winches con detalle de banda/riel), `gancho_arrastre`.
+    - Campos no aplicables (ej. piso, frente, patines, riel en Dolly) devuelven explícitamente `'No aplica'`. Opciones no elegidas muestran `'Por definir'`.
+    - Mantiene notas manuales y `notas_taller` con requerimientos especiales (ej. caballete, color de lona, etc.).
+- **Generación de Órdenes (`motor/generar_ordenes_cotizacion.ts` & `index.ts`):**
+  - Desacoplada la generación de órdenes del cálculo de requisición (`calcularRequisicion`), evitando bloqueos por tablas o recetas inexistentes.
+  - Genera 1 orden de trabajo por cada unidad física de equipos remolque (`cantidad`), asignando nomenclatura correlativa (`OT-{FOLIO}-U{N}`) y guardando `caracteristicas.ficha`.
+  - Endpoint `POST /cotizaciones/:id/generar-ordenes` valida estado `Aprobada`, responde con detalle de órdenes creadas o existentes, y maneja idempotencia.
+  - Endpoint `PUT /ordenes-trabajo/:id` actualizado para fusionar profundamente campos manuales de cabecera (`pedido_recibido_por`, fechas, color) en `caracteristicas.ficha.cabecera` y `caracteristicas.ficha.caracteristicas.color`.
+  - Nuevo endpoint `POST /ordenes-trabajo/:id/regenerar-ficha` para regenerar fichas de órdenes previas al formato 2R-11.
+- **Visualizador e Impresión de Orden de Trabajo (`OrdenTrabajoPDF.tsx`):**
+  - Rediseñado completamente replicando la estructura oficial de 1 página A4 de `docs/referencias/orden_trabajo_ejemplo_pag1.png`.
+  - Integrado encabezado con logo de la empresa (`decidirLogoEncabezado(ajustes)`), membrete de datos fiscales/taller, y bloque de cabecera sombreado.
+  - Tabla de 14 características técnicas y bloque de 4 accesorios con diseño denso, legible y etiquetas en negrita.
+  - Bloque de firmas: "ELABORÓ", "REVISÓ (INGENIERÍA)" y "RECIBIÓ (TALLER / PRODUCCIÓN)".
+  - Estilos de impresión estrictos `@media print` fijando `@page { size: A4 portrait; margin: 10mm 12mm; }`.
+- **Listado y Navegación de Órdenes (`OrdenesTrabajoList.tsx`, `Layout.tsx`, `ModernLayout.tsx`, `App.tsx`):**
+  - Menú lateral renombrado de "Producción" a "Órdenes de trabajo". Soporte de rutas `/produccion` y `/ordenes-trabajo`.
+  - Listado con columnas claras: Folio / Nomenclatura, Cotización origen, Cliente (`nombre_razon_social`), Proyecto, Equipo, Fecha compromiso, Estado.
+  - Modal de edición rápida para completar campos de taller (`pedido_recibido_por`, `fecha_entrega_compromiso`, notas de taller, color).
+  - Acceso directo para imprimir / visualizar la OT en PDF y aviso de regeneración si fue creada con versión anterior.
+- **Botón "Generar Orden de Trabajo" en Cotizaciones (`CotizacionesTableModern.tsx`, `CotizacionesList.tsx`, `CotizacionDetalle.tsx`):**
+  - Acción visible y directa para cotizaciones con estado "Aprobada".
+  - Feedback guiado con toasts informativos: éxito con botón "Ver órdenes", aviso de órdenes ya existentes, validación si no está aprobada y reintento con mensaje claro si falla la conexión.
+- **Pruebas Automatizadas:**
+  - `ficha_orden_trabajo.test.ts`: 7 pruebas unitarias cubriendo Plana #2 real de referencia, Dolly con exclusiones ("No aplica"), Góndola 3 ejes con selección mixta de rines y llantas, validación de `aplica_a` por tipo de equipo (Dolly con ejes/suspensión en 'Por definir' y patines/piso/riel/gancho/frente en 'No aplica'; Góndola con piso/riel/gancho/frente en 'No aplica'), fallback de opciones no configuradas ("Por definir"), compatibilidad con strings planos, y `formatearCantidadTexto`.
+  - `generar_ordenes_cotizacion.test.ts`: 8 pruebas unitarias cubriendo rechazo de cotización no aprobada, generación de N órdenes para cantidad N con ficha congelada e `item_id`/`unidad` guardados, idempotencia, ignorado de conceptos no equipo, seguridad de PUT con campos ajenos / `organizacion_id` inmutable, regeneración con `item_id` exacto, regeneración legacy con 1 equipo y respuesta 409 con 2 equipos.
+- **Ajustes de Seguridad y Consistencia (Pre-merge):**
+  - `PUT /ordenes-trabajo/:id` filtrado por lista blanca estricta (`CAMPOS_PERMITIDOS_ORDEN_TRABAJO`), descartando `organizacion_id`, `id`, `cotizacion_id`, etc.
+  - `regenerarFichaDeOrden` almacena y consulta `item_id` y `unidad`. Órdenes legadas con múltiples equipos devuelven error 409 en vez de seleccionar el primero por defecto.
+  - `ficha_orden_trabajo.ts` evalúa `aplica_a` de los grupos de catálogo para distinguir entre "No aplica" (el grupo no corresponde al tipo de remolque) y "Por definir" (aplica pero no se configuró).
+**Acciones manuales pendientes:**  
+- Rebuild del servicio API en EasyPanel tras deploy.
+
 ## 2026-10-20 - Sub-bloque 2R-10: Matracas hasta 20 piezas y varios sistemas retráctiles por equipo
 **Herramienta:** Antigravity  
 **Tipo:** feat (catálogo, motor, validaciones, frontend, ui)  

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -39,9 +40,11 @@ export function CotizacionesList({
   crearPresupuesto,
   productos = []
 }: CotizacionesListProps) {
+  const navigate = useNavigate();
   const [busqueda, setBusqueda] = useState('');
   const [filtroEstado, setFiltroEstado] = useState<string>('todos');
   const [generandoPresupuesto, setGenerandoPresupuesto] = useState(false);
+  const [generandoOrdenes, setGenerandoOrdenes] = useState(false);
   const [cotizacionAReemplazar, setCotizacionAReemplazar] = useState<Cotizacion | null>(null);
 
   const ejecutarGenerarPresupuesto = async (cotizacion: Cotizacion, reemplazar = false) => {
@@ -135,6 +138,91 @@ export function CotizacionesList({
 
   const handleGenerarPresupuesto = (cotizacion: Cotizacion) => {
     ejecutarGenerarPresupuesto(cotizacion, false);
+  };
+
+  const ejecutarGenerarOrdenes = async (cotizacion: Cotizacion) => {
+    if (generandoOrdenes) return;
+    setGenerandoOrdenes(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) {
+        toast.error('Sesión no válida. Por favor inicia sesión nuevamente.');
+        return;
+      }
+
+      const res = await fetch(`${BASE_URL}/cotizaciones/${cotizacion.id}/generar-ordenes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ force: false })
+      });
+
+      if (res.status === 400) {
+        const errData = await res.json().catch(() => ({}));
+        toast.error(errData.error || 'No se pudo generar la orden de trabajo', {
+          description: errData.error?.includes('Aprueba la cotización')
+            ? 'Debes aprobar la cotización antes de generar sus órdenes de trabajo.'
+            : undefined,
+          duration: 6000
+        });
+        return;
+      }
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({ error: 'Error del servidor' }));
+        toast.error('Error al generar orden de trabajo', {
+          description: errData.error || `HTTP ${res.status}`,
+          action: {
+            label: 'Reintentar',
+            onClick: () => ejecutarGenerarOrdenes(cotizacion)
+          }
+        });
+        return;
+      }
+
+      const data = await res.json();
+      const proy = cotizacion.descripcion || cotizacion.folio;
+      const numOrdenes = (data.ordenes || []).length;
+
+      if (data.ya_existian) {
+        toast.info(
+          `Esta cotización ya tiene ${numOrdenes} orden${numOrdenes === 1 ? '' : 'es'} de trabajo`,
+          {
+            action: {
+              label: 'Ver órdenes',
+              onClick: () => navigate('/ordenes-trabajo')
+            },
+            duration: 6000
+          }
+        );
+      } else {
+        const creadas = data.creadas || numOrdenes || 1;
+        toast.success(
+          `Orden generada: ${creadas} unidad${creadas === 1 ? '' : 'es'} (${proy})`,
+          {
+            action: {
+              label: 'Ver órdenes',
+              onClick: () => navigate('/ordenes-trabajo')
+            },
+            duration: 6000
+          }
+        );
+      }
+    } catch (err: any) {
+      console.error('[CotizacionesList] Error generando órdenes:', err);
+      toast.error('Error de red al conectar con el servidor', {
+        description: err.message,
+        action: {
+          label: 'Reintentar',
+          onClick: () => ejecutarGenerarOrdenes(cotizacion)
+        }
+      });
+    } finally {
+      setGenerandoOrdenes(false);
+    }
   };
 
   const cotizacionesSeguras = Array.isArray(cotizaciones) ? cotizaciones : [];
@@ -243,6 +331,8 @@ export function CotizacionesList({
       ) : (
         <CotizacionesTableModern
           onGenerarPresupuesto={handleGenerarPresupuesto}
+          onGenerarOrdenesTrabajo={ejecutarGenerarOrdenes}
+          generandoOrdenes={generandoOrdenes}
           cotizaciones={cotizacionesFiltradas}
           onVerCotizacion={onVerCotizacion}
           onDuplicarCotizacion={onDuplicarCotizacion}
