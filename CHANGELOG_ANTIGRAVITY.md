@@ -3,6 +3,17 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-26 - Sub-bloque 2R-13b: Reparar build de remolques-api en Dockerfile.backend y verificación de contexto
+**Herramienta:** Antigravity  
+**Tipo:** fix (docker, devops, verificación)  
+**Archivos tocados:**  
+- `Dockerfile.backend`
+- `scripts/verificar.mjs`  
+**Qué cambió y por qué:**  
+- **1. Reparación de build en contenedor (Dockerfile.backend):** Se agregó `COPY src/app/utils/aceroCalc.ts ./src/app/utils/aceroCalc.ts`. Esto resuelve la falla en EasyPanel (`error: Module not found file:///app/src/app/utils/aceroCalc.ts at motor/acero.ts:12`), ya que el backend Deno (`motor/acero.ts`) importa las funciones puras de cálculo de acero y `Dockerfile.backend` solo copiaba `types` y la carpeta de la función. Se confirmó que `aceroCalc.ts` es 100% autocontenido y no importa dependencias externas de `src/`.
+- **2. Auditoría de imports externos en make-server-feea4382:** Se analizó todo el código bajo `supabase/functions/make-server-feea4382` (incluyendo `motor/`). Se verificó que todos los imports externos (`types/index.ts` y `utils/aceroCalc.ts`) cuentan con su respectivo `COPY` en `Dockerfile.backend`.
+- **3. Nuevo chequeo de verificación "Contexto del Dockerfile.backend":** Se añadió el paso 8 a `scripts/verificar.mjs`, el cual lee las líneas `COPY` de `Dockerfile.backend`, crea un sandbox temporal copiando únicamente dichas rutas con la misma estructura, y ejecuta `deno cache index.ts`. Se demostró que el chequeo detecta y bloquea la falla cuando falta un archivo importado, y aprueba cuando el contexto de Docker está completo.
+
 ## 2026-10-26 - Ajuste Sub-bloque 2R-13: Preservar ediciones de usuario en seed de acero (ON CONFLICT DO NOTHING)
 **Herramienta:** Antigravity  
 **Tipo:** fix (migraciones, seed script)  

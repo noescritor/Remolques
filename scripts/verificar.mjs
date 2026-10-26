@@ -12,12 +12,13 @@
 //  5. npm run build (Vite).
 //  6. Pruebas Deno (motor y utilidades).
 //  7. Arranque real del API (debe escribir "Listening on").
-//  8. Con --limpio: HEAD exportado con git archive, pruebas y arranque ahí (detecta archivos sin versionar).
+//  8. Contexto del Dockerfile.backend (deno cache index.ts en entorno aislado que solo contiene los COPY).
+//  9. Con --limpio: HEAD exportado con git archive, pruebas y arranque ahí (detecta archivos sin versionar).
 
 import { spawnSync, spawn } from 'node:child_process';
-import { readFileSync, existsSync, mkdtempSync, rmSync, readdirSync, symlinkSync, cpSync } from 'node:fs';
+import { readFileSync, existsSync, mkdtempSync, rmSync, readdirSync, symlinkSync, cpSync, mkdirSync } from 'node:fs';
 import { tmpdir, homedir } from 'node:os';
-import { join, resolve, extname } from 'node:path';
+import { join, resolve, extname, dirname } from 'node:path';
 import { createRequire } from 'node:module';
 
 const raiz = resolve(import.meta.dirname ?? process.cwd(), '..');
@@ -165,9 +166,71 @@ titulo('7. Arranque real del API');
 if (rapido || !deno) console.log('  (omitido)');
 else { const a = await arranque(raiz); a.ok ? ok('El API arranca', a.txt) : fallo('El API arranca', '\n           ' + a.txt); }
 
-// ---------- 8. Checkout limpio ----------
+// ---------- 8. Contexto del Dockerfile.backend ----------
+titulo('8. Contexto del Dockerfile.backend');
+{
+  const dockerfilePath = join(raiz, 'Dockerfile.backend');
+  if (!existsSync(dockerfilePath)) {
+    fallo('Contexto del Dockerfile.backend', 'No existe Dockerfile.backend');
+  } else if (!deno) {
+    fallo('Contexto del Dockerfile.backend', 'No encuentro deno');
+  } else {
+    const tmp = mkdtempSync(join(tmpdir(), 'docker-backend-ctx-'));
+    try {
+      const content = readFileSync(dockerfilePath, 'utf8');
+      const lines = content.split('\n');
+      const copyInstructions = [];
+      let finalWorkDir = '/app/supabase/functions/make-server-feea4382';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('#') || !trimmed) continue;
+        const copyMatch = trimmed.match(/^COPY\s+(\S+)\s+(\S+)/);
+        if (copyMatch) copyInstructions.push({ src: copyMatch[1], dest: copyMatch[2] });
+        const workMatch = trimmed.match(/^WORKDIR\s+(\S+)/);
+        if (workMatch) finalWorkDir = workMatch[1];
+      }
+
+      for (const { src, dest } of copyInstructions) {
+        const srcFull = join(raiz, src);
+        if (!existsSync(srcFull)) {
+          throw new Error(`Ruta de COPY no existe en el repositorio: ${src}`);
+        }
+        const cleanDest = dest.replace(/^\/app\//, '').replace(/^\.\//, '');
+        const destFull = join(tmp, cleanDest);
+        mkdirSync(dirname(destFull), { recursive: true });
+        cpSync(srcFull, destFull, { recursive: true });
+      }
+
+      const cleanWorkDir = finalWorkDir.replace(/^\/app\//, '').replace(/^\/app$/, '');
+      const serverDir = join(tmp, cleanWorkDir);
+
+      const r = sh(deno, ['cache', 'index.ts'], { cwd: serverDir });
+      if (r.status !== 0) {
+        const err = ((r.stderr || '') + (r.stdout || '')).trim().split('\n').filter(Boolean).slice(0, 8).join('\n           ');
+        fallo('Contexto del Dockerfile.backend', '\n           ' + err);
+      } else {
+        let extra = '';
+        try {
+          const docVer = sh('docker', ['--version']);
+          if (docVer.status === 0) {
+            const b = sh('docker', ['build', '-f', 'Dockerfile.backend', '.'], { cwd: raiz });
+            extra = b.status === 0 ? ' (docker build OK)' : ' (docker build falló)';
+          }
+        } catch {}
+        ok('Contexto del Dockerfile.backend', 'deno cache index.ts exitoso' + extra);
+      }
+    } catch (e) {
+      fallo('Contexto del Dockerfile.backend', e.message);
+    } finally {
+      try { rmSync(tmp, { recursive: true, force: true }); } catch {}
+    }
+  }
+}
+
+// ---------- 9. Checkout limpio ----------
 if (limpio) {
-  titulo('8. Checkout limpio de HEAD (git archive)');
+  titulo('9. Checkout limpio de HEAD (git archive)');
   const tmp = mkdtempSync(join(tmpdir(), 'verificar-'));
   try {
     const ar = sh('git', ['archive', 'HEAD', '-o', join(tmp, 'head.tar')]);
