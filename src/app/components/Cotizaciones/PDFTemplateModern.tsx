@@ -1,7 +1,13 @@
 import { Cotizacion, Cliente, Producto, Ajustes } from '../../types';
 import { formatearMoneda, formatearFecha, calcularTotalesCotizacion } from '../../utils/calculations';
+import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 import { decidirLogoEncabezado } from '../../utils/logo';
 import svgPaths from "../../imports/svg-pqfvhu2ekl";
+
+// ─── Font size tokens (Sub-bloque 2R-12) ───────────────────────────────────────
+const FS_ETIQUETA_MIN = 10;   // Pequeñas/labels: mínimo 10px
+const FS_ESPEC_MIN = 12;      // Especificaciones de equipo: mínimo 11px
+const FS_CUERPO_MIN = 14;     // Cuerpo: mínimo 13px
 
 interface PDFTemplateModernProps {
   cotizacion: Cotizacion;
@@ -181,7 +187,7 @@ function ServicesTable({ cotizacion, productos }: { cotizacion: Cotizacion; prod
         {cotizacion.items?.map((item, index) => {
           const producto = productos.find(p => p.id === item.numero_proyecto);
           return (
-            <div key={index} className="border-b border-gray-300 pb-6 mb-6 last:border-b-0 last:mb-0">
+            <div key={index} className="border-b border-gray-300 pb-6 mb-6 last:border-b-0 last:mb-0 break-inside-avoid">
               <div className="grid grid-cols-12 gap-4 items-start">
                 {/* Description */}
                 <div className="col-span-6">
@@ -193,10 +199,24 @@ function ServicesTable({ cotizacion, productos }: { cotizacion: Cotizacion; prod
                       {item.descripcion}
                     </p>
                   )}
+                  {(() => {
+                    const cfg = obtenerConfiguracion(item);
+                    const lineas = normalizarResumenLineas(cfg?.resumen_lineas);
+                    if (lineas.length === 0) return null;
+                    return (
+                      <div className="mt-4 space-y-1 text-sm text-gray-700">
+                        {lineas.map((linea, idx: number) => (
+                          <div key={idx}>
+                            <span className="font-semibold text-gray-900">{linea.etiqueta}:</span> {linea.valor}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                   
                   {/* Additional Details */}
                   {item.observaciones && (
-                    <div className="text-lg text-gray-600 space-y-2">
+                    <div className="text-lg text-gray-600 space-y-2 mt-4">
                       <p><strong>Entregables:</strong></p>
                       <div className="ml-4">
                         {item.observaciones.split('\n').map((line, i) => (

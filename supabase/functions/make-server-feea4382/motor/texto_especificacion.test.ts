@@ -199,3 +199,48 @@ Deno.test("2R-10: Texto de especificación con 1, 2 retráctiles y sin_retractil
   assertEquals(resSin.resumen_lineas.find(r => r.etiqueta === "Retráctil"), undefined);
 });
 
+Deno.test("Sub-bloque 2R-12: Texto de especificación - retractil paleta normaliza a grande, pintura se omite, color personalizado", () => {
+  const { modelo, grupos, opciones } = fixtures.default as any;
+
+  // 1. retractil: "paleta" normaliza a "grande" -> "SISTEMA RETRÁCTIL GRANDE"
+  const configPaleta = {
+    grupos: {
+      retractil: "paleta"
+    }
+  };
+  const resPaleta = generarEspecificacion(modelo, configPaleta, grupos, opciones);
+  assertEquals(resPaleta.texto.includes("SISTEMA RETRÁCTIL GRANDE"), true);
+  assertEquals(resPaleta.resumen_lineas.find(r => r.etiqueta === "Retráctil")?.valor, "RETRÁCTIL GRANDE");
+
+  // 2. pintura se omite por completo del texto y del resumen (con y sin pintura dan idéntico resultado)
+  const configConPintura = {
+    grupos: {
+      eje: "fleet_master",
+      color: "rojo",
+      pintura: "sherwin_williams"
+    }
+  };
+  const configSinPintura = {
+    grupos: {
+      eje: "fleet_master",
+      color: "rojo"
+    }
+  };
+  const resConPintura = generarEspecificacion(modelo, configConPintura, grupos, opciones);
+  const resSinPintura = generarEspecificacion(modelo, configSinPintura, grupos, opciones);
+  assertEquals(resConPintura.texto, resSinPintura.texto);
+  assertEquals(resConPintura.resumen_lineas, resSinPintura.resumen_lineas);
+  assertEquals(resConPintura.texto.includes("SHERWIN"), false);
+  assertEquals(resConPintura.resumen_lineas.some(r => r.etiqueta.toLowerCase().includes("pintura")), false);
+
+  // 3. color personalizado muestra el texto escrito (sin HTML, en mayúsculas en texto, original en resumen)
+  const configColorPersonalizado = {
+    grupos: {
+      color: { opcion: "personalizado", texto: "Verde militar con franja blanca" }
+    }
+  };
+  const resColorPers = generarEspecificacion(modelo, configColorPersonalizado, grupos, opciones);
+  assertEquals(resColorPers.texto.includes("COLOR VERDE MILITAR CON FRANJA BLANCA"), true);
+  assertEquals(resColorPers.resumen_lineas.find(r => r.etiqueta === "Color")?.valor, "Verde militar con franja blanca");
+});
+

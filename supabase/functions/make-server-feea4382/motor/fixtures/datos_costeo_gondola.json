@@ -651,6 +651,13 @@
         "costo_unitario": 15000
       },
       {
+        "grupo_clave": "retractil",
+        "opcion_clave": "grande",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 15000
+      },
+      {
         "grupo_clave": "rines",
         "opcion_clave": "acero",
         "cantidad_base": 4,
@@ -1393,6 +1400,13 @@
       {
         "grupo_clave": "retractil",
         "opcion_clave": "paleta",
+        "cantidad_base": 1,
+        "escala": "fija",
+        "costo_unitario": 15000
+      },
+      {
+        "grupo_clave": "retractil",
+        "opcion_clave": "grande",
         "cantidad_base": 1,
         "escala": "fija",
         "costo_unitario": 15000

@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.168.0/testing/asserts.ts";
-import { construirFichaOrdenTrabajo, formatearCantidadTexto } from "./ficha_orden_trabajo.ts";
+import { construirFichaOrdenTrabajo, formatearCantidadTexto, grupoAplicaAlTipo } from "./ficha_orden_trabajo.ts";
 import type { DatosModelo } from "./tipos.ts";
 
 // Cargar fixture real de catálogo
@@ -280,4 +280,67 @@ Deno.test("formatearCantidadTexto formatos válidos", () => {
   assertEquals(formatearCantidadTexto({ tipo: "plataforma", largo_ft: 40, num_ejes: 2 }), "Una Plataforma 40 ft 2 ejes");
   assertEquals(formatearCantidadTexto({ tipo: "dolly", num_ejes: 2 }), "Un Dolly 2 ejes");
   assertEquals(formatearCantidadTexto({ tipo: "gondola", num_ejes: 3 }), "Una Góndola 3 ejes");
+});
+
+Deno.test("Sub-bloque 2R-12: Ficha OT - retractil paleta como grande, pintura omitida y grupoAplicaAlTipo con arreglo vacío", () => {
+  // 1. grupoAplicaAlTipo con aplica_a vacío no se reactiva vía fallback
+  const gruposCat = [
+    { id: "g-pint", clave: "pintura", nombre: "Pintura", aplica_a: [] }
+  ];
+  assertEquals(grupoAplicaAlTipo("pintura", "plataforma", gruposCat as any), false);
+  assertEquals(grupoAplicaAlTipo("pintura", "dolly", gruposCat as any), false);
+
+  // 2. Ficha con y sin pintura en configuración dan el mismo resultado (y jamás concatena la marca al color)
+  const itemConPintura = {
+    descripcion: "Plataforma 40 ft 2 ejes",
+    configuracion: {
+      grupos: {
+        eje: "fleet_master",
+        suspension: "fleet_master",
+        color: "rojo",
+        pintura: "sherwin_williams"
+      }
+    }
+  };
+  const itemSinPintura = {
+    descripcion: "Plataforma 40 ft 2 ejes",
+    configuracion: {
+      grupos: {
+        eje: "fleet_master",
+        suspension: "fleet_master",
+        color: "rojo"
+      }
+    }
+  };
+  const fichaCon = construirFichaOrdenTrabajo({ item: itemConPintura, datosModelo: rawDatosModelo as DatosModelo });
+  const fichaSin = construirFichaOrdenTrabajo({ item: itemSinPintura, datosModelo: rawDatosModelo as DatosModelo });
+  assertEquals(fichaCon.caracteristicas, fichaSin.caracteristicas);
+  const colorVal = fichaCon.caracteristicas.find(c => c.etiqueta === "COLOR")?.valor;
+  assertEquals(colorVal, "Rojo");
+
+  // 3. Color personalizado se muestra tal cual (sin HTML) y no como "Color personalizado" ni "Por definir"
+  const itemColorPers = {
+    descripcion: "Plataforma 40 ft 2 ejes",
+    configuracion: {
+      grupos: {
+        color: { opcion: "personalizado", texto: "<b>Verde</b> militar con franja blanca" }
+      }
+    }
+  };
+  const fichaPers = construirFichaOrdenTrabajo({ item: itemColorPers, datosModelo: rawDatosModelo as DatosModelo });
+  const colorPersVal = fichaPers.caracteristicas.find(c => c.etiqueta === "COLOR")?.valor;
+  assertEquals(colorPersVal, "Verde militar con franja blanca");
+
+  // 4. Retráctil "paleta" (configuración vieja) normaliza a "grande" y se formatea como "Uno"
+  const itemPaleta = {
+    descripcion: "Plataforma 40 ft 2 ejes",
+    configuracion: {
+      grupos: {
+        retractil: { opcion: "paleta", cantidad: 1 }
+      }
+    }
+  };
+  const fichaPaleta = construirFichaOrdenTrabajo({ item: itemPaleta, datosModelo: rawDatosModelo as DatosModelo });
+  const retrVal = fichaPaleta.caracteristicas.find(c => c.etiqueta === "RETRÁCTIL")?.valor;
+  assertEquals(retrVal, "Uno");
 });

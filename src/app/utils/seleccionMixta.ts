@@ -104,8 +104,34 @@ export function fusionarDuplicados(filas: FilaSeleccionMixta[]): FilaSeleccionMi
 }
 
 /**
+ * Normaliza claves de opción para compatibilidad retroactiva (Sub-bloque 2R-12).
+ * Por ejemplo: retractil/paleta se normaliza a retractil/grande.
+ */
+export function normalizarClaveOpcion(grupo: string, clave: string): string {
+  if (!clave || typeof clave !== 'string') return clave;
+  if (grupo === 'retractil' && clave === 'paleta') {
+    return 'grande';
+  }
+  return clave;
+}
+
+/**
+ * Sanitiza y limpia el texto libre de color personalizado (Sub-bloque 2R-12):
+ * Elimina etiquetas HTML, normaliza espacios y trunca a máximo 80 caracteres.
+ */
+export function limpiarTextoColorPersonalizado(texto: string): string {
+  if (!texto || typeof texto !== 'string') return '';
+  let limpio = texto.replace(/<[^>]*>/g, '');
+  limpio = limpio.replace(/\s+/g, ' ').trim();
+  if (limpio.length > 80) {
+    limpio = limpio.slice(0, 80).trim();
+  }
+  return limpio;
+}
+
+/**
  * Calcula el número máximo de piezas de un grupo para un modelo dado,
- * basándose en su regla JSON (por_eje o fija).
+ * basándose en su regla JSON (por_num_ejes, por_eje o fija).
  */
 export function calcularMaxPiezasGrupo(grupo: any, modelo: any): number | undefined {
   if (!grupo) return undefined;
@@ -118,12 +144,18 @@ export function calcularMaxPiezasGrupo(grupo: any, modelo: any): number | undefi
     }
   }
 
-  if (regla && typeof regla === 'object') {
-    if (regla.max_total?.por_eje && typeof modelo?.num_ejes === 'number') {
-      return regla.max_total.por_eje * modelo.num_ejes;
+  if (regla && typeof regla === 'object' && regla.max_total) {
+    const maxTotal = regla.max_total;
+    if (maxTotal.por_num_ejes && typeof maxTotal.por_num_ejes === 'object' && typeof modelo?.num_ejes === 'number') {
+      const val = maxTotal.por_num_ejes[String(modelo.num_ejes)];
+      if (typeof val === 'number') return val;
+      return undefined;
     }
-    if (typeof regla.max_total?.fija === 'number') {
-      return regla.max_total.fija;
+    if (typeof maxTotal.por_eje === 'number' && typeof modelo?.num_ejes === 'number') {
+      return maxTotal.por_eje * modelo.num_ejes;
+    }
+    if (typeof maxTotal.fija === 'number') {
+      return maxTotal.fija;
     }
   }
 

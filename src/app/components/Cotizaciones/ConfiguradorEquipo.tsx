@@ -25,7 +25,8 @@ import {
   calcularMaxPiezasGrupo,
   obtenerCantidadDefecto,
   siguienteCantidad,
-  completarConEstaOpcion
+  completarConEstaOpcion,
+  limpiarTextoColorPersonalizado
 } from '../../utils/seleccionMixta';
 
 export interface ConfiguracionModelo {
@@ -305,6 +306,12 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
           marca: typeof prev === 'object' ? prev.marca : undefined,
           medida: typeof prev === 'object' ? prev.medida : undefined
         };
+      } else if (grupo.clave === 'color' && o.clave === 'personalizado') {
+        const prev = newConfig.grupos[grupo.clave];
+        newConfig.grupos[grupo.clave] = {
+          opcion: 'personalizado',
+          texto: typeof prev === 'object' && prev?.texto ? prev.texto : ''
+        };
       } else {
         newConfig.grupos[grupo.clave] = o.clave;
       }
@@ -372,7 +379,9 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
     if (typeof val === 'object') return !val.opcion;
     return false;
   });
-  const disableConfirm = (resultado?.errores?.length > 0) || faltanObligatorios || hayExcesoPiezas;
+  const colorVal = configuracion.grupos['color'];
+  const faltaTextoColorPersonalizado = typeof colorVal === 'object' && colorVal?.opcion === 'personalizado' && !colorVal?.texto?.trim();
+  const disableConfirm = (resultado?.errores?.length > 0) || faltanObligatorios || hayExcesoPiezas || faltaTextoColorPersonalizado;
 
   const handleActualizarFilasGrupo = (nuevasFilas: FilaSeleccionMixta[]) => {
     if (!grupoActual) return;
@@ -864,6 +873,28 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                                       {o.marcas.map((m: string) => <SelectItem key={m} value={m} className="uppercase">{m}</SelectItem>)}
                                     </SelectContent>
                                   </Select>
+                                </div>
+                              )}
+
+                              {isSelected && grupoActual?.clave === 'color' && o.clave === 'personalizado' && (
+                                <div className="mt-3 p-3 bg-background border rounded-md space-y-2">
+                                  <div className="flex justify-between items-center">
+                                    <label className="block text-xs font-medium text-muted-foreground">Especifica el color</label>
+                                    <span className="text-[11px] text-muted-foreground">
+                                      {(objVal?.texto || '').length} / 80
+                                    </span>
+                                  </div>
+                                  <input 
+                                    type="text" 
+                                    maxLength={80}
+                                    className="w-full px-2 py-1.5 text-sm rounded-md border border-input bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                                    placeholder="Ej. Verde militar con franja blanca"
+                                    value={objVal?.texto || ''}
+                                    onChange={(e) => handleObjProp(grupoActual!.clave, false, o.clave, 'texto', e.target.value)}
+                                  />
+                                  <p className="text-[11px] text-muted-foreground italic">
+                                    Si lleva costo extra, agrégalo en Ajustes al costo.
+                                  </p>
                                 </div>
                               )}
                             </div>

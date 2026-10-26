@@ -55,6 +55,63 @@ export function obtenerRetractilesDeClaveAbs(claveAbs: string): number | null {
   return null;
 }
 
+/**
+ * Normaliza claves de opción para compatibilidad retroactiva (Sub-bloque 2R-12).
+ * Por ejemplo: retractil/paleta se normaliza a retractil/grande.
+ */
+export function normalizarClaveOpcion(grupo: string, clave: string): string {
+  if (!clave || typeof clave !== "string") return clave;
+  if (grupo === "retractil" && clave === "paleta") {
+    return "grande";
+  }
+  return clave;
+}
+
+/**
+ * Calcula el número máximo de piezas permitido para un grupo según su regla JSON
+ * y los datos del modelo (soporta 'por_num_ejes', 'por_eje' y 'fija').
+ */
+export function calcularMaxPiezas(regla: any, modelo: any): number | undefined {
+  if (!regla) return undefined;
+  let r = regla;
+  if (typeof r === "string") {
+    try {
+      r = JSON.parse(r);
+    } catch {
+      return undefined;
+    }
+  }
+  if (!r || typeof r !== "object" || !r.max_total) return undefined;
+  const maxTotal = r.max_total;
+
+  if (maxTotal.por_num_ejes && typeof maxTotal.por_num_ejes === "object" && typeof modelo?.num_ejes === "number") {
+    const val = maxTotal.por_num_ejes[String(modelo.num_ejes)];
+    if (typeof val === "number") return val;
+    return undefined;
+  }
+  if (typeof maxTotal.por_eje === "number" && typeof modelo?.num_ejes === "number") {
+    return maxTotal.por_eje * modelo.num_ejes;
+  }
+  if (typeof maxTotal.fija === "number") {
+    return maxTotal.fija;
+  }
+  return undefined;
+}
+
+/**
+ * Sanitiza y limpia el texto libre de color personalizado (Sub-bloque 2R-12):
+ * Elimina etiquetas HTML, normaliza espacios y trunca a máximo 80 caracteres.
+ */
+export function limpiarTextoColorPersonalizado(texto: string): string {
+  if (!texto || typeof texto !== "string") return "";
+  let limpio = texto.replace(/<[^>]*>/g, "");
+  limpio = limpio.replace(/\s+/g, " ").trim();
+  if (limpio.length > 80) {
+    limpio = limpio.slice(0, 80).trim();
+  }
+  return limpio;
+}
+
 export function validarCompatibilidad(
   config: Configuracion,
   datos: DatosModelo,
@@ -81,14 +138,31 @@ export function validarCompatibilidad(
   const retrList = retrRaw ? (Array.isArray(retrRaw) ? retrRaw : [retrRaw]) : [];
 
   for (const r of retrList) {
-    const oClave = typeof r === "string" ? r : r?.opcion;
-    if (!oClave) continue;
-    const opcion = datos.opciones.find((o) => o.grupo_id === grpRetractil?.id && o.clave === oClave);
-    if (susp && opcion && opcion.clave !== "sin_retractil" && opcion.clave !== "paleta") {
-      if (susp.clase === "alta" && opcion.clave !== "grande") {
+    const oClaveRaw = typeof r === "string" ? r : r?.opcion;
+    if (!oClaveRaw) continue;
+    const oClave = normalizarClaveOpcion("retractil", oClaveRaw);
+    const opcion = datos.opciones.find((o) => o.grupo_id === grpRetractil?.id && (o.clave === oClave || o.clave === oClaveRaw));
+    if (susp && opcion && oClave !== "sin_retractil") {
+      if (susp.clase === "alta" && oClave !== "grande") {
         errores.push(`Incompatibilidad: La suspensión de clase alta requiere un retráctil grande (seleccionado: ${opcion.nombre}).`);
-      } else if (susp.clase === "normal" && opcion.clave !== "chico") {
+      } else if (susp.clase === "normal" && oClave !== "chico") {
         errores.push(`Incompatibilidad: La suspensión de clase normal requiere un retráctil chico (seleccionado: ${opcion.nombre}).`);
+      }
+    }
+  }
+
+  // Validación de color personalizado (texto obligatorio y limpio)
+  const colorRaw = config.grupos?.["color"];
+  if (colorRaw) {
+    const colorList = Array.isArray(colorRaw) ? colorRaw : [colorRaw];
+    for (const c of colorList) {
+      const op = typeof c === "string" ? c : c?.opcion;
+      if (op === "personalizado") {
+        const texto = typeof c === "object" && c ? (c as any).texto : "";
+        const textoLimpio = limpiarTextoColorPersonalizado(texto || "");
+        if (!textoLimpio) {
+          errores.push("El color personalizado requiere especificar el texto del color.");
+        }
       }
     }
   }
@@ -119,14 +193,7 @@ export function validarCompatibilidad(
         regla = null;
       }
     }
-    if (!regla || typeof regla !== "object" || !regla.max_total) continue;
-
-    let maxPiezas: number | undefined = undefined;
-    if (regla.max_total?.por_eje && typeof datos.modelo?.num_ejes === "number") {
-      maxPiezas = regla.max_total.por_eje * datos.modelo.num_ejes;
-    } else if (typeof regla.max_total?.fija === "number") {
-      maxPiezas = regla.max_total.fija;
-    }
+    const maxPiezas = calcularMaxPiezas(regla, datos.modelo);
     if (maxPiezas === undefined) continue;
 
     const valConfigRaw = config.grupos?.[grupo.clave];

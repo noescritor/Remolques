@@ -9,7 +9,9 @@ import {
   obtenerCantidadDefecto,
   validarFilasSeleccionMixta,
   siguienteCantidad,
-  completarConEstaOpcion
+  completarConEstaOpcion,
+  normalizarClaveOpcion,
+  limpiarTextoColorPersonalizado
 } from "./seleccionMixta.ts";
 
 Deno.test("seleccionMixta - normalizarFilas: maneja formatos string, objeto único y arreglo (retrocompatibilidad)", () => {
@@ -205,4 +207,35 @@ Deno.test("seleccionMixta - 2R-10: obtenerCantidadDefecto y normalización para 
   assertEquals(resValRetractil.valido, false);
   assertEquals(resValRetractil.errores[0], "Los retráctiles suman 3 piezas y el máximo para este modelo es 2");
 });
+
+Deno.test("Sub-bloque 2R-12: normalizarClaveOpcion, limpiarTextoColorPersonalizado y calcularMaxPiezasGrupo por_num_ejes", () => {
+  // 1. normalizarClaveOpcion
+  assertEquals(normalizarClaveOpcion("retractil", "paleta"), "grande");
+  assertEquals(normalizarClaveOpcion("retractil", "grande"), "grande");
+  assertEquals(normalizarClaveOpcion("retractil", "chico"), "chico");
+  assertEquals(normalizarClaveOpcion("retractil", "sin_retractil"), "sin_retractil");
+  assertEquals(normalizarClaveOpcion("piso", "paleta"), "paleta");
+  assertEquals(normalizarClaveOpcion("rines", "aluminio"), "aluminio");
+
+  // 2. limpiarTextoColorPersonalizado
+  assertEquals(limpiarTextoColorPersonalizado(""), "");
+  assertEquals(limpiarTextoColorPersonalizado(null as any), "");
+  assertEquals(limpiarTextoColorPersonalizado("   Verde militar   "), "Verde militar");
+  assertEquals(limpiarTextoColorPersonalizado("<b>Blanco</b> perla <script>alert(1)</script>"), "Blanco perla alert(1)");
+  assertEquals(limpiarTextoColorPersonalizado("A".repeat(100)), "A".repeat(80));
+
+  // 3. calcularMaxPiezasGrupo con por_num_ejes (2 ejes -> 1, 3 ejes -> 2, otro -> undefined)
+  const grupoRetractil = {
+    clave: "retractil",
+    regla: {
+      max_total: { por_num_ejes: { "2": 1, "3": 2 } },
+      cantidad_defecto: 1
+    }
+  };
+  assertEquals(calcularMaxPiezasGrupo(grupoRetractil, { num_ejes: 2 }), 1);
+  assertEquals(calcularMaxPiezasGrupo(grupoRetractil, { num_ejes: 3 }), 2);
+  assertEquals(calcularMaxPiezasGrupo(grupoRetractil, { num_ejes: 1 }), undefined);
+  assertEquals(calcularMaxPiezasGrupo(grupoRetractil, { num_ejes: 4 }), undefined);
+});
+
 

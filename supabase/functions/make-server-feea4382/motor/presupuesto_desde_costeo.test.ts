@@ -494,11 +494,23 @@ Deno.test("Sub-bloque 2R-8: Presupuesto con rines y llantas mixtos genera una l�
 Deno.test("Sub-bloque 2R-10: Presupuesto con 2 retráctiles - caen en truckzone y total igual al costeo", () => {
   const datosConRetractil: DatosCosteo = {
     ...datosCosteoBase,
+    modelo: {
+      ...datosCosteoBase.modelo,
+      num_ejes: 3
+    },
     opcion_costos: [
       ...datosCosteoBase.opcion_costos,
       { grupo_clave: "retractil", opcion_clave: "chico", cantidad_base: 1, escala: "fija", costo_unitario: 15000, fuente: "Tarifario" },
       { grupo_clave: "retractil", opcion_clave: "grande", cantidad_base: 1, escala: "fija", costo_unitario: 15000, fuente: "Tarifario" }
     ]
+  };
+
+  const datosModelo3Ejes: DatosModelo = {
+    ...datosModeloBase,
+    modelo: {
+      ...datosModeloBase.modelo,
+      num_ejes: 3
+    }
   };
 
   const config2Retr: Configuracion = {
@@ -513,7 +525,7 @@ Deno.test("Sub-bloque 2R-10: Presupuesto con 2 retráctiles - caen en truckzone 
   };
 
   const costeoRes = costear(datosConRetractil, config2Retr, ajustesExcel);
-  const bomRes = resolverReceta(datosModeloBase, config2Retr);
+  const bomRes = resolverReceta(datosModelo3Ejes, config2Retr);
 
   const res = generarPresupuestoDesdeCosteo([
     {
