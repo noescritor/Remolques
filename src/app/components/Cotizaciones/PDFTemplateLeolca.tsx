@@ -3,6 +3,11 @@ import { formatearMoneda, formatearFecha, calcularTotalesCotizacion } from '../.
 import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 import { decidirLogoEncabezado } from '../../utils/logo';
 
+// ─── Font size tokens (Sub-bloque 2R-12) ───────────────────────────────────────
+const FS_ETIQUETA_MIN = 10;   // Pequeñas/labels: mínimo 10px
+const FS_ESPEC_MIN = 12;      // Especificaciones de equipo: mínimo 11px
+const FS_CUERPO_MIN = 14;     // Cuerpo: mínimo 13px
+
 interface PDFTemplateLeolcaProps {
   cotizacion: Cotizacion;
   cliente: Cliente;

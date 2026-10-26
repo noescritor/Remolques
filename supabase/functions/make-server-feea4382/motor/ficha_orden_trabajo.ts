@@ -1,5 +1,5 @@
 import type { DatosModelo, GrupoOpcion, Opcion } from "./tipos.ts";
-import { fusionarFilasConfig } from "./reglas_compatibilidad.ts";
+import { fusionarFilasConfig, normalizarClaveOpcion, limpiarTextoColorPersonalizado } from "./reglas_compatibilidad.ts";
 
 export interface CabeceraFicha {
   cliente: string;
@@ -171,7 +171,6 @@ export const APLICA_A_DEFECTO: Record<string, string[]> = {
   rines: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
   llantas: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
   color: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
-  pintura: ["plataforma", "dolly", "gondola", "jaula", "caja_seca"],
 };
 
 export function grupoAplicaAlTipo(
@@ -186,7 +185,6 @@ export function grupoAplicaAlTipo(
   const grupo = gruposCat.find((g) => g.clave === claveGrupo);
   if (grupo && grupo.aplica_a !== undefined && grupo.aplica_a !== null) {
     if (Array.isArray(grupo.aplica_a)) {
-      if (grupo.aplica_a.length === 0) return true;
       return grupo.aplica_a.map((t: string) => t.toLowerCase().trim()).includes(tipoNorm);
     }
     if (typeof grupo.aplica_a === "string") {
@@ -416,7 +414,8 @@ export function construirFichaOrdenTrabajo(
     if (filasRetractil.length > 0) {
       let cantRetractil = 0;
       for (const r of filasRetractil) {
-        const opClave = typeof r === "string" ? r : r?.opcion;
+        const rawClave = typeof r === "string" ? r : r?.opcion;
+        const opClave = normalizarClaveOpcion("retractil", rawClave);
         if (opClave && !opClave.startsWith("sin_")) {
           const c = typeof r === "object" && typeof r?.cantidad === "number" ? r.cantidad : 1;
           cantRetractil += c;
@@ -468,24 +467,15 @@ export function construirFichaOrdenTrabajo(
     const filasColor = obtenerFilasGrupo(gruposConfig, "color");
     if (filasColor.length > 0) {
       const primerColor = filasColor[0];
-      const opClave = typeof primerColor === "string" ? primerColor : primerColor?.opcion;
-      const opt = buscarOpcion("color", opClave);
-      let colorNom = opt ? opt.nombre : aOracion(opClave || "Por definir");
-
-      // Marca de pintura
-      const filasPintura = obtenerFilasGrupo(gruposConfig, "pintura");
-      if (filasPintura.length > 0) {
-        const p = filasPintura[0];
-        const pClave = typeof p === "string" ? p : p?.opcion;
-        if (pClave && !pClave.startsWith("sin_")) {
-          const optP = buscarOpcion("pintura", pClave);
-          const marcaPintura = optP ? optP.nombre : pClave;
-          if (marcaPintura) {
-            colorNom = `${colorNom}, ${marcaPintura}`;
-          }
-        }
+      const rawClave = typeof primerColor === "string" ? primerColor : primerColor?.opcion;
+      const opClave = normalizarClaveOpcion("color", rawClave);
+      if (opClave === "personalizado") {
+        const txt = typeof primerColor === "object" && primerColor?.texto ? limpiarTextoColorPersonalizado(primerColor.texto) : "";
+        valorColor = txt || "Color personalizado";
+      } else {
+        const opt = buscarOpcion("color", opClave);
+        valorColor = opt ? opt.nombre : aOracion(opClave || "Por definir");
       }
-      valorColor = colorNom;
     }
   }
 

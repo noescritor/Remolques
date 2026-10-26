@@ -636,4 +636,156 @@ Deno.test("26. 2R-10: Coherencia con el kit de aire (abs) y cantidad de retráct
   assertEquals(advDesconocida, []);
 });
 
+Deno.test("27. Sub-bloque 2R-12: Límites de retráctiles por num_ejes (2 ejes -> max 1, 3 ejes -> max 2), paleta a grande, color personalizado", () => {
+  const datos2Ejes = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  datos2Ejes.modelo.num_ejes = 2;
+
+  const datos3Ejes = JSON.parse(JSON.stringify(datos)) as DatosModelo;
+  datos3Ejes.modelo.num_ejes = 3;
+
+  // 1. Plataforma 2 ejes con 2 retráctiles -> error exacto
+  const err2e2r: string[] = [];
+  const adv2e2r: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      retractil: [
+        { opcion: "grande", cantidad: 2 }
+      ]
+    }
+  }, datos2Ejes, err2e2r, adv2e2r);
+  assertEquals(err2e2r, [
+    "Los retráctiles suman 2 piezas y el máximo para este modelo es 1"
+  ]);
+
+  // 2. Plataforma 3 ejes con 2 retráctiles -> válido
+  const err3e2r: string[] = [];
+  const adv3e2r: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      retractil: [
+        { opcion: "chico", cantidad: 1 },
+        { opcion: "grande", cantidad: 1 }
+      ]
+    }
+  }, datos3Ejes, err3e2r, adv3e2r);
+  assertEquals(err3e2r, []);
+
+  // 3. Plataforma 3 ejes con 3 retráctiles -> error exacto
+  const err3e3r: string[] = [];
+  const adv3e3r: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      retractil: [
+        { opcion: "grande", cantidad: 3 }
+      ]
+    }
+  }, datos3Ejes, err3e3r, adv3e3r);
+  assertEquals(err3e3r, [
+    "Los retráctiles suman 3 piezas y el máximo para este modelo es 2"
+  ]);
+
+  // 4. 0 retráctiles (sin_retractil o sin filas) -> válido
+  const err0rSin: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      retractil: "sin_retractil"
+    }
+  }, datos2Ejes, err0rSin, []);
+  assertEquals(err0rSin, []);
+
+  const err0rVacio: string[] = [];
+  validarCompatibilidad({
+    grupos: {}
+  }, datos2Ejes, err0rVacio, []);
+  assertEquals(err0rVacio, []);
+
+  // 5. Configuración vieja retractil: 'chico' -> 1 pieza, válida en 2 ejes
+  const errVieja: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      retractil: "chico"
+    }
+  }, datos2Ejes, errVieja, []);
+  assertEquals(errVieja, []);
+
+  // 6. Suspensión alta con retractil 'paleta' -> normaliza a 'grande' y NO arroja error de incompatibilidad
+  const errPaleta: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      suspension: "alta_hendrickson",
+      retractil: "paleta"
+    }
+  }, datos2Ejes, errPaleta, []);
+  assertEquals(errPaleta, []);
+
+  // Contrastar con suspensión alta y retractil 'chico' -> arroja error
+  const errChico: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      suspension: "alta_hendrickson",
+      retractil: "chico"
+    }
+  }, datos2Ejes, errChico, []);
+  assertEquals(errChico, [
+    "Incompatibilidad: La suspensión de clase alta requiere un retráctil grande (seleccionado: Retráctil chico (UBL))."
+  ]);
+
+  // 7. BOM: retractil 'paleta' genera línea para SISTEMA RETRACTIL GRANDE y no arroja advertencia
+  const resBomPaleta = resolverReceta(datos2Ejes, {
+    grupos: {
+      suspension: "alta_hendrickson",
+      eje: "hendrickson",
+      patin: "hj",
+      retractil: "paleta"
+    }
+  });
+  const lineaBomGrande = resBomPaleta.lineas.filter(l => l.nombre.includes("SISTEMA RETRACTIL GRANDE"));
+  assertEquals(lineaBomGrande.length, 1);
+  assertEquals(lineaBomGrande[0].cantidad, 1);
+  assertEquals(resBomPaleta.advertencias.some(a => a.includes("receta")), false);
+
+  // 8. Color personalizado: vacío o espacios -> error; texto válido -> sin error
+  const errColorVacio: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      color: { opcion: "personalizado", texto: "   " }
+    }
+  }, datos2Ejes, errColorVacio, []);
+  assertEquals(errColorVacio, [
+    "El color personalizado requiere especificar el texto del color."
+  ]);
+
+  const errColorOk: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      color: { opcion: "personalizado", texto: "Azul metálico" }
+    }
+  }, datos2Ejes, errColorOk, []);
+  assertEquals(errColorOk, []);
+
+  // 9. Coherencia kit de aire (abs) con nuevos límites
+  const advAbs0: string[] = [];
+  validarCompatibilidad({
+    grupos: { abs: "2e_sin_retractil", retractil: "sin_retractil" }
+  }, datos2Ejes, [], advAbs0);
+  assertEquals(advAbs0, []);
+
+  const advAbs1: string[] = [];
+  validarCompatibilidad({
+    grupos: { abs: "2e_1_retractil", retractil: "chico" }
+  }, datos2Ejes, [], advAbs1);
+  assertEquals(advAbs1, []);
+
+  const advAbs2: string[] = [];
+  validarCompatibilidad({
+    grupos: {
+      abs: "3e_2_retractil",
+      retractil: [
+        { opcion: "grande", cantidad: 2 }
+      ]
+    }
+  }, datos3Ejes, [], advAbs2);
+  assertEquals(advAbs2, []);
+});
+
 

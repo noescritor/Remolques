@@ -12,6 +12,11 @@ import { decidirLogoEncabezado } from '../../utils/logo';
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const PURPLE = '#6351D3';
 
+// ─── Font size tokens (Sub-bloque 2R-12) ───────────────────────────────────────
+const FS_ETIQUETA_MIN = 10;   // Pequeñas/mono: encabezados tabla, pie, meta (mínimo 10px)
+const FS_ESPEC_MIN = 11;      // Especificaciones de equipo: etiqueta y valor (mínimo 11px)
+const FS_CUERPO_MIN = 13;     // Cuerpo: nombre equipo, cliente, descripción (mínimo 13px)
+
 /** DM Mono — labels, numbers, codes */
 const m = (sz: number, op?: number): CSSProperties => ({
   fontFamily: "'DM Mono', 'Courier New', monospace",
@@ -89,7 +94,7 @@ function PageHeader({
             </>
           )}
         </div>
-        <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.4)' }}>
+        <span style={{ ...m(FS_ETIQUETA_MIN, 1), color: 'rgba(255,255,255,0.4)' }}>
           Cotización {folio}
         </span>
       </header>
@@ -120,7 +125,7 @@ function PageHeader({
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <span style={{ ...s(17, 700), color: '#fff' }}>{empresa}</span>
                 {tagline ? (
-                  <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.45)', textTransform: 'none' }}>
+                  <span style={{ ...m(FS_ETIQUETA_MIN, 1), color: 'rgba(255,255,255,0.45)', textTransform: 'none' }}>
                     {tagline}
                   </span>
                 ) : null}
@@ -143,7 +148,7 @@ function PageHeader({
               ) : null}
               <span style={{ ...s(17, 700), color: '#fff' }}>{empresa}</span>
             </div>
-            <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.45)', textTransform: 'none' }}>
+            <span style={{ ...m(FS_ETIQUETA_MIN, 1), color: 'rgba(255,255,255,0.45)', textTransform: 'none' }}>
               {tagline}
             </span>
           </>
@@ -155,7 +160,7 @@ function PageHeader({
         {[ajustes.direccion, ajustes.email, ajustes.telefono, ajustes.sitio_web]
           .filter(Boolean)
           .map((line, i) => (
-            <span key={i} style={{ ...m(8, 1), color: 'rgba(255,255,255,0.5)' }}>
+            <span key={i} style={{ ...m(FS_ETIQUETA_MIN, 1), color: 'rgba(255,255,255,0.5)' }}>
               {line}
             </span>
           ))}
@@ -190,12 +195,12 @@ function PageFooter({
         background: '#fff',
       }}
     >
-      <span style={{ ...s(8, 700) }}>{sitio || empresa}</span>
+      <span style={{ ...s(FS_ETIQUETA_MIN, 700) }}>{sitio || empresa}</span>
       <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-        <span style={{ ...m(8, 1), color: 'rgba(0,0,0,0.3)' }}>Generada el {hoy}</span>
-        <span style={{ ...m(8, 1), color: 'rgba(0,0,0,0.25)' }}>{page}</span>
+        <span style={{ ...m(FS_ETIQUETA_MIN, 1), color: 'rgba(0,0,0,0.3)' }}>Generada el {hoy}</span>
+        <span style={{ ...m(FS_ETIQUETA_MIN, 1), color: 'rgba(0,0,0,0.25)' }}>{page}</span>
       </div>
-      <span style={{ ...s(8, 700, 0.3) }}>{empresa}</span>
+      <span style={{ ...s(FS_ETIQUETA_MIN, 700, 0.4) }}>{empresa}</span>
     </footer>
   );
 }
@@ -310,49 +315,49 @@ export function PDFTemplateMoodboard({
 
             {/* Bill To */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <span style={{ ...m(9, 0.4), textTransform: 'uppercase' }}>Facturar a</span>
+              <span style={{ ...m(FS_ETIQUETA_MIN, 0.45), textTransform: 'uppercase' }}>Facturar a</span>
               <span style={{ ...s(15, 700) }}>{cliente?.nombre_razon_social || 'Cliente'}</span>
               {cliente?.nombre_contacto && (
-                <span style={{ ...s(10, 400, 0.6) }}>Atención: {cliente.nombre_contacto}</span>
+                <span style={{ ...s(FS_CUERPO_MIN, 400, 0.7) }}>Atención: {cliente.nombre_contacto}</span>
               )}
               {(cliente?.ciudad || cliente?.estado) && (
-                <span style={{ ...s(10, 400, 0.6) }}>
+                <span style={{ ...s(FS_CUERPO_MIN, 400, 0.7) }}>
                   {[cliente.ciudad, cliente.estado].filter(Boolean).join(', ')}
                 </span>
               )}
               {cliente?.correo && (
-                <span style={{ ...s(10, 500), color: PURPLE }}>{cliente.correo}</span>
+                <span style={{ ...s(FS_CUERPO_MIN, 500), color: PURPLE }}>{cliente.correo}</span>
               )}
               {cliente?.telefono && (
-                <span style={{ ...s(10, 400, 0.5) }}>{cliente.telefono}</span>
+                <span style={{ ...s(FS_CUERPO_MIN, 400, 0.7) }}>{cliente.telefono}</span>
               )}
             </div>
 
             {/* Quote Meta */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-end' }}>
-              <span style={{ ...m(9, 0.4), textTransform: 'uppercase' }}>Cotización</span>
+              <span style={{ ...m(FS_ETIQUETA_MIN, 0.45), textTransform: 'uppercase' }}>Cotización</span>
               <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
                 {/* Número */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
-                  <span style={{ ...s(9, 400, 0.45) }}>Número</span>
+                  <span style={{ ...s(FS_ETIQUETA_MIN, 400, 0.5) }}>Número</span>
                   <span style={{ ...m(12, 1), color: PURPLE }}>{cotizacion.folio}</span>
                 </div>
                 {/* Fecha */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span style={{ ...s(9, 400, 0.45) }}>Fecha</span>
+                  <span style={{ ...s(FS_ETIQUETA_MIN, 400, 0.5) }}>Fecha</span>
                   <span style={{ ...s(12, 500) }}>{formatearFecha(cotizacion.fecha)}</span>
                 </div>
                 {/* Vigencia */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span style={{ ...s(9, 400, 0.45) }}>Vigencia</span>
+                  <span style={{ ...s(FS_ETIQUETA_MIN, 400, 0.5) }}>Vigencia</span>
                   <span style={{ ...s(12, 500) }}>{cotizacion.validez_dias} días</span>
                 </div>
                 {/* Estado */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span style={{ ...s(9, 400, 0.45) }}>Estado</span>
+                  <span style={{ ...s(FS_ETIQUETA_MIN, 400, 0.5) }}>Estado</span>
                   <span
                     style={{
-                      ...m(8, 1),
+                      ...m(FS_ETIQUETA_MIN, 1),
                       background: badge.bg,
                       color: badge.color,
                       padding: '4px 8px',
@@ -377,8 +382,8 @@ export function PDFTemplateMoodboard({
                 borderRadius: '0 4px 4px 0',
               }}
             >
-              <span style={{ ...s(9, 700, 0.7) }}>Proyecto: </span>
-              <span style={{ ...s(9, 400, 0.6) }}>{cotizacion.descripcion}</span>
+              <span style={{ ...s(FS_CUERPO_MIN, 700, 0.8) }}>Proyecto: </span>
+              <span style={{ ...s(FS_CUERPO_MIN, 400, 0.75) }}>{cotizacion.descripcion}</span>
             </div>
           )}
 
@@ -398,13 +403,13 @@ export function PDFTemplateMoodboard({
             >
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
                 <span style={{ ...s(14, 700) }}>Servicios / Productos</span>
-                <span style={{ ...m(8, 0.35), textTransform: 'uppercase' }}>Descripción</span>
+                <span style={{ ...m(FS_ETIQUETA_MIN, 0.45), textTransform: 'uppercase' }}>Descripción</span>
               </div>
               <div style={{ display: 'flex', gap: 16 }}>
                 {['Cant.', 'Precio Unit.', 'Total'].map((col) => (
                   <span
                     key={col}
-                    style={{ ...m(8, 0.35), minWidth: 72, textAlign: 'right', textTransform: 'uppercase' }}
+                    style={{ ...m(FS_ETIQUETA_MIN, 0.45), minWidth: 72, textAlign: 'right', textTransform: 'uppercase' }}
                   >
                     {col}
                   </span>
@@ -421,7 +426,7 @@ export function PDFTemplateMoodboard({
               const isLast = i === items.length - 1;
 
               return (
-                <div key={item.id ?? i}>
+                <div key={item.id ?? i} style={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}>
                   <div
                     style={{
                       display: 'flex',
@@ -437,14 +442,14 @@ export function PDFTemplateMoodboard({
 
                     {/* Description block */}
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                      <span style={{ ...s(13, 700) }}>
+                      <span style={{ ...s(FS_CUERPO_MIN, 700) }}>
                         {produto?.nombre || item.descripcion}
                       </span>
                       {produto?.descripcion && (
-                        <span style={{ ...s(10, 400, 0.5) }}>{produto.descripcion}</span>
+                        <span style={{ ...s(FS_ESPEC_MIN, 400, 0.65) }}>{produto.descripcion}</span>
                       )}
                       {esServicio && (
-                        <span style={{ ...s(9, 400, 0.4) }}>
+                        <span style={{ ...s(FS_ETIQUETA_MIN, 400, 0.6) }}>
                           {item.meses_cobrados ? `• ${item.meses_cobrados} mes(es)` : ''}
                           {item.incluir_setup ? ' • Setup incluido' : ''}
                           {item.asientos_extra ? ` • ${item.asientos_extra} asientos extra` : ''}
@@ -455,11 +460,11 @@ export function PDFTemplateMoodboard({
                         const lineas = normalizarResumenLineas(cfg?.resumen_lineas);
                         if (lineas.length === 0) return null;
                         return (
-                          <div style={{ marginTop: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
                             {lineas.map((linea, idx: number) => (
-                                <span key={idx} style={{ ...s(9, 400, 0.5) }}>
-                                  <span style={{ fontWeight: 600 }}>{linea.etiqueta}:</span> {linea.valor}
-                                </span>
+                              <span key={idx} style={{ ...s(FS_ESPEC_MIN, 400), color: 'rgba(0,0,0,0.85)' }}>
+                                <span style={{ fontWeight: 600 }}>{linea.etiqueta}:</span> {linea.valor}
+                              </span>
                             ))}
                           </div>
                         );
@@ -468,13 +473,13 @@ export function PDFTemplateMoodboard({
 
                     {/* Pricing columns */}
                     <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                      <span style={{ ...s(10, 400, 0.6), minWidth: 72, textAlign: 'right' }}>
+                      <span style={{ ...s(FS_ESPEC_MIN, 400, 0.75), minWidth: 72, textAlign: 'right' }}>
                         {item.cantidad} {item.unidad}
                       </span>
-                      <span style={{ ...m(9, 0.55), minWidth: 84, textAlign: 'right' }}>
+                      <span style={{ ...m(FS_ESPEC_MIN, 0.75), minWidth: 84, textAlign: 'right' }}>
                         {precioDisplay}
                       </span>
-                      <span style={{ ...m(12, 1), minWidth: 84, textAlign: 'right' }}>
+                      <span style={{ ...m(13, 1), minWidth: 84, textAlign: 'right' }}>
                         {formatearMoneda(total)}
                       </span>
                     </div>
@@ -594,7 +599,7 @@ export function PDFTemplateMoodboard({
           >
             {formatearMoneda(totales.total)}
           </span>
-          <span style={{ ...m(9, 1), color: 'rgba(255,255,255,0.35)', textTransform: 'none' }}>
+          <span style={{ ...m(FS_ETIQUETA_MIN, 1), color: 'rgba(255,255,255,0.35)', textTransform: 'none' }}>
             MXN · {cotizacion.con_factura !== false ? 'IVA incluido' : 'IVA no incluido'}
           </span>
         </div>
@@ -619,7 +624,7 @@ export function PDFTemplateMoodboard({
                       padding: '11px 0',
                     }}
                   >
-                    <span style={{ ...s(11, 400, 0.7) }}>{produto?.nombre || item.descripcion}</span>
+                    <span style={{ ...s(FS_ESPEC_MIN, 400, 0.8) }}>{produto?.nombre || item.descripcion}</span>
                     <span style={{ ...m(13, 1) }}>{formatearMoneda(total)}</span>
                   </div>
                   <Divider opacity={0.06} />
@@ -630,12 +635,12 @@ export function PDFTemplateMoodboard({
             {/* Totals block */}
             <Divider opacity={0.88} height={2} />
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '11px 0' }}>
-              <span style={{ ...m(9, 0.7), textTransform: 'uppercase' }}>Subtotal</span>
+              <span style={{ ...m(FS_ETIQUETA_MIN, 0.7), textTransform: 'uppercase' }}>Subtotal</span>
               <span style={{ ...m(11) }}>{formatearMoneda(totales.subtotal)}</span>
             </div>
             {totales.iva > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0 11px' }}>
-                <span style={{ ...m(9, 0.5), textTransform: 'uppercase' }}>
+                <span style={{ ...m(FS_ETIQUETA_MIN, 0.5), textTransform: 'uppercase' }}>
                   IVA ({(ajustes.iva_por_defecto * 100).toFixed(0)}%)
                 </span>
                 <span style={{ ...m(11, 0.65) }}>{formatearMoneda(totales.iva)}</span>
@@ -643,7 +648,7 @@ export function PDFTemplateMoodboard({
             )}
             <Divider />
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '11px 0' }}>
-              <span style={{ ...m(10, 1), fontWeight: 700, textTransform: 'uppercase' }}>Total a Pagar</span>
+              <span style={{ ...m(FS_ETIQUETA_MIN, 1), fontWeight: 700, textTransform: 'uppercase' }}>Total a Pagar</span>
               <span style={{ ...m(14, 1), color: PURPLE, fontWeight: 700 }}>
                 {formatearMoneda(totales.total)}
               </span>
@@ -657,21 +662,21 @@ export function PDFTemplateMoodboard({
             <span style={{ ...s(13, 700) }}>Términos y Condiciones</span>
             {cotizacion.nota ? (
               cotizacion.nota.split('\n').map((line, i) => (
-                <span key={i} style={{ ...s(9, 400, 0.55) }}>{line}</span>
+                <span key={i} style={{ ...s(FS_ESPEC_MIN, 400, 0.65) }}>{line}</span>
               ))
             ) : (
               <>
-                <span style={{ ...s(9, 400, 0.55) }}>
+                <span style={{ ...s(FS_ESPEC_MIN, 400, 0.65) }}>
                   • Vigencia de la cotización: {cotizacion.validez_dias} días naturales a partir de la fecha de emisión.
                 </span>
-                <span style={{ ...s(9, 400, 0.55) }}>
+                <span style={{ ...s(FS_ESPEC_MIN, 400, 0.65) }}>
                   • Los precios están expresados en pesos mexicanos (MXN)
                   {cotizacion.con_factura !== false ? ' e IVA incluido.' : ' e IVA no incluido.'}
                 </span>
-                <span style={{ ...s(9, 400, 0.55) }}>
+                <span style={{ ...s(FS_ESPEC_MIN, 400, 0.65) }}>
                   • El inicio del proyecto está sujeto a la confirmación de pago del anticipo del 50%.
                 </span>
-                <span style={{ ...s(9, 400, 0.55) }}>
+                <span style={{ ...s(FS_ESPEC_MIN, 400, 0.65) }}>
                   • Cualquier trabajo fuera del alcance descrito será cotizado por separado.
                 </span>
               </>
@@ -712,9 +717,9 @@ export function PDFTemplateMoodboard({
                     gap: 7,
                   }}
                 >
-                  <span style={{ ...s(10, 700) }}>{card.title}</span>
+                  <span style={{ ...s(FS_ESPEC_MIN, 700) }}>{card.title}</span>
                   {card.lines.map((l, i) => (
-                    <span key={i} style={{ ...m(8, 0.5) }}>{l}</span>
+                    <span key={i} style={{ ...m(FS_ETIQUETA_MIN, 0.6) }}>{l}</span>
                   ))}
                 </div>
               ))}
@@ -734,7 +739,7 @@ export function PDFTemplateMoodboard({
           >
             <div style={{ height: 3, background: PURPLE, borderRadius: 2 }} />
             <span style={{ ...s(14, 700) }}>¡Gracias por la confianza!</span>
-            <span style={{ ...s(10, 400, 0.6) }}>
+            <span style={{ ...s(FS_ESPEC_MIN, 400, 0.7) }}>
               Estamos listos para arrancar. Para confirmar, escríbenos a{' '}
               <span style={{ color: PURPLE }}>{ajustes.email || 'ventas@ideally.com.mx'}</span>
             </span>

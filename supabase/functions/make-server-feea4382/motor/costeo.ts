@@ -7,7 +7,7 @@ import type {
   LineaCosteo,
   PendienteCosteo
 } from "./tipos.ts";
-import { fusionarFilasConfig } from "./reglas_compatibilidad.ts";
+import { fusionarFilasConfig, normalizarClaveOpcion } from "./reglas_compatibilidad.ts";
 
 function calcularCantidad(cantidadBase: number, escala: string, modelo: Modelo): number {
   if (escala === "por_eje") {
@@ -165,9 +165,10 @@ export function costear(
     for (const valConfig of configVals) {
       const oClave = typeof valConfig === "string" ? valConfig : valConfig.opcion;
       if (!oClave) continue;
+      const oClaveNorm = normalizarClaveOpcion(grupoClave, oClave);
 
       const optCosto = (datos.opcion_costos || []).find(
-        (oc) => oc.grupo_clave === grupoClave && oc.opcion_clave === oClave
+        (oc) => oc.grupo_clave === grupoClave && (oc.opcion_clave === oClaveNorm || oc.opcion_clave === oClave)
       );
 
       if (optCosto) {
@@ -234,7 +235,11 @@ export function costear(
         });
       } else {
         const esExenta =
-          oClave.startsWith("sin_") || oClave === "paleta" || oClave === "cliente";
+          oClaveNorm.startsWith("sin_") ||
+          oClaveNorm === "grande" ||
+          oClaveNorm === "paleta" ||
+          oClaveNorm === "cliente" ||
+          oClaveNorm === "personalizado";
 
         if (!esExenta) {
           pendientes.push({

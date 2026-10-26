@@ -1946,7 +1946,15 @@
       "clave": "retractil",
       "nombre": "Sistema retráctil",
       "seleccion": "unica",
-      "regla": null,
+      "regla": {
+        "max_total": {
+          "por_num_ejes": {
+            "2": 1,
+            "3": 2
+          }
+        },
+        "cantidad_defecto": 1
+      },
       "aplica_a": null,
       "depende_de": null,
       "cantidad": "0 a 2",
@@ -2049,7 +2057,7 @@
       "nombre": "Marca de pintura",
       "seleccion": "unica",
       "regla": null,
-      "aplica_a": null,
+      "aplica_a": [],
       "depende_de": null,
       "cantidad": null,
       "unidad_precio": null,
@@ -2358,7 +2366,7 @@
       "clase": "",
       "marcas": null,
       "medidas": null,
-      "activo": true,
+      "activo": false,
       "aliases": null
     },
     {
@@ -2760,7 +2768,7 @@
       "clase": "",
       "marcas": null,
       "medidas": null,
-      "activo": true,
+      "activo": false,
       "aliases": null
     },
     {
@@ -3201,6 +3209,18 @@
       "grupo_id": "4b11860b-0000-0000-0000-000000000000",
       "clave": "axalta",
       "nombre": "Axalta",
+      "precio_venta": 0,
+      "clase": "",
+      "marcas": null,
+      "medidas": null,
+      "activo": true,
+      "aliases": null
+    },
+    {
+      "id": "e9c12345-0000-0000-0000-000000000000",
+      "grupo_id": "94d13f69-0000-0000-0000-000000000000",
+      "clave": "personalizado",
+      "nombre": "Color personalizado",
       "precio_venta": 0,
       "clase": "",
       "marcas": null,

@@ -3,6 +3,86 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-26 - Sub-bloque 2R-12: Ajustes al cotizador (notas del cliente 2026-10-26)
+**Herramienta:** Antigravity  
+**Tipo:** feat & fix (motor, frontend, pdf, migraciones)  
+**Archivos tocados:**  
+- `supabase/migrations/20261026_01_ajustes_cotizador.sql`
+- `docs/importacion/verificacion_2R12.sql`
+- `src/app/utils/seleccionMixta.ts`
+- `src/app/utils/seleccionMixta.test.ts`
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`
+- `src/app/components/Cotizaciones/PDFTemplateMoodboard.tsx`
+- `src/app/components/Cotizaciones/PDFTemplateModern.tsx`
+- `src/app/components/Cotizaciones/PDFTemplateCompact.tsx`
+- `src/app/components/Cotizaciones/PDFTemplateLeolca.tsx`
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`
+- `supabase/functions/make-server-feea4382/motor/reglas_compatibilidad.ts`
+- `supabase/functions/make-server-feea4382/motor/armar_configuracion.ts`
+- `supabase/functions/make-server-feea4382/motor/armar_configuracion.test.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/costeo.test.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.ts`
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.test.ts`
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.ts`
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.test.ts`
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.ts`
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.test.ts`
+- `supabase/functions/make-server-feea4382/motor/ficha_orden_trabajo.ts`
+- `supabase/functions/make-server-feea4382/motor/ficha_orden_trabajo.test.ts`
+- `supabase/functions/make-server-feea4382/motor/fixtures/datos_modelo.json`
+- `supabase/functions/make-server-feea4382/motor/fixtures/datos_costeo_gondola.json`
+- `supabase/functions/make-server-feea4382/motor/fixtures/datos_costeo_dolly.json`
+**Qué cambió y por qué:**  
+- **1. Retráctil "paleta" = retráctil "grande":**
+  - Desactivada la opción `retractil/paleta` (`activo = false`).
+  - Implementada función pura `normalizarClaveOpcion(grupo, clave)` que mapea `retractil/paleta -> grande`.
+  - Integrada en costeo (`costeo.ts`), validación de compatibilidad (`reglas_compatibilidad.ts`), texto de especificación (`texto_especificacion.ts`), BOM y receta (`resolver_receta.ts`), presupuesto cliente (`presupuesto_desde_costeo.ts`) y ficha de orden de trabajo (`ficha_orden_trabajo.ts`).
+  - Copiados los costos de `paleta` a `grande` en `opcion_costos` para góndola (15,000) y dolly (8,200). Auditoría confirmó que ningún modelo tenía costos en conflicto entre ambas opciones.
+  - Configuraciones legadas con `paleta` resuelven, validan y costean exactamente igual a `grande` sin errores ni advertencias.
+- **2. Desactivación de piso "Plástico negro":**
+  - Desactivada la opción `piso/plastico_negro` (`activo = false`).
+  - Confirmado mediante auditoría que las demás opciones de piso (`plastico_cafe`, `laminado_plastico`, `laminado_madera`, etc.) se mantienen intactas.
+  - La opción no se elimina de la base de datos para no romper migraciones previas (`20261015_01_costos_respaldo.sql`) ni configuraciones guardadas que la referencien.
+- **3. Ejes y retráctiles definidos por el modelo:**
+  - Auditado todo el flujo del sistema: confirmado que `num_ejes` nunca es editable ni capturado por el usuario; proviene estrictamente de `modelo.num_ejes`. El grupo `eje` únicamente selecciona la marca.
+  - Nueva regla de retráctiles en `grupos_configuracion.regla`: `{"max_total":{"por_num_ejes":{"2":1,"3":2}},"cantidad_defecto":1}`.
+  - Función pura compartida `calcularMaxPiezas(regla, modelo)` implementada en backend (`reglas_compatibilidad.ts`, importada en `armar_configuracion.ts`) y replicada con las mismas pruebas en frontend (`seleccionMixta.ts`). Soporta `por_num_ejes`, `por_eje` y `fija`.
+  - Validación de compatibilidad: en 2 ejes máximo 1 retráctil (2 retráctiles arrojan error exacto `Los retráctiles suman 2 piezas y el máximo para este modelo es 1`); en 3 ejes máximo 2 (3 retráctiles arrojan error `Los retráctiles suman 3 piezas y el máximo para este modelo es 2`); 0 retráctiles es válido.
+  - Coherencia con kit de aire `abs`: comprobada con pruebas para `2e_sin_retractil`, `2e_1_retractil`, `3e_1_retractil`, `3e_2_retractil`.
+- **4. Eliminación de marca de pintura:**
+  - Desactivado el grupo `pintura` con `aplica_a = '{}'::text[]`.
+  - Corregida la función `grupoAplicaAlTipo` en `ficha_orden_trabajo.ts` para que un arreglo `aplica_a` vacío evalúe `false` y no reactive el grupo a través del fallback.
+  - El grupo se omite del configurador (`armar_configuracion.ts`), texto de especificación, PDF de cotización, ficha de orden de trabajo y presupuesto del cliente (la marca jamás se concatena al color).
+  - Configuraciones viejas con `pintura` guardado no generan errores ni advertencias y costean idénticamente.
+- **5. Pintura personalizable:**
+  - Agregada la opción `personalizado` ("Color personalizado", precio 0, costo 0, fuente 'definido' para evitar pendientes de `costo_no_factura`) en el grupo `color`.
+  - Configuración almacenada como `{ opcion: "personalizado", texto: "..." }`.
+  - Función pura de saneamiento `limpiarTextoColorPersonalizado`: elimina etiquetas HTML, recorta espacios en extremos y trunca a máximo 80 caracteres.
+  - En `ConfiguradorEquipo.tsx`: input de texto con contador de caracteres (`X / 80`) y nota de ayuda: *"Si lleva costo extra, agrégalo en Ajustes al costo."*. Impide confirmar el equipo si no se ha escrito el texto.
+  - Texto de especificación, PDF, presupuesto y ficha de orden de trabajo muestran el texto capturado (`COLOR: Verde militar con franja blanca`).
+  - Validación en backend exige texto no vacío para `opcion === "personalizado"`.
+- **6. Legibilidad y tamaño de letra en PDF de cotizaciones (4 plantillas):**
+  - Actualizadas `PDFTemplateMoodboard.tsx`, `PDFTemplateModern.tsx`, `PDFTemplateCompact.tsx` y `PDFTemplateLeolca.tsx`.
+  - Definidas constantes nombradas por plantilla (`FS_ETIQUETA_MIN`, `FS_ESPEC_MIN`, `FS_CUERPO_MIN`).
+  - Especificaciones técnicas: mínimo 11 px (~8.5 pt impresos).
+  - Cuerpo (nombre del equipo, cliente, descripción): mínimo 13 px.
+  - Etiquetas pequeñas y notas de pie: mínimo 10 px.
+  - Añadida regla `breakInside: 'avoid'` / `break-inside-avoid` en bloques de equipos para prevenir saltos de página a mitad de equipo.
+- **7. Pruebas y Scripts de Verificación:**
+  - Migración idempotente: `supabase/migrations/20261026_01_ajustes_cotizador.sql` con notas exactas `'import-2r12'` y guardias `RAISE EXCEPTION`.
+  - Script de verificación de base de datos: `docs/importacion/verificacion_2R12.sql` con columnas `_ok`.
+  - Pruebas unitarias ampliadas a 137 pruebas Deno pasando al 100% (motor, texto de especificación, ficha de orden de trabajo, costeo, resolver receta, selección mixta).
+- **8. Correcciones pre-merge (Postgres 17 y visibilidad de opciones inactivas):**
+  - **Migración SQL:** Reemplazados todos los `max(id)` sobre UUID por `(array_agg(id))[1]` para evitar el error `function max(uuid) does not exist` en Postgres 17.
+  - **Copia dinámica de costos:** El costo de `grande` en dolly y góndola se copia dinámicamente con `INSERT ... SELECT` desde la fila de `paleta` del mismo `tipo_modelo`, en lugar de valores fijos.
+  - **Verificación SQL:** Calificadas todas las columnas con alias de tabla (`gc.`, `oc.`, `ocst.`, `cr.`, etc.) eliminando cualquier ambigüedad en `notas`.
+  - **Ocultamiento de opciones inactivas en UI:** En `ConfiguradorEquipo.tsx` y `seleccionMixta.ts`, opciones con `activo = false` no se muestran en la lista, salvo que estén seleccionadas en la configuración guardada del equipo editado (función pura `esOpcionVisible`). Pruebas unitarias puras cubriendo inactiva no seleccionada (oculta), inactiva seleccionada (visible) y activa (visible).
+**Acciones manuales pendientes:**  
+- Correr la migración `supabase/migrations/20261026_01_ajustes_cotizador.sql` en Supabase SQL Editor.
+- Ejecutar `docs/importacion/verificacion_2R12.sql` para validar que todas las columnas devuelvan `true`.
+- Rebuild del servicio API en EasyPanel tras deploy.
+
 ## 2026-10-20 - Sub-bloque 2R-11: Orden de trabajo para remolque generada desde la cotización
 **Herramienta:** Antigravity  
 **Tipo:** feat (motor, backend, frontend, pdf, ui)  

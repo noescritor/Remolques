@@ -1,7 +1,13 @@
 import { Cotizacion, Cliente, Producto, Ajustes } from '../../types';
 import { formatearMoneda, formatearFecha, calcularTotalesCotizacion, calcularTotalesCotizacionServiciosAware, totalItemServicio } from '../../utils/calculations';
+import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 import { LogoIdeally } from './LogoIdeally';
 import { decidirLogoEncabezado } from '../../utils/logo';
+
+// ─── Font size tokens (Sub-bloque 2R-12) ───────────────────────────────────────
+const FS_ETIQUETA_MIN = 10;   // Pequeñas/labels: mínimo 10px
+const FS_ESPEC_MIN = 11;      // Especificaciones de equipo: mínimo 11px
+const FS_CUERPO_MIN = 13;     // Cuerpo: mínimo 13px
 
 interface PDFTemplateCompactProps {
   cotizacion: Cotizacion;
@@ -162,17 +168,31 @@ export function PDFTemplateCompact({ cotizacion, cliente, productos, ajustes }: 
               }
               
               return (
-                <tr key={index} className="hover:bg-gray-50">
+                <tr key={index} className="hover:bg-gray-50" style={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}>
                   <td className="border border-gray-300 p-2">
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-gray-900 text-sm">
                         {producto?.nombre || item.descripcion}
                       </p>
                       {producto?.descripcion && (
-                        <p className="text-xs text-gray-600 mt-1 leading-tight">
+                        <p className="text-[11px] text-gray-600 mt-1 leading-tight">
                           {producto.descripcion}
                         </p>
                       )}
+                      {(() => {
+                        const cfg = obtenerConfiguracion(item);
+                        const lineas = normalizarResumenLineas(cfg?.resumen_lineas);
+                        if (lineas.length === 0) return null;
+                        return (
+                          <div className="mt-2 space-y-0.5 text-[11px] text-gray-700">
+                            {lineas.map((linea, idx: number) => (
+                              <div key={idx}>
+                                <span className="font-semibold text-gray-900">{linea.etiqueta}:</span> {linea.valor}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
                       {esServicio && producto?.servicio && (
                         <div className="text-xs text-blue-600 mt-1 space-y-1">
                           {(producto.servicio.modo === 'unico' || producto.servicio.modo === 'hibrido') && item.incluir_setup && (

@@ -69,3 +69,21 @@ Deno.test("armarConfiguracionModelo - calcula max_piezas y cantidad_defecto seg�
   assertEquals(res3.grupos.find(g => g.clave === "retractil")?.cantidad_defecto, 1);
 });
 
+Deno.test("armarConfiguracionModelo - 2R-12: por_num_ejes calcula max_piezas según num_ejes del modelo y excluye pintura (aplica_a: [])", () => {
+  const modelo2Ejes = { tipo: "plataforma", num_ejes: 2 };
+  const modelo3Ejes = { tipo: "plataforma", num_ejes: 3 };
+
+  const grupos = [
+    { id: "g1", clave: "retractil", nombre: "Sistema retráctil", aplica_a: ["plataforma"], regla: { max_total: { por_num_ejes: { "2": 1, "3": 2 } }, cantidad_defecto: 1 }, orden: 1 },
+    { id: "g2", clave: "pintura", nombre: "Pintura", aplica_a: [], regla: null, orden: 2 }
+  ];
+
+  const res2 = armarConfiguracionModelo(modelo2Ejes as any, grupos as any, [], []);
+  assertEquals(res2.grupos.find(g => g.clave === "retractil")?.max_piezas, 1);
+  assertEquals(res2.grupos.find(g => g.clave === "pintura"), undefined);
+
+  const res3 = armarConfiguracionModelo(modelo3Ejes as any, grupos as any, [], []);
+  assertEquals(res3.grupos.find(g => g.clave === "retractil")?.max_piezas, 2);
+  assertEquals(res3.grupos.find(g => g.clave === "pintura"), undefined);
+});
+

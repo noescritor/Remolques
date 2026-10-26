@@ -1,3 +1,5 @@
+import { calcularMaxPiezas } from './reglas_compatibilidad.ts';
+
 export function armarConfiguracionModelo(modelo: any, gruposRaw: any[], opcionesRaw: any[], componentesRaw: any[]) {
   const opcionesConReceta = new Set(componentesRaw.map((c: any) => c.opcion_id));
 
@@ -5,7 +7,7 @@ export function armarConfiguracionModelo(modelo: any, gruposRaw: any[], opciones
     .filter((g: any) => !g.aplica_a || g.aplica_a.includes(modelo.tipo))
     .sort((a: any, b: any) => (a.orden || 0) - (b.orden || 0))
     .map((g: any) => {
-      let max_piezas: number | undefined = undefined;
+      const max_piezas = calcularMaxPiezas(g.regla, modelo);
       let cantidad_defecto: number | "max" | undefined = undefined;
       let regla = g.regla;
       if (typeof regla === 'string') {
@@ -15,15 +17,8 @@ export function armarConfiguracionModelo(modelo: any, gruposRaw: any[], opciones
           regla = null;
         }
       }
-      if (regla && typeof regla === 'object') {
-        if (regla.max_total?.por_eje && typeof modelo?.num_ejes === 'number') {
-          max_piezas = regla.max_total.por_eje * modelo.num_ejes;
-        } else if (typeof regla.max_total?.fija === 'number') {
-          max_piezas = regla.max_total.fija;
-        }
-        if (regla.cantidad_defecto !== undefined) {
-          cantidad_defecto = regla.cantidad_defecto;
-        }
+      if (regla && typeof regla === 'object' && regla.cantidad_defecto !== undefined) {
+        cantidad_defecto = regla.cantidad_defecto;
       }
       return {
         ...g,

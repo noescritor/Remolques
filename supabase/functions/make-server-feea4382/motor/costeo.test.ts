@@ -829,5 +829,50 @@ Deno.test("Sub-bloque 2R-8: matracas con cantidad explícita (corrediza × 10) v
   assertEquals(lineaDef.importe, 3688.8);
 });
 
+Deno.test("Sub-bloque 2R-12: Costeo - normalización de paleta a grande, color personalizado exento y piso plastico_negro preservado", () => {
+  // 1. Dolly con paleta normaliza a grande y cuesta exactamente 8,200 (idéntico a grande)
+  const resDollyPaleta = costear(datosDolly, { grupos: { retractil: "paleta" } });
+  const resDollyGrande = costear(datosDolly, { grupos: { retractil: "grande" } });
+  assertEquals(resDollyPaleta.costo, resDollyGrande.costo);
+  const lineaRetrDolly = resDollyPaleta.secciones.opciones.lineas.find(l => l.concepto.includes("retractil"));
+  assert(lineaRetrDolly);
+  assertEquals(lineaRetrDolly.costo_unitario, 8200);
+
+  // 2. Góndola con paleta normaliza a grande y cuesta exactamente 15,000 (idéntico a grande)
+  const resGondolaPaleta = costear(datosGondolaA36, { grupos: { retractil: "paleta" } });
+  const resGondolaGrande = costear(datosGondolaA36, { grupos: { retractil: "grande" } });
+  assertEquals(resGondolaPaleta.costo, resGondolaGrande.costo);
+  const lineaRetrGondola = resGondolaPaleta.secciones.opciones.lineas.find(l => l.concepto.includes("retractil"));
+  assert(lineaRetrGondola);
+  assertEquals(lineaRetrGondola.costo_unitario, 15000);
+
+  // 3. Color personalizado (con texto) cuesta 0, está exento y no genera pendientes sin_precio
+  const resColorPers = costear(datosBase, {
+    grupos: {
+      color: { opcion: "personalizado", texto: "Verde militar con franja blanca" }
+    }
+  });
+  const pendientesColor = resColorPers.pendientes.filter(p => p.detalle.toLowerCase().includes("color"));
+  assertEquals(pendientesColor.length, 0);
+
+  // 4. Piso plastico_negro (configuración vieja) sigue costeando con su valor histórico (36,182.72)
+  const datosConPiso: DatosCosteo = {
+    ...datosBase,
+    opcion_costos: [
+      ...datosBase.opcion_costos,
+      { grupo_clave: "piso", opcion_clave: "plastico_negro", cantidad_base: 1, escala: "fija", costo_unitario: 36182.72 }
+    ]
+  };
+  const resPisoNegro = costear(datosConPiso, { grupos: { piso: "plastico_negro" } });
+  const lineaPiso = resPisoNegro.secciones.opciones.lineas.find(l => l.concepto === "piso: plastico_negro");
+  assert(lineaPiso);
+  assertEquals(lineaPiso.costo_unitario, 36182.72);
+
+  // 5. Pintura vieja en configuración (sherwin_williams) no genera costo ni altera totales
+  const resConPintura = costear(datosBase, { grupos: { color: "blanco", pintura: "sherwin_williams" } });
+  const resSinPintura = costear(datosBase, { grupos: { color: "blanco" } });
+  assertEquals(resConPintura.costo, resSinPintura.costo);
+});
+
 
 

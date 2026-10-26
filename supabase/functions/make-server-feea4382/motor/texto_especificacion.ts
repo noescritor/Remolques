@@ -1,5 +1,5 @@
 import { Modelo, Configuracion, GrupoOpcion, Opcion } from './tipos.ts';
-import { fusionarFilasConfig } from './reglas_compatibilidad.ts';
+import { fusionarFilasConfig, normalizarClaveOpcion, limpiarTextoColorPersonalizado } from './reglas_compatibilidad.ts';
 
 const ORDEN_TEXTO = [
   'suspension',
@@ -13,7 +13,7 @@ const ORDEN_TEXTO = [
   'redilas',
   'piso',
   'matracas',
-  'pintura',
+  'color',
   'rines',
   'llantas'
 ];
@@ -29,7 +29,7 @@ const ORDEN_RESUMEN = [
   'Redilas',
   'Piso',
   'Matracas / winches',
-  'Pintura',
+  'Color',
   'Rines',
   'Llantas'
 ];
@@ -108,9 +108,15 @@ const TABLA_PLANTILLAS: Record<string, PlantillaGrupo> = {
       return `${qty} MATRACAS ${desc}`;
     }
   },
-  'pintura': {
-    etiqueta: 'Pintura',
-    plantilla: (o) => `PINTURA ${limpiarNombre(o.nombre)}`
+  'color': {
+    etiqueta: 'Color',
+    plantilla: (o, v) => {
+      if (o.clave === 'personalizado') {
+        const txt = typeof v === 'object' && v?.texto ? limpiarTextoColorPersonalizado(v.texto) : '';
+        return `COLOR ${txt.toUpperCase()}`.trim();
+      }
+      return `COLOR ${limpiarNombre(o.nombre, 'Color')}`;
+    }
   },
   'rines': {
     etiqueta: 'Rines',
@@ -161,6 +167,8 @@ export function generarEspecificacion(
     if (procesados.has(claveGrupo)) return;
     procesados.add(claveGrupo);
 
+    if (claveGrupo === 'pintura') return;
+
     const configValue = confGrupos[claveGrupo];
     if (!configValue) return;
     
@@ -171,7 +179,8 @@ export function generarEspecificacion(
     if (claveGrupo === 'retractil') {
       const reales = values.filter(v => {
         const op = typeof v === 'string' ? v : v?.opcion;
-        return op && !op.startsWith('sin_');
+        const opNorm = normalizarClaveOpcion('retractil', op);
+        return opNorm && !opNorm.startsWith('sin_');
       });
       const totalQty = reales.reduce((sum, v) => {
         const c = typeof v === 'object' && typeof v?.cantidad === 'number' && !isNaN(v.cantidad) ? v.cantidad : 1;
@@ -190,8 +199,9 @@ export function generarEspecificacion(
     let etiquetaGrupo = '';
 
     for (const val of values) {
-      const opcionClave = typeof val === 'string' ? val : val.opcion;
-      if (!opcionClave || opcionClave.startsWith('sin_')) continue;
+      const rawOpcionClave = typeof val === 'string' ? val : val.opcion;
+      if (!rawOpcionClave || rawOpcionClave.startsWith('sin_')) continue;
+      const opcionClave = normalizarClaveOpcion(claveGrupo, rawOpcionClave);
 
       const grupo = grupos.find(g => g.clave === claveGrupo);
       const opcion = opciones.find(o => o.grupo_id === grupo?.id && o.clave === opcionClave);
@@ -206,7 +216,14 @@ export function generarEspecificacion(
           frase = plantillaDef.plantilla(opcion, val, modelo);
           etiquetaGrupo = plantillaDef.etiqueta;
           
-          if (claveGrupo === 'rines') {
+          if (claveGrupo === 'color') {
+            if (opcion.clave === 'personalizado') {
+              const txt = typeof val === 'object' && val?.texto ? limpiarTextoColorPersonalizado(val.texto) : '';
+              valorResumen = txt || 'PERSONALIZADO';
+            } else {
+              valorResumen = limpiarNombre(opcion.nombre, 'Color');
+            }
+          } else if (claveGrupo === 'rines') {
             const qty = typeof val === 'object' && val.cantidad ? val.cantidad : (modelo.num_ejes * 4);
             const marca = typeof val === 'object' && val.marca ? ` ${val.marca.toUpperCase()}` : '';
             const baseObj = opcion.clave === 'cliente' ? 'PROPORCIONADOS POR CLIENTE' : limpiarNombre(opcion.nombre, 'Rines de');

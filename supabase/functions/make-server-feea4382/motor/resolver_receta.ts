@@ -1,5 +1,5 @@
 import type { DatosModelo, Configuracion, Resultado, LineaResultado } from "./tipos.ts";
-import { validarCompatibilidad, fusionarFilasConfig } from "./reglas_compatibilidad.ts";
+import { validarCompatibilidad, fusionarFilasConfig, normalizarClaveOpcion } from "./reglas_compatibilidad.ts";
 
 export function resolverReceta(datos: DatosModelo, configuracion: Configuracion): Resultado {
   const lineasMap = new Map<string, LineaResultado>();
@@ -144,13 +144,15 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
 
     for (const valConfig of configVals) {
       const oClave = typeof valConfig === 'string' ? valConfig : valConfig.opcion;
-      const opcion = datos.opciones.find(o => o.grupo_id === grupo.id && o.clave === oClave);
+      const oClaveNorm = normalizarClaveOpcion(grupo.clave, oClave);
+      const opcion = datos.opciones.find(o => o.grupo_id === grupo.id && o.clave === oClaveNorm)
+        || datos.opciones.find(o => o.grupo_id === grupo.id && o.clave === oClave);
       
       if (!opcion) {
         errores.push(`Opción no válida para el grupo ${grupo.nombre}: ${oClave}`);
         continue;
       }
-      if (opcion.activo === false) {
+      if (opcion.activo === false && oClave === oClaveNorm) {
         errores.push(`La opción ${opcion.nombre} del grupo ${grupo.nombre} está inactiva.`);
         continue;
       }
@@ -158,7 +160,7 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
       const componentes = datos.opcion_componentes.filter(c => c.opcion_id === opcion.id);
       
       if (componentes.length === 0) {
-        if (!opcion.clave.startsWith('sin_') && opcion.clave !== 'paleta' && opcion.clave !== 'cliente') {
+        if (!opcion.clave.startsWith('sin_') && opcion.clave !== 'paleta' && opcion.clave !== 'grande' && opcion.clave !== 'cliente' && opcion.clave !== 'personalizado') {
           advertencias.push(`La opción ${opcion.nombre} no tiene receta configurada.`);
           completo = false;
         }

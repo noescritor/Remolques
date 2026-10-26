@@ -3,6 +3,7 @@ import type {
   Resultado,
   LineaCosteo
 } from "./tipos.ts";
+import { normalizarClaveOpcion } from "./reglas_compatibilidad.ts";
 
 export interface PresupuestoItem {
   pzas: number | string;
@@ -355,13 +356,25 @@ export function generarPresupuestoDesdeCosteo(
 
     // 3. Opciones
     for (const linea of costeo.secciones.opciones.lineas || []) {
+      if (linea.origen?.startsWith("opcion:pintura/")) {
+        // El grupo pintura ya no aparece en el presupuesto/despiece al cliente
+        continue;
+      }
       const sec = clasificarOpcion(linea.origen, sinClasificarSet);
       // Las opciones con importe 0 y cu 0 son sin_precio a menos que sean explícitamente exentas
       let esExenta = false;
-      const match = linea.origen.match(/^opcion:[^/]+\/(.+)$/);
+      const match = linea.origen.match(/^opcion:([^/]+)\/(.+)$/);
       if (match) {
-        const oClave = match[1];
-        if (oClave.startsWith("sin_") || oClave === "paleta" || oClave === "cliente") {
+        const gClave = match[1];
+        const oClave = match[2];
+        const oClaveNorm = normalizarClaveOpcion(gClave, oClave);
+        if (
+          oClaveNorm.startsWith("sin_") ||
+          oClaveNorm === "grande" ||
+          oClaveNorm === "paleta" ||
+          oClaveNorm === "cliente" ||
+          oClaveNorm === "personalizado"
+        ) {
           esExenta = true;
         }
       }
