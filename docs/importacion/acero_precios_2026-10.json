@@ -1,0 +1,340 @@
+{
+  "fuente": "PRECIOS DE ACERO.xlsx (Hoja1)",
+  "nota": "Precios por pieza/tramo/lamina tal como aparecen en el Excel (ya con x1.16 donde la formula lo aplica).",
+  "materiales": [
+    {
+      "fila_excel": 2,
+      "nombre": "Canal \"U\" de 6\" (15Kg) a 12.20m",
+      "precios": {
+        "SERVIACERO": 4822.1664
+      }
+    },
+    {
+      "fila_excel": 3,
+      "nombre": "Canal \"U\" de 6\" (12Kg) a 12.20m",
+      "precios": {
+        "FORTACERO": 3891.6318,
+        "SERVIACERO": 3764.1188
+      }
+    },
+    {
+      "fila_excel": 4,
+      "nombre": "Canal \"U\" de 6\" (12Kg) a 6.10m",
+      "precios": {
+        "PIRAMIDE": 2549.97
+      }
+    },
+    {
+      "fila_excel": 5,
+      "nombre": "PTR 6X4\" Cal. 3/16 a 12.20m",
+      "precios": {
+        "FORTACERO": 5201.48,
+        "SERVIACERO": 5230.614
+      }
+    },
+    {
+      "fila_excel": 6,
+      "nombre": "PTR de 6X2\" Cal. 3/16\"",
+      "precios": {
+        "FORTACERO": 2108.1227,
+        "PIRAMIDE": 5050.0
+      }
+    },
+    {
+      "fila_excel": 7,
+      "nombre": "PTR de 2X4\" Cal. 7",
+      "precios": {
+        "TANOS": 1568.75,
+        "SERVIACERO": 1337.94
+      }
+    },
+    {
+      "fila_excel": 8,
+      "nombre": "PTR de 1-1/2X3\" Cal. 14",
+      "precios": {
+        "TANOS": 494.7464,
+        "SERVIACERO": 495.27,
+        "PIRAMIDE": 554.448
+      }
+    },
+    {
+      "fila_excel": 9,
+      "nombre": "PTR de 2X4\" Cal. 9",
+      "precios": {
+        "TANOS": 1264.6262,
+        "SERVIACERO": 1239.1816
+      }
+    },
+    {
+      "fila_excel": 10,
+      "nombre": "PTR de 2X3\" Cal. 10",
+      "precios": {
+        "SERVIACERO": 933.2664
+      }
+    },
+    {
+      "fila_excel": 11,
+      "nombre": "PTR de 2X3\" Cal. 9",
+      "precios": {
+        "TANOS": 996.8947
+      }
+    },
+    {
+      "fila_excel": 12,
+      "nombre": "PTR de 2\" Cal. 12",
+      "precios": {
+        "TANOS": 602.0864,
+        "SERVIACERO": 625.6112
+      }
+    },
+    {
+      "fila_excel": 13,
+      "nombre": "PTR de 2\" Cal. 14",
+      "precios": {
+        "TANOS": 432.9457,
+        "SERVIACERO": 454.6968
+      }
+    },
+    {
+      "fila_excel": 14,
+      "nombre": "PTR de 4\" Cal. 7",
+      "precios": {
+        "SERVIACERO": 2114.4132
+      }
+    },
+    {
+      "fila_excel": 15,
+      "nombre": "PTR de 4\" Cal. 11",
+      "precios": {
+        "PIRAMIDE": 1612.938
+      }
+    },
+    {
+      "fila_excel": 16,
+      "nombre": "Tubo negro mecanico Ced. 40 2\"",
+      "precios": {
+        "TANOS": 789.6236,
+        "FORTACERO": 798.6832,
+        "SERVIACERO": 832.6828,
+        "PIRAMIDE": 982.04
+      }
+    },
+    {
+      "fila_excel": 17,
+      "nombre": "Tubo negro mecanico Ced. 40 1-1/4\"",
+      "precios": {
+        "SERVIACERO": 513.2304,
+        "PIRAMIDE": 609.332
+      }
+    },
+    {
+      "fila_excel": 18,
+      "nombre": "Tubo negro mecanico Ced. 40 3/4\"",
+      "precios": {
+        "PIRAMIDE": 301.026
+      }
+    },
+    {
+      "fila_excel": 19,
+      "nombre": "Solera 3/16X1-1/2\"",
+      "precios": {
+        "PIRAMIDE": 295.116
+      }
+    },
+    {
+      "fila_excel": 20,
+      "nombre": "Solera 3/8 X 2\"",
+      "precios": {
+        "TANOS": 601.3687,
+        "FORTACERO": 602.6036,
+        "SERVIACERO": 586.4264
+      }
+    },
+    {
+      "fila_excel": 21,
+      "nombre": "Solera 1/2 X 3\"",
+      "precios": {
+        "TANOS": 1199.2776,
+        "FORTACERO": 1205.2091,
+        "SERVIACERO": 1172.5976,
+        "PIRAMIDE": 1574.182
+      }
+    },
+    {
+      "fila_excel": 22,
+      "nombre": "Solera 1/2 X 6\" a 12.20m",
+      "precios": {
+        "FORTACERO": 4884.7527,
+        "SERVIACERO": 4697.7448
+      }
+    },
+    {
+      "fila_excel": 23,
+      "nombre": "Angulo 3/16 X 1-1/2\" a 6.10m",
+      "precios": {
+        "TANOS": 897.6405,
+        "FORTACERO": 417.4492,
+        "SERVIACERO": 394.4928
+      }
+    },
+    {
+      "fila_excel": 24,
+      "nombre": "Redondo 1-1/2\"",
+      "precios": {
+        "PIRAMIDE": 1854.34
+      }
+    },
+    {
+      "fila_excel": 25,
+      "nombre": "Redondo 1\"",
+      "precios": {
+        "PIRAMIDE": 824.15
+      }
+    },
+    {
+      "fila_excel": 26,
+      "nombre": "Redondo 1/2\"",
+      "precios": {
+        "PIRAMIDE": 230.004
+      }
+    },
+    {
+      "fila_excel": 27,
+      "nombre": "Lamina Negra Cal. 10 4X10'",
+      "precios": {
+        "FORTACERO": 2148.1344,
+        "SERVIACERO": 2221.11
+      }
+    },
+    {
+      "fila_excel": 28,
+      "nombre": "Placa de grado A-36 de 3/16\" en 5X10'",
+      "precios": {
+        "FORTACERO": 3912.738,
+        "SERVIACERO": 3664.44
+      }
+    },
+    {
+      "fila_excel": 29,
+      "nombre": "Placa de grado A-36 de 3/16\" en 4X10'",
+      "precios": {
+        "TANOS": 3123.0139,
+        "FORTACERO": 3136.7238,
+        "SERVIACERO": 3027.1476
+      }
+    },
+    {
+      "fila_excel": 30,
+      "nombre": "Placa de grado A-36 de 3/16\" en 3X10'",
+      "precios": {
+        "FORTACERO": 2384.96,
+        "SERVIACERO": 2296.162
+      }
+    },
+    {
+      "fila_excel": 31,
+      "nombre": "Placa de grado A-572°50 de 1/4\" en 4X40'",
+      "precios": {
+        "SERVIACERO": 16876.028
+      }
+    },
+    {
+      "fila_excel": 32,
+      "nombre": "Placa de grado A-36 de 1/4\" en 5X20'",
+      "precios": {
+        "SERVIACERO": 9771.84
+      }
+    },
+    {
+      "fila_excel": 33,
+      "nombre": "Placa de grado A-36 de 1/4\" en 5X10'",
+      "precios": {
+        "FORTACERO": 5230.9272,
+        "SERVIACERO": 4885.92
+      }
+    },
+    {
+      "fila_excel": 34,
+      "nombre": "Placa de grado A-36 de 1/4\" en 4X10'",
+      "precios": {
+        "TANOS": 4163.3966,
+        "FORTACERO": 4193.3374,
+        "SERVIACERO": 4036.1968
+      }
+    },
+    {
+      "fila_excel": 35,
+      "nombre": "Placa de grado A-36 de 3/8\" en 4X10'",
+      "precios": {
+        "TANOS": 6231.0908,
+        "FORTACERO": 6290.2299,
+        "SERVIACERO": 6054.2952
+      }
+    },
+    {
+      "fila_excel": 36,
+      "nombre": "Placa de grado A-36 de 1/2\" en 5X20'",
+      "precios": {
+        "SERVIACERO": 20086.7688
+      }
+    },
+    {
+      "fila_excel": 37,
+      "nombre": "Placa de grado A-36 de 1/2\" en 5X10'",
+      "precios": {
+        "FORTACERO": 10895.7408
+      }
+    }
+  ],
+  "comparador_ejemplo": [
+    {
+      "material": "Placa de grado A-572°50 de 1/4\" en 4X40'",
+      "cantidad": 7,
+      "precio_tpi": 19528.6,
+      "precio_serviacero": 16876.03
+    },
+    {
+      "material": "Solera 1/2 X 6\" a 12.20m",
+      "cantidad": 28,
+      "precio_tpi": 5016,
+      "precio_serviacero": 4697.74
+    },
+    {
+      "material": "Canal \"U\" de 6\" (15Kg) a 12.20m",
+      "cantidad": 14,
+      "precio_tpi": 5473.75,
+      "precio_serviacero": 4822.17
+    },
+    {
+      "material": "Canal \"U\" de 6\" (12Kg) a 12.20m",
+      "cantidad": 4,
+      "precio_tpi": 4140.9,
+      "precio_serviacero": 3764.12
+    },
+    {
+      "material": "Solera 3/8 X 2\"",
+      "cantidad": 50,
+      "precio_tpi": 626.18,
+      "precio_serviacero": 586.43
+    },
+    {
+      "material": "PTR de 6X2\" Cal. 3/16\"",
+      "cantidad": 18,
+      "precio_tpi": 2143.96,
+      "precio_serviacero": 2108.12
+    },
+    {
+      "material": "PTR de 2X4\" Cal. 7",
+      "cantidad": 9,
+      "precio_tpi": 2047.27,
+      "precio_serviacero": 1337.94
+    }
+  ],
+  "totales_excel": {
+    "tpi_subtotal": 458670.01,
+    "serviacero_subtotal": 411544.91,
+    "tpi_total_con_iva_encima": 532057.21,
+    "serviacero_total_con_iva_encima": 477392.1,
+    "diferencia": 54665.12
+  }
+}

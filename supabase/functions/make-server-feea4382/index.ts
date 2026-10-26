@@ -29,6 +29,14 @@ import {
   obtenerHistorialCostos,
   verificarPermisoEdicion
 } from "./motor/catalogo_costos.ts";
+import {
+  obtenerCatalogoAcero,
+  guardarPrecioAcero,
+  crearMaterialAcero,
+  actualizarMaterialAcero,
+  eliminarPrecioAcero,
+  obtenerHistorialAcero
+} from "./motor/acero.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -680,6 +688,89 @@ app.get("/catalogo-costos/historial", async (c) => {
     const orgId = c.get("organizacionId");
     const limite = Number(c.req.query("limite")) || 100;
     const data = await obtenerHistorialCostos(supabase, orgId, limite);
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// --- CALCULADORAS Y PRECIOS DE ACERO (2R-13) ---
+
+app.get("/acero/catalogo", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const data = await obtenerCatalogoAcero(supabase, orgId);
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[acero] Error fetching catalogo:", error);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.put("/acero/precios", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+    const payload = await c.req.json().catch(() => ({}));
+    const res = await guardarPrecioAcero(adminClient, orgId, user?.id || null, payload);
+    return c.json(res);
+  } catch (error: any) {
+    const status = error.status || (error.message.includes("no encontrado") ? 404 : 400);
+    return c.json({ error: error.message }, status);
+  }
+});
+
+app.post("/acero/materiales", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const adminClient = getServiceClient();
+    const payload = await c.req.json().catch(() => ({}));
+    const res = await crearMaterialAcero(adminClient, orgId, payload);
+    return c.json(res, 201);
+  } catch (error: any) {
+    const status = error.status || (error.message.includes("Ya existe") ? 409 : 400);
+    return c.json({ error: error.message }, status);
+  }
+});
+
+app.put("/acero/materiales/:id", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const adminClient = getServiceClient();
+    const id = c.req.param("id");
+    const payload = await c.req.json().catch(() => ({}));
+    const res = await actualizarMaterialAcero(adminClient, orgId, id, payload);
+    return c.json(res);
+  } catch (error: any) {
+    const status = error.status || (error.message.includes("no encontrado") ? 404 : error.message.includes("Ya existe") ? 409 : 400);
+    return c.json({ error: error.message }, status);
+  }
+});
+
+app.delete("/acero/precios/:materialId/:proveedor", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+    const materialId = c.req.param("materialId");
+    const proveedor = c.req.param("proveedor");
+    const res = await eliminarPrecioAcero(adminClient, orgId, user?.id || null, materialId, decodeURIComponent(proveedor));
+    return c.json(res);
+  } catch (error: any) {
+    const status = error.status || (error.message.includes("no encontrado") ? 404 : 400);
+    return c.json({ error: error.message }, status);
+  }
+});
+
+app.get("/acero/historial", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const materialId = c.req.query("material_id");
+    const limite = Number(c.req.query("limite")) || 50;
+    const data = await obtenerHistorialAcero(supabase, orgId, materialId, limite);
     return c.json(data);
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
