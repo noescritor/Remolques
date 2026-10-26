@@ -3,6 +3,31 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-26 - Sub-bloque 2R-14: Actualización masiva de precios (Excel, porcentaje, lotes con reversión)
+**Herramienta:** Antigravity  
+**Tipo:** feat (precios masivos, excel, lotes, reversión, migraciones, backend, frontend)  
+**Archivos tocados:**  
+- `docs/importacion/correccion_ptr_piramide_2026-10-26.sql` (agregado sin cambios)
+- `docs/importacion/acero_precios_2026-10.json` (corregido precio PIRAMIDE $5,050 a PTR 6X4)
+- `supabase/migrations/20261027_01_acero_precios.sql` (regenerado con generador; 38 materiales, 76 precios)
+- `supabase/migrations/20261028_01_lotes_precios.sql` (nueva migración: precios_lotes, precios_lotes_items, funciones plpgsql aplicar_lote_precios y revertir_lote_precios)
+- `docs/importacion/verificacion_2R14.sql` (script de verificación con columnas _ok calificadas con alias)
+- `src/app/utils/preciosLote.ts` (funciones puras: calcularNuevoPrecio, parsearPrecioTexto, analizarLote, filasDesdeHoja)
+- `src/app/utils/preciosLote.test.ts` (pruebas unitarias Deno de funciones puras: 5 pruebas pasan)
+- `Dockerfile.backend` (agregado COPY src/app/utils/preciosLote.ts)
+- `supabase/functions/make-server-feea4382/motor/lotes_precios.ts` (motor backend: exportar, previsualizar, aplicar, revertir, listar con lista blanca)
+- `supabase/functions/make-server-feea4382/motor/lotes_precios.test.ts` (pruebas Deno: 7 pruebas pasan, incluyendo F.1, F.2, F.3)
+- `supabase/functions/make-server-feea4382/index.ts` (rutas /precios/* conectadas con autenticación y permisos)
+- `src/app/components/CatalogoCostos/ActualizarPrecios.tsx` (nueva pantalla: 3 pasos visibles + panel lotes anteriores)
+- `src/app/components/CatalogoCostos/CatalogoCostosMain.tsx` (nueva pestaña "Actualizar precios" sincronizada con ?tab=actualizar-precios)
+- `src/app/components/Calculadora/PreciosAcero.tsx` (botón de navegación "Actualización masiva")
+**Qué cambió y por qué:**  
+- **Parte A: Corrección de datos pendiente:** Se movió el precio de PIRAMIDE ($5,050) de `PTR de 6X2" Cal. 3/16"` a `PTR 6X4" Cal. 3/16 a 12.20m` en `docs/importacion/acero_precios_2026-10.json`. Se regeneró `20261027_01_acero_precios.sql` con el script generador, manteniendo el conteo verificado de 38 materiales y 76 precios. Se incorporó `docs/importacion/correccion_ptr_piramide_2026-10-26.sql` sin modificaciones.
+- **Parte B: Esquema de base de datos:** Se crearon las tablas `precios_lotes` y `precios_lotes_items` con RLS estricto por organización e índices optimizados. Se crearon las funciones SQL PL/pgSQL `aplicar_lote_precios` y `revertir_lote_precios` que ejecutan de forma atómica en una sola transacción la validación de organización, comparación de `precio_anterior_visto` contra valor actual (todo o nada, sin cambios a medias ante conflicto), actualización de las tablas (`productos`, `opcion_costos`, `costos_modelo`, `acero_precios`), escritura en `precios_lotes`/`precios_lotes_items` y en sus historiales correspondientes. Se implementó `(array_agg(id))[1]` evitando cualquier uso de `max()/min()` sobre UUIDs. Se creó `docs/importacion/verificacion_2R14.sql` con todas las columnas calificadas con alias de tabla.
+- **Parte C: Funciones puras (preciosLote.ts):** Implementadas funciones puras ejecutables en Deno y navegador: `calcularNuevoPrecio` (porcentaje, monto, fijo; redondeos centavos, peso, múltiplo de 5; validaciones de no negatividad y sinPrecioBase para precio 0), `parsearPrecioTexto` (acepta formatos mexicanos e internacionales, rechaza textos ambiguos como 1,234 sin decimales), `analizarLote` (clasificación en sinCambio, cambia, alerta por variación >30%, precio $0 o >5x, y error por ID vacío/negativo/formato; cálculo de impacto total en pesos) y `filasDesdeHoja` (mapeo dinámico de cabeceras de Excel/CSV reportando número de fila real del archivo).
+- **Parte D: Motor de backend y endpoints REST:** Creado `motor/lotes_precios.ts` y montadas rutas `/precios/exportar`, `/precios/previsualizar`, `/precios/aplicar` (límite de 2,000 registros, 413, lista blanca estricta), `/precios/lotes`, `/precios/lotes/:id` y `/precios/lotes/:id/revertir`. Pruebas automatizadas en `motor/lotes_precios.test.ts` con 7 pruebas pasando al 100%.
+- **Parte E: Pantalla de Actualización Masiva:** Creado `ActualizarPrecios.tsx` con flujo en 3 pasos visibles (1 Elegir fuente, filtros, selección y camino fórmula o Excel; 2 Revisar diferencias, alertas con checkbox obligatorio "Entiendo las alertas", errores con indicación de fila del archivo; 3 Aplicar con descripción obligatoria máx 200 caracteres, confirmación y manejo de 409 de concurrencia) y panel "Lotes anteriores" con modal de detalle y botón "Deshacer lote". Conectado a `CatalogoCostosMain.tsx` como pestaña y botón de acceso rápido en `PreciosAcero.tsx`. Cumple con reglas semánticas de Tailwind para modo claro/oscuro y tipografía >= 13px.
+
 ## 2026-10-26 - Sub-bloque 2R-13b: Reparar build de remolques-api en Dockerfile.backend y verificación de contexto
 **Herramienta:** Antigravity  
 **Tipo:** fix (docker, devops, verificación)  

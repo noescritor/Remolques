@@ -37,6 +37,14 @@ import {
   eliminarPrecioAcero,
   obtenerHistorialAcero
 } from "./motor/acero.ts";
+import {
+  exportarPrecios,
+  previsualizarCambios,
+  aplicarLote,
+  obtenerLotes,
+  obtenerLoteDetalle,
+  revertirLote
+} from "./motor/lotes_precios.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -774,6 +782,125 @@ app.get("/acero/historial", async (c) => {
     return c.json(data);
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
+  }
+});
+
+// --- ACTUALIZACIÓN MASIVA DE PRECIOS (2R-14) ---
+
+app.get("/precios/exportar", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const fuente = c.req.query("fuente") || "productos";
+    const q = c.req.query("q");
+    const proveedor = c.req.query("proveedor");
+    const tipo = c.req.query("tipo");
+    const grupo = c.req.query("grupo");
+    const tipo_modelo = c.req.query("tipo_modelo");
+    const solo_sin_precio = c.req.query("solo_sin_precio") === "true";
+
+    const filas = await exportarPrecios(supabase, orgId, {
+      fuente,
+      q,
+      proveedor,
+      tipo,
+      grupo,
+      tipo_modelo,
+      solo_sin_precio,
+    });
+    return c.json(filas);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 400);
+  }
+});
+
+app.post("/precios/previsualizar", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const body = await c.req.json();
+    const cambios = Array.isArray(body?.cambios) ? body.cambios : [];
+
+    const resultado = await previsualizarCambios(supabase, orgId, cambios);
+    return c.json(resultado);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 400);
+  }
+});
+
+app.post("/precios/aplicar", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+
+    const autorizado = await verificarPermisoEdicion(adminClient, orgId, user?.id);
+    if (!autorizado) {
+      return c.json({ error: "No tienes permiso para editar costos" }, 403);
+    }
+
+    const body = await c.req.json();
+    // Lista blanca estricta
+    const payload = {
+      origen: body.origen,
+      descripcion: body.descripcion,
+      cambios: body.cambios,
+    };
+
+    const res = await aplicarLote(adminClient, orgId, user?.id || null, payload);
+    return c.json(res.data, res.status as any);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.get("/precios/lotes", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const limite = Number(c.req.query("limite")) || 50;
+
+    const data = await obtenerLotes(supabase, orgId, limite);
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.get("/precios/lotes/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const loteId = c.req.param("id");
+
+    const data = await obtenerLoteDetalle(supabase, orgId, loteId);
+    if (!data) {
+      return c.json({ error: "Lote no encontrado" }, 404);
+    }
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.post("/precios/lotes/:id/revertir", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+
+    const autorizado = await verificarPermisoEdicion(adminClient, orgId, user?.id);
+    if (!autorizado) {
+      return c.json({ error: "No tienes permiso para editar costos" }, 403);
+    }
+
+    const loteId = c.req.param("id");
+    const res = await revertirLote(adminClient, orgId, user?.id || null, loteId);
+    return c.json(res.data, res.status as any);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
   }
 });
 

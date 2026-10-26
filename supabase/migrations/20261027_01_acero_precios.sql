@@ -137,6 +137,9 @@ BEGIN
         INSERT INTO acero_precios (organizacion_id, material_id, proveedor, precio, incluye_iva, fuente, notas)
         VALUES (r_org.id, v_mat_id, 'SERVIACERO', 5230.614, true, 'PRECIOS DE ACERO.xlsx (Hoja1)', 'import-2r13')
         ON CONFLICT (material_id, proveedor) DO NOTHING;
+        INSERT INTO acero_precios (organizacion_id, material_id, proveedor, precio, incluye_iva, fuente, notas)
+        VALUES (r_org.id, v_mat_id, 'PIRAMIDE', 5050, true, 'PRECIOS DE ACERO.xlsx (Hoja1)', 'import-2r13')
+        ON CONFLICT (material_id, proveedor) DO NOTHING;
 
         -- Material: PTR de 6X2" Cal. 3/16"
         INSERT INTO acero_materiales (organizacion_id, nombre, tipo, ancho_ft, largo_ft, activo, notas)
@@ -148,9 +151,6 @@ BEGIN
         WHERE organizacion_id = r_org.id AND nombre = 'PTR de 6X2" Cal. 3/16"';
         INSERT INTO acero_precios (organizacion_id, material_id, proveedor, precio, incluye_iva, fuente, notas)
         VALUES (r_org.id, v_mat_id, 'FORTACERO', 2108.1227, true, 'PRECIOS DE ACERO.xlsx (Hoja1)', 'import-2r13')
-        ON CONFLICT (material_id, proveedor) DO NOTHING;
-        INSERT INTO acero_precios (organizacion_id, material_id, proveedor, precio, incluye_iva, fuente, notas)
-        VALUES (r_org.id, v_mat_id, 'PIRAMIDE', 5050, true, 'PRECIOS DE ACERO.xlsx (Hoja1)', 'import-2r13')
         ON CONFLICT (material_id, proveedor) DO NOTHING;
         INSERT INTO acero_precios (organizacion_id, material_id, proveedor, precio, incluye_iva, fuente, notas)
         VALUES (r_org.id, v_mat_id, 'TPI', 2143.96, true, 'PRECIOS DE ACERO.xlsx (Hoja1)', 'import-2r13')

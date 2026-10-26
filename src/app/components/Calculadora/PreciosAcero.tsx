@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -32,6 +33,7 @@ import {
   Trash2,
   Check,
   X,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatearMoneda } from '../../utils/calculations';
@@ -58,6 +60,8 @@ export function PreciosAcero({
   loading = false,
   onRecargar,
 }: PreciosAceroProps) {
+  const navigate = useNavigate();
+
   // Filtros
   const [filtroTipo, setFiltroTipo] = useState<string>('todos');
   const [busqueda, setBusqueda] = useState<string>('');
@@ -283,6 +287,15 @@ export function PreciosAcero({
           >
             <History className="h-4 w-4" />
             Historial de cambios
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/catalogo-costos?tab=actualizar-precios')}
+            className="text-xs gap-1.5 border-emerald-500/30 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
+          >
+            <FileSpreadsheet className="h-4 w-4 text-emerald-500" />
+            Actualización masiva
           </Button>
           <Button
             variant="outline"
