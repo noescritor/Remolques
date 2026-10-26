@@ -4,6 +4,7 @@ WORKDIR /app
 
 # Copiar archivos manteniendo la estructura exacta
 COPY src/app/types ./src/app/types
+COPY src/app/utils/aceroCalc.ts ./src/app/utils/aceroCalc.ts
 COPY supabase/functions/make-server-feea4382 ./supabase/functions/make-server-feea4382
 
 WORKDIR /app/supabase/functions/make-server-feea4382
