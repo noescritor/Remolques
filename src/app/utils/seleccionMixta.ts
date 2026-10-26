@@ -283,3 +283,46 @@ export function completarConEstaOpcion(
   const nuevaCantidad = Math.max(1, maxPiezas - otrasSuma);
   return filas.map((f, i) => (i === indexACompletar ? { ...f, cantidad: nuevaCantidad } : f));
 }
+
+/**
+ * Determina si una opción del catálogo debe ser visible en el configurador (2R-12).
+ *
+ * Regla de negocio:
+ * - Opciones inactivas (`activo === false`) NO deben aparecer en la lista, salvo que
+ *   la opción ya se encuentre seleccionada en la configuración guardada del equipo
+ *   que se está editando (para no romper equipos viejos).
+ * - Opciones activas (`activo !== false`) siempre son visibles.
+ *
+ * @param opcion Objeto con propiedad `activo` opcional (por defecto true si falta).
+ * @param estaSeleccionada Booleano que indica si la opción está seleccionada actualmente.
+ * @returns true si la opción debe mostrarse, false si debe ocultarse.
+ */
+export function esOpcionVisible(
+  opcion: { activo?: boolean } | null | undefined,
+  estaSeleccionada: boolean
+): boolean {
+  if (!opcion) return false;
+  if (opcion.activo === false) {
+    return estaSeleccionada;
+  }
+  return true;
+}
+
+/**
+ * Filtra las opciones de un grupo para mostrar solo las activas más aquellas inactivas
+ * que se encuentren actualmente seleccionadas en la configuración guardada del equipo.
+ *
+ * @param opciones Lista de opciones del grupo.
+ * @param estaSeleccionada Función predicado (clave: string) => boolean, o Set<string> / string[] de claves seleccionadas.
+ */
+export function filtrarOpcionesVisibles<T extends { clave: string; activo?: boolean }>(
+  opciones: T[],
+  estaSeleccionada: ((clave: string) => boolean) | Set<string> | string[]
+): T[] {
+  const predicado = typeof estaSeleccionada === 'function'
+    ? estaSeleccionada
+    : (clave: string) => (estaSeleccionada instanceof Set ? estaSeleccionada.has(clave) : estaSeleccionada.includes(clave));
+
+  return opciones.filter(o => esOpcionVisible(o, predicado(o.clave)));
+}
+

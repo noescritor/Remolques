@@ -72,7 +72,12 @@ Formato: entradas nuevas **arriba**.
 - **7. Pruebas y Scripts de Verificación:**
   - Migración idempotente: `supabase/migrations/20261026_01_ajustes_cotizador.sql` con notas exactas `'import-2r12'` y guardias `RAISE EXCEPTION`.
   - Script de verificación de base de datos: `docs/importacion/verificacion_2R12.sql` con columnas `_ok`.
-  - Pruebas unitarias ampliadas a 136 pruebas Deno pasando al 100% (motor, texto de especificación, ficha de orden de trabajo, costeo, resolver receta, selección mixta).
+  - Pruebas unitarias ampliadas a 137 pruebas Deno pasando al 100% (motor, texto de especificación, ficha de orden de trabajo, costeo, resolver receta, selección mixta).
+- **8. Correcciones pre-merge (Postgres 17 y visibilidad de opciones inactivas):**
+  - **Migración SQL:** Reemplazados todos los `max(id)` sobre UUID por `(array_agg(id))[1]` para evitar el error `function max(uuid) does not exist` en Postgres 17.
+  - **Copia dinámica de costos:** El costo de `grande` en dolly y góndola se copia dinámicamente con `INSERT ... SELECT` desde la fila de `paleta` del mismo `tipo_modelo`, en lugar de valores fijos.
+  - **Verificación SQL:** Calificadas todas las columnas con alias de tabla (`gc.`, `oc.`, `ocst.`, `cr.`, etc.) eliminando cualquier ambigüedad en `notas`.
+  - **Ocultamiento de opciones inactivas en UI:** En `ConfiguradorEquipo.tsx` y `seleccionMixta.ts`, opciones con `activo = false` no se muestran en la lista, salvo que estén seleccionadas en la configuración guardada del equipo editado (función pura `esOpcionVisible`). Pruebas unitarias puras cubriendo inactiva no seleccionada (oculta), inactiva seleccionada (visible) y activa (visible).
 **Acciones manuales pendientes:**  
 - Correr la migración `supabase/migrations/20261026_01_ajustes_cotizador.sql` en Supabase SQL Editor.
 - Ejecutar `docs/importacion/verificacion_2R12.sql` para validar que todas las columnas devuelvan `true`.

@@ -26,7 +26,8 @@ import {
   obtenerCantidadDefecto,
   siguienteCantidad,
   completarConEstaOpcion,
-  limpiarTextoColorPersonalizado
+  limpiarTextoColorPersonalizado,
+  esOpcionVisible
 } from '../../utils/seleccionMixta';
 
 export interface ConfiguracionModelo {
@@ -462,8 +463,10 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
     if (yaLlegoAlMaximo) return;
 
     const opcionesUsadas = new Set(filasActuales.map(f => f.opcion));
-    const candidata = opcionesActuales.find((o: any) => !o.clave.startsWith('sin_') && !opcionesUsadas.has(o.clave))
-      || opcionesActuales.find((o: any) => !o.clave.startsWith('sin_'))
+    const opcionesActivas = opcionesActuales.filter((o: any) => o.activo !== false);
+    const candidata = opcionesActivas.find((o: any) => !o.clave.startsWith('sin_') && !opcionesUsadas.has(o.clave))
+      || opcionesActivas.find((o: any) => !o.clave.startsWith('sin_'))
+      || opcionesActivas[0]
       || opcionesActuales[0];
 
     if (!candidata) return;
@@ -610,19 +613,21 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                             </p>
                           </div>
                           <div className="flex flex-wrap justify-center gap-2 max-w-lg mx-auto">
-                            {opcionesActuales.map((opt: any) => (
-                              <Button
-                                key={opt.id}
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                className="text-xs"
-                                onClick={() => handleSeleccionarPrimeraOpcion(opt)}
-                              >
-                                <Plus className="w-3.5 h-3.5 mr-1" />
-                                {opt.nombre}
-                              </Button>
-                            ))}
+                            {opcionesActuales
+                              .filter((opt: any) => esOpcionVisible(opt, false))
+                              .map((opt: any) => (
+                                <Button
+                                  key={opt.id}
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-xs"
+                                  onClick={() => handleSeleccionarPrimeraOpcion(opt)}
+                                >
+                                  <Plus className="w-3.5 h-3.5 mr-1" />
+                                  {opt.nombre}
+                                </Button>
+                              ))}
                           </div>
                         </div>
                       ) : (
@@ -651,11 +656,13 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                                         <SelectValue placeholder="Seleccionar opción..." />
                                       </SelectTrigger>
                                       <SelectContent>
-                                        {opcionesActuales.map((opt: any) => (
-                                          <SelectItem key={opt.id} value={opt.clave}>
-                                            {opt.nombre}
-                                          </SelectItem>
-                                        ))}
+                                        {opcionesActuales
+                                          .filter((opt: any) => esOpcionVisible(opt, opt.clave === fila.opcion))
+                                          .map((opt: any) => (
+                                            <SelectItem key={opt.id} value={opt.clave}>
+                                              {opt.nombre}
+                                            </SelectItem>
+                                          ))}
                                       </SelectContent>
                                     </Select>
                                   </div>
@@ -802,31 +809,40 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                     <div>
                       <h3 className="text-lg font-medium mb-4 text-foreground">{grupoActual?.nombre}</h3>
                       <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(100%,240px),1fr))]">
-                        {opcionesActuales.map((o: any) => {
-                          const value = configuracion.grupos[grupoActual?.clave || ''];
-                          const isMultiple = isMultipleLike(grupoActual);
-                          
-                          let isSelected = false;
-                          let objVal: any = null;
-                          
-                          if (isMultiple) {
-                            const arr = Array.isArray(value) ? value : [];
-                            objVal = arr.find((x: any) => x.opcion === o.clave);
-                            isSelected = !!objVal;
-                          } else {
-                            isSelected = typeof value === 'object' ? value?.opcion === o.clave : value === o.clave;
-                            objVal = typeof value === 'object' ? value : null;
-                          }
-                          
-                          const isSugerida = datosModelo?.modelo.largo_ft === 40 && datosModelo?.modelo.num_ejes === 2 && 
-                            ['fleet_master', 'hj'].includes(o.clave) && ['eje','suspension','patin'].includes(grupoActual?.clave || '');
-                          
-                          return (
-                            <div key={o.id} className={`p-4 border rounded-md transition-colors relative ${isSelected ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}>
-                              <div 
-                                className={`flex justify-between items-start mb-2 cursor-pointer ${!o.activo ? 'opacity-50 pointer-events-none' : ''}`}
-                                onClick={() => handleOptionSelect(grupoActual, o, !isSelected)}
-                              >
+                        {opcionesActuales
+                          .filter((o: any) => {
+                            const value = configuracion.grupos[grupoActual?.clave || ''];
+                            const isMultiple = isMultipleLike(grupoActual);
+                            const isSelected = isMultiple
+                              ? (Array.isArray(value) ? value : []).some((x: any) => x?.opcion === o.clave || x === o.clave)
+                              : (typeof value === 'object' ? value?.opcion === o.clave : value === o.clave);
+                            return esOpcionVisible(o, isSelected);
+                          })
+                          .map((o: any) => {
+                            const value = configuracion.grupos[grupoActual?.clave || ''];
+                            const isMultiple = isMultipleLike(grupoActual);
+                            
+                            let isSelected = false;
+                            let objVal: any = null;
+                            
+                            if (isMultiple) {
+                              const arr = Array.isArray(value) ? value : [];
+                              objVal = arr.find((x: any) => x.opcion === o.clave);
+                              isSelected = !!objVal;
+                            } else {
+                              isSelected = typeof value === 'object' ? value?.opcion === o.clave : value === o.clave;
+                              objVal = typeof value === 'object' ? value : null;
+                            }
+                            
+                            const isSugerida = datosModelo?.modelo.largo_ft === 40 && datosModelo?.modelo.num_ejes === 2 && 
+                              ['fleet_master', 'hj'].includes(o.clave) && ['eje','suspension','patin'].includes(grupoActual?.clave || '');
+                            
+                            return (
+                              <div key={o.id} className={`p-4 border rounded-md transition-colors relative ${isSelected ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}>
+                                <div 
+                                  className="flex justify-between items-start mb-2 cursor-pointer"
+                                  onClick={() => handleOptionSelect(grupoActual, o, !isSelected)}
+                                >
                                 <span className="font-medium text-foreground flex items-center gap-2">
                                   {isMultiple && <input type="checkbox" checked={isSelected} readOnly />}
                                   {o.nombre}

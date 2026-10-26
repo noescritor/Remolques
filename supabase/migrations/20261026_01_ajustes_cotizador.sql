@@ -32,19 +32,19 @@ DECLARE
 BEGIN
     FOR r_org IN SELECT id FROM organizaciones LOOP
         -- 1. Guardias de coherencia de grupos
-        SELECT count(*), max(id) INTO v_count_retractil, v_grupo_retractil_id
+        SELECT count(*), (array_agg(id))[1] INTO v_count_retractil, v_grupo_retractil_id
         FROM grupos_configuracion
         WHERE organizacion_id = r_org.id AND clave = 'retractil';
 
-        SELECT count(*), max(id) INTO v_count_piso, v_grupo_piso_id
+        SELECT count(*), (array_agg(id))[1] INTO v_count_piso, v_grupo_piso_id
         FROM grupos_configuracion
         WHERE organizacion_id = r_org.id AND clave = 'piso';
 
-        SELECT count(*), max(id) INTO v_count_pintura, v_grupo_pintura_id
+        SELECT count(*), (array_agg(id))[1] INTO v_count_pintura, v_grupo_pintura_id
         FROM grupos_configuracion
         WHERE organizacion_id = r_org.id AND clave = 'pintura';
 
-        SELECT count(*), max(id) INTO v_count_color, v_grupo_color_id
+        SELECT count(*), (array_agg(id))[1] INTO v_count_color, v_grupo_color_id
         FROM grupos_configuracion
         WHERE organizacion_id = r_org.id AND clave = 'color';
 
@@ -62,15 +62,15 @@ BEGIN
         END IF;
 
         -- 2. Guardias de coherencia de opciones esperadas
-        SELECT count(*), max(id) INTO v_count_paleta, v_opt_paleta_id
+        SELECT count(*), (array_agg(id))[1] INTO v_count_paleta, v_opt_paleta_id
         FROM opciones_configuracion
         WHERE organizacion_id = r_org.id AND grupo_id = v_grupo_retractil_id AND clave = 'paleta';
 
-        SELECT count(*), max(id) INTO v_count_grande, v_opt_grande_id
+        SELECT count(*), (array_agg(id))[1] INTO v_count_grande, v_opt_grande_id
         FROM opciones_configuracion
         WHERE organizacion_id = r_org.id AND grupo_id = v_grupo_retractil_id AND clave = 'grande';
 
-        SELECT count(*), max(id) INTO v_count_plastico_negro, v_opt_plastico_negro_id
+        SELECT count(*), (array_agg(id))[1] INTO v_count_plastico_negro, v_opt_plastico_negro_id
         FROM opciones_configuracion
         WHERE organizacion_id = r_org.id AND grupo_id = v_grupo_piso_id AND clave = 'plastico_negro';
 
@@ -112,18 +112,28 @@ BEGIN
             notas = 'import-2r12'
         WHERE organizacion_id = r_org.id AND id = v_opt_plastico_negro_id;
 
-        -- 7. Copiar costo de paleta a grande en opcion_costos para gondola (15,000) y dolly (8,200)
+        -- 7. Copiar costo de paleta a grande en opcion_costos para gondola y dolly
         INSERT INTO opcion_costos (organizacion_id, opcion_id, tipo_modelo, cantidad_base, escala, costo_unitario, fuente, notas)
-        SELECT r_org.id, v_opt_grande_id, 'gondola', 1, 'fija', 15000, 'Copiado de paleta (2R-12)', 'import-2r12'
-        WHERE NOT EXISTS (
-            SELECT 1 FROM opcion_costos WHERE opcion_id = v_opt_grande_id AND tipo_modelo = 'gondola'
-        );
-
-        INSERT INTO opcion_costos (organizacion_id, opcion_id, tipo_modelo, cantidad_base, escala, costo_unitario, fuente, notas)
-        SELECT r_org.id, v_opt_grande_id, 'dolly', 1, 'fija', 8200, 'Copiado de paleta (2R-12)', 'import-2r12'
-        WHERE NOT EXISTS (
-            SELECT 1 FROM opcion_costos WHERE opcion_id = v_opt_grande_id AND tipo_modelo = 'dolly'
-        );
+        SELECT
+            r_org.id,
+            v_opt_grande_id,
+            oc_paleta.tipo_modelo,
+            oc_paleta.cantidad_base,
+            oc_paleta.escala,
+            oc_paleta.costo_unitario,
+            'Copiado de paleta (2R-12)',
+            'import-2r12'
+        FROM opcion_costos oc_paleta
+        WHERE oc_paleta.organizacion_id = r_org.id
+          AND oc_paleta.opcion_id = v_opt_paleta_id
+          AND oc_paleta.tipo_modelo IN ('gondola', 'dolly')
+          AND NOT EXISTS (
+              SELECT 1
+              FROM opcion_costos oc_grande
+              WHERE oc_grande.organizacion_id = r_org.id
+                AND oc_grande.opcion_id = v_opt_grande_id
+                AND oc_grande.tipo_modelo = oc_paleta.tipo_modelo
+          );
 
         -- 8. Opción color/personalizado
         SELECT id INTO v_opt_personalizado_id
