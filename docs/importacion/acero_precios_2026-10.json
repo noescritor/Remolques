@@ -29,15 +29,15 @@
       "nombre": "PTR 6X4\" Cal. 3/16 a 12.20m",
       "precios": {
         "FORTACERO": 5201.48,
-        "SERVIACERO": 5230.614
+        "SERVIACERO": 5230.614,
+        "PIRAMIDE": 5050.0
       }
     },
     {
       "fila_excel": 6,
       "nombre": "PTR de 6X2\" Cal. 3/16\"",
       "precios": {
-        "FORTACERO": 2108.1227,
-        "PIRAMIDE": 5050.0
+        "FORTACERO": 2108.1227
       }
     },
     {

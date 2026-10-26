@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   DollarSign,
   Package,
@@ -14,8 +15,10 @@ import {
   Edit2,
   Loader2,
   ExternalLink,
-  Info
+  Info,
+  FileSpreadsheet
 } from 'lucide-react';
+import { ActualizarPrecios } from './ActualizarPrecios';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -45,8 +48,19 @@ interface CatalogoCostosProps {
 }
 
 export function CatalogoCostosMain({ session, organizacion }: CatalogoCostosProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+
   const [tipoModelo, setTipoModelo] = useState<'plataforma' | 'dolly' | 'gondola'>('plataforma');
-  const [activeTab, setActiveTab] = useState<'opciones' | 'kits' | 'utilidad' | 'cobertura' | 'historial'>('opciones');
+  const [activeTab, setActiveTab] = useState<'opciones' | 'kits' | 'utilidad' | 'cobertura' | 'historial' | 'actualizar-precios'>(
+    tabParam === 'actualizar-precios' ? 'actualizar-precios' : 'opciones'
+  );
+
+  useEffect(() => {
+    if (tabParam === 'actualizar-precios' && activeTab !== 'actualizar-precios') {
+      setActiveTab('actualizar-precios');
+    }
+  }, [tabParam]);
 
   const [loading, setLoading] = useState(false);
   const [opciones, setOpciones] = useState<any[]>([]);
@@ -648,8 +662,19 @@ export function CatalogoCostosMain({ session, organizacion }: CatalogoCostosProp
       )}
 
       {/* Pestañas Principales */}
-      <Tabs value={activeTab} onValueChange={(val: any) => setActiveTab(val)} className="space-y-4">
-        <TabsList className="grid grid-cols-2 sm:grid-cols-5 w-full bg-muted/50 p-1">
+      <Tabs
+        value={activeTab}
+        onValueChange={(val: any) => {
+          setActiveTab(val);
+          if (val === 'actualizar-precios') {
+            setSearchParams({ tab: 'actualizar-precios' });
+          } else {
+            setSearchParams({});
+          }
+        }}
+        className="space-y-4"
+      >
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 w-full bg-muted/50 p-1">
           <TabsTrigger value="opciones" className="flex items-center gap-2 text-xs sm:text-sm">
             <Package className="h-4 w-4" />
             Opciones
@@ -669,6 +694,10 @@ export function CatalogoCostosMain({ session, organizacion }: CatalogoCostosProp
           <TabsTrigger value="historial" className="flex items-center gap-2 text-xs sm:text-sm">
             <History className="h-4 w-4" />
             Historial
+          </TabsTrigger>
+          <TabsTrigger value="actualizar-precios" className="flex items-center gap-2 text-xs sm:text-sm">
+            <FileSpreadsheet className="h-4 w-4 text-emerald-500" />
+            Actualizar precios
           </TabsTrigger>
         </TabsList>
 
@@ -1272,6 +1301,17 @@ export function CatalogoCostosMain({ session, organizacion }: CatalogoCostosProp
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* ─── PESTAÑA 6: ACTUALIZAR PRECIOS (2R-14) ─────────────────────────── */}
+        <TabsContent value="actualizar-precios" className="space-y-4">
+          <ActualizarPrecios
+            canEdit={canEdit}
+            onPreciosActualizados={() => {
+              cargarOpcionesTipo(tipoModelo);
+              if (selectedModeloId) cargarDetalleModelo(selectedModeloId);
+            }}
+          />
         </TabsContent>
       </Tabs>
 
