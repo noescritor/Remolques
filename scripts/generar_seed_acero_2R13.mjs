@@ -2,6 +2,14 @@
  * Generador de la migración y seed para Sub-bloque 2R-13: Calculadoras de acero
  * Lee docs/importacion/acero_precios_2026-10.json y genera:
  * supabase/migrations/20261027_01_acero_precios.sql
+ *
+ * NOTA DE IDEMPOTENCIA Y NO-SOBREESCRITURA:
+ * Tanto en acero_materiales como en acero_precios se utiliza
+ * ON CONFLICT (...) DO NOTHING en lugar de DO UPDATE. Esto garantiza
+ * que ante re-ejecuciones de la migración no se pisen los precios ni
+ * los materiales que hayan sido editados por los usuarios desde la pantalla.
+ * El id del material se obtiene mediante SELECT id INTO v_mat_id
+ * tras el INSERT ... DO NOTHING para enlazar correctamente los precios.
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -210,6 +218,8 @@ CREATE INDEX IF NOT EXISTS idx_acero_precios_historial_org ON acero_precios_hist
 CREATE INDEX IF NOT EXISTS idx_acero_precios_historial_mat ON acero_precios_historial(material_id);
 
 -- 4. Seed de materiales y precios por organización
+-- NOTA: Se usa ON CONFLICT DO NOTHING para que re-ejecuciones de la migración
+-- no sobreescriban precios o materiales editados desde la pantalla por los usuarios.
 DO $$
 DECLARE
     r_org RECORD;
@@ -226,9 +236,11 @@ for (const [nombre, m] of materialesMap) {
         -- Material: ${nombre}
         INSERT INTO acero_materiales (organizacion_id, nombre, tipo, ancho_ft, largo_ft, activo, notas)
         VALUES (r_org.id, '${escapeSql(nombre)}', '${m.tipo}', ${anchoVal}, ${largoVal}, true, 'import-2r13')
-        ON CONFLICT (organizacion_id, nombre)
-        DO UPDATE SET tipo = EXCLUDED.tipo, ancho_ft = EXCLUDED.ancho_ft, largo_ft = EXCLUDED.largo_ft, activo = EXCLUDED.activo, notas = EXCLUDED.notas
-        RETURNING id INTO v_mat_id;
+        ON CONFLICT (organizacion_id, nombre) DO NOTHING;
+
+        SELECT id INTO v_mat_id
+        FROM acero_materiales
+        WHERE organizacion_id = r_org.id AND nombre = '${escapeSql(nombre)}';
 `;
 
   for (const [proveedor, precioObj] of Object.entries(m.precios)) {
@@ -244,8 +256,7 @@ for (const [nombre, m] of materialesMap) {
 
     sql += `        INSERT INTO acero_precios (organizacion_id, material_id, proveedor, precio, incluye_iva, fuente, notas)
         VALUES (r_org.id, v_mat_id, '${escapeSql(proveedor)}', ${precioVal}, true, '${escapeSql(fuenteVal)}', 'import-2r13')
-        ON CONFLICT (material_id, proveedor)
-        DO UPDATE SET precio = EXCLUDED.precio, incluye_iva = EXCLUDED.incluye_iva, fuente = EXCLUDED.fuente, notas = EXCLUDED.notas;
+        ON CONFLICT (material_id, proveedor) DO NOTHING;
 `;
   }
 }

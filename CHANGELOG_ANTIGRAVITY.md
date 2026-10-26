@@ -3,6 +3,18 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-26 - Ajuste Sub-bloque 2R-13: Preservar ediciones de usuario en seed de acero (ON CONFLICT DO NOTHING)
+**Herramienta:** Antigravity  
+**Tipo:** fix (migraciones, seed script)  
+**Archivos tocados:**  
+- `scripts/generar_seed_acero_2R13.mjs`
+- `supabase/migrations/20261027_01_acero_precios.sql`  
+**Qué cambió y por qué:**  
+- Se cambiaron todos los `ON CONFLICT (...) DO UPDATE` del seed de `acero_materiales` y `acero_precios` por `ON CONFLICT (...) DO NOTHING`.
+- En la inserción de materiales, tras el `INSERT ... DO NOTHING` se realiza un `SELECT id INTO v_mat_id FROM acero_materiales WHERE organizacion_id = r_org.id AND nombre = ...` en lugar de depender de `RETURNING id`, asegurando que `v_mat_id` esté disponible aun cuando el material ya existía.
+- Con esto, futuras re-ejecuciones de la migración no pisarán los precios ni los materiales que los usuarios hayan editado o actualizado desde la pantalla.
+- Se mantuvo el conteo verificado de 38 materiales y 76 precios sembrados.
+
 ## 2026-10-26 - Sub-bloque 2R-13: Calculadoras de acero (costeo de placa + comparador de precios de acero)
 **Herramienta:** Antigravity  
 **Tipo:** feat (calculadoras, comparador, matriz de precios, esquema, migraciones)  
