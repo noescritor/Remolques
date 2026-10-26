@@ -78,6 +78,7 @@ WITH
     JOIN opciones_configuracion oc ON ocst.opcion_id = oc.id
     JOIN grupos_configuracion gc ON oc.grupo_id = gc.id
     WHERE gc.clave = 'retractil' AND oc.clave = 'grande'
+      AND ocst.tipo_modelo IN ('dolly', 'gondola')
   ),
   conteos AS (
     SELECT
