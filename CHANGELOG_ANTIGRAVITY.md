@@ -3,6 +3,63 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-26 - Ajuste Sub-bloque 2R-13: Preservar ediciones de usuario en seed de acero (ON CONFLICT DO NOTHING)
+**Herramienta:** Antigravity  
+**Tipo:** fix (migraciones, seed script)  
+**Archivos tocados:**  
+- `scripts/generar_seed_acero_2R13.mjs`
+- `supabase/migrations/20261027_01_acero_precios.sql`  
+**Qué cambió y por qué:**  
+- Se cambiaron todos los `ON CONFLICT (...) DO UPDATE` del seed de `acero_materiales` y `acero_precios` por `ON CONFLICT (...) DO NOTHING`.
+- En la inserción de materiales, tras el `INSERT ... DO NOTHING` se realiza un `SELECT id INTO v_mat_id FROM acero_materiales WHERE organizacion_id = r_org.id AND nombre = ...` en lugar de depender de `RETURNING id`, asegurando que `v_mat_id` esté disponible aun cuando el material ya existía.
+- Con esto, futuras re-ejecuciones de la migración no pisarán los precios ni los materiales que los usuarios hayan editado o actualizado desde la pantalla.
+- Se mantuvo el conteo verificado de 38 materiales y 76 precios sembrados.
+
+## 2026-10-26 - Sub-bloque 2R-13: Calculadoras de acero (costeo de placa + comparador de precios de acero)
+**Herramienta:** Antigravity  
+**Tipo:** feat (calculadoras, comparador, matriz de precios, esquema, migraciones)  
+**Archivos tocados:**  
+- `docs/importacion/acero_precios_2026-10.json`
+- `scripts/generar_seed_acero_2R13.mjs`
+- `supabase/migrations/20261027_01_acero_precios.sql`
+- `docs/importacion/verificacion_2R13.sql`
+- `src/app/utils/aceroCalc.ts`
+- `src/app/utils/aceroCalc.test.ts`
+- `src/app/utils/aceroApi.ts`
+- `supabase/functions/make-server-feea4382/motor/acero.ts`
+- `supabase/functions/make-server-feea4382/motor/acero.test.ts`
+- `supabase/functions/make-server-feea4382/index.ts`
+- `src/app/components/Calculadora/CosteoPlaca.tsx`
+- `src/app/components/Calculadora/ComparadorAcero.tsx`
+- `src/app/components/Calculadora/PreciosAcero.tsx`
+- `src/app/components/Calculadora/CalculadoraPage.tsx`
+**Qué cambió y por qué:**  
+- **1. Base de datos y semilla (20261027_01_acero_precios.sql):**
+  - Creadas tablas `acero_materiales`, `acero_precios` y `acero_precios_historial` con RLS estricto (`organizacion_id = get_current_org_id()`).
+  - Restricciones únicas `UNIQUE(organizacion_id, nombre)` en materiales y `UNIQUE(material_id, proveedor)` en precios.
+  - Creado script generador `scripts/generar_seed_acero_2R13.mjs` que toma como única fuente `docs/importacion/acero_precios_2026-10.json`.
+  - Normalizado el carácter dañado en `A-572°50` -> `A-572-50`.
+  - Sembrados 38 materiales (36 del catálogo + 2 de referencia de `COSTEO DE PLACA.xlsx`) y 76 precios (67 de proveedores catálogo + 7 de TPI + 2 de referencia) con `notas = 'import-2r13'` e `incluye_iva = true`. Idempotencia garantizada con `ON CONFLICT DO UPDATE`.
+  - Reporte de datos: en la fila `PTR de 6X2" Cal. 3/16"` el Excel original del cliente colocó como "Serviacero" el precio de FORTACERO ($2,108.12) debido a que Serviacero no tiene precio para ese material; no se inventó ningún precio falso de Serviacero.
+  - Script de verificación `docs/importacion/verificacion_2R13.sql` con columnas `_ok` calificadas con alias de tabla.
+- **2. Funciones puras (aceroCalc.ts y pruebas aceroCalc.test.ts):**
+  - `medidaFtAMm`: tabla nombrada para valores explícitos del cliente (4→1219, 5→1523, 10→3050 mm) y `Math.round(ft * 304.8)` para el resto.
+  - `determinarTipoMaterial` y `parsearMedidaLamina`: clasificación entre los 8 tipos permitidos y extracción de dimensiones en pies probada con las 14 láminas/placas del JSON.
+  - `costoPieza`: cálculo proporcional por área y factor de merma/proceso (1.5 defecto). Prueba dorada del Excel: lámina 1/4" 4X10' ($4,193.34) con pieza 1250×1000 mm -> $2,114.744012157237 exacto (tolerancia < 1e-9). Validaciones estrictas de dimensiones > 0, factor >= 1 y pieza <= lámina.
+  - `compararProveedores`: cálculo completo con soporte de `incluyeIva = true` o `false`. Prueba dorada con `comparador_ejemplo` del JSON (TPI vs Serviacero con cantidades 7, 28, 14, 4, 50, 18, 9): sin IVA da TPI $458,670.01 / $532,057.21 y Serviacero $411,544.91 / $477,392.10 (diferencia $54,665.12); con IVA da $458,670.01 y $411,544.91 (diferencia $47,125.10). Soporta proveedores incompletos, compra mixta óptima y casos borde.
+- **3. Backend y seguridad (motor/acero.ts y rutas en index.ts):**
+  - Implementados endpoints bajo `/acero/...`: `GET /acero/catalogo`, `PUT /acero/precios`, `POST /acero/materiales`, `PUT /acero/materiales/:id`, `DELETE /acero/precios/:materialId/:proveedor` y `GET /acero/historial`.
+  - Estricto filtrado por `organizacion_id` y lista blanca de campos aceptados en cada endpoint (campos como `organizacion_id`, `id` o `material_id` en el update son ignorados).
+  - Manejo de códigos HTTP: `400` para precios o nombres inválidos, `404` para materiales ajenos o no encontrados, `409` para nombres duplicados en la misma organización.
+  - Trazabilidad: cada cambio o eliminación de precio escribe una fila en `acero_precios_historial` con el usuario que lo realizó (evitando escribir duplicados si el precio no cambió).
+  - Pruebas unitarias de contrato y seguridad en Deno (`acero.test.ts`) con mock completo de Supabase.
+- **4. Pantallas y UI (CalculadoraPage.tsx, CosteoPlaca.tsx, ComparadorAcero.tsx, PreciosAcero.tsx):**
+  - `CalculadoraPage.tsx` reestructurada con componentes `Tabs`: la funcionalidad previa del estimador se conserva íntegra como la pestaña 1 ("Estimador rápido").
+  - Pestaña "Costeo de placa": selección de lámina de catálogo o manual, proveedor o mejor precio automático, unidad mm/cm, factor editable, desglose métrico detallado y botón de copiado de costo.
+  - Pestaña "Comparador de acero": lista editable de materiales con cantidades, switch de IVA, selección de proveedores a comparar, tabla contenida con desplazamiento horizontal, badges de ganador y proveedor incompleto, diferencias vs mejor proveedor, fila de compra mixta con cálculo de ahorro y botón "Cargar ejemplo del Excel" para prueba inmediata.
+  - Pestaña "Precios de acero": matriz interactiva materiales × proveedores con edición en línea (clic para editar, Enter para guardar, Esc para cancelar), aviso de confirmación ante variaciones mayores al 30%, alta de materiales y proveedores, y diálogo de historial de cambios.
+  - Cumplimiento de estilos: variables semánticas de Tailwind (`bg-card`, `text-foreground`, `border-border`), tipografías mínimas (13px cuerpo, 11px etiquetas), íconos de Lucide y formato de moneda consistente `$1,234.56`.
+
 ## 2026-10-26 - Sub-bloque 2R-12: Ajustes al cotizador (notas del cliente 2026-10-26)
 **Herramienta:** Antigravity  
 **Tipo:** feat & fix (motor, frontend, pdf, migraciones)  
