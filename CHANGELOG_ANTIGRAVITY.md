@@ -3,6 +3,24 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-26 - Ajustes Sub-bloque 2R-14: Seguridad SECURITY DEFINER, join modelos y prueba funcional
+**Herramienta:** Antigravity  
+**Tipo:** fix (seguridad, base de datos, backend, pruebas)  
+**Archivos tocados:**  
+- `supabase/migrations/20261028_01_lotes_precios.sql` (agregado REVOKE FROM PUBLIC, anon, authenticated; GRANT TO service_role; SET search_path = public; corregido JOIN a modelos/productos en rama costos_modelo y WHERE en revertir)
+- `docs/importacion/verificacion_2R14.sql` (agregada comprobación permisos_funciones_ok verificando que anon y authenticated no tengan execute y service_role sí tenga execute)
+- `docs/importacion/prueba_2R14.sql` (nuevo script con bloque BEGIN...ROLLBACK que prueba aplicación, verificación y reversión de las 4 fuentes en Postgres real)
+- `supabase/functions/make-server-feea4382/motor/lotes_precios.ts` (corregida consulta de exportación y previsualización para obtener el nombre del modelo a través de modelos.producto_id -> productos.nombre)
+**Qué cambió y por qué:**  
+- **1. Seguridad en funciones SECURITY DEFINER:** Se restringió `EXECUTE` en `aplicar_lote_precios` y `revertir_lote_precios` revocando privilegios a `PUBLIC`, `anon` y `authenticated`, otorgándolos únicamente a `service_role`, y fijando `SET search_path = public` tanto en la definición como con `ALTER FUNCTION`. Esto evita que clientes no autenticados o usuarios estándar invoquen las funciones vía `/rest/v1/rpc` con la anon key de Supabase.
+- **2. Corrección del esquema en join de modelos:** La tabla `modelos` no tiene columna `nombre` (su nombre proviene de `productos` mediante `producto_id`). Se corrigió la consulta en la rama `costos_modelo` de `aplicar_lote_precios` para hacer `JOIN modelos m ON m.id = cm.modelo_id JOIN productos pm ON pm.id = m.producto_id` y usar `pm.nombre`. Asimismo, en `revertir_lote_precios` se eliminó un calificador erróneo `p.organizacion_id` dentro del `UPDATE productos`. En el backend TypeScript (`motor/lotes_precios.ts`), se ajustó la consulta a `modelos(tipo, productos(nombre))` para obtener el contexto correcto.
+- **3. Auditoría exhaustiva de tablas y columnas involucradas:**
+  - `productos`: validada existencia de `id`, `organizacion_id`, `nombre`, `precio_base`, `activo`.
+  - `opcion_costos`: validada existencia de `id`, `organizacion_id`, `costo`, `opcion_id`, y joins con `opciones_configuracion` (`nombre`, `grupo_id`) y `grupos_configuracion` (`nombre`).
+  - `modelos` y `costos_modelo`: validada existencia de `costos_modelo.costo_base`, `modelos.producto_id`, `productos.nombre`.
+  - `acero_precios`: validada existencia de `acero_precios.precio_tonelada`, `acero_materiales.nombre`.
+- **4. Script de prueba funcional integral (`prueba_2R14.sql`):** Se redactó un script idempotente envuelto en `BEGIN ... ROLLBACK` que toma 1 registro existente de cada una de las 4 fuentes, ejecuta `aplicar_lote_precios`, verifica la actualización en las tablas base y en las tablas de auditoría/historial (`precios_lotes_items`, `costos_historial`, `acero_precios_historial`), ejecuta `revertir_lote_precios`, comprueba la restauración exacta de los precios originales y efectúa rollback garantizando cero impacto permanente.
+
 ## 2026-10-26 - Sub-bloque 2R-14: Actualización masiva de precios (Excel, porcentaje, lotes con reversión)
 **Herramienta:** Antigravity  
 **Tipo:** feat (precios masivos, excel, lotes, reversión, migraciones, backend, frontend)  

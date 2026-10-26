@@ -4,8 +4,9 @@
 -- 2. Existencia de funciones aplicar_lote_precios y revertir_lote_precios
 -- 3. Políticas RLS activas en ambas tablas
 -- 4. Índices creados
--- 5. Tablas vacías tras la migración inicial (0 lotes, 0 items)
--- 6. todo_ok: evaluación global en true
+-- 5. Restricción de permisos EXECUTE (anon/authenticated sin acceso, service_role con acceso)
+-- 6. Tablas vacías tras la migración inicial (0 lotes, 0 items)
+-- 7. todo_ok: evaluación global en true
 
 WITH
   check_tablas AS (
@@ -41,6 +42,17 @@ WITH
         EXISTS (SELECT 1 FROM pg_indexes idx WHERE idx.schemaname = 'public' AND idx.tablename = 'precios_lotes_items' AND idx.indexname = 'idx_precios_lotes_items_org')
       ) AS indices_ok
   ),
+  check_permisos AS (
+    SELECT
+      (
+        NOT has_function_privilege('anon', 'public.aplicar_lote_precios(uuid,uuid,text,text,jsonb)', 'EXECUTE') AND
+        NOT has_function_privilege('authenticated', 'public.aplicar_lote_precios(uuid,uuid,text,text,jsonb)', 'EXECUTE') AND
+        has_function_privilege('service_role', 'public.aplicar_lote_precios(uuid,uuid,text,text,jsonb)', 'EXECUTE') AND
+        NOT has_function_privilege('anon', 'public.revertir_lote_precios(uuid,uuid,uuid)', 'EXECUTE') AND
+        NOT has_function_privilege('authenticated', 'public.revertir_lote_precios(uuid,uuid,uuid)', 'EXECUTE') AND
+        has_function_privilege('service_role', 'public.revertir_lote_precios(uuid,uuid,uuid)', 'EXECUTE')
+      ) AS permisos_funciones_ok
+  ),
   check_conteo_inicial AS (
     SELECT
       (
@@ -53,12 +65,14 @@ SELECT
   cf.funciones_ok,
   cp.politicas_ok,
   ci.indices_ok,
+  cperm.permisos_funciones_ok,
   cci.lotes_inicial_vacio_ok,
   (
     ct.tablas_ok AND
     cf.funciones_ok AND
     cp.politicas_ok AND
     ci.indices_ok AND
+    cperm.permisos_funciones_ok AND
     cci.lotes_inicial_vacio_ok
   ) AS todo_ok
 FROM
@@ -66,4 +80,5 @@ FROM
   check_funciones cf,
   check_politicas cp,
   check_indices ci,
+  check_permisos cperm,
   check_conteo_inicial cci;

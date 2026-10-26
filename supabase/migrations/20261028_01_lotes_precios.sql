@@ -57,7 +57,7 @@ CREATE OR REPLACE FUNCTION aplicar_lote_precios(
     p_origen TEXT,
     p_descripcion TEXT,
     p_cambios JSONB
-) RETURNS JSONB LANGUAGE plpgsql SECURITY DEFINER AS $$
+) RETURNS JSONB LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
     r_item JSONB;
     v_fuente TEXT;
@@ -149,10 +149,11 @@ BEGIN
                 CONTINUE;
             END;
 
-            SELECT cm.costo_unitario, (m.nombre || ' / ' || cm.seccion || ' / ' || cm.concepto)
+            SELECT cm.costo_unitario, (pm.nombre || ' / ' || cm.seccion || ' / ' || cm.concepto)
             INTO v_costo_actual, v_desc
             FROM costos_modelo cm
             JOIN modelos m ON m.id = cm.modelo_id
+            JOIN productos pm ON pm.id = m.producto_id
             WHERE cm.id = v_id_uuid AND cm.organizacion_id = p_org;
 
             IF v_desc IS NULL THEN
@@ -343,7 +344,7 @@ CREATE OR REPLACE FUNCTION revertir_lote_precios(
     p_org UUID,
     p_usuario UUID,
     p_lote_id UUID
-) RETURNS JSONB LANGUAGE plpgsql SECURITY DEFINER AS $$
+) RETURNS JSONB LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
     r_lote RECORD;
     r_item RECORD;
@@ -409,7 +410,7 @@ BEGIN
             IF v_costo_actual IS NOT NULL AND abs(v_costo_actual - r_item.precio_nuevo) < 0.0001 THEN
                 UPDATE productos
                 SET costo = r_item.precio_anterior, updated_at = NOW()
-                WHERE id = r_item.registro_id::text AND p.organizacion_id = p_org;
+                WHERE id = r_item.registro_id::text AND organizacion_id = p_org;
 
                 INSERT INTO precios_lotes_items (
                     lote_id, organizacion_id, fuente, registro_id, descripcion,
@@ -567,5 +568,13 @@ BEGIN
     );
 END;
 $$;
+
+-- 5. Restricción estricta de permisos EXECUTE (SECURITY DEFINER exclusivo para service_role)
+REVOKE ALL ON FUNCTION aplicar_lote_precios(uuid, uuid, text, text, jsonb) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION revertir_lote_precios(uuid, uuid, uuid) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION aplicar_lote_precios(uuid, uuid, text, text, jsonb) TO service_role;
+GRANT EXECUTE ON FUNCTION revertir_lote_precios(uuid, uuid, uuid) TO service_role;
+ALTER FUNCTION aplicar_lote_precios(uuid, uuid, text, text, jsonb) SET search_path = public;
+ALTER FUNCTION revertir_lote_precios(uuid, uuid, uuid) SET search_path = public;
 
 COMMIT;

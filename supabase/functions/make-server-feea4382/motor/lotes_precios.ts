@@ -158,7 +158,7 @@ export async function exportarPrecios(
         seccion,
         concepto,
         costo_unitario,
-        modelo:modelos!inner(id, nombre, tipo)
+        modelo:modelos!inner(id, tipo, productos(nombre))
       `)
       .eq('organizacion_id', orgId);
 
@@ -176,7 +176,7 @@ export async function exportarPrecios(
       fuente: 'costos_modelo',
       id: row.id,
       descripcion: row.concepto,
-      contexto: `${row.modelo?.nombre || 'Modelo'} / ${row.seccion}`,
+      contexto: `${(row.modelo as any)?.productos?.nombre || (row.modelo as any)?.tipo || 'Modelo'} / ${row.seccion}`,
       unidad: 'PZA',
       precio_actual: row.costo_unitario !== null ? Number(row.costo_unitario) : null,
       incluye_iva: null,
@@ -305,11 +305,11 @@ export async function previsualizarCambios(
   if (idsPorFuente.costos_modelo.length > 0) {
     const { data } = await supabase
       .from('costos_modelo')
-      .select('id, concepto, seccion, costo_unitario, modelo:modelos(nombre)')
+      .select('id, concepto, seccion, costo_unitario, modelo:modelos(tipo, productos(nombre))')
       .eq('organizacion_id', orgId)
       .in('id', idsPorFuente.costos_modelo);
     for (const cm of data || []) {
-      const m = (cm.modelo as any)?.nombre || '';
+      const m = (cm.modelo as any)?.productos?.nombre || (cm.modelo as any)?.tipo || '';
       preciosActuales.set(`costos_modelo:${cm.id}`, {
         precioActual: cm.costo_unitario !== null ? Number(cm.costo_unitario) : null,
         descripcion: cm.concepto,
