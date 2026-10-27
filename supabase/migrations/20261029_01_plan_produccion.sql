@@ -279,6 +279,7 @@ DECLARE
     v_evento TEXT;
     v_es_nuevo BOOLEAN := false;
     v_tarea_ant RECORD;
+    v_estado_hist TEXT := 'planeada';
 BEGIN
     -- Validar organización del frente
     SELECT organizacion_id INTO v_frente_org
@@ -316,6 +317,7 @@ BEGIN
             RETURN jsonb_build_object('exito', false, 'error', 'no_encontrada', 'mensaje', 'Tarea no encontrada');
         END IF;
         v_es_nuevo := false;
+        v_estado_hist := v_tarea_ant.estado;
         v_tarea_id := p_tarea_id;
     ELSE
         v_es_nuevo := true;
@@ -405,7 +407,7 @@ BEGIN
             'descripcion', p_descripcion,
             'movilidad', p_movilidad,
             'material_faltante', p_material_faltante,
-            'estado', CASE WHEN v_es_nuevo THEN 'planeada' ELSE v_tarea_ant.estado END,
+            'estado', v_estado_hist,
             'total_operarios', coalesce(array_length(p_operarios, 1), 0),
             'total_materiales', coalesce(jsonb_array_length(p_materiales), 0)
         ),
