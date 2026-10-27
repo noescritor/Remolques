@@ -45,6 +45,21 @@ import {
   obtenerLoteDetalle,
   revertirLote
 } from "./motor/lotes_precios.ts";
+import {
+  listarOperarios,
+  crearOperario,
+  actualizarOperario,
+  obtenerEstructuraProduccion,
+  guardarArea,
+  guardarFrente,
+  obtenerPlanSemanal,
+  guardarTarea,
+  cambiarEstadoTarea,
+  eliminarTarea,
+  duplicarSemanaProduccion,
+  obtenerTrazabilidadOrden,
+  obtenerTrazabilidadOperario,
+} from "./motor/plan_produccion.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -899,6 +914,289 @@ app.post("/precios/lotes/:id/revertir", async (c) => {
     const loteId = c.req.param("id");
     const res = await revertirLote(adminClient, orgId, user?.id || null, loteId);
     return c.json(res.data, res.status as any);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+// --- PLAN SEMANAL DE PRODUCCIÓN ---
+
+app.get("/produccion/operarios", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const activos = c.req.query("activos") === "1";
+    const operarios = await listarOperarios(supabase, orgId, activos);
+    return c.json({ operarios });
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.post("/produccion/operarios", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const body = await c.req.json().catch(() => ({}));
+    const payload = {
+      nombre: body.nombre,
+      puesto: body.puesto,
+      telefono: body.telefono,
+      activo: body.activo,
+      notas: body.notas,
+    };
+    const data = await crearOperario(supabase, orgId, payload);
+    return c.json(data, 201);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.put("/produccion/operarios/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+    const payload = {
+      nombre: body.nombre,
+      puesto: body.puesto,
+      telefono: body.telefono,
+      activo: body.activo,
+      notas: body.notas,
+    };
+    const data = await actualizarOperario(supabase, orgId, id, payload);
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.get("/produccion/estructura", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const areas = await obtenerEstructuraProduccion(supabase, orgId);
+    return c.json({ areas });
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.post("/produccion/areas", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const body = await c.req.json().catch(() => ({}));
+    const payload = {
+      clave: body.clave,
+      nombre: body.nombre,
+      orden: body.orden,
+      activo: body.activo,
+    };
+    const data = await guardarArea(supabase, orgId, null, payload);
+    return c.json(data, 201);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.put("/produccion/areas/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+    const payload = {
+      nombre: body.nombre,
+      orden: body.orden,
+      activo: body.activo,
+    };
+    const data = await guardarArea(supabase, orgId, id, payload);
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.post("/produccion/frentes", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const body = await c.req.json().catch(() => ({}));
+    const payload = {
+      area_id: body.area_id,
+      nombre: body.nombre,
+      orden: body.orden,
+      activo: body.activo,
+    };
+    const data = await guardarFrente(supabase, orgId, null, payload);
+    return c.json(data, 201);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.put("/produccion/frentes/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+    const payload = {
+      area_id: body.area_id,
+      nombre: body.nombre,
+      orden: body.orden,
+      activo: body.activo,
+    };
+    const data = await guardarFrente(supabase, orgId, id, payload);
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.get("/produccion/plan", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const desde = c.req.query("desde") || "";
+    const hasta = c.req.query("hasta") || "";
+    const area = c.req.query("area") || undefined;
+    if (!desde || !hasta) {
+      return c.json({ error: "Parámetros desde y hasta son obligatorios" }, 400);
+    }
+    const tareas = await obtenerPlanSemanal(supabase, orgId, desde, hasta, area);
+    return c.json({ tareas });
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.post("/produccion/tareas", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const serviceClient = getServiceClient();
+    const body = await c.req.json().catch(() => ({}));
+    const payload = {
+      fecha: body.fecha,
+      frente_id: body.frente_id,
+      orden_trabajo_id: body.orden_trabajo_id,
+      descripcion: body.descripcion,
+      movilidad: body.movilidad,
+      observaciones: body.observaciones,
+      material_faltante: body.material_faltante,
+      estado: body.estado,
+      operarios: body.operarios,
+      materiales: body.materiales,
+    };
+    const res = await guardarTarea(serviceClient, orgId, user?.id || null, null, payload);
+    return c.json(res, 201);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.put("/produccion/tareas/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const serviceClient = getServiceClient();
+    const id = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+    const payload = {
+      fecha: body.fecha,
+      frente_id: body.frente_id,
+      orden_trabajo_id: body.orden_trabajo_id,
+      descripcion: body.descripcion,
+      movilidad: body.movilidad,
+      observaciones: body.observaciones,
+      material_faltante: body.material_faltante,
+      estado: body.estado,
+      operarios: body.operarios,
+      materiales: body.materiales,
+    };
+    const res = await guardarTarea(serviceClient, orgId, user?.id || null, id, payload);
+    return c.json(res);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.delete("/produccion/tareas/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const serviceClient = getServiceClient();
+    const id = c.req.param("id");
+    const confirmado = c.req.query("confirmado") === "1" || c.req.query("confirmado") === "true";
+    const res = await eliminarTarea(serviceClient, supabase, orgId, user?.id || null, id, confirmado);
+    return c.json(res);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.post("/produccion/tareas/:id/estado", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const serviceClient = getServiceClient();
+    const id = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+    const nuevoEstado = body.estado;
+    const confirmarReapertura = Boolean(body.confirmar_reapertura);
+    const res = await cambiarEstadoTarea(serviceClient, supabase, orgId, user?.id || null, id, nuevoEstado, confirmarReapertura);
+    return c.json(res);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.post("/produccion/plan/duplicar", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const serviceClient = getServiceClient();
+    const body = await c.req.json().catch(() => ({}));
+    const res = await duplicarSemanaProduccion(serviceClient, supabase, orgId, user?.id || null, {
+      desde: body.desde,
+      hasta: body.hasta,
+      areaIdOClave: body.area,
+    });
+    return c.json(res);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.get("/produccion/trazabilidad/orden/:ordenId", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const ordenId = c.req.param("ordenId");
+    const data = await obtenerTrazabilidadOrden(supabase, orgId, ordenId);
+    return c.json(data);
+  } catch (error: any) {
+    return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+app.get("/produccion/trazabilidad/operario/:operarioId", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const operarioId = c.req.param("operarioId");
+    const desde = c.req.query("desde");
+    const hasta = c.req.query("hasta");
+    const data = await obtenerTrazabilidadOperario(supabase, orgId, operarioId, desde, hasta);
+    return c.json(data);
   } catch (error: any) {
     return c.json({ error: error.message }, error.status || 500);
   }

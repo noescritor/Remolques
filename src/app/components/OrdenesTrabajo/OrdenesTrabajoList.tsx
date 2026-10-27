@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { OrdenTrabajo, Cliente } from '../../types';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -6,7 +7,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Dialog, DialogContent } from '../ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Printer, FileCheck, Search, Edit } from 'lucide-react';
+import { Printer, FileCheck, Search, Edit, Calendar } from 'lucide-react';
 import { OrdenTrabajoPDF } from './OrdenTrabajoPDF';
 import { LiberacionPDF } from './LiberacionPDF';
 import { BASE_URL } from '../../utils/api';
@@ -20,6 +21,7 @@ interface OrdenesTrabajoListProps {
 }
 
 export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrden, ajustes }: OrdenesTrabajoListProps) {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [ordenEditando, setOrdenEditando] = useState<OrdenTrabajo | null>(null);
   const [ordenParaPDF, setOrdenParaPDF] = useState<OrdenTrabajo | null>(null);
@@ -226,6 +228,14 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
                     </td>
                     <td className="px-6 py-4 text-xs">{fechaPedido}</td>
                     <td className="px-6 py-4 text-right space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => navigate(`/plan-semanal?tab=trazabilidad&ordenId=${orden.id}`)}
+                        title="Ver tareas de producción"
+                      >
+                        <Calendar className="w-4 h-4 text-primary" />
+                      </Button>
                       <Button variant="ghost" size="icon" onClick={() => handleEdit(orden)} title="Editar datos">
                         <Edit className="w-4 h-4 text-blue-400" />
                       </Button>

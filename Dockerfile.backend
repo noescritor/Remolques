@@ -6,6 +6,7 @@ WORKDIR /app
 COPY src/app/types ./src/app/types
 COPY src/app/utils/aceroCalc.ts ./src/app/utils/aceroCalc.ts
 COPY src/app/utils/preciosLote.ts ./src/app/utils/preciosLote.ts
+COPY src/app/utils/planProduccion.ts ./src/app/utils/planProduccion.ts
 COPY supabase/functions/make-server-feea4382 ./supabase/functions/make-server-feea4382
 
 WORKDIR /app/supabase/functions/make-server-feea4382

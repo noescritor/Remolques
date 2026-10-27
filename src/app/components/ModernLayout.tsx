@@ -11,7 +11,8 @@ import {
   Menu,
   X,
   ClipboardList,
-  DollarSign
+  DollarSign,
+  Calendar
 } from 'lucide-react';
 import { LogoIdeally } from './Cotizaciones/LogoIdeally';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from './ui/sheet';
@@ -72,6 +73,7 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading
     { id: 'dashboard',    label: 'Dashboard',     icon: LayoutDashboard, isActive: currentPage === 'dashboard' },
     { id: 'cotizaciones', label: 'Cotizaciones',  icon: FileText,        isActive: currentPage === 'cotizaciones', visible: modulos.cotizaciones !== false },
         { id: 'tablero-produccion', label: 'Tablero Producción', icon: LayoutDashboard, isActive: currentPage === 'tablero-produccion' },
+    { id: 'plan-semanal', label: 'Plan semanal', icon: Calendar, isActive: currentPage === 'plan-semanal' },
     { id: 'trazabilidad', label: 'Trazabilidad',  icon: ClipboardList,   isActive: currentPage === 'trazabilidad' },
     { id: 'presupuestos', label: 'Presupuestos',  icon: Calculator,      isActive: currentPage === 'presupuestos' },
     { id: 'plantillas',   label: 'Plantillas',    icon: BookTemplate,    isActive: currentPage === 'plantillas', visible: modulos.cotizaciones !== false },

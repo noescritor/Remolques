@@ -17,6 +17,7 @@ import { ComprasProveedorList } from './components/ComprasProveedor/ComprasProve
 import { CuentasPorCobrar } from './components/Finanzas/CuentasPorCobrar';
 import { CuentasPorPagar } from './components/Finanzas/CuentasPorPagar';
 import { TableroProduccionPage } from './components/TableroProduccion/TableroProduccionPage';
+import { PlanSemanalMain } from './components/PlanProduccion/PlanSemanalMain';
 import { TrazabilidadList } from './components/Trazabilidad/TrazabilidadList';
 import { OrdenesTrabajoList } from './components/OrdenesTrabajo/OrdenesTrabajoList';
 import { PresupuestosList } from './components/Presupuestos/PresupuestosList';
@@ -446,6 +447,7 @@ export default function App() {
     if (path.startsWith('/cxp')) return 'cxp';
     if (path.startsWith('/produccion') || path.startsWith('/ordenes-trabajo')) return 'produccion';
     if (path.startsWith('/tablero-produccion')) return 'tablero-produccion';
+    if (path.startsWith('/plan-semanal')) return 'plan-semanal';
     if (path.startsWith('/presupuestos')) return 'presupuestos';
     if (path.startsWith('/trazabilidad')) return 'trazabilidad';
     if (path.startsWith('/productos')) return 'productos';
@@ -676,6 +678,13 @@ export default function App() {
               ordenesTrabajo={ordenesTrabajo}
               loading={loading}
               onMoverOrden={moverOrdenKanban}
+            />
+          } />
+          <Route path="/plan-semanal" element={
+            <PlanSemanalMain
+              ordenesTrabajo={ordenesTrabajo}
+              productos={productos}
+              session={session}
             />
           } />
           <Route path="/trazabilidad" element={
