@@ -3,6 +3,26 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-27 - Sub-bloque 2R-15 (Fix): Correcciones a transiciones de estado, estructura editable, duplicación semanal y trazabilidad
+**Herramienta:** Antigravity  
+**Tipo:** fix (producción, migración sql, backend hono/deno, frontend react/ui, pruebas unitarias)  
+**Archivos tocados:**  
+- `supabase/migrations/20261029_01_plan_produccion.sql` (ajuste a función guardar_plan_tarea: retorno de error no_encontrada en edición con id inexistente o ajeno a la organización; preservación estricta de estado previo en edición y forzado de planeada en inserción, eliminando bypass del modal)
+- `docs/importacion/prueba_2R15.sql` (agregados casos 5b y 5c verificando preservación de estado en edición y error no_encontrada en id inexistente)
+- `supabase/functions/make-server-feea4382/motor/plan_produccion.ts` (eliminado estado de TareaPayload; validación de duplicados de operarios sin .ilike() y manejo de 23505 -> 409; validación de pertenencia de area_id y unicidad en frentes/áreas; validación de fecha calendario y cantidad numérica > 0 antes de RPC; validación de estado en cambiarEstadoTarea; duplicarSemana omite operarios inactivos y no aborta el lote retornando errores y operarios_omitidos; trazabilidad de orden recupera historial de tareas eliminadas mediante detalle->>'orden_trabajo_id')
+- `supabase/functions/make-server-feea4382/index.ts` (removido area_id de payload en PUT frentes; removido estado de payload en POST/PUT tareas)
+- `supabase/functions/make-server-feea4382/motor/plan_produccion.test.ts` (ampliado a 10 pruebas unitarias Deno cubriendo validaciones de fecha, cantidad, duplicación con operarios inactivos, trazabilidad de tareas eliminadas y actualización sin bypass de estado)
+- `src/app/components/PlanProduccion/EstructuraManager.tsx` (nuevo componente para gestión de áreas y frentes: renombrado en sitio, reordenar subir/bajar, activar/desactivar y alta de áreas/frentes sin borrar tareas)
+- `src/app/components/PlanProduccion/FormularioTareaModal.tsx` (reemplazado select de estado por badge y panel de botones de transición explícitos conectando al endpoint de estado; visualización de inicio_real, fin_real y duración)
+- `src/app/components/PlanProduccion/CuadriculaSemanal.tsx` (botones de transición rápida de estado y visualización de inicio_real/fin_real/duración en tarjetas de escritorio y móvil; inclusión de frentes inactivos con tareas asignadas en la semana)
+- `src/app/components/PlanProduccion/PlanSemanalMain.tsx` (pestaña Estructura con icono Layers, manejador centralizado handleCambiarEstado, toast de duplicar semana con detalle de operarios omitidos)
+**Qué cambió y por qué:**  
+- **1. Corrección de bypass de estados (guardar_plan_tarea y FormularioTareaModal):** Se eliminó la posibilidad de cambiar el estado de la tarea desde el formulario de guardado. La migración SQL ahora fuerza `estado = 'planeada'` al insertar y conserva el estado preexistente al actualizar. La interfaz sustituyó el combo desplegable por botones de acción de estado explícitos que llaman a `POST /produccion/tareas/:id/estado` respetando las reglas de `puedeCambiarEstado` (`valido`, `motivo`, `fijaTiempos`). Se muestran `inicio_real`, `fin_real` y duración calculada.
+- **2. Gestión de Estructura (EstructuraManager.tsx):** Se agregó la pestaña "Estructura" para permitir a los supervisores renombrar frentes (especialmente corregir `CHASIS 6` a `CHASIS 3` en góndolas), reordenar con subir/bajar, desactivar frentes obsoletos sin perder las tareas pasadas o futuras asociadas, y crear nuevas áreas o frentes.
+- **3. Robustez en duplicar semana:** Si un operario asignado en la semana anterior fue desactivado, la duplicación ya no falla ni aborta: omite la asignación del operario inactivo, genera la tarea, reporta el conteo de operarios omitidos y acumula errores individuales sin abortar el resto del lote.
+- **4. Trazabilidad integral de órdenes de trabajo:** Al eliminar una tarea, el registro en `plan_tareas_historial` conserva `detalle->>'orden_trabajo_id'`. El endpoint de trazabilidad ahora consulta tanto las tareas activas de la orden como las entradas históricas de tareas eliminadas, unificando la línea de tiempo.
+- **5. Validaciones y códigos de estado HTTP adecuados:** Sustituidos errores 500 por respuestas 400 (fechas inválidas de calendario, cantidades numéricas `<= 0` o no finitas), 404 (frente o área ajena o inexistente, tarea inexistente en guardar) y 409 (conflictos de unicidad `23505` en nombres de operarios, áreas o frentes, y transiciones de estado no permitidas).
+
 ## 2026-10-27 - Sub-bloque 2R-15: Plan semanal de producción (operarios, tareas, materiales y trazabilidad)
 **Herramienta:** Antigravity  
 **Tipo:** feat (producción, plan semanal, operarios, tareas, trazabilidad, cuadrícula, impresión, migración, backend, frontend)  

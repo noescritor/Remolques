@@ -14,9 +14,27 @@ import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Checkbox } from '../ui/checkbox';
 import { Badge } from '../ui/badge';
-import { AlertTriangle, Plus, Trash2, UserPlus, Clock, Check, X } from 'lucide-react';
+import {
+  AlertTriangle,
+  Plus,
+  Trash2,
+  UserPlus,
+  Clock,
+  Check,
+  X,
+  Play,
+  Pause,
+  RotateCcw,
+  CheckCircle2,
+  XCircle,
+} from 'lucide-react';
 import { toast } from 'sonner';
-import { PlanTarea, EstadoPlanTarea, OperarioRef } from '../../utils/planProduccion';
+import {
+  PlanTarea,
+  EstadoPlanTarea,
+  OperarioRef,
+  puedeCambiarEstado,
+} from '../../utils/planProduccion';
 
 interface FormularioTareaModalProps {
   open: boolean;
@@ -48,10 +66,38 @@ interface FormularioTareaModalProps {
   tareasSemana: PlanTarea[];
   onGuardar: (payload: any, tareaId: string | null) => Promise<void>;
   onEliminar?: (tareaId: string) => Promise<void>;
+  onCambiarEstado?: (tareaId: string, nuevoEstado: EstadoPlanTarea, confirmarReapertura?: boolean) => Promise<void>;
   onCrearOperarioRapido?: (nombre: string, puesto?: string) => Promise<OperarioRef | null>;
 }
 
 const SUGERENCIAS_MOVILIDAD = ['Montacargas', 'Grúa', 'Camión', 'Patín', 'Plataforma', 'Camioneta'];
+
+function getEstadoBadgeClass(estado: EstadoPlanTarea) {
+  switch (estado) {
+    case 'en_proceso':
+      return 'bg-primary/10 text-primary border-primary/30';
+    case 'pausada':
+      return 'bg-amber-500/10 text-amber-600 border-amber-500/30';
+    case 'terminada':
+      return 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30';
+    case 'cancelada':
+      return 'bg-destructive/10 text-destructive border-destructive/30';
+    default:
+      return 'bg-muted text-muted-foreground border-border/50';
+  }
+}
+
+function calcularDuracionTexto(inicio?: string | null, fin?: string | null) {
+  if (!inicio) return '--';
+  const tInicio = new Date(inicio).getTime();
+  const tFin = fin ? new Date(fin).getTime() : Date.now();
+  const diffMs = Math.max(0, tFin - tInicio);
+  const totalMin = Math.floor(diffMs / 60000);
+  const horas = Math.floor(totalMin / 60);
+  const mins = totalMin % 60;
+  if (horas === 0) return `${mins}m`;
+  return `${horas}h ${mins}m`;
+}
 
 export function FormularioTareaModal({
   open,
@@ -67,6 +113,7 @@ export function FormularioTareaModal({
   tareasSemana,
   onGuardar,
   onEliminar,
+  onCambiarEstado,
   onCrearOperarioRapido,
 }: FormularioTareaModalProps) {
   const [fecha, setFecha] = useState('');
@@ -77,7 +124,10 @@ export function FormularioTareaModal({
   const [movilidad, setMovilidad] = useState('');
   const [observaciones, setObservaciones] = useState('');
   const [materialFaltante, setMaterialFaltante] = useState(false);
-  const [estado, setEstado] = useState<EstadoPlanTarea>('planeada');
+  const [estadoActual, setEstadoActual] = useState<EstadoPlanTarea>('planeada');
+  const [inicioReal, setInicioReal] = useState<string | null>(null);
+  const [finReal, setFinReal] = useState<string | null>(null);
+  const [cambiandoEstado, setCambiandoEstado] = useState(false);
   const [operariosSeleccionados, setOperariosSeleccionados] = useState<string[]>([]);
   const [materiales, setMateriales] = useState<Array<{
     producto_id?: string | null;
@@ -120,7 +170,9 @@ export function FormularioTareaModal({
       setMovilidad(tarea.movilidad || '');
       setObservaciones(tarea.observaciones || '');
       setMaterialFaltante(Boolean(tarea.material_faltante));
-      setEstado(tarea.estado || 'planeada');
+      setEstadoActual(tarea.estado || 'planeada');
+      setInicioReal(tarea.inicio_real || null);
+      setFinReal(tarea.fin_real || null);
 
       const opIds = (tarea.operarios || [])
         .map((o: any) => (typeof o === 'string' ? o : o.id))
@@ -146,7 +198,9 @@ export function FormularioTareaModal({
       setMovilidad('');
       setObservaciones('');
       setMaterialFaltante(false);
-      setEstado('planeada');
+      setEstadoActual('planeada');
+      setInicioReal(null);
+      setFinReal(null);
       setOperariosSeleccionados([]);
       setMateriales([]);
     }
@@ -328,7 +382,6 @@ export function FormularioTareaModal({
         movilidad: movilidad.trim() || null,
         observaciones: observaciones.trim() || null,
         material_faltante: materialFaltante,
-        estado,
         operarios: operariosSeleccionados,
         materiales: materiales.map((m) => ({
           producto_id: m.producto_id || null,
@@ -348,6 +401,90 @@ export function FormularioTareaModal({
       setGuardando(false);
     }
   };
+
+  const handleEjecutarCambioEstado = async (nuevoEstado: EstadoPlanTarea, requiereConfirmacion?: boolean) => {
+    if (!tarea || !onCambiarEstado) return;
+    if (requiereConfirmacion) {
+      const ok = confirm(`Reabrir una tarea terminada reiniciará su seguimiento a "en proceso". ¿Deseas continuar?`);
+      if (!ok) return;
+    }
+    try {
+      setCambiandoEstado(true);
+      await onCambiarEstado(tarea.id, nuevoEstado, requiereConfirmacion);
+      setEstadoActual(nuevoEstado);
+      if (nuevoEstado === 'en_proceso' && !inicioReal) {
+        setInicioReal(new Date().toISOString());
+      }
+      if (nuevoEstado === 'terminada') {
+        setFinReal(new Date().toISOString());
+      }
+    } catch (err: any) {
+      // Notificado en el llamador
+    } finally {
+      setCambiandoEstado(false);
+    }
+  };
+
+  const accionesEstadoDisponibles = useMemo(() => {
+    if (!tarea) return [];
+    const candidatos: Array<{
+      nuevoEstado: EstadoPlanTarea;
+      etiqueta: string;
+      variante: 'default' | 'outline' | 'destructive' | 'secondary';
+      icono: React.ReactNode;
+      requiereConfirmacion?: boolean;
+    }> = [];
+
+    const todos: EstadoPlanTarea[] = ['planeada', 'en_proceso', 'pausada', 'terminada', 'cancelada'];
+    for (const st of todos) {
+      if (st === estadoActual) continue;
+      const res = puedeCambiarEstado(estadoActual, st, { confirmarReapertura: true });
+      if (res.valido) {
+        let etiqueta = st.replace('_', ' ');
+        let variante: 'default' | 'outline' | 'destructive' | 'secondary' = 'outline';
+        let icono: React.ReactNode = null;
+        let requiereConfirmacion = false;
+
+        if (st === 'en_proceso') {
+          if (estadoActual === 'planeada') {
+            etiqueta = 'Iniciar labor';
+            variante = 'default';
+            icono = <Play className="w-3.5 h-3.5 mr-1" />;
+          } else if (estadoActual === 'pausada') {
+            etiqueta = 'Reanudar labor';
+            variante = 'default';
+            icono = <Play className="w-3.5 h-3.5 mr-1" />;
+          } else if (estadoActual === 'terminada') {
+            etiqueta = 'Reabrir labor';
+            variante = 'secondary';
+            icono = <RotateCcw className="w-3.5 h-3.5 mr-1" />;
+            requiereConfirmacion = true;
+          }
+        } else if (st === 'pausada') {
+          etiqueta = 'Pausar labor';
+          variante = 'outline';
+          icono = <Pause className="w-3.5 h-3.5 mr-1 text-amber-500" />;
+        } else if (st === 'terminada') {
+          etiqueta = 'Terminar labor';
+          variante = 'default';
+          icono = <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-emerald-500" />;
+        } else if (st === 'cancelada') {
+          etiqueta = 'Cancelar labor';
+          variante = 'destructive';
+          icono = <XCircle className="w-3.5 h-3.5 mr-1" />;
+        }
+
+        candidatos.push({
+          nuevoEstado: st,
+          etiqueta,
+          variante,
+          icono,
+          requiereConfirmacion,
+        });
+      }
+    }
+    return candidatos;
+  }, [tarea, estadoActual]);
 
   const handleEliminarClick = async () => {
     if (!tarea || !onEliminar) return;
@@ -494,22 +631,83 @@ export function FormularioTareaModal({
                 </Select>
               </div>
 
-              <div>
+              <div className="space-y-1">
                 <Label className="text-xs font-semibold">Estado de la Tarea</Label>
-                <Select value={estado} onValueChange={(val: any) => setEstado(val)}>
-                  <SelectTrigger className="bg-background mt-1 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="planeada" className="text-xs">Planeada</SelectItem>
-                    <SelectItem value="en_proceso" className="text-xs">En Proceso</SelectItem>
-                    <SelectItem value="pausada" className="text-xs">Pausada</SelectItem>
-                    <SelectItem value="terminada" className="text-xs">Terminada</SelectItem>
-                    <SelectItem value="cancelada" className="text-xs">Cancelada</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="mt-1 flex items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className={`text-xs px-2.5 py-1 font-semibold capitalize border ${getEstadoBadgeClass(estadoActual)}`}
+                  >
+                    {estadoActual.replace('_', ' ')}
+                  </Badge>
+                  {!tarea && (
+                    <span className="text-[11px] text-muted-foreground italic">
+                      (Toda tarea inicia como &quot;planeada&quot;)
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
+
+            {/* Panel de Control de Estados y Tiempos Reales (solo al editar tarea existente) */}
+            {tarea && (
+              <div className="bg-muted/30 border border-border/70 rounded-xl p-3.5 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <span className="text-xs font-bold text-foreground">Acciones de Estado</span>
+                    <p className="text-[11px] text-muted-foreground">
+                      Cambios auditados con registro de inicio y fin real.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {accionesEstadoDisponibles.length === 0 ? (
+                      <span className="text-xs text-muted-foreground italic">
+                        {estadoActual === 'cancelada' ? 'Tarea cancelada (sin transiciones)' : 'Sin acciones disponibles'}
+                      </span>
+                    ) : (
+                      accionesEstadoDisponibles.map((accion) => (
+                        <Button
+                          key={accion.nuevoEstado}
+                          type="button"
+                          size="sm"
+                          variant={accion.variante as any}
+                          disabled={cambiandoEstado}
+                          onClick={() => handleEjecutarCambioEstado(accion.nuevoEstado, accion.requiereConfirmacion)}
+                          className="text-xs h-7"
+                        >
+                          {accion.icono}
+                          <span>{accion.etiqueta}</span>
+                        </Button>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Tiempos Reales y Duración */}
+                {(inicioReal || finReal) && (
+                  <div className="pt-2 border-t border-border/40 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                    <div>
+                      <span className="text-muted-foreground text-[10px] block">Inicio Real:</span>
+                      <span className="font-mono font-medium text-foreground">
+                        {inicioReal ? new Date(inicioReal).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : 'No iniciado'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground text-[10px] block">Fin Real:</span>
+                      <span className="font-mono font-medium text-foreground">
+                        {finReal ? new Date(finReal).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : (inicioReal ? 'En curso' : 'Pendiente')}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground text-[10px] block">Duración:</span>
+                      <span className="font-mono font-semibold text-primary">
+                        {calcularDuracionTexto(inicioReal, finReal)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Fila 3: Descripción / Labor */}
             <div>

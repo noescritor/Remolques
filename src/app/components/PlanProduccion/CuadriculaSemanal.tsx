@@ -17,6 +17,10 @@ import {
   CheckCircle2,
   PauseCircle,
   FileText,
+  Play,
+  Pause,
+  RotateCcw,
+  XCircle,
 } from 'lucide-react';
 import {
   PlanTarea,
@@ -34,7 +38,7 @@ interface CuadriculaSemanalProps {
     id: string;
     clave: string;
     nombre: string;
-    frentes: Array<{ id: string; nombre: string; orden: number }>;
+    frentes: Array<{ id: string; nombre: string; orden: number; activo?: boolean }>;
   }>;
   areaSeleccionadaId: string;
   onSeleccionarArea: (areaId: string) => void;
@@ -48,6 +52,7 @@ interface CuadriculaSemanalProps {
   onEditarTarea: (tarea: PlanTarea) => void;
   onDuplicarSemana: () => void;
   onImprimir: () => void;
+  onCambiarEstado?: (tareaId: string, nuevoEstado: EstadoPlanTarea, confirmarReapertura?: boolean) => Promise<void>;
 }
 
 export function CuadriculaSemanal({
@@ -64,14 +69,30 @@ export function CuadriculaSemanal({
   onEditarTarea,
   onDuplicarSemana,
   onImprimir,
+  onCambiarEstado,
 }: CuadriculaSemanalProps) {
   const areaActiva = useMemo(() => {
     return areas.find((a) => a.id === areaSeleccionadaId) || areas[0];
   }, [areas, areaSeleccionadaId]);
 
   const frentesActivos = useMemo(() => {
-    return areaActiva?.frentes || [];
-  }, [areaActiva]);
+    if (!areaActiva?.frentes) return [];
+    // Incluir frentes activos y aquellos inactivos que tengan tareas registradas esta semana
+    const frentesConTareasEstaSemana = new Set(tareas.map((t) => t.frente_id));
+    return areaActiva.frentes.filter((f) => f.activo !== false || frentesConTareasEstaSemana.has(f.id));
+  }, [areaActiva, tareas]);
+
+  const calcularDuracion = (inicio?: string | null, fin?: string | null) => {
+    if (!inicio) return '--';
+    const tInicio = new Date(inicio).getTime();
+    const tFin = fin ? new Date(fin).getTime() : Date.now();
+    const diffMs = Math.max(0, tFin - tInicio);
+    const totalMin = Math.floor(diffMs / 60000);
+    const horas = Math.floor(totalMin / 60);
+    const mins = totalMin % 60;
+    if (horas === 0) return `${mins}m`;
+    return `${horas}h ${mins}m`;
+  };
 
   const dias = useMemo(() => {
     return diasDeSemana(lunesActual, { sabado: mostrarSabado });
@@ -385,6 +406,98 @@ export function CuadriculaSemanal({
                                     <span>{t.materiales.length} material(es)</span>
                                   </div>
                                 )}
+
+                                {/* Tiempos reales y duración */}
+                                {(t.inicio_real || t.fin_real) && (
+                                  <div className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono pt-0.5">
+                                    <Clock className="w-2.5 h-2.5 text-primary" />
+                                    <span>
+                                      {t.inicio_real ? new Date(t.inicio_real).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+                                      {t.fin_real ? ` - ${new Date(t.fin_real).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                                    </span>
+                                    <span className="text-[9px] text-primary font-bold">
+                                      ({calcularDuracion(t.inicio_real, t.fin_real)})
+                                    </span>
+                                  </div>
+                                )}
+
+                                {/* Acciones rápidas de estado */}
+                                {onCambiarEstado && (
+                                  <div
+                                    className="flex items-center gap-1 pt-1 border-t border-border/40 mt-1"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {t.estado === 'planeada' && (
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => onCambiarEstado(t.id, 'en_proceso')}
+                                        className="h-5 px-1.5 text-[10px] gap-0.5 text-primary hover:bg-primary/10"
+                                        title="Iniciar labor"
+                                      >
+                                        <Play className="w-2.5 h-2.5" />
+                                        <span>Iniciar</span>
+                                      </Button>
+                                    )}
+                                    {t.estado === 'en_proceso' && (
+                                      <>
+                                        <Button
+                                          type="button"
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => onCambiarEstado(t.id, 'pausada')}
+                                          className="h-5 px-1.5 text-[10px] gap-0.5 text-amber-500 hover:bg-amber-500/10"
+                                          title="Pausar labor"
+                                        >
+                                          <Pause className="w-2.5 h-2.5" />
+                                          <span>Pausar</span>
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => onCambiarEstado(t.id, 'terminada')}
+                                          className="h-5 px-1.5 text-[10px] gap-0.5 text-emerald-600 hover:bg-emerald-600/10"
+                                          title="Terminar labor"
+                                        >
+                                          <CheckCircle2 className="w-2.5 h-2.5" />
+                                          <span>Terminar</span>
+                                        </Button>
+                                      </>
+                                    )}
+                                    {t.estado === 'pausada' && (
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => onCambiarEstado(t.id, 'en_proceso')}
+                                        className="h-5 px-1.5 text-[10px] gap-0.5 text-primary hover:bg-primary/10"
+                                        title="Reanudar labor"
+                                      >
+                                        <Play className="w-2.5 h-2.5" />
+                                        <span>Reanudar</span>
+                                      </Button>
+                                    )}
+                                    {t.estado === 'terminada' && (
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => {
+                                          if (confirm('¿Deseas reabrir esta labor terminada?')) {
+                                            onCambiarEstado(t.id, 'en_proceso', true);
+                                          }
+                                        }}
+                                        className="h-5 px-1.5 text-[10px] gap-0.5 text-muted-foreground hover:text-foreground hover:bg-muted"
+                                        title="Reabrir labor"
+                                      >
+                                        <RotateCcw className="w-2.5 h-2.5" />
+                                        <span>Reabrir</span>
+                                      </Button>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             );
                           })}
@@ -487,6 +600,86 @@ export function CuadriculaSemanal({
                               <div className="text-[10px] text-muted-foreground">
                                 OP: {(t.operarios || []).map((o: any) => o.nombre || o).join(', ') || 'Sin asignar'}
                               </div>
+                              {(t.inicio_real || t.fin_real) && (
+                                <div className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono pt-0.5">
+                                  <Clock className="w-2.5 h-2.5 text-primary" />
+                                  <span>
+                                    {t.inicio_real ? new Date(t.inicio_real).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+                                    {t.fin_real ? ` - ${new Date(t.fin_real).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                                  </span>
+                                  <span className="text-[9px] text-primary font-bold">
+                                    ({calcularDuracion(t.inicio_real, t.fin_real)})
+                                  </span>
+                                </div>
+                              )}
+                              {onCambiarEstado && (
+                                <div className="flex items-center gap-1 pt-1 border-t border-border/40 mt-1" onClick={(e) => e.stopPropagation()}>
+                                  {t.estado === 'planeada' && (
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => onCambiarEstado(t.id, 'en_proceso')}
+                                      className="h-5 px-1.5 text-[10px] gap-0.5 text-primary"
+                                    >
+                                      <Play className="w-2.5 h-2.5" />
+                                      <span>Iniciar</span>
+                                    </Button>
+                                  )}
+                                  {t.estado === 'en_proceso' && (
+                                    <>
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => onCambiarEstado(t.id, 'pausada')}
+                                        className="h-5 px-1.5 text-[10px] gap-0.5 text-amber-500"
+                                      >
+                                        <Pause className="w-2.5 h-2.5" />
+                                        <span>Pausar</span>
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => onCambiarEstado(t.id, 'terminada')}
+                                        className="h-5 px-1.5 text-[10px] gap-0.5 text-emerald-600"
+                                      >
+                                        <CheckCircle2 className="w-2.5 h-2.5" />
+                                        <span>Terminar</span>
+                                      </Button>
+                                    </>
+                                  )}
+                                  {t.estado === 'pausada' && (
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => onCambiarEstado(t.id, 'en_proceso')}
+                                      className="h-5 px-1.5 text-[10px] gap-0.5 text-primary"
+                                    >
+                                      <Play className="w-2.5 h-2.5" />
+                                      <span>Reanudar</span>
+                                    </Button>
+                                  )}
+                                  {t.estado === 'terminada' && (
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => {
+                                        if (confirm('¿Deseas reabrir esta labor terminada?')) {
+                                          onCambiarEstado(t.id, 'en_proceso', true);
+                                        }
+                                      }}
+                                      className="h-5 px-1.5 text-[10px] gap-0.5 text-muted-foreground"
+                                    >
+                                      <RotateCcw className="w-2.5 h-2.5" />
+                                      <span>Reabrir</span>
+                                    </Button>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>

@@ -3,9 +3,12 @@ import { assertEquals, assertRejects, assert } from "https://deno.land/std@0.192
 import {
   crearOperario,
   actualizarOperario,
+  guardarArea,
+  guardarFrente,
   guardarTarea,
   cambiarEstadoTarea,
   eliminarTarea,
+  duplicarSemanaProduccion,
   obtenerTrazabilidadOrden,
   obtenerTrazabilidadOperario,
 } from "./plan_produccion.ts";
@@ -25,6 +28,11 @@ function createFakeClient(opts: {
       function getFilteredRows() {
         let res = tables[tableName] || [];
         for (const f of filters) {
+          if (f.col.includes("->>")) {
+            const [parent, child] = f.col.split("->>");
+            res = res.filter((r) => r[parent] && String(r[parent][child] || "") === String(f.val));
+            continue;
+          }
           if (f.op === "eq") res = res.filter((r) => r[f.col] === f.val);
           if (f.op === "neq") res = res.filter((r) => r[f.col] !== f.val);
           if (f.op === "ilike") {
@@ -33,6 +41,8 @@ function createFakeClient(opts: {
             );
           }
           if (f.op === "in") res = res.filter((r) => f.val.includes(r[f.col]));
+          if (f.op === "gte") res = res.filter((r) => r[f.col] >= f.val);
+          if (f.op === "lte") res = res.filter((r) => r[f.col] <= f.val);
         }
         return res;
       }
@@ -114,20 +124,20 @@ function createFakeClient(opts: {
   };
 }
 
-Deno.test("motor/plan_produccion - Duplicado de nombre de operario da 409", async () => {
+Deno.test("motor/plan_produccion - Duplicado de nombre de operario da 409 (incluyendo _ y %)", async () => {
   const fakeDb = createFakeClient({
     tables: {
       operarios: [
-        { id: "op-1", organizacion_id: "org-1", nombre: "Juan Pérez", activo: true },
+        { id: "op-1", organizacion_id: "org-1", nombre: "Soldador_100%_Especial", activo: true },
       ],
     },
   });
 
-  // Intentar crear con mismo nombre pero minúsculas
+  // Intentar crear con mismo nombre pero minúsculas y espacios
   await assertRejects(
     async () => {
       await crearOperario(fakeDb, "org-1", {
-        nombre: "  juan pérez  ",
+        nombre: "  soldador_100%_especial  ",
         puesto: "Soldador",
       });
     },
@@ -210,56 +220,224 @@ Deno.test("motor/plan_produccion - Lista blanca de campos y RPC guardar_plan_tar
   assertEquals(rpcArgsReceived.p_fecha, "2026-10-19");
   assertEquals(rpcArgsReceived.p_frente_id, "frente-1");
   assertEquals(rpcArgsReceived.p_descripcion, "Corte de PTR");
+  assertEquals(rpcArgsReceived.p_estado, null); // Estado no se envía en payload de guardarTarea
   assertEquals(rpcArgsReceived.p_operarios.length, 2);
   assertEquals(rpcArgsReceived.p_materiales.length, 1);
 });
 
-Deno.test("motor/plan_produccion - Operario inactivo o de otra org rechazado con 400", async () => {
-  const fakeServiceClient = createFakeClient({
-    rpcHandlers: {
-      guardar_plan_tarea: (_args) => {
-        return {
-          exito: false,
-          error: "operario_invalido",
-          mensaje: "Uno o más operarios no existen, están inactivos o no pertenecen a la organización",
-        };
-      },
-    },
-  });
+Deno.test("motor/plan_produccion - Validaciones antes de RPC: fecha inválida y cantidad de material", async () => {
+  const fakeServiceClient = createFakeClient({});
 
+  // 1. Fecha calendario inválida (2026-13-45)
+  await assertRejects(
+    async () => {
+      await guardarTarea(fakeServiceClient, "org-1", "user-1", null, {
+        fecha: "2026-13-45",
+        frente_id: "f-1",
+      });
+    },
+    Error,
+    "inválida"
+  );
+
+  // 2. Cantidad de material no numérica ("abc")
   await assertRejects(
     async () => {
       await guardarTarea(fakeServiceClient, "org-1", "user-1", null, {
         fecha: "2026-10-19",
         frente_id: "f-1",
-        operarios: ["op-inactivo"],
+        materiales: [{ descripcion: "Tornillos", cantidad: "abc" as any, unidad: "PZA" }],
       });
     },
     Error,
-    "están inactivos o no pertenecen"
+    "número mayor a 0"
+  );
+
+  // 3. Cantidad de material <= 0
+  await assertRejects(
+    async () => {
+      await guardarTarea(fakeServiceClient, "org-1", "user-1", null, {
+        fecha: "2026-10-19",
+        frente_id: "f-1",
+        materiales: [{ descripcion: "Tornillos", cantidad: 0, unidad: "PZA" }],
+      });
+    },
+    Error,
+    "número mayor a 0"
   );
 });
 
-Deno.test("motor/plan_produccion - Transición de estado inválida da 409", async () => {
+Deno.test("motor/plan_produccion - Editar con tarea_id inexistente responde 404", async () => {
+  const fakeServiceClient = createFakeClient({
+    rpcHandlers: {
+      guardar_plan_tarea: () => {
+        return {
+          exito: false,
+          error: "no_encontrada",
+          mensaje: "Tarea no encontrada",
+        };
+      },
+    },
+  });
+
+  let catchedErr: any = null;
+  try {
+    await guardarTarea(fakeServiceClient, "org-1", "user-1", "tarea-inexistente", {
+      fecha: "2026-10-19",
+      frente_id: "f-1",
+      descripcion: "Intento de edición",
+    });
+  } catch (err: any) {
+    catchedErr = err;
+  }
+  assert(catchedErr !== null, "Debe arrojar error");
+  assertEquals(catchedErr.status, 404);
+  assertEquals(catchedErr.message, "Tarea no encontrada");
+});
+
+Deno.test("motor/plan_produccion - Transición de estado: validación 400 y reglas 409", async () => {
   const fakeDb = createFakeClient({
     tables: {
       plan_tareas: [
-        { id: "t-1", organizacion_id: "org-1", estado: "planeada" },
+        { id: "t-1", organizacion_id: "org-1", estado: "planeada", inicio_real: null, fin_real: null },
       ],
     },
   });
   const fakeServiceClient = createFakeClient({});
 
-  // planeada -> terminada directamente no es permitido (debe pasar por en_proceso)
-  let catchedErr: any = null;
+  // 1. Estado fuera de catálogo retorna 400
+  let err400: any = null;
+  try {
+    await cambiarEstadoTarea(fakeServiceClient, fakeDb, "org-1", "user-1", "t-1", "estado_invalido" as any);
+  } catch (err: any) {
+    err400 = err;
+  }
+  assert(err400 !== null);
+  assertEquals(err400.status, 400);
+
+  // 2. planeada -> terminada directamente no es permitido (409)
+  let err409: any = null;
   try {
     await cambiarEstadoTarea(fakeServiceClient, fakeDb, "org-1", "user-1", "t-1", "terminada");
   } catch (err: any) {
-    catchedErr = err;
+    err409 = err;
   }
-  assert(catchedErr !== null, "Debe arrojar error");
-  assertEquals(catchedErr.status, 409);
-  assert(catchedErr.message.includes("solo puede pasar a"));
+  assert(err409 !== null);
+  assertEquals(err409.status, 409);
+  assert(err409.message.includes("solo puede pasar a"));
+});
+
+Deno.test("motor/plan_produccion - Estructura: frente con area_id ajena da 404 y duplicado da 409", async () => {
+  const fakeDb = createFakeClient({
+    tables: {
+      produccion_areas: [
+        { id: "area-1", organizacion_id: "org-MIA", clave: "nave", nombre: "Nave" },
+        { id: "area-AJENA", organizacion_id: "org-AJENA", clave: "nave", nombre: "Nave Ajena" },
+      ],
+      produccion_frentes: [
+        { id: "f-1", organizacion_id: "org-MIA", area_id: "area-1", nombre: "Corte" },
+      ],
+    },
+  });
+
+  // 1. Crear frente con area_id de otra organización -> 404
+  let errAreaAjena: any = null;
+  try {
+    await guardarFrente(fakeDb, "org-MIA", null, {
+      area_id: "area-AJENA",
+      nombre: "Frente Infiltrado",
+    });
+  } catch (err: any) {
+    errAreaAjena = err;
+  }
+  assert(errAreaAjena !== null);
+  assertEquals(errAreaAjena.status, 404);
+  assert(errAreaAjena.message.includes("no pertenece a la organización"));
+});
+
+Deno.test("motor/plan_produccion - Duplicar semana omite operarios inactivos sin tumbar la ejecución", async () => {
+  let tareasGuardadas: any[] = [];
+  const fakeServiceClient = createFakeClient({
+    rpcHandlers: {
+      guardar_plan_tarea: (args) => {
+        tareasGuardadas.push(args);
+        return { exito: true, tarea_id: `t-dup-${tareasGuardadas.length}` };
+      },
+    },
+  });
+
+  const fakeDb = createFakeClient({
+    tables: {
+      operarios: [
+        { id: "op-activo", organizacion_id: "org-1", nombre: "Activo", activo: true },
+        { id: "op-inactivo", organizacion_id: "org-1", nombre: "Inactivo", activo: false },
+      ],
+      plan_tareas: [
+        {
+          id: "t-orig-1",
+          organizacion_id: "org-1",
+          fecha: "2026-10-19",
+          frente_id: "frente-1",
+          descripcion: "Tarea con operario inactivo",
+          estado: "planeada",
+          frente: { id: "frente-1", area_id: "area-1", area: { clave: "nave", nombre: "Nave" } },
+          operarios_asig: [
+            { operario: { id: "op-activo", nombre: "Activo" } },
+            { operario: { id: "op-inactivo", nombre: "Inactivo" } },
+          ],
+          materiales: [],
+        },
+      ],
+    },
+  });
+
+  const resultado = await duplicarSemanaProduccion(
+    fakeServiceClient,
+    fakeDb,
+    "org-1",
+    "user-1",
+    { desde: "2026-10-19", hasta: "2026-10-26" }
+  );
+
+  assertEquals(resultado.creadas, 1);
+  assertEquals(resultado.operarios_omitidos, 1);
+  assertEquals(resultado.errores.length, 0);
+
+  // Comprobar que a la tarea duplicada solo se le envió el operario activo
+  assertEquals(tareasGuardadas.length, 1);
+  assertEquals(tareasGuardadas[0].p_operarios, ["op-activo"]);
+});
+
+Deno.test("motor/plan_produccion - Trazabilidad por orden incluye eventos de tareas eliminadas", async () => {
+  const fakeDb = createFakeClient({
+    tables: {
+      ordenes_trabajo: [
+        { id: "ot-1", organizacion_id: "org-1", nomenclatura_id: "REM-001", modelo: "Plataforma" },
+      ],
+      plan_tareas: [], // La tarea ya fue eliminada de plan_tareas
+      plan_tareas_historial: [
+        {
+          id: "hist-1",
+          organizacion_id: "org-1",
+          tarea_id: null, // tarea eliminada
+          evento: "eliminada",
+          descripcion_tarea: "Armado de chasis",
+          fecha_tarea: "2026-10-20",
+          creado_el: "2026-10-20T10:00:00Z",
+          detalle: {
+            orden_trabajo_id: "ot-1",
+            tarea_id_eliminada: "t-eliminada-123",
+          },
+        },
+      ],
+    },
+  });
+
+  const res = await obtenerTrazabilidadOrden(fakeDb, "org-1", "ot-1");
+  assertEquals(res.orden.nomenclatura_id, "REM-001");
+  assertEquals(res.bitacora.length, 1);
+  assertEquals(res.bitacora[0].evento, "eliminada");
+  assertEquals(res.bitacora[0].detalle.tarea_id_eliminada, "t-eliminada-123");
 });
 
 Deno.test("motor/plan_produccion - Borrar tarea con historial deja la bitácora", async () => {

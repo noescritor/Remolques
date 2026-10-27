@@ -133,6 +133,60 @@ BEGIN
         RAISE EXCEPTION 'El estado esperado era en_proceso pero es %', v_estado_actual;
     END IF;
 
+    -- 5b. Verificar que editar tarea con guardar_plan_tarea NO cambia el estado (incluso si se envía 'terminada' o 'planeada')
+    v_res := guardar_plan_tarea(
+        v_org_id,
+        v_user_id,
+        v_tarea_id, -- ID existente
+        CURRENT_DATE,
+        v_frente_id,
+        NULL,
+        'Labor editada sin alterar estado',
+        'Montacargas 1',
+        'Observación editada',
+        false,
+        'planeada', -- Intento de pasar p_estado = planeada en un PUT
+        ARRAY[v_operario_id],
+        jsonb_build_array(
+            jsonb_build_object(
+                'producto_id', v_prod_id,
+                'descripcion', v_prod_nombre,
+                'cantidad', 2.0,
+                'unidad', v_prod_unidad
+            )
+        )
+    );
+
+    IF (v_res->>'exito')::boolean <> true THEN
+        RAISE EXCEPTION 'Fallo al editar tarea: %', v_res;
+    END IF;
+
+    SELECT estado INTO v_estado_actual FROM plan_tareas WHERE id = v_tarea_id;
+    IF v_estado_actual <> 'en_proceso' THEN
+        RAISE EXCEPTION 'Fallo de seguridad: editar la tarea cambió el estado a %, se esperaba conservar en_proceso', v_estado_actual;
+    END IF;
+
+    -- 5c. Verificar que editar con tarea_id inexistente retorna no_encontrada
+    v_res := guardar_plan_tarea(
+        v_org_id,
+        v_user_id,
+        gen_random_uuid(), -- ID inexistente
+        CURRENT_DATE,
+        v_frente_id,
+        NULL,
+        'Intento con ID inexistente',
+        NULL,
+        NULL,
+        false,
+        'planeada',
+        ARRAY[v_operario_id],
+        '[]'::jsonb
+    );
+
+    IF (v_res->>'exito')::boolean = true OR (v_res->>'error') <> 'no_encontrada' THEN
+        RAISE EXCEPTION 'Fallo: guardar_plan_tarea con ID inexistente no retornó no_encontrada: %', v_res;
+    END IF;
+
     -- 6. Transición a terminada
     v_res := cambiar_estado_plan_tarea(
         v_org_id,

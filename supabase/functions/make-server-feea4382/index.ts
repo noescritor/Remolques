@@ -1044,7 +1044,6 @@ app.put("/produccion/frentes/:id", async (c) => {
     const id = c.req.param("id");
     const body = await c.req.json().catch(() => ({}));
     const payload = {
-      area_id: body.area_id,
       nombre: body.nombre,
       orden: body.orden,
       activo: body.activo,
@@ -1088,7 +1087,6 @@ app.post("/produccion/tareas", async (c) => {
       movilidad: body.movilidad,
       observaciones: body.observaciones,
       material_faltante: body.material_faltante,
-      estado: body.estado,
       operarios: body.operarios,
       materiales: body.materiales,
     };
@@ -1115,7 +1113,6 @@ app.put("/produccion/tareas/:id", async (c) => {
       movilidad: body.movilidad,
       observaciones: body.observaciones,
       material_faltante: body.material_faltante,
-      estado: body.estado,
       operarios: body.operarios,
       materiales: body.materiales,
     };

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
 import { Button } from '../ui/button';
-import { Calendar, Users, History, AlertCircle } from 'lucide-react';
+import { Calendar, Users, History, AlertCircle, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 import { BASE_URL } from '../../utils/api';
 import { supabase } from '../../utils/supabase/client';
@@ -17,6 +17,7 @@ import { FormularioTareaModal } from './FormularioTareaModal';
 import { OperariosManager } from './OperariosManager';
 import { TrazabilidadProduccion } from './TrazabilidadProduccion';
 import { ImpresionPlanSemanal } from './ImpresionPlanSemanal';
+import { EstructuraManager } from './EstructuraManager';
 
 interface PlanSemanalMainProps {
   ordenesTrabajo?: any[];
@@ -35,8 +36,8 @@ export function PlanSemanalMain({
   const tabUrl = searchParams.get('tab') || 'plan';
   const ordenIdUrl = searchParams.get('ordenId');
 
-  const [activeTab, setActiveTab] = useState<'plan' | 'operarios' | 'trazabilidad'>(
-    tabUrl === 'operarios' || tabUrl === 'trazabilidad' ? tabUrl : 'plan'
+  const [activeTab, setActiveTab] = useState<'plan' | 'operarios' | 'trazabilidad' | 'estructura'>(
+    tabUrl === 'operarios' || tabUrl === 'trazabilidad' || tabUrl === 'estructura' ? tabUrl : 'plan'
   );
 
   // Estados de Estructura (Áreas y Frentes)
@@ -74,7 +75,7 @@ export function PlanSemanalMain({
 
   // Sincronizar tab con URL
   const handleTabChange = (nuevoTab: string) => {
-    const tabSeguro = nuevoTab as 'plan' | 'operarios' | 'trazabilidad';
+    const tabSeguro = nuevoTab as 'plan' | 'operarios' | 'trazabilidad' | 'estructura';
     setActiveTab(tabSeguro);
     const params = new URLSearchParams(searchParams);
     params.set('tab', tabSeguro);
@@ -257,6 +258,39 @@ export function PlanSemanalMain({
     return creado;
   };
 
+  // Cambiar Estado de Tarea
+  const handleCambiarEstado = async (
+    tareaId: string,
+    nuevoEstado: string,
+    confirmarReapertura?: boolean
+  ) => {
+    try {
+      const token = await getAuthToken();
+      const res = await fetch(`${BASE_URL}/produccion/tareas/${tareaId}/estado`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          estado: nuevoEstado,
+          confirmar_reapertura: !!confirmarReapertura,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Error al cambiar estado de la tarea');
+      }
+
+      toast.success(`Estado de tarea actualizado a: ${nuevoEstado}`);
+      await cargarTareasSemana();
+    } catch (err: any) {
+      toast.error('Error al cambiar estado', { description: err.message });
+      throw err;
+    }
+  };
+
   // Duplicar Semana
   const handleDuplicarSemana = async () => {
     const dDesde = new Date(lunesActual + 'T12:00:00Z');
@@ -290,7 +324,14 @@ export function PlanSemanalMain({
       }
 
       const json = await res.json();
-      toast.success(`Semana duplicada: ${json.creadas} tareas creadas, ${json.omitidas} omitidas`);
+      let msg = `Semana duplicada: ${json.creadas} tareas creadas, ${json.omitidas} omitidas`;
+      if (json.operarios_omitidos > 0) {
+        msg += ` (${json.operarios_omitidos} operarios inactivos no se copiaron)`;
+      }
+      toast.success(msg);
+      if (json.errores && json.errores.length > 0) {
+        toast.warning(`${json.errores.length} tareas tuvieron errores al duplicarse`);
+      }
       // Avanzar a la semana siguiente para visualizarla
       setLunesActual(hastaStr);
     } catch (err: any) {
@@ -334,6 +375,10 @@ export function PlanSemanalMain({
               <History className="w-3.5 h-3.5" />
               Trazabilidad
             </TabsTrigger>
+            <TabsTrigger value="estructura" className="text-xs gap-1.5 data-[state=active]:bg-card">
+              <Layers className="w-3.5 h-3.5" />
+              Estructura
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -353,6 +398,7 @@ export function PlanSemanalMain({
             cargando={cargandoTareas || cargandoEstructura}
             onNuevaTarea={handleAbrirNuevaTarea}
             onEditarTarea={handleEditarTarea}
+            onCambiarEstado={handleCambiarEstado}
             onDuplicarSemana={handleDuplicarSemana}
             onImprimir={handleImprimir}
           />
@@ -392,6 +438,14 @@ export function PlanSemanalMain({
             ordenIdInicial={ordenIdUrl}
           />
         )}
+
+        {activeTab === 'estructura' && (
+          <EstructuraManager
+            areas={areas}
+            onRecargar={cargarEstructura}
+            session={session}
+          />
+        )}
       </div>
 
       {/* Modal Formulario de Tarea */}
@@ -409,6 +463,7 @@ export function PlanSemanalMain({
         tareasSemana={tareas}
         onGuardar={handleGuardarTarea}
         onEliminar={handleEliminarTarea}
+        onCambiarEstado={handleCambiarEstado}
         onCrearOperarioRapido={handleCrearOperarioRapido}
       />
 

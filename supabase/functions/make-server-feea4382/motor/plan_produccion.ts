@@ -38,7 +38,6 @@ export interface TareaPayload {
   movilidad?: string | null;
   observaciones?: string | null;
   material_faltante?: boolean;
-  estado?: EstadoPlanTarea;
   operarios?: string[];
   materiales?: {
     producto_id?: string | null;
@@ -83,13 +82,15 @@ export async function crearOperario(
     throw err;
   }
 
-  // Verificar duplicado insensible a mayúsculas
-  const { data: existente } = await supabase
+  // Verificar duplicado insensible a mayúsculas sin comodines ilike (% y _)
+  const { data: todosOperarios } = await supabase
     .from("operarios")
     .select("id, nombre")
-    .eq("organizacion_id", orgId)
-    .ilike("nombre", nombreLimpio)
-    .maybeSingle();
+    .eq("organizacion_id", orgId);
+
+  const existente = (todosOperarios || []).some(
+    (op: any) => op.nombre.trim().toLowerCase() === nombreLimpio.toLowerCase()
+  );
 
   if (existente) {
     const err: any = new Error(`El operario "${nombreLimpio}" ya está registrado`);
@@ -112,7 +113,14 @@ export async function crearOperario(
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    if (error.code === "23505" || error.message?.includes("uq_operarios_org_nombre_ci")) {
+      const err: any = new Error(`El operario "${nombreLimpio}" ya está registrado`);
+      err.status = 409;
+      throw err;
+    }
+    throw error;
+  }
   return data;
 }
 
@@ -146,13 +154,14 @@ export async function actualizarOperario(
     }
 
     if (nombreLimpio.toLowerCase() !== actual.nombre.toLowerCase()) {
-      const { data: duplicado } = await supabase
+      const { data: todosOperarios } = await supabase
         .from("operarios")
-        .select("id")
-        .eq("organizacion_id", orgId)
-        .ilike("nombre", nombreLimpio)
-        .neq("id", id)
-        .maybeSingle();
+        .select("id, nombre")
+        .eq("organizacion_id", orgId);
+
+      const duplicado = (todosOperarios || []).some(
+        (op: any) => op.nombre.trim().toLowerCase() === nombreLimpio.toLowerCase() && op.id !== id
+      );
 
       if (duplicado) {
         const err: any = new Error(`Ya existe otro operario con el nombre "${nombreLimpio}"`);
@@ -176,7 +185,14 @@ export async function actualizarOperario(
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    if (error.code === "23505" || error.message?.includes("uq_operarios_org_nombre_ci")) {
+      const err: any = new Error(`El operario "${payload.nombre}" ya está registrado`);
+      err.status = 409;
+      throw err;
+    }
+    throw error;
+  }
   return data;
 }
 
@@ -227,6 +243,19 @@ export async function guardarArea(
   }
 
   if (id) {
+    const { data: areaExistente, error: errAreaEx } = await supabase
+      .from("produccion_areas")
+      .select("id")
+      .eq("id", id)
+      .eq("organizacion_id", orgId)
+      .maybeSingle();
+
+    if (errAreaEx || !areaExistente) {
+      const err: any = new Error("Área no encontrada");
+      err.status = 404;
+      throw err;
+    }
+
     const updateData: any = {
       nombre: nombreLimpio,
       updated_at: new Date().toISOString(),
@@ -242,7 +271,14 @@ export async function guardarArea(
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === "23505") {
+        const err: any = new Error("Ya existe un área con esta clave o nombre en la organización");
+        err.status = 409;
+        throw err;
+      }
+      throw error;
+    }
     return data;
   } else {
     const clave = (payload.clave || nombreLimpio.toLowerCase().replace(/[^a-z0-9]/g, "_")).slice(0, 50);
@@ -260,7 +296,14 @@ export async function guardarArea(
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === "23505") {
+        const err: any = new Error("Ya existe un área con esta clave en la organización");
+        err.status = 409;
+        throw err;
+      }
+      throw error;
+    }
     return data;
   }
 }
@@ -279,6 +322,19 @@ export async function guardarFrente(
   }
 
   if (id) {
+    const { data: frenteExistente, error: errExistente } = await supabase
+      .from("produccion_frentes")
+      .select("id, area_id")
+      .eq("id", id)
+      .eq("organizacion_id", orgId)
+      .maybeSingle();
+
+    if (errExistente || !frenteExistente) {
+      const err: any = new Error("Frente no encontrado");
+      err.status = 404;
+      throw err;
+    }
+
     const updateData: any = {
       nombre: nombreLimpio,
       updated_at: new Date().toISOString(),
@@ -294,12 +350,33 @@ export async function guardarFrente(
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === "23505") {
+        const err: any = new Error("Ya existe un frente con este nombre en esta área");
+        err.status = 409;
+        throw err;
+      }
+      throw error;
+    }
     return data;
   } else {
     if (!payload.area_id) {
       const err: any = new Error("area_id es obligatorio para crear un frente");
       err.status = 400;
+      throw err;
+    }
+
+    // Validar que el área pertenezca a la organización
+    const { data: areaValida, error: errAreaVal } = await supabase
+      .from("produccion_areas")
+      .select("id")
+      .eq("id", payload.area_id)
+      .eq("organizacion_id", orgId)
+      .maybeSingle();
+
+    if (errAreaVal || !areaValida) {
+      const err: any = new Error("El área especificada no existe o no pertenece a la organización");
+      err.status = 404;
       throw err;
     }
 
@@ -317,7 +394,14 @@ export async function guardarFrente(
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === "23505") {
+        const err: any = new Error("Ya existe un frente con este nombre en esta área");
+        err.status = 409;
+        throw err;
+      }
+      throw error;
+    }
     return data;
   }
 }
@@ -413,10 +497,50 @@ export async function guardarTarea(
     err.status = 400;
     throw err;
   }
+
+  // Validar formato YYYY-MM-DD y fecha real en calendario
+  const matchFecha = /^(\d{4})-(\d{2})-(\d{2})$/.exec(payload.fecha);
+  if (!matchFecha) {
+    const err: any = new Error("Formato de fecha inválido. Se espera YYYY-MM-DD");
+    err.status = 400;
+    throw err;
+  }
+  const [_, yStr, mStr, dStr] = matchFecha;
+  const y = Number(yStr);
+  const m = Number(mStr);
+  const d = Number(dStr);
+  if (m < 1 || m > 12 || d < 1 || d > 31) {
+    const err: any = new Error("Fecha de tarea inválida en calendario");
+    err.status = 400;
+    throw err;
+  }
+  const dateObj = new Date(Date.UTC(y, m - 1, d));
+  if (
+    dateObj.getUTCFullYear() !== y ||
+    dateObj.getUTCMonth() !== m - 1 ||
+    dateObj.getUTCDate() !== d
+  ) {
+    const err: any = new Error("Fecha de tarea inválida en calendario");
+    err.status = 400;
+    throw err;
+  }
+
   if (!payload.frente_id) {
     const err: any = new Error("El frente de producción es obligatorio");
     err.status = 400;
     throw err;
+  }
+
+  // Validar cantidades de materiales numéricas y mayores a 0
+  if (payload.materiales && Array.isArray(payload.materiales)) {
+    for (const mat of payload.materiales) {
+      const cant = Number(mat.cantidad);
+      if (!Number.isFinite(cant) || cant <= 0) {
+        const err: any = new Error("La cantidad de cada material debe ser un número mayor a 0");
+        err.status = 400;
+        throw err;
+      }
+    }
   }
 
   const { data: res, error } = await serviceClient.rpc("guardar_plan_tarea", {
@@ -430,7 +554,7 @@ export async function guardarTarea(
     p_movilidad: payload.movilidad || null,
     p_observaciones: payload.observaciones || null,
     p_material_faltante: Boolean(payload.material_faltante),
-    p_estado: payload.estado || "planeada",
+    p_estado: null, // El estado se fuerza a 'planeada' al crear y se conserva al editar
     p_operarios: payload.operarios || [],
     p_materiales: payload.materiales || [],
   });
@@ -438,7 +562,7 @@ export async function guardarTarea(
   if (error) throw error;
   if (res && res.exito === false) {
     const err: any = new Error(res.mensaje || "Error al guardar la tarea");
-    err.status = 400;
+    err.status = res.error === "no_encontrada" ? 404 : 400;
     err.code = res.error;
     throw err;
   }
@@ -455,6 +579,15 @@ export async function cambiarEstadoTarea(
   nuevoEstado: EstadoPlanTarea,
   confirmarReapertura = false
 ) {
+  const estadosValidos: EstadoPlanTarea[] = ["planeada", "en_proceso", "pausada", "terminada", "cancelada"];
+  if (!nuevoEstado || !estadosValidos.includes(nuevoEstado)) {
+    const err: any = new Error(
+      "Estado inválido. Debe ser uno de: planeada, en_proceso, pausada, terminada, cancelada"
+    );
+    err.status = 400;
+    throw err;
+  }
+
   const { data: tareaActual, error: errFetch } = await supabase
     .from("plan_tareas")
     .select("id, estado, inicio_real, fin_real")
@@ -567,7 +700,7 @@ export async function duplicarSemanaProduccion(
   );
 
   if (tareasOrigen.length === 0) {
-    return { creadas: 0, omitidas: 0, mensaje: "No hay tareas activas en la semana de origen para duplicar" };
+    return { creadas: 0, omitidas: 0, operarios_omitidos: 0, errores: [], mensaje: "No hay tareas activas en la semana de origen para duplicar" };
   }
 
   if (tareasOrigen.length > 500) {
@@ -575,6 +708,16 @@ export async function duplicarSemanaProduccion(
     err.status = 413;
     throw err;
   }
+
+  // Consultar operarios activos de la organización para filtrar inactivos
+  const { data: operariosActivosData, error: errOp } = await supabase
+    .from("operarios")
+    .select("id")
+    .eq("organizacion_id", orgId)
+    .eq("activo", true);
+
+  if (errOp) throw errOp;
+  const setOperariosActivos = new Set<string>((operariosActivosData || []).map((o: any) => o.id));
 
   const payloadsNuevas = duplicarSemana(tareasOrigen as PlanTarea[], {
     desde,
@@ -601,6 +744,8 @@ export async function duplicarSemanaProduccion(
 
   let creadas = 0;
   let omitidas = 0;
+  let operarios_omitidos = 0;
+  const errores: Array<{ fecha: string; frente_id: string; mensaje: string }> = [];
 
   for (const item of payloadsNuevas) {
     const clave = `${item.fecha}__${item.frente_id}__${item.orden_trabajo_id || ""}__${(item.descripcion || "").trim()}`;
@@ -609,12 +754,26 @@ export async function duplicarSemanaProduccion(
       continue;
     }
 
-    await guardarTarea(serviceClient, orgId, usuarioId, null, item);
-    setExistentes.add(clave);
-    creadas += 1;
+    // Filtrar operarios inactivos
+    const opsOriginales = item.operarios || [];
+    const opsFiltrados = opsOriginales.filter((id) => setOperariosActivos.has(id));
+    operarios_omitidos += (opsOriginales.length - opsFiltrados.length);
+    item.operarios = opsFiltrados;
+
+    try {
+      await guardarTarea(serviceClient, orgId, usuarioId, null, item);
+      setExistentes.add(clave);
+      creadas += 1;
+    } catch (e: any) {
+      errores.push({
+        fecha: item.fecha,
+        frente_id: item.frente_id,
+        mensaje: e.message || "Error al duplicar tarea",
+      });
+    }
   }
 
-  return { creadas, omitidas };
+  return { creadas, omitidas, operarios_omitidos, errores };
 }
 
 // ── TRAZABILIDAD ──
@@ -664,19 +823,36 @@ export async function obtenerTrazabilidadOrden(
 
   const tareaIds = (tareas || []).map((t: any) => t.id);
 
-  // Bitácora de eventos de esas tareas
-  let bitacora: any[] = [];
+  // Bitácora de eventos: unir eventos de tareas activas y eventos con detalle->>'orden_trabajo_id' (incluye tareas eliminadas)
+  const bitacoraMap = new Map<string, any>();
+
   if (tareaIds.length > 0) {
-    const { data: eventos, error: errHist } = await supabase
+    const { data: eventosActivos, error: errHist } = await supabase
       .from("plan_tareas_historial")
       .select("id, tarea_id, descripcion_tarea, fecha_tarea, evento, detalle, usuario_id, creado_el")
       .eq("organizacion_id", orgId)
-      .in("tarea_id", tareaIds)
-      .order("creado_el", { ascending: true });
+      .in("tarea_id", tareaIds);
 
     if (errHist) throw errHist;
-    bitacora = eventos || [];
+    for (const ev of eventosActivos || []) {
+      bitacoraMap.set(ev.id, ev);
+    }
   }
+
+  const { data: eventosPorOrden, error: errHistOrden } = await supabase
+    .from("plan_tareas_historial")
+    .select("id, tarea_id, descripcion_tarea, fecha_tarea, evento, detalle, usuario_id, creado_el")
+    .eq("organizacion_id", orgId)
+    .eq("detalle->>orden_trabajo_id", ordenId);
+
+  if (errHistOrden) throw errHistOrden;
+  for (const ev of eventosPorOrden || []) {
+    bitacoraMap.set(ev.id, ev);
+  }
+
+  const bitacora = Array.from(bitacoraMap.values()).sort(
+    (a, b) => new Date(a.creado_el).getTime() - new Date(b.creado_el).getTime()
+  );
 
   const tareasFormateadas = (tareas || []).map((t: any) => ({
     ...t,

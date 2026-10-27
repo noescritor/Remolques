@@ -310,17 +310,19 @@ BEGIN
     END IF;
 
     -- Determinar si es creación o actualización
-    IF p_tarea_id IS NULL THEN
-        v_es_nuevo := true;
-    ELSE
+    IF p_tarea_id IS NOT NULL THEN
         SELECT * INTO v_tarea_ant FROM plan_tareas WHERE id = p_tarea_id AND organizacion_id = p_org;
         IF v_tarea_ant.id IS NULL THEN
-            v_es_nuevo := true;
+            RETURN jsonb_build_object('exito', false, 'error', 'no_encontrada', 'mensaje', 'Tarea no encontrada');
         END IF;
+        v_es_nuevo := false;
+        v_tarea_id := p_tarea_id;
+    ELSE
+        v_es_nuevo := true;
+        v_tarea_id := gen_random_uuid();
     END IF;
 
     IF v_es_nuevo THEN
-        v_tarea_id := coalesce(p_tarea_id, gen_random_uuid());
         INSERT INTO plan_tareas (
             id, organizacion_id, fecha, frente_id, orden_trabajo_id,
             descripcion, movilidad, observaciones, material_faltante,
@@ -328,11 +330,10 @@ BEGIN
         ) VALUES (
             v_tarea_id, p_org, p_fecha, p_frente_id, p_orden_trabajo_id,
             p_descripcion, p_movilidad, p_observaciones, coalesce(p_material_faltante, false),
-            coalesce(p_estado, 'planeada'), p_usuario, 'import-2r15'
+            'planeada', p_usuario, 'import-2r15'
         );
         v_evento := 'creada';
     ELSE
-        v_tarea_id := p_tarea_id;
         UPDATE plan_tareas
         SET fecha = p_fecha,
             frente_id = p_frente_id,
@@ -341,7 +342,6 @@ BEGIN
             movilidad = p_movilidad,
             observaciones = p_observaciones,
             material_faltante = coalesce(p_material_faltante, false),
-            estado = coalesce(p_estado, estado),
             updated_at = now()
         WHERE id = v_tarea_id AND organizacion_id = p_org;
         v_evento := 'editada';
@@ -405,7 +405,7 @@ BEGIN
             'descripcion', p_descripcion,
             'movilidad', p_movilidad,
             'material_faltante', p_material_faltante,
-            'estado', coalesce(p_estado, 'planeada'),
+            'estado', CASE WHEN v_es_nuevo THEN 'planeada' ELSE v_tarea_ant.estado END,
             'total_operarios', coalesce(array_length(p_operarios, 1), 0),
             'total_materiales', coalesce(jsonb_array_length(p_materiales), 0)
         ),
