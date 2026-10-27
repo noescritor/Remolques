@@ -1,7 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { Clock, AlertTriangle, FileText } from 'lucide-react';
+import { Clock, AlertTriangle, FileText, Calendar } from 'lucide-react';
 import { OrdenTrabajo } from '../../types';
 import { getClientName } from '../../utils/calculations';
 
@@ -12,6 +13,7 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ orden, onDragStart, onClick }: OrderCardProps) {
+  const navigate = useNavigate();
   const getStatusColor = (estado: string) => {
     switch (estado) {
       case 'en_proceso': return 'bg-accent-green/20 text-accent-green border-accent-green/30';
@@ -61,6 +63,21 @@ export function OrderCard({ orden, onDragStart, onClick }: OrderCardProps) {
             </p>
           </div>
         )}
+
+        <div className="mt-2 pt-2 border-t border-border/40 flex justify-end">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/plan-semanal?tab=trazabilidad&ordenId=${orden.id}`);
+            }}
+            className="text-[10px] text-primary hover:text-primary/80 flex items-center gap-1 hover:underline font-medium"
+            title="Ver tareas de producción"
+          >
+            <Calendar className="w-3 h-3" />
+            <span>Ver tareas de producción</span>
+          </button>
+        </div>
       </CardContent>
     </Card>
   );

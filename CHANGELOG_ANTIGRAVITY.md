@@ -3,6 +3,61 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-27 - Sub-bloque 2R-15 (Fix): Correcciones a transiciones de estado, estructura editable, duplicación semanal y trazabilidad
+**Herramienta:** Antigravity  
+**Tipo:** fix (producción, migración sql, backend hono/deno, frontend react/ui, pruebas unitarias)  
+**Archivos tocados:**  
+- `supabase/migrations/20261029_01_plan_produccion.sql` (ajuste a función guardar_plan_tarea: retorno de error no_encontrada en edición con id inexistente o ajeno a la organización; preservación estricta de estado previo en edición y forzado de planeada en inserción, eliminando bypass del modal)
+- `docs/importacion/prueba_2R15.sql` (agregados casos 5b y 5c verificando preservación de estado en edición y error no_encontrada en id inexistente)
+- `supabase/functions/make-server-feea4382/motor/plan_produccion.ts` (eliminado estado de TareaPayload; validación de duplicados de operarios sin .ilike() y manejo de 23505 -> 409; validación de pertenencia de area_id y unicidad en frentes/áreas; validación de fecha calendario y cantidad numérica > 0 antes de RPC; validación de estado en cambiarEstadoTarea; duplicarSemana omite operarios inactivos y no aborta el lote retornando errores y operarios_omitidos; trazabilidad de orden recupera historial de tareas eliminadas mediante detalle->>'orden_trabajo_id')
+- `supabase/functions/make-server-feea4382/index.ts` (removido area_id de payload en PUT frentes; removido estado de payload en POST/PUT tareas)
+- `supabase/functions/make-server-feea4382/motor/plan_produccion.test.ts` (ampliado a 10 pruebas unitarias Deno cubriendo validaciones de fecha, cantidad, duplicación con operarios inactivos, trazabilidad de tareas eliminadas y actualización sin bypass de estado)
+- `src/app/components/PlanProduccion/EstructuraManager.tsx` (nuevo componente para gestión de áreas y frentes: renombrado en sitio, reordenar subir/bajar, activar/desactivar y alta de áreas/frentes sin borrar tareas)
+- `src/app/components/PlanProduccion/FormularioTareaModal.tsx` (reemplazado select de estado por badge y panel de botones de transición explícitos conectando al endpoint de estado; visualización de inicio_real, fin_real y duración)
+- `src/app/components/PlanProduccion/CuadriculaSemanal.tsx` (botones de transición rápida de estado y visualización de inicio_real/fin_real/duración en tarjetas de escritorio y móvil; inclusión de frentes inactivos con tareas asignadas en la semana)
+- `src/app/components/PlanProduccion/PlanSemanalMain.tsx` (pestaña Estructura con icono Layers, manejador centralizado handleCambiarEstado, toast de duplicar semana con detalle de operarios omitidos)
+**Qué cambió y por qué:**  
+- **1. Corrección de bypass de estados (guardar_plan_tarea y FormularioTareaModal):** Se eliminó la posibilidad de cambiar el estado de la tarea desde el formulario de guardado. La migración SQL ahora fuerza `estado = 'planeada'` al insertar y conserva el estado preexistente al actualizar. La interfaz sustituyó el combo desplegable por botones de acción de estado explícitos que llaman a `POST /produccion/tareas/:id/estado` respetando las reglas de `puedeCambiarEstado` (`valido`, `motivo`, `fijaTiempos`). Se muestran `inicio_real`, `fin_real` y duración calculada.
+- **2. Gestión de Estructura (EstructuraManager.tsx):** Se agregó la pestaña "Estructura" para permitir a los supervisores renombrar frentes (especialmente corregir `CHASIS 6` a `CHASIS 3` en góndolas), reordenar con subir/bajar, desactivar frentes obsoletos sin perder las tareas pasadas o futuras asociadas, y crear nuevas áreas o frentes.
+- **3. Robustez en duplicar semana:** Si un operario asignado en la semana anterior fue desactivado, la duplicación ya no falla ni aborta: omite la asignación del operario inactivo, genera la tarea, reporta el conteo de operarios omitidos y acumula errores individuales sin abortar el resto del lote.
+- **4. Trazabilidad integral de órdenes de trabajo:** Al eliminar una tarea, el registro en `plan_tareas_historial` conserva `detalle->>'orden_trabajo_id'`. El endpoint de trazabilidad ahora consulta tanto las tareas activas de la orden como las entradas históricas de tareas eliminadas, unificando la línea de tiempo.
+- **5. Validaciones y códigos de estado HTTP adecuados:** Sustituidos errores 500 por respuestas 400 (fechas inválidas de calendario, cantidades numéricas `<= 0` o no finitas), 404 (frente o área ajena o inexistente, tarea inexistente en guardar) y 409 (conflictos de unicidad `23505` en nombres de operarios, áreas o frentes, y transiciones de estado no permitidas).
+
+## 2026-10-27 - Sub-bloque 2R-15: Plan semanal de producción (operarios, tareas, materiales y trazabilidad)
+**Herramienta:** Antigravity  
+**Tipo:** feat (producción, plan semanal, operarios, tareas, trazabilidad, cuadrícula, impresión, migración, backend, frontend)  
+**Archivos tocados:**  
+- `supabase/migrations/20261029_01_plan_produccion.sql` (nueva migración: operarios, produccion_areas, produccion_frentes, plan_tareas, plan_tarea_operarios, plan_tarea_materiales, plan_tareas_historial, seed de 5 áreas y 23 frentes, y funciones atómicas seguras guardar_plan_tarea, cambiar_estado_plan_tarea, eliminar_plan_tarea con REVOKE a PUBLIC, anon, authenticated y GRANT a service_role)
+- `docs/importacion/verificacion_2R15.sql` (script de verificación con columnas _ok calificadas con alias para tablas, índices, políticas, funciones, permisos estrictos y seed)
+- `docs/importacion/prueba_2R15.sql` (script con bloque BEGIN...ROLLBACK que prueba ciclo completo de operario, tarea atómica con materiales, transiciones de estado, trazabilidad y eliminación segura preservando historial)
+- `src/app/utils/planProduccion.ts` (funciones puras: inicioDeSemana, diasDeSemana, etiquetaDia, rangoSemanaTexto, agruparPlan, totalesPersonal, detectarConflictos, duplicarSemana, puedeCambiarEstado)
+- `src/app/utils/planProduccion.test.ts` (8 pruebas unitarias Deno cubriendo semana 19-23/10/2026, cruces de mes/año, totales con operario en dos frentes, conflictos, duplicación y transiciones)
+- `Dockerfile.backend` (agregado COPY src/app/utils/planProduccion.ts)
+- `supabase/functions/make-server-feea4382/motor/plan_produccion.ts` (motor backend con lista blanca estricta y aislamiento por organizacion_id: operarios, estructura, plan semanal, tareas, duplicar semana, trazabilidad por orden y por operario)
+- `supabase/functions/make-server-feea4382/motor/plan_produccion.test.ts` (6 pruebas unitarias Deno con fake client verificando aislamiento por org, lista blanca, validación de operario inactivo, transiciones inválidas y preservación de bitácora)
+- `supabase/functions/make-server-feea4382/index.ts` (montadas rutas /produccion/* con autenticación y lista blanca)
+- `src/app/components/PlanProduccion/ImpresionPlanSemanal.tsx` (vista para impresión en A4 horizontal idéntica al Excel de producción)
+- `src/app/components/PlanProduccion/FormularioTareaModal.tsx` (diálogo de alta/edición de tarea con selector de OT, labor, operarios con alta rápida, sugerencias de movilidad, materiales del catálogo y texto libre, observaciones, falta material y avisos de conflicto)
+- `src/app/components/PlanProduccion/CuadriculaSemanal.tsx` (cuadrícula interactiva tipo Excel con columnas de frentes, filas de días, tarjetas de tareas, fila TOTAL DE PERSONAL, columna TOT, banner de conflictos y vista móvil)
+- `src/app/components/PlanProduccion/OperariosManager.tsx` (catálogo y gestión de operarios: alta, edición, activar/desactivar y conteo semanal de tareas)
+- `src/app/components/PlanProduccion/TrazabilidadProduccion.tsx` (línea de tiempo por orden de trabajo con bitácora de eventos, y consulta de labores por operario)
+- `src/app/components/PlanProduccion/PlanSemanalMain.tsx` (página principal con 4 pestañas sincronizadas con la URL ?tab=)
+- `src/app/components/ModernLayout.tsx` (nueva opción "Plan semanal" junto a Tablero Producción)
+- `src/app/App.tsx` (ruta /plan-semanal conectada con el layout)
+- `src/app/components/OrdenesTrabajo/OrdenesTrabajoList.tsx` (botón "Ver tareas de producción" en cada fila para navegar a la trazabilidad de la orden)
+- `src/app/components/TableroProduccion/OrderCard.tsx` (enlace "Ver tareas de producción" en cada tarjeta del kanban)
+**Qué cambió y por qué:**  
+- **1. Esquema e Idempotencia (20261029_01_plan_produccion.sql):** Se crearon 7 tablas con RLS estricto por organización (`operarios`, `produccion_areas`, `produccion_frentes`, `plan_tareas`, `plan_tarea_operarios`, `plan_tarea_materiales`, `plan_tareas_historial`). Se incluyó índice único insensible a mayúsculas sobre `operarios(organizacion_id, lower(trim(nombre)))`. Se sembraron 5 áreas y 23 frentes exactos del Excel de producción (`CHASIS 6` en góndolas conservado tal cual y editable). Se crearon las funciones `guardar_plan_tarea`, `cambiar_estado_plan_tarea` y `eliminar_plan_tarea` como `SECURITY DEFINER SET search_path = public` con revocación explícita para `PUBLIC`, `anon` y `authenticated`, y `GRANT EXECUTE` exclusivo a `service_role`.
+- **2. Funciones Puras (planProduccion.ts):** Implementadas 8 funciones puras sin dependencias de red ni React. Se validaron casos dorados con fechas locales (sin desfasamiento UTC), formatos de etiqueta día (`LUNES 19/10/26`), rangos de texto con cruces de mes/año, conteos de personal (`TOT` como operarios físicos distintos del día y `TOTAL DE PERSONAL` como suma de asignaciones de operario por frente), detección de conflictos, duplicación semanal conservando operarios/materiales reseteando a planeada, y transiciones de estado con fijación de tiempos reales.
+- **3. Motor Backend y Rutas REST (motor/plan_produccion.ts e index.ts):** Implementados endpoints bajo `/produccion/*` con lista blanca estricta de parámetros y aislamiento estricto por `organizacion_id`.
+- **4. Pantalla Plan Semanal (PlanSemanalMain.tsx):** Interfaz completa responsive con 4 pestañas (Plan semanal tipo Excel, Formulario modal con buscador y alta rápida, Catálogo de operarios, y Trazabilidad por orden/operario). Integrado enlace desde Órdenes de Trabajo y Tablero Producción.
+- **5. Impresión Horizontal A4 (ImpresionPlanSemanal.tsx):** Componente optimizado para `window.print` en formato horizontal con tabla exacta al formato Excel semanal de taller.
+- **Supuestos documentados:**
+  - `MOVILIDAD`: Campo de texto libre para registrar vehículo o equipo de apoyo (montacargas, grúa, etc.) con sugerencias rápidas en la interfaz.
+  - Lunes a viernes por defecto, con interruptor opcional para visualizar y planear sábados.
+  - Los materiales son requerimientos operativos de la tarea y no descuentan stock del inventario en esta fase.
+  - La asignación de tareas a un frente no modifica el estado kanban ni las fases existentes de las órdenes de trabajo.
+
 ## 2026-10-26 - Ajustes Sub-bloque 2R-14: Seguridad SECURITY DEFINER, join modelos y prueba funcional
 **Herramienta:** Antigravity  
 **Tipo:** fix (seguridad, base de datos, backend, pruebas)  
