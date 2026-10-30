@@ -80,7 +80,26 @@ export interface GuardarEstadoCuentaPayload {
   notas?: string | null;
 }
 
-// ── AUXILIARES DE VALIDACIÓN ──
+// ── AUXILIARES DE VALIDACIÓN Y ERROR ──
+
+export function hoyMexicoISO(): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Mexico_City' }).format(new Date());
+}
+
+export function formatearErrorRespuesta(err: any): { status: number; body: { error: string } } {
+  if (err && typeof err.status === "number" && err.status >= 400 && err.status < 500) {
+    return {
+      status: err.status,
+      body: { error: err.message || "Error en la solicitud" },
+    };
+  }
+
+  console.error("Error interno CXP:", err);
+  return {
+    status: 500,
+    body: { error: "No se pudo completar la operación" },
+  };
+}
 
 function esFechaValida(str: string): boolean {
   if (!str || typeof str !== "string") return false;
@@ -115,7 +134,7 @@ export async function obtenerResumenCxp(
 ) {
   const fechaCorte = corte && esFechaValida(corte)
     ? corte
-    : new Date().toISOString().slice(0, 10);
+    : hoyMexicoISO();
 
   if (corte && !esFechaValida(corte)) {
     const err: any = new Error("Fecha de corte inválida (formato YYYY-MM-DD)");
@@ -126,12 +145,13 @@ export async function obtenerResumenCxp(
   // Resolver tipo de cambio: tcManual > último en tipos_cambio > null
   let tcUSD: number | null = null;
   if (tcManual !== undefined && tcManual !== null) {
-    if (isNaN(tcManual) || tcManual <= 0) {
+    const tcNum = Number(tcManual);
+    if (!Number.isFinite(tcNum) || isNaN(tcNum) || tcNum <= 0) {
       const err: any = new Error("El tipo de cambio debe ser un número mayor a 0");
       err.status = 400;
       throw err;
     }
-    tcUSD = Number(tcManual);
+    tcUSD = Math.round(tcNum * 10000) / 10000;
   } else {
     const { data: ultimosTC } = await supabase
       .from("tipos_cambio")
@@ -146,23 +166,43 @@ export async function obtenerResumenCxp(
     }
   }
 
-  // Cargar facturas abiertas con sus pagos no anulados
-  const { data: facturas, error: errF } = await supabase
-    .from("facturas_proveedor")
-    .select(`
-      id, proveedor_id, folio, sucursal, fecha_emision, fecha_vencimiento,
-      moneda, importe, estado,
-      proveedor:proveedores(id, nombre, razon_social, rfc, moneda_default, dias_credito, limite_credito, limite_credito_moneda),
-      pagos:pagos_factura(monto, fecha_pago, anulado)
-    `)
-    .eq("organizacion_id", orgId)
-    .neq("estado", "cancelada");
+  // Cargar facturas abiertas con saldo > 0 vía v_facturas_proveedor_saldo
+  // Paginación en lotes de 1000 para superar el límite por omisión de PostgREST
+  let facturasFiltradas: any[] = [];
+  let offset = 0;
+  const BATCH = 1000;
 
-  if (errF) {
-    throw new Error(`Error al consultar facturas: ${errF.message}`);
+  while (true) {
+    let q = supabase
+      .from("v_facturas_proveedor_saldo")
+      .select(`
+        id, proveedor_id, folio, sucursal, fecha_emision, fecha_vencimiento,
+        moneda, importe, pagado, saldo, estado,
+        proveedor:proveedores(id, nombre, razon_social, rfc, moneda_default, dias_credito, limite_credito, limite_credito_moneda)
+      `)
+      .eq("organizacion_id", orgId)
+      .neq("estado", "cancelada")
+      .gt("saldo", 0);
+
+    if (typeof q.range === "function") {
+      q = q.range(offset, offset + BATCH - 1);
+    }
+
+    const { data: batch, error: errF } = await q;
+    if (errF) {
+      throw new Error(`Error al consultar facturas: ${errF.message}`);
+    }
+
+    const rows = batch || [];
+    facturasFiltradas.push(...rows);
+
+    if (rows.length < BATCH) {
+      break;
+    }
+    offset += BATCH;
   }
 
-  const facturasRef: FacturaRef[] = (facturas || []).map((f: any) => ({
+  const facturasRef: FacturaRef[] = facturasFiltradas.map((f: any) => ({
     id: f.id,
     folio: f.folio,
     sucursal: f.sucursal,
@@ -171,11 +211,9 @@ export async function obtenerResumenCxp(
     moneda: f.moneda,
     importe: Number(f.importe),
     estado: f.estado,
-    pagos: (f.pagos || []).map((p: any) => ({
-      monto: Number(p.monto),
-      fecha_pago: p.fecha_pago,
-      anulado: p.anulado,
-    })),
+    pagos: f.pagos
+      ? f.pagos.map((p: any) => ({ monto: Number(p.monto), fecha_pago: p.fecha_pago, anulado: p.anulado }))
+      : (f.pagado ? [{ monto: Number(f.pagado), anulado: false }] : []),
   }));
 
   // Resumen general
@@ -186,7 +224,7 @@ export async function obtenerResumenCxp(
 
   // Agrupar por proveedor
   const provMap: Record<string, { proveedor: any; facturas: FacturaRef[] }> = {};
-  for (const f of facturas || []) {
+  for (const f of facturasFiltradas) {
     const pId = f.proveedor_id;
     if (!provMap[pId]) {
       provMap[pId] = {
@@ -203,11 +241,9 @@ export async function obtenerResumenCxp(
       moneda: f.moneda,
       importe: Number(f.importe),
       estado: f.estado,
-      pagos: (f.pagos || []).map((p: any) => ({
-        monto: Number(p.monto),
-        fecha_pago: p.fecha_pago,
-        anulado: p.anulado,
-      })),
+      pagos: f.pagos
+        ? f.pagos.map((p: any) => ({ monto: Number(p.monto), fecha_pago: p.fecha_pago, anulado: p.anulado }))
+        : (f.pagado ? [{ monto: Number(f.pagado), anulado: false }] : []),
     });
   }
 
@@ -265,7 +301,9 @@ export async function listarFacturas(
     vencidas?: string | boolean;
     desde?: string;
     hasta?: string;
-  }
+    corte?: string;
+  } = {},
+  limite = 500
 ) {
   let query = supabase
     .from("facturas_proveedor")
@@ -278,7 +316,7 @@ export async function listarFacturas(
     `)
     .eq("organizacion_id", orgId)
     .order("fecha_vencimiento", { ascending: true })
-    .limit(500);
+    .limit(limite + 1);
 
   if (filtros.proveedor_id) {
     query = query.eq("proveedor_id", filtros.proveedor_id);
@@ -301,8 +339,14 @@ export async function listarFacturas(
     throw new Error(`Error al listar facturas: ${error.message}`);
   }
 
-  const hoyStr = new Date().toISOString().slice(0, 10);
-  const filtradas = (data || []).map((f: any) => {
+  const truncado = (data || []).length > limite;
+  const items = truncado ? (data || []).slice(0, limite) : (data || []);
+
+  const hoyStr = filtros.corte && esFechaValida(filtros.corte)
+    ? filtros.corte
+    : hoyMexicoISO();
+
+  const filtradas = items.map((f: any) => {
     const pagosValidos = (f.pagos || []).filter((p: any) => !p.anulado);
     const pagado = pagosValidos.reduce((sum: number, p: any) => sum + Number(p.monto), 0);
     const importe = Number(f.importe);
@@ -349,7 +393,10 @@ export async function listarFacturas(
     resultado = resultado.filter((f: any) => f.dias_atraso > 0 && f.saldo > 0 && f.estado !== "cancelada");
   }
 
-  return resultado;
+  return {
+    facturas: resultado,
+    truncado,
+  };
 }
 
 export async function crearFactura(
@@ -402,12 +449,13 @@ export async function crearFactura(
     throw err;
   }
 
-  const diasCredito = payload.dias_credito !== undefined ? Number(payload.dias_credito) : 30;
-  if (isNaN(diasCredito) || diasCredito < 0) {
+  const diasRaw = payload.dias_credito !== undefined ? Number(payload.dias_credito) : 30;
+  if (!Number.isInteger(diasRaw) || diasRaw < 0) {
     const err: any = new Error("Los días de crédito deben ser un entero mayor o igual a 0");
     err.status = 400;
     throw err;
   }
+  const diasCredito = diasRaw;
 
   let fechaVencimiento = payload.fecha_vencimiento;
   if (!fechaVencimiento || !esFechaValida(fechaVencimiento)) {
@@ -421,11 +469,28 @@ export async function crearFactura(
     throw err;
   }
 
-  const importe = Number(payload.importe);
-  if (isNaN(importe) || importe <= 0) {
-    const err: any = new Error("El importe de la factura debe ser mayor a 0");
+  if (payload.importe === undefined || payload.importe === null || typeof payload.importe === "boolean") {
+    const err: any = new Error("El importe de la factura es obligatorio");
     err.status = 400;
     throw err;
+  }
+  const impNum = Number(payload.importe);
+  if (!Number.isFinite(impNum) || isNaN(impNum) || impNum < 0.01) {
+    const err: any = new Error("El importe de la factura debe ser un número finito mayor o igual a 0.01");
+    err.status = 400;
+    throw err;
+  }
+  const importe = redondearCentavos(impNum);
+
+  let tcEmision: number | null = null;
+  if (payload.tipo_cambio_emision !== undefined && payload.tipo_cambio_emision !== null && (payload.tipo_cambio_emision as any) !== "") {
+    const tcNum = Number(payload.tipo_cambio_emision);
+    if (!Number.isFinite(tcNum) || isNaN(tcNum) || tcNum <= 0) {
+      const err: any = new Error("El tipo de cambio de emisión debe ser un número finito mayor a 0");
+      err.status = 400;
+      throw err;
+    }
+    tcEmision = Math.round(tcNum * 10000) / 10000;
   }
 
   const sucursalTrim = payload.sucursal ? payload.sucursal.trim() : null;
@@ -566,8 +631,8 @@ export async function actualizarFactura(
 
   if (payload.dias_credito !== undefined) {
     const dias = Number(payload.dias_credito);
-    if (isNaN(dias) || dias < 0) {
-      const err: any = new Error("Días de crédito inválidos");
+    if (!Number.isInteger(dias) || dias < 0) {
+      const err: any = new Error("Los días de crédito deben ser un entero mayor o igual a 0");
       err.status = 400;
       throw err;
     }
@@ -594,12 +659,12 @@ export async function actualizarFactura(
     }
     if (payload.importe !== undefined) {
       const imp = Number(payload.importe);
-      if (isNaN(imp) || imp <= 0) {
-        const err: any = new Error("El importe debe ser mayor a 0");
+      if (!Number.isFinite(imp) || isNaN(imp) || imp < 0.01) {
+        const err: any = new Error("El importe debe ser un número finito mayor o igual a 0.01");
         err.status = 400;
         throw err;
       }
-      updateData.importe = imp;
+      updateData.importe = redondearCentavos(imp);
     }
     if (payload.proveedor_id !== undefined) {
       const { data: prov } = await supabase
@@ -617,7 +682,17 @@ export async function actualizarFactura(
   }
 
   if (payload.tipo_cambio_emision !== undefined) {
-    updateData.tipo_cambio_emision = payload.tipo_cambio_emision ? Number(payload.tipo_cambio_emision) : null;
+    if (payload.tipo_cambio_emision !== null && (payload.tipo_cambio_emision as any) !== "") {
+      const tc = Number(payload.tipo_cambio_emision);
+      if (!Number.isFinite(tc) || isNaN(tc) || tc <= 0) {
+        const err: any = new Error("El tipo de cambio de emisión debe ser un número finito mayor a 0");
+        err.status = 400;
+        throw err;
+      }
+      updateData.tipo_cambio_emision = Math.round(tc * 10000) / 10000;
+    } else {
+      updateData.tipo_cambio_emision = null;
+    }
   }
 
   // 3. Ejecutar UPDATE
@@ -684,16 +759,25 @@ export async function cancelarFactura(
 // ── 3. PAGOS DE FACTURA ──
 
 export async function registrarPago(
-  supabase: any,
+  serviceClient: any,
   orgId: string,
   facturaId: string,
   payload: RegistrarPagoPayload
 ) {
-  if (!payload.monto || isNaN(Number(payload.monto)) || Number(payload.monto) <= 0) {
-    const err: any = new Error("El monto del pago debe ser mayor a 0");
+  if (payload.monto === undefined || payload.monto === null || typeof payload.monto === "boolean") {
+    const err: any = new Error("El monto del pago es obligatorio");
     err.status = 400;
     throw err;
   }
+
+  const montoNum = Number(payload.monto);
+  if (!Number.isFinite(montoNum) || isNaN(montoNum) || montoNum < 0.01) {
+    const err: any = new Error("El monto del pago debe ser un número finito mayor o igual a 0.01");
+    err.status = 400;
+    throw err;
+  }
+
+  const montoRedondeado = redondearCentavos(montoNum);
 
   if (!esFechaValida(payload.fecha_pago)) {
     const err: any = new Error("Fecha de pago inválida (formato YYYY-MM-DD)");
@@ -701,13 +785,24 @@ export async function registrarPago(
     throw err;
   }
 
-  // Llamada a la función PostgreSQL registrar_pago_factura
-  const { data: res, error: errRpc } = await supabase.rpc("registrar_pago_factura", {
+  let tcPago: number | null = null;
+  if (payload.tipo_cambio !== undefined && payload.tipo_cambio !== null && (payload.tipo_cambio as any) !== "") {
+    const tcNum = Number(payload.tipo_cambio);
+    if (!Number.isFinite(tcNum) || isNaN(tcNum) || tcNum <= 0) {
+      const err: any = new Error("El tipo de cambio debe ser un número finito mayor a 0");
+      err.status = 400;
+      throw err;
+    }
+    tcPago = Math.round(tcNum * 10000) / 10000;
+  }
+
+  // Llamada a la función PostgreSQL registrar_pago_factura USANDO serviceClient
+  const { data: res, error: errRpc } = await serviceClient.rpc("registrar_pago_factura", {
     p_org: orgId,
     p_factura_id: facturaId,
     p_fecha: payload.fecha_pago,
-    p_monto: Number(payload.monto),
-    p_tipo_cambio: payload.tipo_cambio ? Number(payload.tipo_cambio) : null,
+    p_monto: montoRedondeado,
+    p_tipo_cambio: tcPago,
     p_metodo: payload.metodo_pago ? payload.metodo_pago.trim() : "Transferencia",
     p_referencia: payload.referencia ? payload.referencia.trim() : null,
     p_complemento: payload.complemento_pago ? payload.complemento_pago.trim() : null,
@@ -737,7 +832,7 @@ export async function registrarPago(
 }
 
 export async function anularPago(
-  supabase: any,
+  serviceClient: any,
   orgId: string,
   pagoId: string,
   motivo: string
@@ -749,7 +844,8 @@ export async function anularPago(
     throw err;
   }
 
-  const { data: res, error: errRpc } = await supabase.rpc("anular_pago_factura", {
+  // Llamada a anular_pago_factura USANDO serviceClient
+  const { data: res, error: errRpc } = await serviceClient.rpc("anular_pago_factura", {
     p_org: orgId,
     p_pago_id: pagoId,
     p_motivo: motivoTrim,
@@ -791,13 +887,16 @@ export async function listarPagos(
     `)
     .eq("organizacion_id", orgId)
     .order("fecha_pago", { ascending: false })
-    .limit(limite);
+    .limit(limite + 1);
 
   if (error) {
     throw new Error(`Error al listar pagos: ${error.message}`);
   }
 
-  return (data || []).map((p: any) => {
+  const truncado = (data || []).length > limite;
+  const items = truncado ? (data || []).slice(0, limite) : (data || []);
+
+  const pagosMapped = items.map((p: any) => {
     const tc = p.tipo_cambio ? Number(p.tipo_cambio) : null;
     const monto = Number(p.monto);
     const moneda = p.factura?.moneda || "MXN";
@@ -810,6 +909,11 @@ export async function listarPagos(
       monto_en_pesos: montoPesos,
     };
   });
+
+  return {
+    pagos: pagosMapped,
+    truncado,
+  };
 }
 
 // ── 4. TIPOS DE CAMBIO ──
@@ -844,8 +948,8 @@ export async function guardarTipoCambio(
   }
 
   const valor = Number(payload.valor);
-  if (isNaN(valor) || valor <= 0) {
-    const err: any = new Error("El valor del tipo de cambio debe ser mayor a 0");
+  if (!Number.isFinite(valor) || isNaN(valor) || valor <= 0) {
+    const err: any = new Error("El valor del tipo de cambio debe ser un número finito mayor a 0");
     err.status = 400;
     throw err;
   }
@@ -854,7 +958,7 @@ export async function guardarTipoCambio(
     organizacion_id: orgId,
     fecha: payload.fecha,
     moneda: "USD",
-    valor,
+    valor: Math.round(valor * 10000) / 10000,
     fuente: payload.fuente ? payload.fuente.trim() : "manual",
     notas: payload.notas ? payload.notas.trim() : null,
   };
@@ -936,7 +1040,7 @@ export async function actualizarCreditoProveedor(
   if (payload.dias_credito !== undefined) {
     if (payload.dias_credito !== null) {
       const d = Number(payload.dias_credito);
-      if (isNaN(d) || d < 0) {
+      if (!Number.isInteger(d) || isNaN(d) || d < 0) {
         const err: any = new Error("dias_credito debe ser un entero >= 0");
         err.status = 400;
         throw err;
@@ -950,12 +1054,12 @@ export async function actualizarCreditoProveedor(
   if (payload.limite_credito !== undefined) {
     if (payload.limite_credito !== null) {
       const l = Number(payload.limite_credito);
-      if (isNaN(l) || l < 0) {
-        const err: any = new Error("limite_credito debe ser un número >= 0");
+      if (!Number.isFinite(l) || isNaN(l) || l < 0) {
+        const err: any = new Error("limite_credito debe ser un número finito >= 0");
         err.status = 400;
         throw err;
       }
-      updateData.limite_credito = l;
+      updateData.limite_credito = redondearCentavos(l);
     } else {
       updateData.limite_credito = null;
     }
@@ -1059,8 +1163,15 @@ export async function guardarEstadoCuentaProveedor(
     throw err;
   }
 
-  if (payload.saldo === undefined || payload.saldo === null || isNaN(Number(payload.saldo))) {
+  if (payload.saldo === undefined || payload.saldo === null || typeof payload.saldo === "boolean") {
     const err: any = new Error("El saldo debe ser un número válido");
+    err.status = 400;
+    throw err;
+  }
+
+  const saldoNum = Number(payload.saldo);
+  if (!Number.isFinite(saldoNum) || isNaN(saldoNum)) {
+    const err: any = new Error("El saldo debe ser un número finito");
     err.status = 400;
     throw err;
   }
@@ -1070,7 +1181,7 @@ export async function guardarEstadoCuentaProveedor(
     proveedor_id: proveedorId,
     fecha: payload.fecha,
     moneda: payload.moneda,
-    saldo: Number(payload.saldo),
+    saldo: redondearCentavos(saldoNum),
     notas: payload.notas ? payload.notas.trim() : null,
   };
 
@@ -1098,7 +1209,7 @@ export async function obtenerConciliacionProveedor(
 ) {
   const fechaCorte = corte && esFechaValida(corte)
     ? corte
-    : new Date().toISOString().slice(0, 10);
+    : hoyMexicoISO();
 
   if (corte && !esFechaValida(corte)) {
     const err: any = new Error("Fecha de corte inválida");

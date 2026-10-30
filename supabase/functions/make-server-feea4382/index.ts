@@ -76,6 +76,7 @@ import {
   listarEstadosCuentaProveedor,
   guardarEstadoCuentaProveedor,
   obtenerConciliacionProveedor,
+  formatearErrorRespuesta,
 } from "./motor/cuentas_por_pagar.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
@@ -3263,7 +3264,8 @@ app.get("/cxp/resumen", async (c) => {
     const data = await obtenerResumenCxp(supabase, orgId, corte, tc);
     return c.json(data);
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3278,18 +3280,21 @@ app.get("/cxp/facturas", async (c) => {
     const vencidas = c.req.query("vencidas");
     const desde = c.req.query("desde");
     const hasta = c.req.query("hasta");
+    const corte = c.req.query("corte");
 
-    const facturas = await listarFacturas(supabase, orgId, {
+    const { facturas, truncado } = await listarFacturas(supabase, orgId, {
       proveedor_id,
       estado,
       moneda,
       vencidas,
       desde,
       hasta,
+      corte,
     });
-    return c.json({ facturas });
+    return c.json({ facturas, truncado });
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3317,7 +3322,8 @@ app.post("/cxp/facturas", async (c) => {
     const factura = await crearFactura(supabase, orgId, payload);
     return c.json({ factura }, 201);
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3346,7 +3352,8 @@ app.put("/cxp/facturas/:id", async (c) => {
     const factura = await actualizarFactura(supabase, orgId, id, payload);
     return c.json({ factura });
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3359,14 +3366,15 @@ app.post("/cxp/facturas/:id/cancelar", async (c) => {
     const factura = await cancelarFactura(supabase, orgId, id);
     return c.json({ success: true, factura });
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
 // 3. Pagos de factura
 app.post("/cxp/facturas/:id/pagos", async (c) => {
   try {
-    const supabase = (c as any).get("supabase") as any;
+    const serviceClient = getServiceClient();
     const orgId = (c as any).get("organizacionId") as string;
     const id = c.req.param("id");
     const body = await c.req.json();
@@ -3381,24 +3389,26 @@ app.post("/cxp/facturas/:id/pagos", async (c) => {
       notas: body.notas || null,
     };
 
-    const resultado = await registrarPago(supabase, orgId, id, payload);
+    const resultado = await registrarPago(serviceClient, orgId, id, payload);
     return c.json(resultado, 201);
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
 app.post("/cxp/pagos/:id/anular", async (c) => {
   try {
-    const supabase = (c as any).get("supabase") as any;
+    const serviceClient = getServiceClient();
     const orgId = (c as any).get("organizacionId") as string;
     const id = c.req.param("id");
     const body = await c.req.json().catch(() => ({}));
 
-    const resultado = await anularPago(supabase, orgId, id, body.motivo);
+    const resultado = await anularPago(serviceClient, orgId, id, body.motivo);
     return c.json(resultado);
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3406,10 +3416,11 @@ app.get("/cxp/pagos", async (c) => {
   try {
     const supabase = (c as any).get("supabase") as any;
     const orgId = (c as any).get("organizacionId") as string;
-    const pagos = await listarPagos(supabase, orgId);
-    return c.json({ pagos });
+    const { pagos, truncado } = await listarPagos(supabase, orgId);
+    return c.json({ pagos, truncado });
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3421,7 +3432,8 @@ app.get("/cxp/tipos-cambio", async (c) => {
     const tipos_cambio = await listarTiposCambio(supabase, orgId);
     return c.json({ tipos_cambio });
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3441,7 +3453,8 @@ app.put("/cxp/tipos-cambio", async (c) => {
     const tipo_cambio = await guardarTipoCambio(supabase, orgId, payload);
     return c.json({ tipo_cambio });
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3455,7 +3468,8 @@ app.get("/cxp/proveedores/:id/credito", async (c) => {
     const credito = await obtenerCreditoProveedor(supabase, orgId, id);
     return c.json({ credito });
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3479,7 +3493,8 @@ app.put("/cxp/proveedores/:id/credito", async (c) => {
     const credito = await actualizarCreditoProveedor(supabase, orgId, id, payload);
     return c.json({ credito });
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3493,7 +3508,8 @@ app.get("/cxp/proveedores/:id/estados-cuenta", async (c) => {
     const estados_cuenta = await listarEstadosCuentaProveedor(supabase, orgId, id);
     return c.json({ estados_cuenta });
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3514,7 +3530,8 @@ app.post("/cxp/proveedores/:id/estados-cuenta", async (c) => {
     const estado_cuenta = await guardarEstadoCuentaProveedor(supabase, orgId, id, payload);
     return c.json({ estado_cuenta }, 201);
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3528,7 +3545,8 @@ app.get("/cxp/proveedores/:id/conciliacion", async (c) => {
     const conciliacion = await obtenerConciliacionProveedor(supabase, orgId, id, corte);
     return c.json(conciliacion);
   } catch (err: any) {
-    return c.json({ error: err.message }, err.status || 400);
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 

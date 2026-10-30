@@ -204,6 +204,9 @@ DECLARE
     v_pago_id UUID;
     v_saldo_restante NUMERIC(14,2);
 BEGIN
+    -- Redondear monto a 2 decimales
+    p_monto := ROUND(COALESCE(p_monto, 0), 2);
+
     -- Validar monto
     IF p_monto IS NULL OR p_monto <= 0 THEN
         RETURN jsonb_build_object('exito', false, 'error', 'monto_invalido', 'mensaje', 'El monto del pago debe ser mayor a 0');

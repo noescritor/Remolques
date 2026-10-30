@@ -9,7 +9,7 @@ import { CheckCircle2, AlertTriangle, AlertCircle, RefreshCw, Save, DollarSign, 
 import { toast } from 'sonner';
 import { BASE_URL } from '../../utils/api';
 import { supabase } from '../../utils/supabase/client';
-import { formatearMonedaDe } from '../../utils/cuentasPorPagar';
+import { formatearMonedaDe, fechaLocalISO } from '../../utils/cuentasPorPagar';
 
 interface CxpConciliacionTabProps {
   proveedores: any[];
@@ -18,7 +18,7 @@ interface CxpConciliacionTabProps {
 
 export function CxpConciliacionTab({ proveedores, proveedorInicial }: CxpConciliacionTabProps) {
   const [proveedorId, setProveedorId] = useState<string>(proveedorInicial || '');
-  const [fechaCorte, setFechaCorte] = useState<string>(() => new Date().toISOString().slice(0, 10));
+  const [fechaCorte, setFechaCorte] = useState<string>(() => fechaLocalISO());
 
   const [conciliacion, setConciliacion] = useState<any>(null);
   const [cargando, setCargando] = useState(false);

@@ -154,7 +154,42 @@ BEGIN
         RAISE EXCEPTION 'El índice único uq_facturas_proveedor_folio no rechazó el duplicado de sucursal y folio';
     END IF;
 
-    -- 12. Comprobar vista v_facturas_proveedor_saldo
+    -- 12. Prueba de redondeo de montos: 0.004 (rechazado por monto_invalido) y 99.996 (redondeado a 100.00 y aceptado)
+    DECLARE
+        v_fact_redondeo UUID;
+        v_monto_guardado NUMERIC(14,2);
+    BEGIN
+        INSERT INTO facturas_proveedor (
+            organizacion_id, proveedor_id, sucursal, folio, fecha_emision, dias_credito,
+            fecha_vencimiento, moneda, importe, concepto
+        ) VALUES (
+            v_org_id, v_prov_id, NULL, 'F-RED-100', '2026-10-25', 15,
+            '2026-11-09', 'MXN', 100.00, 'Factura prueba redondeo'
+        ) RETURNING id INTO v_fact_redondeo;
+
+        -- 0.004 redondea a 0.00 y debe ser rechazado como monto_invalido
+        v_res := registrar_pago_factura(
+            v_org_id, v_fact_redondeo, '2026-10-26'::date, 0.004, NULL, 'Transferencia', 'REF-004', NULL, NULL
+        );
+        IF (v_res->>'exito')::boolean IS NOT FALSE OR v_res->>'error' <> 'monto_invalido' THEN
+            RAISE EXCEPTION 'Fallo esperando monto_invalido con 0.004: %', v_res;
+        END IF;
+
+        -- 99.996 redondea a 100.00 y debe liquidar exactamente el saldo de 100.00
+        v_res := registrar_pago_factura(
+            v_org_id, v_fact_redondeo, '2026-10-26'::date, 99.996, NULL, 'Transferencia', 'REF-99996', NULL, NULL
+        );
+        IF (v_res->>'exito')::boolean IS NOT TRUE OR (v_res->>'saldo_restante')::numeric <> 0.00 THEN
+            RAISE EXCEPTION 'Fallo esperando liquidación exacta con 99.996: %', v_res;
+        END IF;
+
+        SELECT monto INTO v_monto_guardado FROM pagos_factura WHERE id = (v_res->>'pago_id')::uuid;
+        IF v_monto_guardado <> 100.00 THEN
+            RAISE EXCEPTION 'El monto guardado debió ser 100.00 tras redondear 99.996, pero fue: %', v_monto_guardado;
+        END IF;
+    END;
+
+    -- 13. Comprobar vista v_facturas_proveedor_saldo
     PERFORM * FROM v_facturas_proveedor_saldo WHERE id = v_factura_usd;
 
     RAISE NOTICE 'PRUEBA_2R16 COMPLETADA CON ÉXITO: Todos los casos pasaron correctamente';

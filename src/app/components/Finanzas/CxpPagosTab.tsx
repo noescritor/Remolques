@@ -14,6 +14,7 @@ import { formatearMonedaDe } from '../../utils/cuentasPorPagar';
 export function CxpPagosTab() {
   const [pagos, setPagos] = useState<any[]>([]);
   const [cargando, setCargando] = useState(true);
+  const [truncado, setTruncado] = useState(false);
   const [busqueda, setBusqueda] = useState('');
   const [filtroSoloValidos, setFiltroSoloValidos] = useState(false);
 
@@ -41,6 +42,7 @@ export function CxpPagosTab() {
 
       const data = await res.json();
       setPagos(data.pagos || []);
+      setTruncado(!!data.truncado);
     } catch (err: any) {
       console.error('Error al cargar pagos:', err);
       toast.error(`Error al cargar pagos: ${err.message}`);
@@ -149,6 +151,14 @@ export function CxpPagosTab() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Aviso de truncado a 200 registros */}
+      {truncado && (
+        <div className="p-3 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-600 text-xs flex items-center gap-2">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          <span>Mostrando los 200 abonos más recientes. Utilice el buscador para localizar abonos específicos.</span>
+        </div>
+      )}
 
       {/* Tabla de Pagos */}
       <Card className="bg-card border-border">

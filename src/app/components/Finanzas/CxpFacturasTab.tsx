@@ -20,13 +20,14 @@ import {
   CheckCircle2,
   Calendar,
 } from 'lucide-react';
-import { formatearMonedaDe, Moneda } from '../../utils/cuentasPorPagar';
+import { formatearMonedaDe, Moneda, fechaLocalISO } from '../../utils/cuentasPorPagar';
 import { toast } from 'sonner';
 
 interface FacturasTabProps {
   facturas: any[];
   proveedores: any[];
   cargando: boolean;
+  truncado?: boolean;
   proveedorFiltro: string;
   onCambiarProveedorFiltro: (pId: string) => void;
   tipoCambioActual: number | null;
@@ -41,6 +42,7 @@ export function CxpFacturasTab({
   facturas,
   proveedores,
   cargando,
+  truncado = false,
   proveedorFiltro,
   onCambiarProveedorFiltro,
   tipoCambioActual,
@@ -67,7 +69,7 @@ export function CxpFacturasTab({
     sucursal: '',
     folio: '',
     nota: '',
-    fecha_emision: new Date().toISOString().slice(0, 10),
+    fecha_emision: fechaLocalISO(),
     dias_credito: 30,
     fecha_vencimiento: '',
     moneda: 'MXN' as Moneda,
@@ -81,7 +83,7 @@ export function CxpFacturasTab({
   const [modalPagoOpen, setModalPagoOpen] = useState(false);
   const [facturaPago, setFacturaPago] = useState<any | null>(null);
   const [formPago, setFormPago] = useState({
-    fecha_pago: new Date().toISOString().slice(0, 10),
+    fecha_pago: fechaLocalISO(),
     monto: '',
     tipo_cambio: '',
     metodo_pago: 'Transferencia',
@@ -148,7 +150,7 @@ export function CxpFacturasTab({
   };
 
   const abrirNuevaFactura = () => {
-    const emision = new Date().toISOString().slice(0, 10);
+    const emision = fechaLocalISO();
     const vencimiento = handleEmisionOrDiasChange(emision, 30);
     setFacturaEditando(null);
     setFormFactura({
@@ -231,7 +233,7 @@ export function CxpFacturasTab({
   const abrirRegistrarPago = (f: any) => {
     setFacturaPago(f);
     setFormPago({
-      fecha_pago: new Date().toISOString().slice(0, 10),
+      fecha_pago: fechaLocalISO(),
       monto: String(f.saldo || ''),
       tipo_cambio: f.moneda === 'USD' && tipoCambioActual ? String(tipoCambioActual) : '',
       metodo_pago: 'Transferencia',
@@ -319,6 +321,14 @@ export function CxpFacturasTab({
 
   return (
     <div className="space-y-4">
+      {/* Aviso de truncado a 500 registros */}
+      {truncado && (
+        <div className="p-3 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-600 text-xs flex items-center gap-2">
+          <Clock className="h-4 w-4 shrink-0" />
+          <span>Mostrando las primeras 500 facturas. Utilice los filtros de búsqueda o proveedor para acotar los resultados.</span>
+        </div>
+      )}
+
       {/* Barra de Filtros y Botón Nueva Factura */}
       <Card className="bg-card border-border/50">
         <CardContent className="p-4">

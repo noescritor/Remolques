@@ -10,6 +10,7 @@ import {
   conciliar,
   usoDeCredito,
   formatearMonedaDe,
+  fechaLocalISO,
   FacturaRef,
   PagoRef,
 } from "./cuentasPorPagar.ts";
@@ -349,3 +350,14 @@ Deno.test("cuentasPorPagar - 9. formatearMonedaDe para MXN y USD", () => {
   assertEquals(formatearMonedaDe(0, "MXN"), "$0.00");
   assertEquals(formatearMonedaDe(0, "USD"), "US$ 0.00");
 });
+
+Deno.test("cuentasPorPagar - 10. fechaLocalISO preserva fecha local a altas horas de la noche", () => {
+  // 2026-10-29 a las 23:30 hora local (no debe saltar al día siguiente)
+  const fechaNoche = new Date(2026, 9, 29, 23, 30, 0);
+  assertEquals(fechaLocalISO(fechaNoche), "2026-10-29");
+
+  // Cruce de año a las 23:59
+  const finAno = new Date(2026, 11, 31, 23, 59, 59);
+  assertEquals(fechaLocalISO(finAno), "2026-12-31");
+});
+

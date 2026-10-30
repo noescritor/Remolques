@@ -11,6 +11,7 @@ import { CxpPagosTab } from './CxpPagosTab';
 import { CxpConciliacionTab } from './CxpConciliacionTab';
 import { CuentasPorPagar } from './CuentasPorPagar';
 import { CompraProveedor, PagoProveedor, Proveedor, Producto } from '../../types';
+import { fechaLocalISO } from '../../utils/cuentasPorPagar';
 
 export interface CuentasPorPagarMainProps {
   compras: CompraProveedor[];
@@ -35,7 +36,7 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
   const [proveedorFiltro, setProveedorFiltro] = useState<string>('');
 
   // Estados de Resumen y Tipo de Cambio
-  const [fechaCorte, setFechaCorte] = useState<string>(() => new Date().toISOString().slice(0, 10));
+  const [fechaCorte, setFechaCorte] = useState<string>(() => fechaLocalISO());
   const [tipoCambioInput, setTipoCambioInput] = useState<string>('');
   const [resumenData, setResumenData] = useState<any>(null);
   const [cargandoResumen, setCargandoResumen] = useState(false);
@@ -44,6 +45,7 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
   // Estados de Facturas
   const [facturas, setFacturas] = useState<any[]>([]);
   const [cargandoFacturas, setCargandoFacturas] = useState(false);
+  const [truncadoFacturas, setTruncadoFacturas] = useState(false);
 
   useEffect(() => {
     const tabFromUrl = searchParams.get('tab');
@@ -100,7 +102,7 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
     setCargandoFacturas(true);
     try {
       const token = await getAuthToken();
-      const res = await fetch(`${BASE_URL}/cxp/facturas`, {
+      const res = await fetch(`${BASE_URL}/cxp/facturas?corte=${fechaCorte}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -110,13 +112,14 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
 
       const data = await res.json();
       setFacturas(data.facturas || []);
+      setTruncadoFacturas(!!data.truncado);
     } catch (err: any) {
       console.error('Error al cargar facturas CXP:', err);
       toast.error(`Error al cargar facturas: ${err.message}`);
     } finally {
       setCargandoFacturas(false);
     }
-  }, []);
+  }, [fechaCorte]);
 
   useEffect(() => {
     fetchResumen();
@@ -136,7 +139,7 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
     setGuardandoTC(true);
     try {
       const token = await getAuthToken();
-      const hoyLocal = new Date().toISOString().slice(0, 10);
+      const hoyLocal = fechaLocalISO();
 
       const res = await fetch(`${BASE_URL}/cxp/tipos-cambio`, {
         method: 'PUT',
@@ -346,6 +349,7 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
             facturas={facturas}
             proveedores={props.proveedores || []}
             cargando={cargandoFacturas}
+            truncado={truncadoFacturas}
             proveedorFiltro={proveedorFiltro}
             onCambiarProveedorFiltro={setProveedorFiltro}
             tipoCambioActual={resumenData?.tc || (tipoCambioInput ? Number(tipoCambioInput) : null)}

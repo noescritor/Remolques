@@ -8,19 +8,23 @@ import {
   cancelarFactura,
   registrarPago,
   anularPago,
+  listarPagos,
   guardarTipoCambio,
   obtenerCreditoProveedor,
   actualizarCreditoProveedor,
   guardarEstadoCuentaProveedor,
   obtenerConciliacionProveedor,
+  formatearErrorRespuesta,
 } from "./cuentas_por_pagar.ts";
 
 function createFakeClient(opts: {
   tables?: Record<string, any[]>;
   rpcHandlers?: Record<string, (args: any) => Promise<any> | any>;
+  onRpc?: (fnName: string, args: any) => void;
 }) {
   const tables: Record<string, any[]> = opts.tables || {};
   const rpcHandlers = opts.rpcHandlers || {};
+  const onRpc = opts.onRpc;
 
   return {
     from(tableName: string) {
@@ -28,9 +32,31 @@ function createFakeClient(opts: {
       let orderCol: string | null = null;
       let orderAsc = true;
       let limitCount: number | null = null;
+      let rangeFrom: number | null = null;
+      let rangeTo: number | null = null;
 
       function getFilteredRows() {
         let res = (tables[tableName] || []).map((r) => ({ ...r }));
+        if (
+          tableName === "v_facturas_proveedor_saldo" &&
+          (!tables[tableName] || tables[tableName].length === 0) &&
+          tables["facturas_proveedor"]
+        ) {
+          res = tables["facturas_proveedor"].map((f) => {
+            const pagos = f.pagos || [];
+            const pagado = pagos
+              .filter((p: any) => !p.anulado)
+              .reduce((acc: number, p: any) => acc + Number(p.monto), 0);
+            const saldo = Math.round((Number(f.importe) - pagado) * 100) / 100;
+            const prov = (tables["proveedores"] || []).find((p) => p.id === f.proveedor_id);
+            return {
+              ...f,
+              pagado,
+              saldo,
+              proveedor: prov || null,
+            };
+          });
+        }
         for (const f of filters) {
           if (f.op === "eq") res = res.filter((r) => r[f.col] === f.val);
           if (f.op === "neq") res = res.filter((r) => r[f.col] !== f.val);
@@ -38,6 +64,7 @@ function createFakeClient(opts: {
           if (f.op === "in") res = res.filter((r) => (f.val || []).includes(r[f.col]));
           if (f.op === "gte") res = res.filter((r) => r[f.col] >= f.val);
           if (f.op === "lte") res = res.filter((r) => r[f.col] <= f.val);
+          if (f.op === "gt") res = res.filter((r) => Number(r[f.col]) > Number(f.val));
         }
         if (orderCol) {
           res.sort((a, b) => {
@@ -46,7 +73,9 @@ function createFakeClient(opts: {
             return orderAsc ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
           });
         }
-        if (limitCount !== null) {
+        if (rangeFrom !== null && rangeTo !== null) {
+          res = res.slice(rangeFrom, rangeTo + 1);
+        } else if (limitCount !== null) {
           res = res.slice(0, limitCount);
         }
         return res;
@@ -62,6 +91,10 @@ function createFakeClient(opts: {
         },
         neq(col: string, val: any) {
           filters.push({ col, op: "neq", val });
+          return builder;
+        },
+        gt(col: string, val: any) {
+          filters.push({ col, op: "gt", val });
           return builder;
         },
         is(col: string, val: any) {
@@ -87,6 +120,11 @@ function createFakeClient(opts: {
         },
         limit(count: number) {
           limitCount = count;
+          return builder;
+        },
+        range(from: number, to: number) {
+          rangeFrom = from;
+          rangeTo = to;
           return builder;
         },
         async single() {
@@ -196,6 +234,7 @@ function createFakeClient(opts: {
     },
 
     rpc(fnName: string, args: any) {
+      if (onRpc) onRpc(fnName, args);
       if (rpcHandlers[fnName]) {
         return Promise.resolve(rpcHandlers[fnName](args));
       }
@@ -463,4 +502,302 @@ Deno.test("motor/cuentas_por_pagar - 7. Resumen sin tipo de cambio devuelve null
   assertEquals(res.resumenGeneral.equivalenteUSDEnPesos, null);
   assertEquals(res.resumenGeneral.totalEnPesos, null);
   assertEquals(res.resumenGeneral.antiguedad.pesos, null);
+});
+
+Deno.test("motor/cuentas_por_pagar - 8. Seguridad RPC: registrarPago y anularPago llaman exclusivamente a serviceClient, cliente de usuario es rechazado", async () => {
+  let userRpcLlamadas = 0;
+  let serviceRpcLlamadas = 0;
+
+  const userClient = {
+    ...createFakeClient({}),
+    rpc(_fnName: string, _args: any) {
+      userRpcLlamadas++;
+      return Promise.resolve({
+        data: null,
+        error: { message: "permission denied for function " + _fnName, code: "42501" },
+      });
+    },
+  };
+
+  const serviceClient = {
+    ...createFakeClient({
+      rpcHandlers: {
+        registrar_pago_factura(args: any) {
+          return { data: { exito: true, pago_id: "pago-service-1", saldo_restante: 500 } };
+        },
+        anular_pago_factura(args: any) {
+          return { data: { exito: true, pago_id: args.p_pago_id, factura_id: "fact-1", saldo_restante: 1000 } };
+        },
+      },
+      onRpc: () => {
+        serviceRpcLlamadas++;
+      },
+    }),
+  };
+
+  // 1. Invocar con userClient debe fallar con permission denied
+  await assertRejects(
+    async () => {
+      await registrarPago(userClient, ORG_A, "fact-1", {
+        fecha_pago: "2026-10-30",
+        monto: 100,
+      });
+    },
+    Error,
+    "permission denied"
+  );
+  assertEquals(userRpcLlamadas, 1);
+  assertEquals(serviceRpcLlamadas, 0);
+
+  await assertRejects(
+    async () => {
+      await anularPago(userClient, ORG_A, "pago-1", "Error de captura");
+    },
+    Error,
+    "permission denied"
+  );
+  assertEquals(userRpcLlamadas, 2);
+  assertEquals(serviceRpcLlamadas, 0);
+
+  // 2. Invocar con serviceClient debe completarse con éxito
+  const resPago = await registrarPago(serviceClient, ORG_A, "fact-1", {
+    fecha_pago: "2026-10-30",
+    monto: 100,
+  });
+  assertEquals(resPago.exito, true);
+  assertEquals(resPago.pago_id, "pago-service-1");
+  assertEquals(serviceRpcLlamadas, 1);
+  assertEquals(userRpcLlamadas, 2); // no aumentó
+
+  const resAnular = await anularPago(serviceClient, ORG_A, "pago-service-1", "Aclaración bancaria");
+  assertEquals(resAnular.exito, true);
+  assertEquals(serviceRpcLlamadas, 2);
+  assertEquals(userRpcLlamadas, 2); // sigue en 2, nunca llamado por serviceClient
+});
+
+Deno.test("motor/cuentas_por_pagar - 9. Validaciones de montos inválidos, finitud y enteros (0.004, Infinity, NaN, 'abc', dias_credito=30.5) -> 400", async () => {
+  const fake = createFakeClient({
+    tables: {
+      proveedores: [{ id: PROV_A, organizacion_id: ORG_A, nombre: "Proveedor Validaciones" }],
+      facturas_proveedor: [
+        {
+          id: "fact-val-1",
+          organizacion_id: ORG_A,
+          proveedor_id: PROV_A,
+          folio: "F-VAL-1",
+          moneda: "MXN",
+          importe: 500,
+          pagos: [],
+        },
+      ],
+    },
+  });
+
+  // A. Monto de pago < 0.01 (0.004) -> 400
+  const err004 = await assertRejects(
+    async () => {
+      await registrarPago(fake, ORG_A, "fact-val-1", {
+        fecha_pago: "2026-10-30",
+        monto: 0.004,
+      });
+    },
+    Error,
+    "El monto del pago debe ser un número finito mayor o igual a 0.01"
+  );
+  assertEquals(err004.status, 400);
+
+  // B. Monto de pago Infinity -> 400
+  const errInf = await assertRejects(
+    async () => {
+      await registrarPago(fake, ORG_A, "fact-val-1", {
+        fecha_pago: "2026-10-30",
+        monto: Infinity,
+      });
+    },
+    Error,
+    "El monto del pago debe ser un número finito mayor o igual a 0.01"
+  );
+  assertEquals(errInf.status, 400);
+
+  // C. Monto de pago NaN -> 400
+  const errNaN = await assertRejects(
+    async () => {
+      await registrarPago(fake, ORG_A, "fact-val-1", {
+        fecha_pago: "2026-10-30",
+        monto: NaN,
+      });
+    },
+    Error,
+    "El monto del pago debe ser un número finito mayor o igual a 0.01"
+  );
+  assertEquals(errNaN.status, 400);
+
+  // D. Monto de pago "abc" -> 400
+  const errAbc = await assertRejects(
+    async () => {
+      await registrarPago(fake, ORG_A, "fact-val-1", {
+        fecha_pago: "2026-10-30",
+        monto: "abc" as any,
+      });
+    },
+    Error,
+    "El monto del pago debe ser un número finito mayor o igual a 0.01"
+  );
+  assertEquals(errAbc.status, 400);
+
+  // E. dias_credito = 30.5 en crearFactura -> 400
+  const errDiasCrear = await assertRejects(
+    async () => {
+      await crearFactura(fake, ORG_A, {
+        proveedor_id: PROV_A,
+        folio: "F-VAL-2",
+        fecha_emision: "2026-10-30",
+        moneda: "MXN",
+        importe: 100,
+        dias_credito: 30.5,
+      });
+    },
+    Error,
+    "Los días de crédito deben ser un entero mayor o igual a 0"
+  );
+  assertEquals(errDiasCrear.status, 400);
+
+  // F. dias_credito = 30.5 en actualizarFactura -> 400
+  const errDiasAct = await assertRejects(
+    async () => {
+      await actualizarFactura(fake, ORG_A, "fact-val-1", {
+        dias_credito: 30.5,
+      });
+    },
+    Error,
+    "Los días de crédito deben ser un entero mayor o igual a 0"
+  );
+  assertEquals(errDiasAct.status, 400);
+
+  // G. dias_credito = 30.5 en actualizarCreditoProveedor -> 400
+  const errDiasCred = await assertRejects(
+    async () => {
+      await actualizarCreditoProveedor(fake, ORG_A, PROV_A, {
+        dias_credito: 30.5,
+      });
+    },
+    Error,
+    "dias_credito debe ser un entero >= 0"
+  );
+  assertEquals(errDiasCred.status, 400);
+
+  // H. tipo_cambio finito > 0 (Infinity) en registrarPago -> 400
+  const errTcInf = await assertRejects(
+    async () => {
+      await registrarPago(fake, ORG_A, "fact-val-1", {
+        fecha_pago: "2026-10-30",
+        monto: 100,
+        tipo_cambio: Infinity,
+      });
+    },
+    Error,
+    "El tipo de cambio debe ser un número finito mayor a 0"
+  );
+  assertEquals(errTcInf.status, 400);
+
+  // I. guardarTipoCambio con valor Infinity -> 400
+  const errTcValInf = await assertRejects(
+    async () => {
+      await guardarTipoCambio(fake, ORG_A, {
+        fecha: "2026-10-30",
+        valor: Infinity,
+      });
+    },
+    Error,
+    "El valor del tipo de cambio debe ser un número finito mayor a 0"
+  );
+  assertEquals(errTcValInf.status, 400);
+
+  // J. guardarEstadoCuentaProveedor con saldo NaN -> 400
+  const errSaldoNaN = await assertRejects(
+    async () => {
+      await guardarEstadoCuentaProveedor(fake, ORG_A, PROV_A, {
+        fecha: "2026-10-30",
+        moneda: "MXN",
+        saldo: NaN,
+      });
+    },
+    Error,
+    "El saldo debe ser un número finito"
+  );
+  assertEquals(errSaldoNaN.status, 400);
+});
+
+Deno.test("motor/cuentas_por_pagar - 10. formatearErrorRespuesta enmascara errores internos sin status en 500 y preserva errores 4xx", () => {
+  // Error interno inesperado (ej. sintaxis SQL, desconexión de BD, permiso denegado en Postgres)
+  const errInterno = new Error("syntax error at or near 'SELECT' in query_executor.c:1402");
+  const res500 = formatearErrorRespuesta(errInterno);
+
+  assertEquals(res500.status, 500);
+  assertEquals(res500.body.error, "No se pudo completar la operación");
+  assert(!JSON.stringify(res500.body).includes("syntax error"));
+  assert(!JSON.stringify(res500.body).includes("query_executor"));
+
+  // Error con status 400 (validación de negocio)
+  const err400: any = new Error("El folio de la factura es obligatorio");
+  err400.status = 400;
+  const res400 = formatearErrorRespuesta(err400);
+  assertEquals(res400.status, 400);
+  assertEquals(res400.body.error, "El folio de la factura es obligatorio");
+
+  // Error con status 409 (conflicto)
+  const err409: any = new Error("Excede el saldo de la factura");
+  err409.status = 409;
+  const res409 = formatearErrorRespuesta(err409);
+  assertEquals(res409.status, 409);
+  assertEquals(res409.body.error, "Excede el saldo de la factura");
+});
+
+Deno.test("motor/cuentas_por_pagar - 11. Paginación y truncado: listarFacturas (500) y listarPagos (200) marcan truncado: true", async () => {
+  // Crear 505 facturas
+  const facturas505 = Array.from({ length: 505 }, (_, i) => ({
+    id: `fact-${i + 1}`,
+    organizacion_id: ORG_A,
+    proveedor_id: PROV_A,
+    folio: `F-${1000 + i}`,
+    fecha_emision: "2026-10-01",
+    fecha_vencimiento: "2026-10-31",
+    moneda: "MXN",
+    importe: 100,
+    estado: "abierta",
+    pagos: [],
+  }));
+
+  // Crear 205 pagos
+  const pagos205 = Array.from({ length: 205 }, (_, i) => ({
+    id: `pago-${i + 1}`,
+    organizacion_id: ORG_A,
+    factura_id: "fact-1",
+    fecha_pago: "2026-10-15",
+    monto: 10,
+    anulado: false,
+    factura: {
+      id: "fact-1",
+      folio: "F-1000",
+      moneda: "MXN",
+      proveedor: { id: PROV_A, nombre: "Proveedor A" },
+    },
+  }));
+
+  const fake = createFakeClient({
+    tables: {
+      facturas_proveedor: facturas505,
+      pagos_factura: pagos205,
+    },
+  });
+
+  // listarFacturas con límite 500
+  const resFacturas = await listarFacturas(fake, ORG_A, {}, 500);
+  assertEquals(resFacturas.truncado, true);
+  assertEquals(resFacturas.facturas.length, 500);
+
+  // listarPagos con límite 200
+  const resPagos = await listarPagos(fake, ORG_A, 200);
+  assertEquals(resPagos.truncado, true);
+  assertEquals(resPagos.pagos.length, 200);
 });

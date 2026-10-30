@@ -335,3 +335,16 @@ export function formatearMonedaDe(monto: number, moneda: Moneda): string {
   }
   return `$${formateado}`;
 }
+
+// ── FECHA LOCAL ISO (YYYY-MM-DD) ──
+
+/**
+ * Devuelve la fecha local en formato YYYY-MM-DD sin desfases por conversión a UTC.
+ */
+export function fechaLocalISO(d: Date = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dia = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dia}`;
+}
+
