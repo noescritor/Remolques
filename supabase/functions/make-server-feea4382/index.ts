@@ -60,6 +60,23 @@ import {
   obtenerTrazabilidadOrden,
   obtenerTrazabilidadOperario,
 } from "./motor/plan_produccion.ts";
+import {
+  obtenerResumenCxp,
+  listarFacturas,
+  crearFactura,
+  actualizarFactura,
+  cancelarFactura,
+  registrarPago,
+  anularPago,
+  listarPagos,
+  listarTiposCambio,
+  guardarTipoCambio,
+  obtenerCreditoProveedor,
+  actualizarCreditoProveedor,
+  listarEstadosCuentaProveedor,
+  guardarEstadoCuentaProveedor,
+  obtenerConciliacionProveedor,
+} from "./motor/cuentas_por_pagar.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -3227,6 +3244,291 @@ app.post("/produccion/import", async (c) => {
     return c.json({ success: true, message: "Import completed" });
   } catch (err: any) {
     return c.json({ error: err.message }, 400);
+  }
+});
+
+// ══════════════════════════════════════════════════════════
+// RUTAS DE CUENTAS POR PAGAR (Sub-bloque 2R-16)
+// ══════════════════════════════════════════════════════════
+
+// 1. Resumen global y por proveedor
+app.get("/cxp/resumen", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const corte = c.req.query("corte") || null;
+    const tcQuery = c.req.query("tc");
+    const tc = tcQuery ? parseFloat(tcQuery) : null;
+
+    const data = await obtenerResumenCxp(supabase, orgId, corte, tc);
+    return c.json(data);
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+// 2. Facturas de proveedor (listado y creación)
+app.get("/cxp/facturas", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const proveedor_id = c.req.query("proveedor_id");
+    const estado = c.req.query("estado");
+    const moneda = c.req.query("moneda");
+    const vencidas = c.req.query("vencidas");
+    const desde = c.req.query("desde");
+    const hasta = c.req.query("hasta");
+
+    const facturas = await listarFacturas(supabase, orgId, {
+      proveedor_id,
+      estado,
+      moneda,
+      vencidas,
+      desde,
+      hasta,
+    });
+    return c.json({ facturas });
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+app.post("/cxp/facturas", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const body = await c.req.json();
+
+    const payload = {
+      proveedor_id: body.proveedor_id,
+      compra_id: body.compra_id || null,
+      sucursal: body.sucursal || null,
+      folio: body.folio,
+      nota: body.nota || null,
+      fecha_emision: body.fecha_emision,
+      dias_credito: body.dias_credito !== undefined ? body.dias_credito : 30,
+      fecha_vencimiento: body.fecha_vencimiento || undefined,
+      moneda: body.moneda,
+      importe: body.importe,
+      tipo_cambio_emision: body.tipo_cambio_emision || null,
+      concepto: body.concepto || null,
+    };
+
+    const factura = await crearFactura(supabase, orgId, payload);
+    return c.json({ factura }, 201);
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+app.put("/cxp/facturas/:id", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+    const body = await c.req.json();
+
+    const payload = {
+      proveedor_id: body.proveedor_id,
+      compra_id: body.compra_id,
+      sucursal: body.sucursal,
+      folio: body.folio,
+      nota: body.nota,
+      fecha_emision: body.fecha_emision,
+      dias_credito: body.dias_credito,
+      fecha_vencimiento: body.fecha_vencimiento,
+      moneda: body.moneda,
+      importe: body.importe,
+      tipo_cambio_emision: body.tipo_cambio_emision,
+      concepto: body.concepto,
+    };
+
+    const factura = await actualizarFactura(supabase, orgId, id, payload);
+    return c.json({ factura });
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+app.post("/cxp/facturas/:id/cancelar", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+
+    const factura = await cancelarFactura(supabase, orgId, id);
+    return c.json({ success: true, factura });
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+// 3. Pagos de factura
+app.post("/cxp/facturas/:id/pagos", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+    const body = await c.req.json();
+
+    const payload = {
+      fecha_pago: body.fecha_pago,
+      monto: body.monto,
+      tipo_cambio: body.tipo_cambio !== undefined ? body.tipo_cambio : null,
+      metodo_pago: body.metodo_pago || "Transferencia",
+      referencia: body.referencia || null,
+      complemento_pago: body.complemento_pago || null,
+      notas: body.notas || null,
+    };
+
+    const resultado = await registrarPago(supabase, orgId, id, payload);
+    return c.json(resultado, 201);
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+app.post("/cxp/pagos/:id/anular", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    const resultado = await anularPago(supabase, orgId, id, body.motivo);
+    return c.json(resultado);
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+app.get("/cxp/pagos", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const pagos = await listarPagos(supabase, orgId);
+    return c.json({ pagos });
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+// 4. Tipos de cambio
+app.get("/cxp/tipos-cambio", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const tipos_cambio = await listarTiposCambio(supabase, orgId);
+    return c.json({ tipos_cambio });
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+app.put("/cxp/tipos-cambio", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const body = await c.req.json();
+
+    const payload = {
+      fecha: body.fecha,
+      valor: body.valor,
+      fuente: body.fuente || "manual",
+      notas: body.notas || null,
+    };
+
+    const tipo_cambio = await guardarTipoCambio(supabase, orgId, payload);
+    return c.json({ tipo_cambio });
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+// 5. Ficha de crédito de proveedor
+app.get("/cxp/proveedores/:id/credito", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+
+    const credito = await obtenerCreditoProveedor(supabase, orgId, id);
+    return c.json({ credito });
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+app.put("/cxp/proveedores/:id/credito", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+    const body = await c.req.json();
+
+    const payload = {
+      razon_social: body.razon_social,
+      rfc: body.rfc,
+      moneda_default: body.moneda_default,
+      dias_credito: body.dias_credito,
+      limite_credito: body.limite_credito,
+      limite_credito_moneda: body.limite_credito_moneda,
+      notas_credito: body.notas_credito,
+    };
+
+    const credito = await actualizarCreditoProveedor(supabase, orgId, id, payload);
+    return c.json({ credito });
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+// 6. Estados de cuenta y conciliación
+app.get("/cxp/proveedores/:id/estados-cuenta", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+
+    const estados_cuenta = await listarEstadosCuentaProveedor(supabase, orgId, id);
+    return c.json({ estados_cuenta });
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+app.post("/cxp/proveedores/:id/estados-cuenta", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+    const body = await c.req.json();
+
+    const payload = {
+      fecha: body.fecha,
+      moneda: body.moneda,
+      saldo: body.saldo,
+      notas: body.notas || null,
+    };
+
+    const estado_cuenta = await guardarEstadoCuentaProveedor(supabase, orgId, id, payload);
+    return c.json({ estado_cuenta }, 201);
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
+  }
+});
+
+app.get("/cxp/proveedores/:id/conciliacion", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+    const corte = c.req.query("corte") || null;
+
+    const conciliacion = await obtenerConciliacionProveedor(supabase, orgId, id, corte);
+    return c.json(conciliacion);
+  } catch (err: any) {
+    return c.json({ error: err.message }, err.status || 400);
   }
 });
 

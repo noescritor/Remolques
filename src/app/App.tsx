@@ -15,7 +15,7 @@ import { ProveedoresList } from './components/Proveedores/ProveedoresList';
 import { ComprasProveedorList } from './components/ComprasProveedor/ComprasProveedorList';
 
 import { CuentasPorCobrar } from './components/Finanzas/CuentasPorCobrar';
-import { CuentasPorPagar } from './components/Finanzas/CuentasPorPagar';
+import { CuentasPorPagarMain } from './components/Finanzas/CuentasPorPagarMain';
 import { TableroProduccionPage } from './components/TableroProduccion/TableroProduccionPage';
 import { PlanSemanalMain } from './components/PlanProduccion/PlanSemanalMain';
 import { TrazabilidadList } from './components/Trazabilidad/TrazabilidadList';
@@ -630,13 +630,14 @@ export default function App() {
         } />
 
         <Route path="/cxp" element={
-          <CuentasPorPagar
+          <CuentasPorPagarMain
             compras={comprasProveedor}
             pagos={pagosProveedor}
             proveedores={proveedores}
             productos={productos}
             loading={loading}
             onCrearPago={crearPagoProveedor}
+            session={session}
           />
         } />
         
