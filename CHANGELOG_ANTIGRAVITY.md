@@ -3,6 +3,62 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-10-30 - Sub-bloque 2R-16 (Fix): Correcciones de seguridad serviceClient, fecha local, validaciones numéricas y truncado
+**Herramienta:** Antigravity  
+**Tipo:** fix (seguridad rpc, serviceClient, fechas locales mexico, validaciones numericas, enmascaramiento errores 500, paginacion y truncado)  
+**Archivos tocados:**  
+- `supabase/migrations/20261030_01_cxp_facturas.sql` (redondeo de monto a 2 decimales en registrar_pago_factura antes de la comprobación <= 0, traduciendo montos < 0.01 a monto_invalido)
+- `docs/importacion/prueba_2R16.sql` (agregados casos para redondeo: 0.004 rechazado por monto_invalido y 99.996 aceptado y guardado como 100.00 liquidando factura)
+- `src/app/utils/cuentasPorPagar.ts` (helper fechaLocalISO con getFullYear/getMonth/getDate locales evitando saltos de fecha UTC por la tarde/noche)
+- `src/app/utils/cuentasPorPagar.test.ts` (prueba 10 para fechaLocalISO a las 23:30 local)
+- `src/app/components/Finanzas/CuentasPorPagarMain.tsx` (reemplazo de toISOString por fechaLocalISO, propagación de bandera truncado)
+- `src/app/components/Finanzas/CxpFacturasTab.tsx` (reemplazo de toISOString por fechaLocalISO, banner de advertencia cuando la consulta es truncada a 500 registros)
+- `src/app/components/Finanzas/CxpPagosTab.tsx` (banner de advertencia cuando la consulta es truncada a 200 abonos)
+- `src/app/components/Finanzas/CxpConciliacionTab.tsx` (reemplazo de toISOString por fechaLocalISO)
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.ts` (hoyMexicoISO con timeZone America/Mexico_City; paginación por lotes de 1000 en v_facturas_proveedor_saldo con gt('saldo', 0); límite + 1 y detección de truncado; serviceClient en registrarPago y anularPago; validaciones de Number.isFinite, >= 0.01 con redondeo a centavos, dias_credito entero >= 0, tipo_cambio > 0 finito; helper formatearErrorRespuesta enmascarando 500 sin exponer texto SQL)
+- `supabase/functions/make-server-feea4382/index.ts` (inyección de serviceClient vía getServiceClient() en registrarPago y anularPago; parámetro corte en /cxp/facturas; retorno de truncado; catch con formatearErrorRespuesta en todos los endpoints /cxp/*)
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.test.ts` (ampliado a 11 pruebas Deno con tests para serviceClient vs userClient, montos 0.004, Infinity, NaN, "abc", dias_credito 30.5, formatearErrorRespuesta y truncado)
+**Qué cambió y por qué:**  
+- **1. Seguridad y Privilegios RPC (serviceClient):** Dado que las funciones `registrar_pago_factura` y `anular_pago_factura` tienen `REVOKE ALL FROM PUBLIC, anon, authenticated` y `GRANT TO service_role`, invocar `.rpc()` con el cliente del usuario (`authenticated`) fallaba con `permission denied`. Se modificaron `registrarPago` y `anularPago` para recibir y utilizar exclusivamente `serviceClient` (instanciado vía `getServiceClient()` en `index.ts`), manteniendo el aislamiento por `orgId` en los argumentos de la función. Se añadieron pruebas unitarias verificando que el cliente de usuario es rechazado y `serviceClient` es el único invocado.
+- **2. Cálculo de fechas en horario local de México:** Se erradicó `new Date().toISOString().slice(0, 10)` en frontend y backend. En el frontend se utiliza `fechaLocalISO()` y en el backend `hoyMexicoISO()` (`America/Mexico_City`), evitando que después de las 18:00 hrs de México las facturas se consideren vencidas un día antes o los cortes se trasladen al día siguiente.
+- **3. Validaciones numéricas y redondeo seguro:** En la migración SQL, `registrar_pago_factura` redondea `p_monto` a 2 decimales antes de validar `p_monto <= 0`, impidiendo que un monto como `0.004` pase la validación inicial y detone una violación de CHECK cruda. En el backend se implementaron validaciones con `Number.isFinite`, `>= 0.01`, redondeo a 2 decimales en pagos, importes, saldos y límites de crédito; `Number.isInteger` y `>= 0` en `dias_credito`; y `tipo_cambio > 0` finito, arrojando código HTTP 400.
+- **4. Enmascaramiento de errores inesperados (formatearErrorRespuesta):** Se eliminó la exposición de errores internos o de base de datos como HTTP 400. Los errores controlados (400 a 499) conservan su status y mensaje legible; los errores no controlados registran el stack trace con `console.error` y responden HTTP 500 con el mensaje genérico `"No se pudo completar la operación"`.
+- **5. Mitigación del límite de PostgREST y truncado:** En `obtenerResumenCxp`, se consulta únicamente la vista `v_facturas_proveedor_saldo` con filtro `.gt("saldo", 0)` y paginación en lotes de 1000 registros mediante `.range()`. En `listarFacturas` y `listarPagos`, se solicita `limit + 1` para detectar si el resultado excede el límite y retornar `truncado: true`, mostrando un banner de advertencia informativo en la interfaz.
+
+## 2026-10-30 - Sub-bloque 2R-16: Cuentas por pagar con facturas, dólares y conciliación
+**Herramienta:** Antigravity  
+**Tipo:** feat (finanzas, cxp, facturas, divisas usd/mxn, abonos, conciliacion, migracion sql, backend hono/deno, frontend react)  
+**Archivos tocados:**  
+- `Dockerfile.backend` (agregado COPY src/app/utils/cuentasPorPagar.ts)
+- `supabase/migrations/20261030_01_cxp_facturas.sql` (columnas de crédito en proveedores, tablas tipos_cambio, facturas_proveedor, pagos_factura, estados_cuenta_proveedor, vista v_facturas_proveedor_saldo con security_invoker = true, funciones atómicas SECURITY DEFINER registrar_pago_factura y anular_pago_factura con search_path = public, REVOKE a PUBLIC/anon/authenticated y GRANT a service_role)
+- `docs/importacion/verificacion_2R16.sql` (script de verificación de esquema, RLS, índices únicos, vista security_invoker, permisos de funciones y todo_ok)
+- `docs/importacion/prueba_2R16.sql` (script transaccional BEGIN...ROLLBACK con pruebas de pagos parciales, saldo 0, excede_saldo, tipo_cambio_requerido, facturas canceladas, aislamiento org, anulación y unicidad)
+- `src/app/utils/cuentasPorPagar.ts` (funciones puras: saldoFactura, convertirAPesos, diasAtraso, cubeta, resumenCuenta, saldoAFecha, conciliar, usoDeCredito, formatearMonedaDe con aritmética en centavos enteros)
+- `src/app/utils/cuentasPorPagar.test.ts` (9 pruebas Deno incluyendo caso dorado CADECO al 29/10/2026: USD 9,406.71, MXN 25,222.99, cubeta mas_60, TC 19.07 -> $204,608.95, diferencia 1,607.73 y 94.07% uso crédito)
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.ts` (motor backend con lista blanca estricta y aislamiento por organizacion_id)
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.test.ts` (7 pruebas Deno con fake client validando seguridad, fechas, duplicados 409, bloqueo en PUT/cancelación y manejo de TC nulo)
+- `supabase/functions/make-server-feea4382/index.ts` (montadas rutas /cxp/*)
+- `src/app/components/Finanzas/CxpResumenTab.tsx` (pestaña Resumen con tarjetas USD/MXN, antigüedad por cubeta, revaluación a tipo de cambio capturado, tabla por proveedor con barra de uso de crédito)
+- `src/app/components/Finanzas/CxpFacturasTab.tsx` (pestaña Facturas con filtros, tabla con filas expandibles para pagos, diálogos de nueva/editar factura, registro de abono y cancelación con confirmación)
+- `src/app/components/Finanzas/CxpPagosTab.tsx` (pestaña Abonos con listado cronológico, visualización tachada de anulados y diálogo de anulación con motivo obligatorio)
+- `src/app/components/Finanzas/CxpConciliacionTab.tsx` (pestaña Conciliación con selector de proveedor/corte, comparativa lado a lado Leolca vs Proveedor, desglose de facturas abiertas y ficha de crédito editable)
+- `src/app/components/Finanzas/CuentasPorPagarMain.tsx` (contenedor principal con 5 pestañas, preservando la pantalla previa en 'Por compras')
+- `src/app/App.tsx` (ruta /cxp conectada a CuentasPorPagarMain pasando session)
+**Qué cambió y por qué:**  
+- **1. Modelo e Idempotencia (20261030_01_cxp_facturas.sql):** Se agregaron a `proveedores` los campos comerciales de crédito (`razon_social`, `rfc`, `moneda_default`, `dias_credito`, `limite_credito`, `limite_credito_moneda`, `notas_credito`). Se crearon tablas `tipos_cambio` (único `organizacion_id, fecha, moneda`), `facturas_proveedor` (único `organizacion_id, proveedor_id, coalesce(sucursal, ''), folio` previniendo duplicados vistos en el Excel con o sin sucursal), `pagos_factura` (con trazabilidad de anulación, fecha y motivo) y `estados_cuenta_proveedor` (único `organizacion_id, proveedor_id, fecha, moneda`). Se creó la vista `v_facturas_proveedor_saldo` con `WITH (security_invoker = true)` que aplica el RLS del usuario que consulta. Las funciones `registrar_pago_factura` y `anular_pago_factura` operan con `SECURITY DEFINER SET search_path = public`, bloqueo `SELECT ... FOR UPDATE` para evitar sobrepagos concurrentes, revocación total a `PUBLIC`, `anon` y `authenticated`, y `GRANT EXECUTE` exclusivo a `service_role`.
+- **2. Aritmética y Reglas Puras (cuentasPorPagar.ts):** Todo cálculo monetario se realiza en centavos enteros para eliminar imprecisiones de coma flotante. Las fechas se manejan como cadenas locales `YYYY-MM-DD` sin conversión a medianoche UTC. Se implementó la revaluación de facturas USD en pesos con el tipo de cambio proporcionado, la clasificación por 4 cubetas (`por_vencer`, `1_30`, `31_60`, `mas_60`) y la conciliación automática entre saldo Leolca y saldo reportado por el proveedor con tolerancia de 1 centavo.
+- **3. Motor Backend y Rutas REST (motor/cuentas_por_pagar.ts e index.ts):** Implementados los 15 endpoints bajo `/cxp/*` con lista blanca estricta de parámetros, validación de fechas de calendario, traducción de códigos de error (400 fecha o monto inválido, 404 recurso no encontrado o de otra organización, 409 duplicado o pago concurrente que excede saldo), y retorno controlado de `tc: null` y equivalentes en null si no existe tipo de cambio registrado.
+- **4. Pantalla Cuentas por Pagar (CuentasPorPagarMain.tsx):** Renovada la experiencia de usuario con 5 pestañas: Resumen General (tarjetas USD/MXN, antigüedad, revaluación instantánea y tabla de proveedores con barra de crédito), Facturas (filas expandibles con abonos, cálculo automático de vencimiento, modales accesibles y validación de errores del servidor), Abonos (historial cronológico completo con marcado tachado para pagos anulados), Conciliación (comparativa visual lado a lado con badges verde/rojo/azul y captura de saldo de estado de cuenta), y "Por compras" (pantalla legacy intacta).
+- **Acciones manuales pendientes:**
+  - Correr `supabase/migrations/20261030_01_cxp_facturas.sql` en el SQL Editor de Supabase en producción.
+  - Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.
+- **Supuestos documentados:**
+  - Monedas únicamente MXN y USD. Los importes son totales con IVA incluido.
+  - El tipo de cambio de referencia lo captura el usuario; el saldo en pesos de las facturas USD se revalúa al tipo de cambio de corte de la pantalla. No se calcula utilidad/pérdida cambiaria en esta versión.
+  - Intereses por atraso: fuera de alcance en esta fase.
+  - Antigüedad en días naturales desde el vencimiento hasta la fecha de corte.
+  - Cuentas por cobrar (`/cxc`) queda reservado para un sub-bloque futuro.
+
 ## 2026-10-27 - Sub-bloque 2R-15 (Fix): Correcciones a transiciones de estado, estructura editable, duplicación semanal y trazabilidad
 **Herramienta:** Antigravity  
 **Tipo:** fix (producción, migración sql, backend hono/deno, frontend react/ui, pruebas unitarias)  
