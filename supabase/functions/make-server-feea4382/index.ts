@@ -78,6 +78,13 @@ import {
   obtenerConciliacionProveedor,
   formatearErrorRespuesta,
 } from "./motor/cuentas_por_pagar.ts";
+import {
+  clonarRecetaMotor,
+  obtenerRecetaMotor,
+  guardarLineaRecetaMotor,
+  eliminarLineaRecetaMotor,
+  obtenerHistorialRecetaMotor,
+} from "./motor/recetas_editor.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -3544,6 +3551,108 @@ app.get("/cxp/proveedores/:id/conciliacion", async (c) => {
 
     const conciliacion = await obtenerConciliacionProveedor(supabase, orgId, id, corte);
     return c.json(conciliacion);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+// --- EDITOR DE RECETAS (T6) ---
+
+app.post("/recetas/clonar", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const user = (c as any).get("user");
+    const serviceClient = getServiceClient();
+    const body = await c.req.json();
+    const result = await clonarRecetaMotor(serviceClient, {
+      ...body,
+      usuarioId: user?.id || null,
+    });
+    return c.json(result, 201);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.get("/recetas/:modeloId", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const modeloId = c.req.param("modeloId");
+    const result = await obtenerRecetaMotor(supabase, modeloId);
+    return c.json(result);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.post("/recetas/:modeloId/lineas", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const user = (c as any).get("user");
+    const serviceClient = getServiceClient();
+    const modeloId = c.req.param("modeloId");
+    const body = await c.req.json();
+    const result = await guardarLineaRecetaMotor(serviceClient, {
+      ...body,
+      modeloId,
+      usuarioId: user?.id || null,
+    });
+    return c.json(result, 201);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.put("/recetas/:modeloId/lineas/:id", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const user = (c as any).get("user");
+    const serviceClient = getServiceClient();
+    const modeloId = c.req.param("modeloId");
+    const lineaId = c.req.param("id");
+    const body = await c.req.json();
+    const result = await guardarLineaRecetaMotor(serviceClient, {
+      ...body,
+      modeloId,
+      lineaId,
+      usuarioId: user?.id || null,
+    });
+    return c.json(result);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.delete("/recetas/:modeloId/lineas/:id", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const user = (c as any).get("user");
+    const serviceClient = getServiceClient();
+    const lineaId = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+    const result = await eliminarLineaRecetaMotor(serviceClient, {
+      lineaId,
+      usuarioId: user?.id || null,
+      motivo: body?.motivo || null,
+    });
+    return c.json(result);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.get("/recetas/:modeloId/historial", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const modeloId = c.req.param("modeloId");
+    const result = await obtenerHistorialRecetaMotor(supabase, modeloId);
+    return c.json(result);
   } catch (err: any) {
     const { status, body } = formatearErrorRespuesta(err);
     return c.json(body, status as any);

@@ -3,6 +3,31 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - Sub-bloque T6 (Noche): Editor de recetas creadas por el usuario, clonación de modelos y auditoría
+**Herramienta:** Antigravity  
+**Tipo:** feat (modelos, recetas, clonacion, editor por fases, costos derivados, auditoria, migracion sql, backend hono, ui react)  
+**Rama:** `noche-t6-editor-recetas`  
+**Archivos tocados:**  
+- `docs/propuestas/EDITOR_RECETAS.md` (nota de diseño arquitectónico y análisis de viabilidad: motor dinámico sin tocar código, CHECKs de modelo, productos terminados, costos derivados y aclaración de plantillas comerciales vs de receta)
+- `supabase/migrations/20261102_04_editor_recetas.sql` (tabla `receta_base_historial` con RLS, RPCs atómicas `clonar_receta_modelo`, `guardar_linea_receta` y `eliminar_linea_receta` con permisos exclusivos a `service_role`)
+- `docs/recetas/verificacion_T6.sql` (script de verificación de esquema con `todo_ok = true`)
+- `docs/recetas/prueba_T6.sql` (prueba transaccional BEGIN...ROLLBACK de clonación, adición, edición, eliminación y auditoría sin alterar el modelo origen)
+- `supabase/functions/make-server-feea4382/motor/recetas_editor.ts` (motores de negocio `clonarRecetaMotor`, `obtenerRecetaMotor`, `guardarLineaRecetaMotor`, `eliminarLineaRecetaMotor`, `obtenerHistorialRecetaMotor`)
+- `supabase/functions/make-server-feea4382/motor/recetas_editor.test.ts` (3 pruebas unitarias Deno de validación, escalado proporcional en modelo clonado y preservación de origen)
+- `supabase/functions/make-server-feea4382/index.ts` (rutas REST `/recetas/clonar`, `/recetas/:modeloId`, `/recetas/:modeloId/lineas`, `/recetas/:modeloId/lineas/:id`, `/recetas/:modeloId/historial`)
+- `src/app/components/CatalogoCostos/RecetasEditorTab.tsx` (pestaña de edición de recetas por fases oficiales, modal de clonación "Nueva Receta Desde...", diálogo de agregar/editar materias primas y visor de historial de auditoría)
+- `src/app/components/CatalogoCostos/CatalogoCostosMain.tsx` (integración de la pestaña "Recetas" en la barra de navegación y carga reactiva de modelos)
+**Qué cambió y por qué:**  
+- **1. Análisis de Viabilidad y Nota de Diseño (`EDITOR_RECETAS.md`):** Se comprobó que `resolver_receta.ts` y `costeo.ts` resuelven modelos dinámicamente según `num_ejes`, `largo_ft`, `costos_derivados_de` y `aplica_a` sin requerir modificaciones de código TS en el motor. Se documentaron las restricciones de integridad (`CHECK (tipo IN (...))` en `modelos`, FK requerida en `productos`).
+- **2. Modelo e Idempotencia (`20261102_04_editor_recetas.sql`):** Se implementó la tabla `receta_base_historial` para registrar cada alta, modificación o baja de materias primas. La RPC `clonar_receta_modelo` permite clonar la receta base completa, kits y procesos de un modelo origen hacia una nueva clave de producto y modelo de forma atómica.
+- **3. Motores y Endpoints Deno:** Implementados endpoints seguros bajo `/recetas/*` con inyección de `serviceClient` para las funciones privilegiadas y captura de excepciones traducidas con códigos HTTP apropiados (400, 404, 409).
+- **4. Interfaz de Usuario React (`RecetasEditorTab.tsx`):** Pestaña dedicada con selector de modelo, botón "Nueva Receta Desde..." con modal intuitivo, acordeones por las 14 fases oficiales de despiece, tabla de materias primas con cálculo en vivo de subtotales, modales para agregar/modificar insumos con escala (`fija`, `por_eje`, `por_largo`) y cajón de trazabilidad histórica.
+- **5. Inmutabilidad de Presupuestos y OTs:** Las cotizaciones y órdenes de trabajo ya generadas permanecen congeladas con su snapshot en `meta.bom`; las modificaciones a la receta aplican exclusivamente a cotizaciones y despieces futuros.
+**Acciones manuales pendientes:**  
+- Correr `supabase/migrations/20261102_04_editor_recetas.sql` en SQL Editor de Supabase.  
+- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
+- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.  
+
 ## 2026-11-02 - Sub-bloque T2 (Noche): Despiece por fases desde UNION DE LISTADOS, catálogo oficial y equivalencias
 **Herramienta:** Antigravity  
 **Tipo:** feat (despiece, catalogo de fases, equivalencias legacy, materias primas, arbol bom, deduccion referencia)  
