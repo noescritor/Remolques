@@ -3,6 +3,29 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - Sub-bloque T3 (Noche): Checklist de almacén -> producción por orden, equipo y fase
+**Herramienta:** Antigravity  
+**Tipo:** feat (checklist almacen, entregas parciales, reposicion, devolucion, avance por fase y equipo, rpc transaccional con FOR UPDATE)  
+**Rama:** `noche-t3-checklist`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_02_checklist_almacen.sql` (tablas `orden_despiece_lineas`, `orden_despiece_entregas`, vista `v_orden_despiece_avance` con `security_invoker = true`, funciones atómicas `registrar_entrega_despiece` y `anular_entrega_despiece` con `FOR UPDATE`, índices de consulta rápida y aislamiento RLS)
+- `docs/checklist/verificacion_T3.sql` (script de verificación de tablas, columnas, funciones RPC, vista e índices con `todo_ok = true`)
+- `docs/checklist/prueba_T3.sql` (prueba transaccional BEGIN...ROLLBACK con validación de entregas parciales, bloqueo de sobreentrega ordinaria, reposición justificada y anulación)
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.ts` (motor backend con generación idempotente de líneas BOM desde presupuesto/receta base, registro de entrega con serviceClient, anulación de entrega, resumen de avance y exportación a CSV/impresión)
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.test.ts` (4 pruebas unitarias Deno de generación BOM, control de sobreentrega ordinaria, reposición con motivo obligatorio y cálculo de avance porcentual)
+- `supabase/functions/make-server-feea4382/index.ts` (8 rutas REST bajo `/ordenes-trabajo/:id/despiece/*` para inicializar BOM, consultar líneas, resumen, entregas, registrar entrega, anular entrega y exportar checklist)
+- `src/app/components/OrdenesTrabajo/ChecklistDespieceModal.tsx` (modal interactivo con selector de equipo, pestañas por fase oficial, barra de progreso general y por fase, selector de operario/fase receptora, modal de entrega con reposición justificada y descarga de checklist para impresión/firma)
+- `src/app/components/OrdenesTrabajo/OrdenesTrabajoList.tsx` (botón de acción rápida "Checklist Almacén" con ícono ClipboardCheck para abrir el modal del despiece de la OT)
+**Qué cambió y por qué:**  
+- **1. Modelo de datos y control de concurrencia:** Se crearon las tablas `orden_despiece_lineas` (unidades teóricas por OT, equipo y fase) y `orden_despiece_entregas` (historial inmutable de entregas con fecha, operario y tipo). La función RPC `registrar_entrega_despiece` utiliza bloqueo de fila `FOR UPDATE` para impedir entregas concurrentes superiores a la cantidad requerida, requiriendo motivo obligatorio para reposiciones.
+- **2. Generación idempotente de líneas BOM:** El motor toma el despiece calculado del presupuesto vinculado a la OT (`presupuestos.datos.meta.bom`) o, en su defecto, la receta base del modelo para cada equipo de la orden, asegurando unicidad mediante `clave_origen`.
+- **3. API y servicio Deno:** Se implementaron 8 endpoints bajo `/ordenes-trabajo/:id/despiece/*` con manejo robusto de errores, tipado estricto y ejecución privilegiada en RPC mediante `serviceClient`.
+- **4. UI intuitiva y accesible:** Se integró el modal en `OrdenesTrabajoList.tsx` respetando las variables semánticas de Tailwind (`bg-card`, `text-foreground`, `border-border`), con vista desglosada por equipos y fases oficiales, firmas y observaciones para almacén.
+- **Acciones manuales pendientes:**
+  - Ejecutar `supabase/migrations/20261102_02_checklist_almacen.sql` en producción.
+  - Rebuild del servicio backend Deno en EasyPanel.
+  - Correr `docs/checklist/verificacion_T3.sql` en SQL Editor para validar `todo_ok = true`.
+
 ## 2026-11-02 - Sub-bloque T2 (Noche): Despiece por fases desde UNION DE LISTADOS, catálogo oficial y equivalencias
 **Herramienta:** Antigravity  
 **Tipo:** feat (despiece, catalogo de fases, equivalencias legacy, materias primas, arbol bom, deduccion referencia)  

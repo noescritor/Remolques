@@ -78,6 +78,16 @@ import {
   obtenerConciliacionProveedor,
   formatearErrorRespuesta,
 } from "./motor/cuentas_por_pagar.ts";
+import {
+  listarDespieceOT,
+  generarDespieceOT,
+  registrarEntrega,
+  entregarFaseCompleta,
+  anularEntrega,
+  agregarLineaManual,
+  ajustarCantidadRequerida,
+  eliminarLineaManual,
+} from "./motor/checklist_almacen.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -3150,6 +3160,186 @@ app.post("/ordenes-trabajo/:id/regenerar-ficha", async (c) => {
         ? 409
         : 500);
     return c.json({ error: error.message }, status);
+  }
+});
+
+// --- Checklist de Entregas Almacén -> Producción (T3) ---
+
+app.get("/ordenes-trabajo/:id/despiece", async (c) => {
+  try {
+    const supabase = (c.get("supabase") || getServiceClient()) as any;
+    const orgId = c.get("organizacionId");
+    const otId = c.req.param("id");
+    const equipo = c.req.query("equipo") ? parseInt(c.req.query("equipo")!, 10) : undefined;
+
+    const data = await listarDespieceOT(supabase, { otId, orgId, equipoIndice: equipo });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error listando despiece OT:", error);
+    return c.json({ error: error.message || "Error al listar despiece" }, 500);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/despiece/generar", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const otId = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    const data = await generarDespieceOT(supabase, { otId, orgId, forzar: !!body.forzar });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error generando despiece OT:", error);
+    return c.json({ error: error.message || "Error al generar despiece" }, 400);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/despiece/entregar", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const body = await c.req.json().catch(() => ({}));
+
+    if (!body.linea_id) return c.json({ error: "linea_id es requerido" }, 400);
+    if (!body.cantidad || body.cantidad <= 0) return c.json({ error: "cantidad inválida" }, 400);
+
+    const data = await registrarEntrega(supabase, {
+      orgId,
+      lineaId: body.linea_id,
+      cantidad: parseFloat(body.cantidad),
+      tipo: body.tipo || "entrega",
+      operarioId: body.operario_id || null,
+      operarioNombre: body.operario_nombre || null,
+      motivo: body.motivo || null,
+      usuarioId: user?.id || null,
+    });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error registrando entrega:", error);
+    const msg = error.message || "Error al registrar entrega";
+    const status = msg.includes("excede_requerido") ? 409 : msg.includes("motivo_requerido") ? 400 : 500;
+    return c.json({ error: msg }, status);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/despiece/entregar-fase", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const otId = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    if (!body.fase_clave) return c.json({ error: "fase_clave es requerida" }, 400);
+
+    const data = await entregarFaseCompleta(supabase, {
+      orgId,
+      otId,
+      faseClave: body.fase_clave,
+      equipoIndice: body.equipo_indice ? parseInt(body.equipo_indice, 10) : undefined,
+      operarioId: body.operario_id || null,
+      operarioNombre: body.operario_nombre || null,
+      usuarioId: user?.id || null,
+    });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error entregando fase completa:", error);
+    return c.json({ error: error.message || "Error al entregar fase" }, 500);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/despiece/anular-entrega", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const body = await c.req.json().catch(() => ({}));
+
+    if (!body.entrega_id) return c.json({ error: "entrega_id es requerido" }, 400);
+    if (!body.motivo || !body.motivo.trim()) return c.json({ error: "motivo es obligatorio" }, 400);
+
+    const data = await anularEntrega(supabase, {
+      orgId,
+      entregaId: body.entrega_id,
+      motivo: body.motivo,
+      usuarioId: user?.id || null,
+    });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error anulando entrega:", error);
+    return c.json({ error: error.message || "Error al anular entrega" }, 400);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/despiece/lineas", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const otId = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    if (!body.descripcion || !body.descripcion.trim()) return c.json({ error: "descripcion es requerida" }, 400);
+    if (!body.fase_clave) return c.json({ error: "fase_clave es requerida" }, 400);
+    if (!body.cantidad || body.cantidad <= 0) return c.json({ error: "cantidad inválida" }, 400);
+
+    const data = await agregarLineaManual(supabase, {
+      orgId,
+      otId,
+      equipoIndice: body.equipo_indice ? parseInt(body.equipo_indice, 10) : 1,
+      faseClave: body.fase_clave,
+      materialId: body.material_id || null,
+      descripcion: body.descripcion,
+      unidad: body.unidad || "pz",
+      cantidadRequerida: parseFloat(body.cantidad),
+      notas: body.notas || null,
+    });
+    return c.json(data, 201);
+  } catch (error: any) {
+    console.error("[make-server] Error agregando línea manual:", error);
+    return c.json({ error: error.message || "Error al agregar partida" }, 400);
+  }
+});
+
+app.put("/ordenes-trabajo/:id/despiece/lineas/:lineaId", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const lineaId = c.req.param("lineaId");
+    const body = await c.req.json().catch(() => ({}));
+
+    if (body.nueva_cantidad === undefined || body.nueva_cantidad < 0) {
+      return c.json({ error: "nueva_cantidad inválida" }, 400);
+    }
+    if (!body.motivo || !body.motivo.trim()) {
+      return c.json({ error: "motivo del ajuste es requerido" }, 400);
+    }
+
+    const data = await ajustarCantidadRequerida(supabase, {
+      orgId,
+      lineaId,
+      nuevaCantidad: parseFloat(body.nueva_cantidad),
+      motivo: body.motivo,
+    });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error ajustando cantidad requerida:", error);
+    return c.json({ error: error.message || "Error al ajustar cantidad" }, 400);
+  }
+});
+
+app.delete("/ordenes-trabajo/:id/despiece/lineas/:lineaId", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const lineaId = c.req.param("lineaId");
+
+    const data = await eliminarLineaManual(supabase, { orgId, lineaId });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error eliminando línea manual:", error);
+    return c.json({ error: error.message || "Error al eliminar partida" }, 400);
   }
 });
 

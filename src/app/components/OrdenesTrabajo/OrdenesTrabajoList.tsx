@@ -7,9 +7,10 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Dialog, DialogContent } from '../ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Printer, FileCheck, Search, Edit, Calendar } from 'lucide-react';
+import { Printer, FileCheck, Search, Edit, Calendar, ClipboardCheck } from 'lucide-react';
 import { OrdenTrabajoPDF } from './OrdenTrabajoPDF';
 import { LiberacionPDF } from './LiberacionPDF';
+import { ChecklistDespieceModal } from './ChecklistDespieceModal';
 import { BASE_URL } from '../../utils/api';
 
 interface OrdenesTrabajoListProps {
@@ -25,6 +26,7 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
   const [searchTerm, setSearchTerm] = useState('');
   const [ordenEditando, setOrdenEditando] = useState<OrdenTrabajo | null>(null);
   const [ordenParaPDF, setOrdenParaPDF] = useState<OrdenTrabajo | null>(null);
+  const [ordenParaChecklist, setOrdenParaChecklist] = useState<OrdenTrabajo | null>(null);
   const [clienteLiberacion, setClienteLiberacion] = useState<string | null>(null);
 
   // Estados de edición básicos
@@ -236,6 +238,14 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
                       >
                         <Calendar className="w-4 h-4 text-primary" />
                       </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setOrdenParaChecklist(orden)}
+                        title="Checklist de almacén / despiece"
+                      >
+                        <ClipboardCheck className="w-4 h-4 text-emerald-500" />
+                      </Button>
                       <Button variant="ghost" size="icon" onClick={() => handleEdit(orden)} title="Editar datos">
                         <Edit className="w-4 h-4 text-blue-400" />
                       </Button>
@@ -357,6 +367,13 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de Checklist y Entregas de Almacén */}
+      <ChecklistDespieceModal
+        orden={ordenParaChecklist}
+        open={!!ordenParaChecklist}
+        onOpenChange={(o) => !o && setOrdenParaChecklist(null)}
+      />
     </div>
   );
 }
