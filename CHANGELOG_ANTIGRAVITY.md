@@ -3,6 +3,30 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - Sub-bloque T2 (Noche): Despiece por fases desde UNION DE LISTADOS, catálogo oficial y equivalencias
+**Herramienta:** Antigravity  
+**Tipo:** feat (despiece, catalogo de fases, equivalencias legacy, materias primas, arbol bom, deduccion referencia)  
+**Rama:** `noche-t2-despiece`  
+**Archivos tocados:**  
+- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (análisis exhaustivo de las 316 filas de `UNION DE LISTADOS ACTULIZADO (1).xlsx`, deducción de la unidad de referencia Plataforma 2 ejes 40 FT, árbol de 14 fases, bloques de opciones, normalización de typos y registro de anomalías)
+- `docs/despiece/union_listados_raw.json` (extracción estructurada en JSON de las 316 filas para reproducibilidad)
+- `scripts/analizar_union.py` (script de análisis de openpyxl y generación del reporte de despiece)
+- `scripts/generar_migracion_despiece.py` (script generador de la migración SQL, verificador y pruebas transaccionales)
+- `supabase/migrations/20261102_01_despiece_union.sql` (migración idempotente con creación de `fases_despiece`, `fases_despiece_equivalencias`, columnas `fase_id` en `receta_base` y `opcion_componentes`, población de 14 fases por organización, equivalencias de pasos legados, actualización de `fase_id` en registros existentes y alta de 257 materias primas con nota `import-union-2026-11`)
+- `docs/despiece/verificacion_T2.sql` (script de verificación de esquema y conteos con `todo_ok = true`)
+- `docs/despiece/prueba_T2.sql` (prueba transaccional BEGIN...ROLLBACK de integridad relacional, asignación de fase_id y JOIN)
+- `src/app/utils/fasesDespiece.ts` (utilidades puras: `normalizarClavePaso`, `resolverFaseDeLinea`, `agruparBOMPorFases`)
+- `src/app/utils/fasesDespiece.test.ts` (3 pruebas unitarias Deno de normalización, mapeo y agrupación por fases)
+**Qué cambió y por qué:**  
+- **1. Análisis y deducción de la unidad de referencia:** Se comprobó que el Excel corresponde a la **PLATAFORMA DE 2 EJES Y 40 PIES (PLATAFORMA 2 40 FT)** por la presencia de 38 cargadores IPR 4" x 102", 2 almas de viga, 4 soleras de almas para 40 ft, y kit de frenos ABS de 2 ejes (2 tanques, 4 cámaras).
+- **2. Catálogo oficial de fases (`fases_despiece`):** Se crearon 14 fases oficiales con el nombre y proceso del Excel (`Paso 1` a `Paso 6`, `PASO 7` a `PASO 12`, `EXTRAS` y `LLANTAS Y RINES`), con orden, subtítulos y aislamiento RLS multi-tenant.
+- **3. Tabla de equivalencias (`fases_despiece_equivalencias`):** Mapea pasos legados (`PASO 1..6`, `AIRE`, `LUZ`, `PINTURA`, `PISOS`, `TERMINADO`, `EXTRAS`, `RINES`, `LLANTAS`) a `fase_id` oficial, permitiendo actualizar registros existentes sin romper el campo `paso` legado.
+- **4. Vinculación relacional:** Se agregó columna `fase_id UUID REFERENCES fases_despiece(id)` tanto a `receta_base` como a `opcion_componentes`, y se retro-pobló automáticamente para todos los componentes existentes.
+- **5. Catálogo de productos:** Se dieron de alta 257 materias primas normalizadas con unidades inferidas (`PZA`, `L`, `M`, `KG`), conservando el texto original en la descripción y aplicando precios cuando estaban disponibles sin sobrescribir costos existentes.
+- **Acciones manuales pendientes:**
+  - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en producción.
+  - Correr `docs/despiece/verificacion_T2.sql` en SQL Editor para validar `todo_ok = true`.
+
 ## 2026-10-30 - Sub-bloque 2R-16 (Fix): Correcciones de seguridad serviceClient, fecha local, validaciones numéricas y truncado
 **Herramienta:** Antigravity  
 **Tipo:** fix (seguridad rpc, serviceClient, fechas locales mexico, validaciones numericas, enmascaramiento errores 500, paginacion y truncado)  
