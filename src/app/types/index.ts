@@ -147,6 +147,13 @@ export interface Proveedor {
   id: string;
   organizacion_id: string;
   nombre: string;
+  razon_social?: string;
+  rfc?: string;
+  moneda_default?: 'MXN' | 'USD';
+  dias_credito?: number;
+  limite_credito?: number;
+  limite_credito_moneda?: 'MXN' | 'USD';
+  notas_credito?: string;
   contacto?: string;
   telefono?: string;
   tiempo_entrega_dias?: number;

@@ -77,6 +77,11 @@ import {
   guardarEstadoCuentaProveedor,
   obtenerConciliacionProveedor,
   formatearErrorRespuesta,
+  guardarFacturaConPartidasMotor,
+  obtenerPartidasFactura,
+  previsualizarCFDIsMotor,
+  importarCFDIsMotor,
+  obtenerReporteFacturacion,
 } from "./motor/cuentas_por_pagar.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
@@ -3319,6 +3324,20 @@ app.post("/cxp/facturas", async (c) => {
       concepto: body.concepto || null,
     };
 
+    if (body.partidas && Array.isArray(body.partidas) && body.partidas.length > 0) {
+      const serviceClient = getServiceClient();
+      const resultado = await guardarFacturaConPartidasMotor(serviceClient, orgId, null, {
+        ...payload,
+        uuid_fiscal: body.uuid_fiscal,
+        subtotal: body.subtotal,
+        descuento: body.descuento,
+        impuestos_trasladados: body.impuestos_trasladados,
+        impuestos_retenidos: body.impuestos_retenidos,
+        partidas: body.partidas,
+      });
+      return c.json({ factura: resultado }, 201);
+    }
+
     const factura = await crearFactura(supabase, orgId, payload);
     return c.json({ factura }, 201);
   } catch (err: any) {
@@ -3348,6 +3367,20 @@ app.put("/cxp/facturas/:id", async (c) => {
       tipo_cambio_emision: body.tipo_cambio_emision,
       concepto: body.concepto,
     };
+
+    if (body.partidas && Array.isArray(body.partidas) && body.partidas.length > 0) {
+      const serviceClient = getServiceClient();
+      const resultado = await guardarFacturaConPartidasMotor(serviceClient, orgId, id, {
+        ...payload,
+        uuid_fiscal: body.uuid_fiscal,
+        subtotal: body.subtotal,
+        descuento: body.descuento,
+        impuestos_trasladados: body.impuestos_trasladados,
+        impuestos_retenidos: body.impuestos_retenidos,
+        partidas: body.partidas,
+      });
+      return c.json({ factura: resultado });
+    }
 
     const factura = await actualizarFactura(supabase, orgId, id, payload);
     return c.json({ factura });
@@ -3544,6 +3577,89 @@ app.get("/cxp/proveedores/:id/conciliacion", async (c) => {
 
     const conciliacion = await obtenerConciliacionProveedor(supabase, orgId, id, corte);
     return c.json(conciliacion);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+// 7. Partidas por factura (T4a)
+app.get("/cxp/facturas/:id/partidas", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+
+    const partidas = await obtenerPartidasFactura(supabase, orgId, id);
+    return c.json({ partidas });
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.post("/cxp/facturas/:id/partidas", async (c) => {
+  try {
+    const serviceClient = getServiceClient();
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+    const body = await c.req.json();
+
+    const resultado = await guardarFacturaConPartidasMotor(serviceClient, orgId, id, body);
+    return c.json(resultado);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+// 8. Importación de XML CFDI 3.3 / 4.0 (T4b)
+app.post("/cxp/cfdi/previsualizar", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const body = await c.req.json();
+
+    const resultado = await previsualizarCFDIsMotor(supabase, orgId, body.archivos);
+    return c.json(resultado);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.post("/cxp/cfdi/importar", async (c) => {
+  try {
+    const serviceClient = getServiceClient();
+    const orgId = (c as any).get("organizacionId") as string;
+    const body = await c.req.json();
+
+    const resultado = await importarCFDIsMotor(serviceClient, orgId, body.lotes);
+    return c.json(resultado);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+// 9. Reporte de facturación de proveedores (T4c)
+app.get("/cxp/reportes/facturacion", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const queryParams = c.req.query();
+
+    const resultado = await obtenerReporteFacturacion(supabase, orgId, {
+      desde: queryParams.desde || undefined,
+      hasta: queryParams.hasta || undefined,
+      filtro_fecha_tipo: (queryParams.filtro_fecha_tipo as any) || "emision",
+      proveedor_id: queryParams.proveedor_id || undefined,
+      moneda: queryParams.moneda || undefined,
+      estado: queryParams.estado || undefined,
+      corte: queryParams.corte || undefined,
+      limite: queryParams.limite ? parseInt(queryParams.limite, 10) : 500,
+    });
+    return c.json(resultado);
   } catch (err: any) {
     const { status, body } = formatearErrorRespuesta(err);
     return c.json(body, status as any);

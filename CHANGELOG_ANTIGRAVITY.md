@@ -3,6 +3,34 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - Tarea T4: Proveedores — partidas por factura, importador XML CFDI 3.3/4.0, reporte de facturación y revisión general
+**Herramienta:** Antigravity  
+**Tipo:** feat (proveedores, cxp, facturas_proveedor, partidas, cfdi 3.3 y 4.0 xml, reporte facturacion, revision general proveedores)  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql` (tabla `factura_proveedor_partidas`, columnas fiscales en `facturas_proveedor` [`uuid_fiscal`, `subtotal`, `descuento`, `impuestos_trasladados`, `impuestos_retenidos`], función atómica `guardar_factura_con_partidas` validando `nuevo_total >= total_pagado`, RLS y vistas)
+- `docs/proveedores/verificacion_T4.sql` (script de verificación de esquema, columnas y constraints)
+- `docs/proveedores/prueba_T4.sql` (script de prueba transaccional para partidas, validación de saldo y unicidad UUID)
+- `supabase/functions/make-server-feea4382/motor/cfdi_parser.ts` (parser de CFDI 3.3 y 4.0 con prevención estricta de XXE/DTD, extracción de emisor, receptor, conceptos, impuestos y UUID fiscal)
+- `supabase/functions/make-server-feea4382/motor/cfdi_parser.test.ts` (pruebas unitarias para parsing CFDI 3.3, 4.0, rechazo de XXE/DTD y UUID repetido)
+- `supabase/functions/make-server-feea4382/motor/partidas_cfdi.test.ts` (pruebas de motor para partidas, nuevo_total >= total_pagado y endpoints)
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.ts` (motores de partidas `guardarFacturaConPartidasMotor`, `obtenerFacturaConPartidasMotor`, `obtenerReporteFacturacion`)
+- `supabase/functions/make-server-feea4382/index.ts` (rutas `/cxp/facturas/:id/partidas`, `/cxp/cfdi/previsualizar`, `/cxp/cfdi/importar`, `/cxp/reportes/facturacion`)
+- `src/app/types/index.ts` (tipos `FacturaProveedorPartida`, campos fiscales en `FacturaProveedor`, campos crediticios en `Proveedor`)
+- `src/app/components/Finanzas/CxpCfdiModal.tsx` (modal importador de XMLs CFDI con previsualización, detección de duplicados por UUID y leyenda obligatoria)
+- `src/app/components/Finanzas/CxpReporteFacturacionTab.tsx` (pestaña de reporte de facturación con filtros por emisión/vencimiento, totales MXN/USD, revaluación a pesos, exportación CSV con BOM UTF-8 e impresión)
+- `src/app/components/Finanzas/CxpFacturasTab.tsx` (soporte de partidas dinámicas en diálogo de factura y visualización de partidas en fila expandible)
+- `src/app/components/Finanzas/CuentasPorPagarMain.tsx` (integración de pestaña 'Reporte facturación' y botón importador CFDI)
+- `src/app/components/Proveedores/ProveedoresList.tsx` (campos de crédito y RFC, detección de RFCs duplicados con advertencia visual y botón 'Ver CxP')
+**Qué cambió y por qué:**  
+- **1. Partidas por factura (T4a):** Se creó la tabla `factura_proveedor_partidas` relacionada a `facturas_proveedor` con campos de descripción, unidad, cantidad, valor unitario, importe, descuentos e impuestos. La función RPC `guardar_factura_con_partidas` permite crear o actualizar facturas y sus partidas atómicamente, validando que el nuevo importe total no sea inferior a lo ya pagado. En el frontend se integró la edición de partidas con recálculo automático de totales y visualización detallada en el acordeón de cada factura.
+- **2. Importador CFDI XML 3.3/4.0 (T4b):** Se implementó un parser seguro contra inyecciones XXE/DTD (`cfdi_parser.ts`) compatible con CFDI versiones 3.3 y 4.0. Se añadieron endpoints para previsualizar lotes de XMLs (detectando facturas duplicadas por UUID fiscal o folios ya existentes) e importarlos automáticamente asociándolos o sugiriendo crear el proveedor. El modal `CxpCfdiModal.tsx` incluye la leyenda requerida: *"Importado desde XML; no validado con el SAT"*.
+- **3. Reporte de facturación de proveedores (T4c):** Se implementó `CxpReporteFacturacionTab.tsx` y endpoint `/cxp/reportes/facturacion` para consultar facturación por rango de fechas (emisión o vencimiento), proveedor, moneda y estado. Muestra totales separados en MXN y USD, el equivalente global en pesos mediante el tipo de cambio oficial, exportación a CSV con BOM UTF-8 y versión lista para impresión.
+- **4. Revisión y mejoras en Proveedores (T4d):** Se añadieron campos de RFC, razón social, días y límite de crédito a los formularios de proveedores. Se agregó detección visual de RFCs duplicados con badge de advertencia y botón de acceso directo "Ver CxP" que redirige con filtro a las facturas del proveedor.
+**Acciones manuales pendientes:**  
+- Correr `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql` en el SQL Editor de Supabase en producción.  
+- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
+- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.  
+
 ## 2026-10-30 - Sub-bloque 2R-16 (Fix): Correcciones de seguridad serviceClient, fecha local, validaciones numéricas y truncado
 **Herramienta:** Antigravity  
 **Tipo:** fix (seguridad rpc, serviceClient, fechas locales mexico, validaciones numericas, enmascaramiento errores 500, paginacion y truncado)  
