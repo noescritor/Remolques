@@ -3,6 +3,18 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - T0: Orden de la casa (Housekeeping nocturno)
+**Herramienta:** Antigravity  
+**Tipo:** chore (housekeeping, gitignore, versionado de prompts y migraciones previas)  
+**Archivos tocados:**  
+- `.gitignore` (agregados `Normas/` y `XML_FACTURAS/` para prevenir filtraciones de datos sensibles de clientes y XML de proveedores)
+- `XML_FACTURAS/LEEME.txt` (creada carpeta de depósito para XML de proveedores con archivo de instrucciones, fuera de git)
+- `docs/importacion/carga_cadeco_2026-10-29.sql` (versionado archivo SQL que ya corrió en producción)
+- `supabase/migrations/20261031_01_concha_110_redilas_85.sql` (versionada migración de concha y redilas)
+- `PROMPT_ANTY_2R16_CXP_FACTURAS.md`, `PROMPT_ANTY_2R16_FIX.md`, `PROMPT_ANTY_NOCHE_2026-11-02.md` (versionados prompts para trazabilidad)
+**Qué cambió y por qué:**  
+- Se realizó la limpieza inicial del repositorio para el turno de noche 2026-11-02, versionando migraciones y prompts previos que estaban en el árbol de trabajo, protegiendo directorios confidenciales (`Normas/` y `XML_FACTURAS/`) y preparando el entorno para las tareas T1 a T6.
+
 ## 2026-10-30 - Sub-bloque 2R-16 (Fix): Correcciones de seguridad serviceClient, fecha local, validaciones numéricas y truncado
 **Herramienta:** Antigravity  
 **Tipo:** fix (seguridad rpc, serviceClient, fechas locales mexico, validaciones numericas, enmascaramiento errores 500, paginacion y truncado)  
