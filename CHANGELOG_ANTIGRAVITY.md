@@ -3,6 +3,35 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - Sub-bloque T1 (Noche): Catálogo de productos completo, sin tope de 1000 filas, pestaña sin categoría, filtro sin costo y visor del cotizador
+**Herramienta:** Antigravity  
+**Tipo:** feat & fix (catalogo productos, paginacion postgrest sin tope 1000, conteos exactos, sin categoria, filtro sin costo, visor catalogo cotizador)  
+**Rama:** `noche-t1-catalogo`  
+**Archivos tocados:**  
+- `docs/diagnostico/CATALOGO_PRODUCTOS.md` (diagnóstico exhaustivo de causas: corte de 1000 de PostgREST, migración de BOMs con categoria_id null, y cotizador desacoplado en tablas independientes)
+- `docs/diagnostico/catalogo_conteos.sql` (consultas de solo lectura para auditar productos, conteo por categoría, nulos y tablas del cotizador)
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.ts` (motor backend con `listarProductosPaginados` que pagina por lotes de 1000 con `.range()` para no truncar a 1000, soporte de modo retrocompatible como array con cabecera `X-Total-Count`, modo paginado `{ productos, total, page, limit, truncado }`, y `obtenerCatalogoCotizador` que unifica aceros y opciones)
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.test.ts` (3 pruebas Deno de paginación retrocompatible, paginación explícita con truncado y catálogo del cotizador)
+- `supabase/functions/make-server-feea4382/index.ts` (conectado `GET /productos` a `listarProductosPaginados` y nueva ruta `GET /catalogo-cotizador`)
+- `src/app/utils/catalogoProductos.ts` (utilidades puras: `esProductoSinCosto`, `calcularCategoriasConConteo`, `filtrarProductosCatalogo` genérico)
+- `src/app/utils/catalogoProductos.test.ts` (3 pruebas Deno con casos de borde de costo, conteos y filtros)
+- `src/app/components/Productos/ProductosList.tsx` (interfaz renovada con selector de vista "General" vs "Catálogo Cotizador", badges con conteos reales en tabs de categorías, pestaña "Sin categoría", selector switch "Solo sin costo cargado", badge "Sin costo cargado" en lugar de $0, y visor de tablas de aceros y opciones del cotizador)
+**Qué cambió y por qué:**  
+- **1. Diagnóstico del problema reportado por Luis:** Luis solo veía categorías con 3, 2, 5, 1 productos porque:
+  a) PostgREST trunca a 1000 filas si no se usa `.range()`.
+  b) Las migraciones de recetas de producción insertaron cientos de materiales con `categoria_id IS NULL`, y la interfaz filtraba por `categoria_id === cat.id` sin ofrecer pestaña para ver los que no tenían categoría.
+  c) Los ítems del cotizador (`acero_materiales`, `opciones_configuracion`) nunca estuvieron en `productos`, sino en sus propias tablas de configuración.
+- **2. Paginación segura y sin límite de 1000 en el backend:** `listarProductosPaginados` recorre automáticamente en lotes de 1000 mediante `.range()` hasta agotar los registros, retornando la lista completa con `X-Total-Count` para clientes existentes (como `useSupabaseData.ts`), o un objeto `{ productos, total, page, limit, truncado }` si se solicita con `paginado=1`.
+- **3. Endpoints del cotizador expuestos:** Nueva ruta `GET /catalogo-cotizador` que reúne materiales de acero con sus precios por kg/m y opciones de configuración con sus costos de referencia sin duplicar filas en la tabla general de productos.
+- **4. UX del frontend:**
+  - Cada pestaña de categoría muestra su badge con el conteo exacto de productos.
+  - Pestaña "Sin categoría" disponible con su conteo para que ningún producto quede oculto.
+  - Filtro switch "Solo sin costo cargado" con badge numérico.
+  - Los productos sin costo (`null`, `undefined` o `0`) muestran un badge ámbar `"Sin costo cargado"` en lugar de $0.
+  - Pestaña "Catálogo Cotizador" que permite consultar en vivo las tablas de aceros y opciones configurables con buscador y recarga bajo demanda.
+- **Acciones manuales pendientes:**
+  - Rebuild de `remolques-api` en EasyPanel para activar las mejoras en el backend en producción.
+
 ## 2026-10-30 - Sub-bloque 2R-16 (Fix): Correcciones de seguridad serviceClient, fecha local, validaciones numéricas y truncado
 **Herramienta:** Antigravity  
 **Tipo:** fix (seguridad rpc, serviceClient, fechas locales mexico, validaciones numericas, enmascaramiento errores 500, paginacion y truncado)  

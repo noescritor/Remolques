@@ -78,6 +78,10 @@ import {
   obtenerConciliacionProveedor,
   formatearErrorRespuesta,
 } from "./motor/cuentas_por_pagar.ts";
+import {
+  listarProductosPaginados,
+  obtenerCatalogoCotizador,
+} from "./motor/catalogo_productos.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -1542,13 +1546,45 @@ app.delete("/clientes/:id", async (c) => {
 
 app.get("/productos", async (c) => {
   try {
-    const supabase = c.get("supabase") as SupabaseClient;
-    const { data, error } = await supabase.from('productos').select('*');
-    if (error) throw error;
-    return c.json(data);
-  } catch (error) {
-    console.error('[make-server] Error fetching productos:', error);
-    return c.json({ error: 'Error fetching productos' }, 500);
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId") as string;
+    const q = c.req.query("q");
+    const categoria = c.req.query("categoria");
+    const sinCosto = c.req.query("sin_costo");
+    const paginado = c.req.query("paginado");
+    const page = c.req.query("page") ? parseInt(c.req.query("page")!, 10) : undefined;
+    const limit = c.req.query("limit") ? parseInt(c.req.query("limit")!, 10) : undefined;
+
+    const resultado = await listarProductosPaginados(supabase, orgId, {
+      q,
+      categoria,
+      sinCosto,
+      paginado,
+      page,
+      limit,
+    });
+
+    if (Array.isArray(resultado)) {
+      c.header("X-Total-Count", String(resultado.length));
+      return c.json(resultado);
+    }
+
+    return c.json(resultado);
+  } catch (error: any) {
+    console.error("[make-server] Error fetching productos:", error);
+    return c.json({ error: error.message || "Error fetching productos" }, 500);
+  }
+});
+
+app.get("/catalogo-cotizador", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId") as string;
+    const catalogo = await obtenerCatalogoCotizador(supabase, orgId);
+    return c.json(catalogo);
+  } catch (error: any) {
+    console.error("[make-server] Error fetching catalogo-cotizador:", error);
+    return c.json({ error: error.message || "Error al consultar catálogo del cotizador" }, 500);
   }
 });
 
