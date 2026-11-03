@@ -3,6 +3,29 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - Sub-bloque T2 (Ronda 3): Resolución de hallazgos R3 de árbol BOM, 0 duplicados, pasos reales 1:1, RLS estricto SELECT, aislamiento de modelos
+**Herramienta:** Antigravity  
+**Tipo:** fix (arbol bom excel 1 a 1, eliminacion de casi duplicados, suspension sustitutos cant 0, rls solo select authenticated, aislamiento modelos plataforma)  
+**Rama:** `noche-t2-despiece`  
+**Archivos tocados:**  
+- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (análisis enriquecido con tabla exhaustiva de las 316 filas del Excel, diff considerando uso en §4.1, lista completa de las 25 piezas de BD que no están en el Excel en §4.3, diff de opciones de suspensión y patines en §4.4, sección pendientes de definir completa en §5 con anomalías de fosfato, ptr sin precio y fila 248, patines y ejes corregidos a Paso 6)
+- `docs/despiece/union_listados_raw.json` (limpieza de "Material Jairo" en fila 145)
+- `supabase/migrations/20261102_01_despiece_union.sql` (migración reescrita: políticas RLS estrictamente FOR SELECT TO authenticated, sin políticas FOR ALL ni de escritura para authenticated; población de 14 fases y 22 equivalencias; asignación 1:1 de las 61 piezas estructurales sin paso a sus pasos exactos en modelos plataforma; preservación íntegra de pasos legados como AIRE, LUZ, TERMINADO, LIMPIEZA; actualización de fase_id vía equivalencias; ajuste de sustitutos en suspensiones Hendrickson alta y Fleet Master a cantidad = 0 y rol = sustituto; cero duplicados insertados en productos)
+- `docs/despiece/verificacion_T2.sql` (verificador actualizado con conteos exactos por fase para PLATAFORMA 2 40 FT: P1=3, P2=5, P3=22, P4=22, P5=16, P6=28, P7=4, P9=47, P10=29, P12=16, Extras=10, Total=202; validación de 0 políticas non-SELECT, 0 recetas cruzadas, 0 líneas de Dolly/Góndola alteradas, 0 casi-duplicados, retornando todo_ok = true)
+- `docs/despiece/prueba_T2.sql` (prueba transaccional RLS multi-tenant real con 2 usuarios y 2 organizaciones bajo SET LOCAL ROLE authenticated y request.jwt.claim.sub, comprobando aislamiento de lectura y bloqueo de INSERT para authenticated)
+- `scripts/generar_archivos_t2_ronda3.py` (script generador determinista que produce los 4 artefactos sin dependencias flotantes)
+**Qué cambió y por qué:**  
+- **1. Árbol BOM 1:1 desde el Excel (Hallazgo 1 y 2):** Se mapearon con exactitud las 61 piezas estructurales de `receta_base` que tenían `paso IS NULL` a sus pasos exactos del Excel sin heurísticas `ILIKE` genéricas. En `PLATAFORMA 2 40 FT`, las 202 líneas quedan 100% asociadas a su fase oficial correspondiente.
+- **2. Preservación de pasos y usos originales (Hallazgo 3):** Se preservaron íntegramente los pasos y usos originales (como `AIRE`, `LUZ`, `TERMINADO`, `LIMPIEZA`, `EXTRAS`). La fase oficial se asocia mediante `fase_id` utilizando `fases_despiece_equivalencias`.
+- **3. Aislamiento de modelos (Hallazgo 4):** Se filtraron estrictamente las actualizaciones de `receta_base` por `modelos.tipo = 'plataforma'`, dejando Dolly (33 líneas) y Góndola (98 líneas) 100% intactas.
+- **4. Eliminación de casi-duplicados y productos huérfanos (Hallazgos 5 y 6):** Mediante coincidencia canónica, todas las materias primas del Excel reutilizan el producto existente en el catálogo, resultando en 0 duplicados y 0 productos huérfanos.
+- **5. Alternativas en suspensión (Hallazgo 2):** En `alta_hendrickson`, Monroe 65512 queda con `cantidad = 0, rol = 'sustituto'`. En `fleet_master`, amortiguadores FCR/Gabriel y cámaras AMPRO/FCR quedan con `cantidad = 0, rol = 'sustituto'`, resolviendo la duplicación de 3 amortiguadores y 3 cámaras por eje.
+- **6. Patines y ejes a Paso 6 (Hallazgo 7):** Se corrigió la asignación de patines y ejes a `paso_6` conforme a la clasificación del Excel oficial.
+- **7. RLS estricto y prueba multi-tenant real (Hallazgos 8 y 9):** Políticas exclusivamente `FOR SELECT` para `authenticated`, revocando permisos de escritura. La prueba transaccional `prueba_T2.sql` ejecuta bajo `SET LOCAL ROLE authenticated` y `SET LOCAL request.jwt.claim.sub` con dos usuarios de dos organizaciones, validando aislamiento y denegación de escritura.
+- **Acciones manuales pendientes:**
+  - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en EasyPanel/Supabase.
+  - Ejecutar `docs/despiece/verificacion_T2.sql` validando `todo_ok = true`.
+
 ## 2026-11-02 - Sub-bloque T3 (Ronda 2): Generación BOM real, RLS estricto, RPCs atómicas, hora México y UI completa
 **Herramienta:** Antigravity  
 **Tipo:** fix (checklist almacen, generacion bom real presupuestos, rls select only, rpc atomicas con for update, ui selector equipo csv e impresion)  
@@ -26,31 +49,6 @@ Formato: entradas nuevas **arriba**.
   - Correr `supabase/migrations/20261102_02_checklist_almacen.sql` en producción.
   - Rebuild del backend en EasyPanel.
   - Correr `docs/checklist/verificacion_T3.sql` comprobando `todo_ok = t`.
-
-
-
-## 2026-11-02 - Sub-bloque T3 (Noche): Checklist de almacén -> producción por orden, equipo y fase
-**Herramienta:** Antigravity  
-**Tipo:** feat (checklist almacen, entregas parciales, reposicion, devolucion, avance por fase y equipo, rpc transaccional con FOR UPDATE)  
-**Rama:** `noche-t3-checklist`  
-**Archivos tocados:**  
-- `supabase/migrations/20261102_02_checklist_almacen.sql` (tablas `orden_despiece_lineas`, `orden_despiece_entregas`, vista `v_orden_despiece_avance` con `security_invoker = true`, funciones atómicas `registrar_entrega_despiece` y `anular_entrega_despiece` con `FOR UPDATE`, índices de consulta rápida y aislamiento RLS)
-- `docs/checklist/verificacion_T3.sql` (script de verificación de tablas, columnas, funciones RPC, vista e índices con `todo_ok = true`)
-- `docs/checklist/prueba_T3.sql` (prueba transaccional BEGIN...ROLLBACK con validación de entregas parciales, bloqueo de sobreentrega ordinaria, reposición justificada y anulación)
-- `supabase/functions/make-server-feea4382/motor/checklist_almacen.ts` (motor backend con generación idempotente de líneas BOM desde presupuesto/receta base, registro de entrega con serviceClient, anulación de entrega, resumen de avance y exportación a CSV/impresión)
-- `supabase/functions/make-server-feea4382/motor/checklist_almacen.test.ts` (4 pruebas unitarias Deno de generación BOM, control de sobreentrega ordinaria, reposición con motivo obligatorio y cálculo de avance porcentual)
-- `supabase/functions/make-server-feea4382/index.ts` (8 rutas REST bajo `/ordenes-trabajo/:id/despiece/*` para inicializar BOM, consultar líneas, resumen, entregas, registrar entrega, anular entrega y exportar checklist)
-- `src/app/components/OrdenesTrabajo/ChecklistDespieceModal.tsx` (modal interactivo con selector de equipo, pestañas por fase oficial, barra de progreso general y por fase, selector de operario/fase receptora, modal de entrega con reposición justificada y descarga de checklist para impresión/firma)
-- `src/app/components/OrdenesTrabajo/OrdenesTrabajoList.tsx` (botón de acción rápida "Checklist Almacén" con ícono ClipboardCheck para abrir el modal del despiece de la OT)
-**Qué cambió y por qué:**  
-- **1. Modelo de datos y control de concurrencia:** Se crearon las tablas `orden_despiece_lineas` (unidades teóricas por OT, equipo y fase) y `orden_despiece_entregas` (historial inmutable de entregas con fecha, operario y tipo). La función RPC `registrar_entrega_despiece` utiliza bloqueo de fila `FOR UPDATE` para impedir entregas concurrentes superiores a la cantidad requerida, requiriendo motivo obligatorio para reposiciones.
-- **2. Generación idempotente de líneas BOM:** El motor toma el despiece calculado del presupuesto vinculado a la OT (`presupuestos.datos.meta.bom`) o, en su defecto, la receta base del modelo para cada equipo de la orden, asegurando unicidad mediante `clave_origen`.
-- **3. API y servicio Deno:** Se implementaron 8 endpoints bajo `/ordenes-trabajo/:id/despiece/*` con manejo robusto de errores, tipado estricto y ejecución privilegiada en RPC mediante `serviceClient`.
-- **4. UI intuitiva y accesible:** Se integró el modal en `OrdenesTrabajoList.tsx` respetando las variables semánticas de Tailwind (`bg-card`, `text-foreground`, `border-border`), con vista desglosada por equipos y fases oficiales, firmas y observaciones para almacén.
-- **Acciones manuales pendientes:**
-  - Ejecutar `supabase/migrations/20261102_02_checklist_almacen.sql` en producción.
-  - Rebuild del servicio backend Deno en EasyPanel.
-  - Correr `docs/checklist/verificacion_T3.sql` en SQL Editor para validar `todo_ok = true`.
 
 ## 2026-11-02 - Sub-bloque T2 (Ronda 2): Correcciones de RLS, esquema real, carga de árbol, categorías y aislamiento
 **Herramienta:** Antigravity  
