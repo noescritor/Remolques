@@ -3368,7 +3368,7 @@ app.put("/cxp/facturas/:id", async (c) => {
       concepto: body.concepto,
     };
 
-    if (body.partidas && Array.isArray(body.partidas) && body.partidas.length > 0) {
+    if (body.partidas !== undefined && Array.isArray(body.partidas)) {
       const serviceClient = getServiceClient();
       const resultado = await guardarFacturaConPartidasMotor(serviceClient, orgId, id, {
         ...payload,
@@ -3613,6 +3613,21 @@ app.post("/cxp/facturas/:id/partidas", async (c) => {
   }
 });
 
+app.put("/cxp/facturas/:id/partidas", async (c) => {
+  try {
+    const serviceClient = getServiceClient();
+    const orgId = (c as any).get("organizacionId") as string;
+    const id = c.req.param("id");
+    const body = await c.req.json();
+
+    const resultado = await guardarFacturaConPartidasMotor(serviceClient, orgId, id, body);
+    return c.json(resultado);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
 // 8. Importación de XML CFDI 3.3 / 4.0 (T4b)
 app.post("/cxp/cfdi/previsualizar", async (c) => {
   try {
@@ -3650,9 +3665,9 @@ app.get("/cxp/reportes/facturacion", async (c) => {
     const queryParams = c.req.query();
 
     const resultado = await obtenerReporteFacturacion(supabase, orgId, {
-      desde: queryParams.desde || undefined,
-      hasta: queryParams.hasta || undefined,
-      filtro_fecha_tipo: (queryParams.filtro_fecha_tipo as any) || "emision",
+      desde: queryParams.desde || queryParams.fecha_desde || undefined,
+      hasta: queryParams.hasta || queryParams.fecha_hasta || undefined,
+      filtro_fecha_tipo: (queryParams.filtro_fecha_tipo || queryParams.criterio_fecha as any) || "emision",
       proveedor_id: queryParams.proveedor_id || undefined,
       moneda: queryParams.moneda || undefined,
       estado: queryParams.estado || undefined,

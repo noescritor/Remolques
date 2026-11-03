@@ -52,6 +52,7 @@ export interface NuevaFacturaPayload {
   impuestos_trasladados?: number | null;
   impuestos_retenidos?: number | null;
   partidas?: PartidaFacturaPayload[];
+  cfdi?: any;
 }
 
 export interface EditarFacturaPayload {
@@ -73,6 +74,7 @@ export interface EditarFacturaPayload {
   impuestos_trasladados?: number | null;
   impuestos_retenidos?: number | null;
   partidas?: PartidaFacturaPayload[];
+  cfdi?: any;
 }
 
 export interface RegistrarPagoPayload {
@@ -1456,19 +1458,34 @@ export async function guardarFacturaConPartidasMotor(
 
   // Validar partidas si se incluyeron
   const partidas = payload.partidas || [];
-  for (const p of partidas) {
-    if (!p.descripcion || !p.descripcion.trim()) {
-      const err: any = new Error("Cada partida debe contener una descripción válida");
-      err.status = 400;
-      throw err;
+  if (partidas.length > 0) {
+    let sumaPartidas = 0;
+    for (const p of partidas) {
+      if (!p.descripcion || !p.descripcion.trim()) {
+        const err: any = new Error("Cada partida debe contener una descripción válida");
+        err.status = 400;
+        throw err;
+      }
+      if (Number(p.cantidad) <= 0) {
+        const err: any = new Error("La cantidad de cada partida debe ser mayor a 0");
+        err.status = 400;
+        throw err;
+      }
+      if (Number(p.importe) < 0) {
+        const err: any = new Error("El importe de cada partida no puede ser negativo");
+        err.status = 400;
+        throw err;
+      }
+      const imp = Number(p.importe) || 0;
+      if (p.tipo === "concepto" || p.tipo === "impuesto_trasladado" || p.tipo === "otro_cargo") {
+        sumaPartidas += imp;
+      } else if (p.tipo === "descuento" || p.tipo === "retencion") {
+        sumaPartidas -= imp;
+      }
     }
-    if (Number(p.cantidad) <= 0) {
-      const err: any = new Error("La cantidad de cada partida debe ser mayor a 0");
-      err.status = 400;
-      throw err;
-    }
-    if (Number(p.importe) < 0) {
-      const err: any = new Error("El importe de cada partida no puede ser negativo");
+    sumaPartidas = redondearCentavos(sumaPartidas);
+    if (Math.abs(importe - sumaPartidas) > 0.05) {
+      const err: any = new Error(`El importe de la factura (${importe}) no coincide con la suma calculada de las partidas (${sumaPartidas})`);
       err.status = 400;
       throw err;
     }
@@ -1494,15 +1511,49 @@ export async function guardarFacturaConPartidasMotor(
     p_impuestos_trasladados: payload.impuestos_trasladados ? Number(payload.impuestos_trasladados) : 0,
     p_impuestos_retenidos: payload.impuestos_retenidos ? Number(payload.impuestos_retenidos) : 0,
     p_partidas: partidas,
+    p_cfdi: payload.cfdi || null,
   });
 
   if (error) {
-    if (error.message.includes("nuevo_total_menor_que_pagado")) {
-      const err: any = new Error("El nuevo importe de la factura no puede ser menor a lo ya pagado");
+    const msg = error.message || "";
+    if (msg.includes("factura_no_encontrada")) {
+      const err: any = new Error("La factura no existe o pertenece a otra organización");
+      err.status = 404;
+      throw err;
+    }
+    if (msg.includes("proveedor_no_encontrado")) {
+      const err: any = new Error("El proveedor no existe o pertenece a otra organización");
       err.status = 400;
       throw err;
     }
-    throw new Error(`Error al guardar factura con partidas: ${error.message}`);
+    if (msg.includes("importe_no_cuadra")) {
+      const err: any = new Error("El importe de la factura no coincide con la suma de las partidas");
+      err.status = 400;
+      throw err;
+    }
+    if (msg.includes("no_se_puede_cambiar_moneda_con_pagos")) {
+      const err: any = new Error("No se puede cambiar la moneda de una factura que ya tiene pagos registrados");
+      err.status = 409;
+      throw err;
+    }
+    if (msg.includes("no_se_puede_cambiar_proveedor_con_pagos")) {
+      const err: any = new Error("No se puede cambiar el proveedor de una factura que ya tiene pagos registrados");
+      err.status = 409;
+      throw err;
+    }
+    if (msg.includes("nuevo_total_menor_que_pagado")) {
+      const err: any = new Error("El nuevo importe de la factura no puede ser menor a lo ya pagado");
+      err.status = 409;
+      throw err;
+    }
+    if (msg.includes("uuid_fiscal_duplicado") || msg.includes("uq_facturas_proveedor_org_uuid")) {
+      const err: any = new Error("Ya existe una factura registrada con este UUID fiscal en la organización");
+      err.status = 409;
+      throw err;
+    }
+    const err: any = new Error(`Error al guardar factura: ${msg.split('\n')[0]}`);
+    err.status = 400;
+    throw err;
   }
 
   return data;
@@ -1529,7 +1580,8 @@ export async function obtenerPartidasFactura(
 export async function previsualizarCFDIsMotor(
   supabase: any,
   orgId: string,
-  archivos: Array<{ nombre: string; contenido: string }>
+  archivos: Array<{ nombre: string; contenido: string }>,
+  rfcOrg?: string
 ) {
   if (!archivos || !Array.isArray(archivos)) {
     const err: any = new Error("El payload debe contener un arreglo de archivos");
@@ -1542,26 +1594,8 @@ export async function previsualizarCFDIsMotor(
     throw err;
   }
 
-  // Pre-cargar proveedores de la organización para resolución rápida en memoria
-  const { data: provs } = await supabase
-    .from("proveedores")
-    .select("id, nombre, rfc, dias_credito, moneda_default")
-    .eq("organizacion_id", orgId);
-  const provMapByRfc: Record<string, any> = {};
-  for (const p of provs || []) {
-    if (p.rfc) {
-      provMapByRfc[p.rfc.trim().toUpperCase()] = p;
-    }
-  }
-
-  // Pre-cargar UUIDs fiscales ya existentes en facturas_proveedor_cfdi
-  const { data: cfdisExistentes } = await supabase
-    .from("facturas_proveedor_cfdi")
-    .select("uuid_fiscal, folio, serie")
-    .eq("organizacion_id", orgId);
-  const uuidSet = new Set((cfdisExistentes || []).map((c: any) => (c.uuid_fiscal || "").toUpperCase()));
-
   const resultados: any[] = [];
+  const parsedItems: Array<{ nombre: string; arch: any; parsed: any }> = [];
 
   for (const arch of archivos) {
     const nombre = arch.nombre || "archivo.xml";
@@ -1584,7 +1618,8 @@ export async function previsualizarCFDIsMotor(
     }
 
     try {
-      const parsed = parsearCFDI(arch.contenido);
+      validarSeguridadXML(arch.contenido);
+      const parsed = parsearCFDI(arch.contenido, rfcOrg);
       if (!parsed.ok) {
         resultados.push({
           nombre,
@@ -1594,38 +1629,7 @@ export async function previsualizarCFDIsMotor(
         });
         continue;
       }
-
-      // Validar duplicado
-      if (uuidSet.has(parsed.uuid_fiscal.toUpperCase())) {
-        resultados.push({
-          nombre,
-          estado: "duplicado",
-          motivo: "Factura ya importada previamente en la organización",
-          uuid_fiscal: parsed.uuid_fiscal,
-          emisor: parsed.emisor,
-          total: parsed.total,
-          moneda: parsed.moneda,
-        });
-        continue;
-      }
-
-      // Validar si proveedor existe
-      const rfcEmisor = (parsed.emisor.rfc || "").toUpperCase();
-      const provExistente = provMapByRfc[rfcEmisor];
-
-      const partidas = cfdiAPartidasFactura(parsed);
-
-      resultados.push({
-        nombre,
-        estado: provExistente ? "valido" : "proveedor_nuevo",
-        motivo: provExistente ? "Listo para importar" : "Proveedor no encontrado en catálogo; se creará al confirmar",
-        cfdi: parsed,
-        proveedor_id: provExistente ? provExistente.id : null,
-        proveedor_nombre: provExistente ? provExistente.nombre : parsed.emisor.nombre,
-        dias_credito: provExistente ? provExistente.dias_credito : 30,
-        partidas,
-        xml_contenido: arch.contenido,
-      });
+      parsedItems.push({ nombre, arch, parsed });
     } catch (err: any) {
       resultados.push({
         nombre,
@@ -1633,6 +1637,76 @@ export async function previsualizarCFDIsMotor(
         motivo: err.message || "Error al procesar XML",
       });
     }
+  }
+
+  // Pre-cargar proveedores y UUIDs sólo de los archivos recibidos (evita límite de 1000 filas)
+  const candidateUUIDs = Array.from(new Set(parsedItems.map((p) => p.parsed.uuid_fiscal.toUpperCase())));
+  const candidateRFCs = Array.from(new Set(parsedItems.map((p) => (p.parsed.emisor.rfc || "").toUpperCase())));
+
+  const uuidSet = new Set<string>();
+  if (candidateUUIDs.length > 0) {
+    const { data: cfdisExistentes } = await supabase
+      .from("facturas_proveedor_cfdi")
+      .select("uuid_fiscal")
+      .eq("organizacion_id", orgId)
+      .in("uuid_fiscal", candidateUUIDs);
+    for (const c of cfdisExistentes || []) {
+      if (c.uuid_fiscal) uuidSet.add(c.uuid_fiscal.toUpperCase());
+    }
+
+    const { data: facturasExistentes } = await supabase
+      .from("facturas_proveedor")
+      .select("uuid_fiscal")
+      .eq("organizacion_id", orgId)
+      .in("uuid_fiscal", candidateUUIDs);
+    for (const f of facturasExistentes || []) {
+      if (f.uuid_fiscal) uuidSet.add(f.uuid_fiscal.toUpperCase());
+    }
+  }
+
+  const provMapByRfc: Record<string, any> = {};
+  if (candidateRFCs.length > 0) {
+    const { data: provs } = await supabase
+      .from("proveedores")
+      .select("id, nombre, rfc, dias_credito, moneda_default")
+      .eq("organizacion_id", orgId)
+      .in("rfc", candidateRFCs);
+    for (const p of provs || []) {
+      if (p.rfc) provMapByRfc[p.rfc.trim().toUpperCase()] = p;
+    }
+  }
+
+  for (const { nombre, arch, parsed } of parsedItems) {
+    const uuidUpper = parsed.uuid_fiscal.toUpperCase();
+    if (uuidSet.has(uuidUpper)) {
+      resultados.push({
+        nombre,
+        estado: "duplicado",
+        motivo: "Factura ya importada previamente en la organización",
+        uuid_fiscal: parsed.uuid_fiscal,
+        emisor: parsed.emisor,
+        total: parsed.total,
+        moneda: parsed.moneda,
+      });
+      continue;
+    }
+
+    const rfcEmisor = (parsed.emisor.rfc || "").toUpperCase();
+    const provExistente = provMapByRfc[rfcEmisor];
+    const partidas = cfdiAPartidasFactura(parsed);
+
+    resultados.push({
+      nombre,
+      estado: provExistente ? "valido" : "proveedor_nuevo",
+      motivo: provExistente ? "Listo para importar" : "Proveedor no encontrado en catálogo; se creará al confirmar",
+      cfdi: parsed,
+      proveedor_id: provExistente ? provExistente.id : null,
+      proveedor_nombre: provExistente ? provExistente.nombre : parsed.emisor.nombre,
+      dias_credito: provExistente ? provExistente.dias_credito : 30,
+      partidas,
+      xml_contenido: arch.contenido,
+      advertencias: parsed.advertencias,
+    });
   }
 
   const validosCount = resultados.filter((r) => r.estado === "valido" || r.estado === "proveedor_nuevo").length;
@@ -1652,8 +1726,9 @@ export async function importarCFDIsMotor(
   serviceClient: any,
   orgId: string,
   lotes: Array<{
-    cfdi: CFDIParseado;
     xml_contenido: string;
+    cfdi?: any;
+    nombre_archivo?: string;
     crear_proveedor?: boolean;
     proveedor_id?: string;
   }>
@@ -1663,20 +1738,59 @@ export async function importarCFDIsMotor(
     err.status = 400;
     throw err;
   }
+  if (lotes.length > 100) {
+    const err: any = new Error("El lote supera el límite máximo de 100 comprobantes por importación");
+    err.status = 400;
+    throw err;
+  }
 
   let importadas = 0;
   let proveedoresCreados = 0;
   const detalles: any[] = [];
 
   for (const item of lotes) {
-    const cfdi = item.cfdi;
-    if (!cfdi || !cfdi.uuid_fiscal) continue;
+    if (!item.xml_contenido || typeof item.xml_contenido !== "string") {
+      detalles.push({ ok: false, error: "Contenido XML inválido o vacío" });
+      continue;
+    }
 
     try {
+      validarSeguridadXML(item.xml_contenido);
+      const cfdi = parsearCFDI(item.xml_contenido);
+      if (!cfdi.ok) {
+        detalles.push({
+          uuid_fiscal: cfdi.uuid_fiscal || null,
+          folio: cfdi.folio || null,
+          ok: false,
+          error: cfdi.error || "Error al parsear CFDI",
+        });
+        continue;
+      }
+
+      const uuidUpper = cfdi.uuid_fiscal.toUpperCase();
+
+      // Verificar existencia previa
+      const { data: fExistente } = await serviceClient
+        .from("facturas_proveedor")
+        .select("id")
+        .eq("organizacion_id", orgId)
+        .eq("uuid_fiscal", uuidUpper)
+        .limit(1);
+
+      if (fExistente && fExistente.length > 0) {
+        detalles.push({
+          uuid_fiscal: uuidUpper,
+          folio: cfdi.folio,
+          ok: false,
+          error: `Factura con UUID ${uuidUpper} ya importada previamente`,
+          ya_importado: true,
+        });
+        continue;
+      }
+
       let provId = item.proveedor_id;
       let diasCredito = 30;
 
-      // Si no viene proveedor_id, buscar por RFC
       if (!provId) {
         const { data: prov } = await serviceClient
           .from("proveedores")
@@ -1703,7 +1817,7 @@ export async function importarCFDIsMotor(
             .select("id, dias_credito")
             .single();
 
-          if (errProv) throw errProv;
+          if (errProv) throw new Error("Error al crear proveedor en catálogo");
           provId = nuevoProv.id;
           proveedoresCreados++;
         } else {
@@ -1715,40 +1829,18 @@ export async function importarCFDIsMotor(
       const fechaVencimiento = calcularVencimiento(fechaEmisionISO, diasCredito);
       const partidas = cfdiAPartidasFactura(cfdi);
 
-      // Guardar factura con partidas vía RPC transaccional
-      const resFactura = await guardarFacturaConPartidasMotor(serviceClient, orgId, null, {
-        proveedor_id: provId,
-        folio: cfdi.folio || cfdi.uuid_fiscal.slice(0, 8),
-        sucursal: cfdi.serie || null,
-        fecha_emision: fechaEmisionISO,
-        dias_credito: diasCredito,
-        fecha_vencimiento: fechaVencimiento,
-        moneda: cfdi.moneda,
-        importe: cfdi.total,
-        tipo_cambio_emision: cfdi.tipo_cambio,
-        concepto: cfdi.conceptos[0]?.descripcion ? `CFDI: ${cfdi.conceptos[0].descripcion}` : "Importado desde CFDI XML",
-        uuid_fiscal: cfdi.uuid_fiscal,
-        subtotal: cfdi.subtotal,
-        descuento: cfdi.descuento || 0,
-        impuestos_trasladados: cfdi.impuestos_trasladados || 0,
-        impuestos_retenidos: cfdi.impuestos_retenidos || 0,
-        partidas,
-      });
+      const fechaEmisionMexico = cfdi.fecha_emision && !cfdi.fecha_emision.includes('Z') && !/[+-]\d{2}:\d{2}$/.test(cfdi.fecha_emision)
+        ? `${cfdi.fecha_emision}-06:00`
+        : cfdi.fecha_emision;
 
-      const facturaId = (resFactura as any)?.factura_id;
-
-      // Registrar en facturas_proveedor_cfdi
-      await serviceClient.from("facturas_proveedor_cfdi").insert({
-        organizacion_id: orgId,
-        factura_id: facturaId,
-        uuid_fiscal: cfdi.uuid_fiscal.toUpperCase(),
+      const cfdiPayload = {
         version: cfdi.version,
         rfc_emisor: cfdi.emisor.rfc.toUpperCase(),
         nombre_emisor: cfdi.emisor.nombre,
         rfc_receptor: cfdi.receptor.rfc.toUpperCase(),
         serie: cfdi.serie || null,
         folio: cfdi.folio || null,
-        fecha_emision: cfdi.fecha_emision,
+        fecha_emision: fechaEmisionMexico,
         moneda: cfdi.moneda,
         tipo_cambio: cfdi.tipo_cambio,
         subtotal: cfdi.subtotal,
@@ -1759,21 +1851,43 @@ export async function importarCFDIsMotor(
         metodo_pago: cfdi.metodo_pago || null,
         forma_pago: cfdi.forma_pago || null,
         xml_contenido: item.xml_contenido,
+      };
+
+      // Guardar factura, partidas y comprobante fiscal en una sola transacción atómica vía RPC
+      const resFactura = await guardarFacturaConPartidasMotor(serviceClient, orgId, null, {
+        proveedor_id: provId,
+        folio: cfdi.folio || uuidUpper.slice(0, 8),
+        sucursal: cfdi.serie || null,
+        fecha_emision: fechaEmisionISO,
+        dias_credito: diasCredito,
+        fecha_vencimiento: fechaVencimiento,
+        moneda: cfdi.moneda,
+        importe: cfdi.total,
+        tipo_cambio_emision: cfdi.tipo_cambio,
+        concepto: cfdi.conceptos[0]?.descripcion ? `CFDI: ${cfdi.conceptos[0].descripcion}` : "Importado desde CFDI XML",
+        uuid_fiscal: uuidUpper,
+        subtotal: cfdi.subtotal,
+        descuento: cfdi.descuento || 0,
+        impuestos_trasladados: cfdi.impuestos_trasladados || 0,
+        impuestos_retenidos: cfdi.impuestos_retenidos || 0,
+        partidas,
+        cfdi: cfdiPayload,
       });
 
+      const facturaId = (resFactura as any)?.factura_id;
       importadas++;
       detalles.push({
-        uuid_fiscal: cfdi.uuid_fiscal,
+        uuid_fiscal: uuidUpper,
         folio: cfdi.folio,
         factura_id: facturaId,
         ok: true,
       });
     } catch (err: any) {
       detalles.push({
-        uuid_fiscal: cfdi.uuid_fiscal,
-        folio: cfdi.folio,
+        uuid_fiscal: item.cfdi?.uuid_fiscal || null,
+        folio: item.cfdi?.folio || null,
         ok: false,
-        error: err.message,
+        error: err.message || "Error al procesar comprobante",
       });
     }
   }
@@ -1803,32 +1917,36 @@ export async function obtenerReporteFacturacion(
   const limite = filtros.limite || 500;
   const fechaCorte = filtros.corte && esFechaValida(filtros.corte) ? filtros.corte : hoyMexicoISO();
 
-  // 1. Obtener tipo de cambio más reciente para conversión
+  // 1. Obtener tipo de cambio vigente a la fecha de corte
   let tcUSD = 20.0;
-  let tcFecha = fechaCorte;
+  let tcFecha: string | null = null;
+  let sinTipoCambio = true;
+
   const { data: ultimosTC } = await supabase
     .from("tipos_cambio")
     .select("valor, fecha")
     .eq("organizacion_id", orgId)
     .eq("moneda", "USD")
+    .lte("fecha", fechaCorte)
     .order("fecha", { ascending: false })
     .limit(1);
 
   if (ultimosTC && ultimosTC.length > 0) {
     tcUSD = Number(ultimosTC[0].valor);
     tcFecha = ultimosTC[0].fecha;
+    sinTipoCambio = false;
   }
 
-  // 2. Construir consulta con límite + 1 para detectar truncado
+  // 2. Construir consulta sobre v_facturas_proveedor_saldo con columnas fiscales
   let q = supabase
     .from("v_facturas_proveedor_saldo")
     .select(`
       id, proveedor_id, folio, sucursal, fecha_emision, fecha_vencimiento,
-      moneda, importe, pagado, saldo, estado, uuid_fiscal,
+      moneda, importe, pagado, saldo, estado, estado_vencimiento, dias_vencimiento,
+      uuid_fiscal, subtotal, impuestos_trasladados, impuestos_retenidos,
       proveedor:proveedores(id, nombre, razon_social, rfc)
     `)
-    .eq("organizacion_id", orgId)
-    .limit(limite + 1);
+    .eq("organizacion_id", orgId);
 
   if (filtros.proveedor_id && filtros.proveedor_id !== "todos") {
     q = q.eq("proveedor_id", filtros.proveedor_id);
@@ -1838,6 +1956,19 @@ export async function obtenerReporteFacturacion(
     q = q.eq("moneda", filtros.moneda);
   }
 
+  // Filtrar estado a nivel base de datos antes de aplicar limit
+  if (filtros.estado && filtros.estado !== "todas") {
+    if (filtros.estado === "abierta") {
+      q = q.gt("saldo", 0);
+    } else if (filtros.estado === "pagada") {
+      q = q.lte("saldo", 0);
+    } else if (filtros.estado === "vencida") {
+      q = q.eq("estado_vencimiento", "vencida").gt("saldo", 0);
+    } else if (filtros.estado === "cancelada") {
+      q = q.eq("estado", "cancelada");
+    }
+  }
+
   const campoFecha = filtros.filtro_fecha_tipo === "vencimiento" ? "fecha_vencimiento" : "fecha_emision";
   if (filtros.desde && esFechaValida(filtros.desde)) {
     q = q.gte(campoFecha, filtros.desde);
@@ -1845,6 +1976,8 @@ export async function obtenerReporteFacturacion(
   if (filtros.hasta && esFechaValida(filtros.hasta)) {
     q = q.lte(campoFecha, filtros.hasta);
   }
+
+  q = q.limit(limite + 1);
 
   const { data, error } = await q;
   if (error) {
@@ -1858,7 +1991,12 @@ export async function obtenerReporteFacturacion(
     const importe = Number(f.importe);
     const pagado = Number(f.pagado || 0);
     const saldo = Number(f.saldo || 0);
-    const dias = diasAtraso(f.fecha_vencimiento, fechaCorte);
+    const subtotal = Number(f.subtotal || importe);
+    const impuestos_trasladados = Number(f.impuestos_trasladados || 0);
+    const impuestos_retenidos = Number(f.impuestos_retenidos || 0);
+    const dias = f.dias_vencimiento !== undefined && f.dias_vencimiento !== null 
+      ? Number(f.dias_vencimiento) 
+      : diasAtraso(f.fecha_vencimiento, fechaCorte);
 
     let estadoCalculado = f.estado;
     if (f.estado !== "cancelada") {
@@ -1881,6 +2019,9 @@ export async function obtenerReporteFacturacion(
       folio: f.folio,
       sucursal: f.sucursal,
       uuid_fiscal: f.uuid_fiscal,
+      subtotal,
+      impuestos_trasladados,
+      impuestos_retenidos,
       fecha_emision: f.fecha_emision,
       fecha_vencimiento: f.fecha_vencimiento,
       moneda: f.moneda,
@@ -1892,15 +2033,9 @@ export async function obtenerReporteFacturacion(
     };
   });
 
-  // Filtrado por estado si se solicitó
-  let itemsFiltrados = items;
-  if (filtros.estado && filtros.estado !== "todas") {
-    itemsFiltrados = items.filter((it: any) => it.estado === filtros.estado);
-  }
-
   // Totales por moneda
-  const mxnItems = itemsFiltrados.filter((it: any) => it.moneda === "MXN");
-  const usdItems = itemsFiltrados.filter((it: any) => it.moneda === "USD");
+  const mxnItems = items.filter((it: any) => it.moneda === "MXN");
+  const usdItems = items.filter((it: any) => it.moneda === "USD");
 
   const totalesMXN = {
     total: redondearCentavos(mxnItems.reduce((acc: number, it: any) => acc + it.importe, 0)),
@@ -1921,12 +2056,12 @@ export async function obtenerReporteFacturacion(
 
   return {
     corte: fechaCorte,
-    tc_vigente: { valor: tcUSD, fecha: tcFecha },
+    tc_vigente: { valor: tcUSD, fecha: tcFecha, sin_tipo_cambio: sinTipoCambio },
     totales_mxn: totalesMXN,
     totales_usd: totalesUSD,
     equivalente_pesos: equivalentePesos,
     saldo_equivalente_pesos: saldoEquivalentePesos,
     truncado,
-    items: itemsFiltrados,
+    items,
   };
 }

@@ -46,6 +46,10 @@ function createFakeClient(initialState: any = {}) {
           filters.push((row: any) => row[col] <= val);
           return queryObj;
         },
+        in(col: string, vals: any[]) {
+          filters.push((row: any) => Array.isArray(vals) && vals.includes(row[col]));
+          return queryObj;
+        },
         order(col: string, opts?: { ascending?: boolean }) {
           orderField = col;
           orderAsc = opts?.ascending !== false;
@@ -131,6 +135,30 @@ Deno.test("guardarFacturaConPartidasMotor valida partidas y ejecuta RPC", async 
     },
     Error,
     "La cantidad de cada partida debe ser mayor a 0"
+  );
+
+  // Importe de factura que no cuadra con la suma de partidas rechazado
+  await assertRejects(
+    async () => {
+      await guardarFacturaConPartidasMotor(fake, ORG_A, null, {
+        proveedor_id: PROV_A,
+        folio: "FAC-100",
+        fecha_emision: "2026-10-15",
+        moneda: "MXN",
+        importe: 5000,
+        partidas: [
+          {
+            tipo: "concepto",
+            descripcion: "Vigas",
+            cantidad: 1,
+            precio_unitario: 100,
+            importe: 100,
+          },
+        ],
+      });
+    },
+    Error,
+    "no coincide con la suma calculada"
   );
 
   // Guardado exitoso con RPC
@@ -253,4 +281,52 @@ Deno.test("obtenerReporteFacturacion separa totales MXN y USD y aplica tipo de c
   // Equivalente en pesos: 5000 MXN + (1000 USD * 20.00) = 25000 MXN
   assertEquals(reporte.equivalente_pesos, 25000);
   assertEquals(reporte.saldo_equivalente_pesos, 23000); // 3000 MXN + 20000 MXN
+  assertEquals(reporte.tc_vigente.sin_tipo_cambio, false);
 });
+
+Deno.test("importarCFDIsMotor re-parsea en el servidor y rechaza XML malicioso", async () => {
+  const fake = createFakeClient({
+    proveedores: [
+      { id: PROV_A, organizacion_id: ORG_A, rfc: "PAC010203XYZ", nombre: "ACEROS CORDOBA", dias_credito: 30 },
+    ],
+  });
+
+  const xmlMalicioso = `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+<cfdi:Comprobante Version="3.3" Folio="666" Total="100.00" Moneda="MXN">
+  <cfdi:Emisor Rfc="PAC010203XYZ" Nombre="ACEROS CORDOBA"/>
+  <cfdi:Conceptos><cfdi:Concepto Importe="100.00" Cantidad="1" ValorUnitario="100.00"/></cfdi:Conceptos>
+</cfdi:Comprobante>`;
+
+  const xmlValido = `<?xml version="1.0" encoding="utf-8"?>
+<cfdi:Comprobante Version="3.3" Folio="777" Fecha="2026-10-25T12:00:00" SubTotal="100.00" Total="116.00" Moneda="MXN" TipoDeComprobante="I">
+  <cfdi:Emisor Rfc="PAC010203XYZ" Nombre="ACEROS CORDOBA"/>
+  <cfdi:Receptor Rfc="LEO120524ABC" Nombre="LEOLCA"/>
+  <cfdi:Conceptos><cfdi:Concepto Cantidad="1" Descripcion="Material" Importe="100.00" ValorUnitario="100.00"/></cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosTrasladados="16.00">
+    <cfdi:Traslados><cfdi:Traslado Impuesto="002" TasaOCuota="0.160000" Importe="16.00"/></cfdi:Traslados>
+  </cfdi:Impuestos>
+  <cfdi:Complemento><tfd:TimbreFiscalDigital UUID="UUID-VALIDO-777"/></cfdi:Complemento>
+</cfdi:Comprobante>`;
+
+  const res = await importarCFDIsMotor(fake, ORG_A, [
+    {
+      nombre_archivo: "malicioso.xml",
+      xml_contenido: xmlMalicioso,
+      proveedor_id: PROV_A,
+    },
+    {
+      nombre_archivo: "valido.xml",
+      xml_contenido: xmlValido,
+      proveedor_id: PROV_A,
+    },
+  ]);
+
+  assertEquals(res.total_solicitadas, 2);
+  assertEquals(res.importadas, 1);
+  assertEquals(res.detalles[0].ok, false);
+  assertEquals(res.detalles[0].error.includes("declaraciones DTD o entidades externas"), true);
+  assertEquals(res.detalles[1].ok, true);
+  assertEquals(res.detalles[1].uuid_fiscal, "UUID-VALIDO-777");
+});
+

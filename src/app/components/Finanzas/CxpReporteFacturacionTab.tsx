@@ -105,6 +105,9 @@ export function CxpReporteFacturacionTab({
       'Fecha Emisión',
       'Fecha Vencimiento',
       'Moneda',
+      'Subtotal',
+      'Impuestos Trasladados',
+      'Impuestos Retenidos',
       'Total Facturado',
       'Monto Pagado',
       'Saldo Pendiente',
@@ -126,6 +129,9 @@ export function CxpReporteFacturacionTab({
       escapeCSV(it.fecha_emision),
       escapeCSV(it.fecha_vencimiento),
       escapeCSV(it.moneda),
+      escapeCSV((it.subtotal !== undefined && it.subtotal !== null ? it.subtotal : it.importe).toFixed(2)),
+      escapeCSV((it.impuestos_trasladados ?? 0).toFixed(2)),
+      escapeCSV((it.impuestos_retenidos ?? 0).toFixed(2)),
       escapeCSV(it.importe.toFixed(2)),
       escapeCSV(it.pagado.toFixed(2)),
       escapeCSV(it.saldo.toFixed(2)),
@@ -355,8 +361,13 @@ export function CxpReporteFacturacionTab({
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground font-medium">Total Estimado en Pesos</span>
-                <span className="text-[11px] font-mono text-muted-foreground">
-                  TC: ${reporteData.tc_vigente.valor.toFixed(4)}
+                <span className="text-[11px] font-mono text-muted-foreground flex items-center gap-1.5 flex-wrap justify-end">
+                  {reporteData.tc_vigente?.sin_tipo_cambio && (
+                    <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-sans font-medium">
+                      (TC estimado / sin registro a la fecha)
+                    </span>
+                  )}
+                  <span>TC: ${reporteData.tc_vigente.valor.toFixed(4)}</span>
                 </span>
               </div>
               <div className="text-xl font-bold font-mono mt-1 text-primary">
@@ -409,6 +420,8 @@ export function CxpReporteFacturacionTab({
                   <th className="p-3">Emisión</th>
                   <th className="p-3">Vence</th>
                   <th className="p-3">Moneda</th>
+                  <th className="p-3 text-right">Subtotal</th>
+                  <th className="p-3 text-right">IVA</th>
                   <th className="p-3 text-right">Total</th>
                   <th className="p-3 text-right">Pagado</th>
                   <th className="p-3 text-right">Saldo</th>
@@ -419,7 +432,7 @@ export function CxpReporteFacturacionTab({
               <tbody className="divide-y divide-border">
                 {itemsFiltrados.length === 0 ? (
                   <tr>
-                    <td colSpan={11} className="p-8 text-center text-muted-foreground">
+                    <td colSpan={13} className="p-8 text-center text-muted-foreground">
                       No se encontraron facturas con los filtros seleccionados
                     </td>
                   </tr>
@@ -449,6 +462,12 @@ export function CxpReporteFacturacionTab({
                         <td className="p-3 whitespace-nowrap">{it.fecha_vencimiento}</td>
                         <td className="p-3 font-semibold font-mono">{it.moneda}</td>
                         <td className="p-3 text-right font-mono font-medium">
+                          {formatearMonedaDe(it.subtotal !== undefined && it.subtotal !== null ? it.subtotal : it.importe, it.moneda)}
+                        </td>
+                        <td className="p-3 text-right font-mono font-medium text-muted-foreground">
+                          {formatearMonedaDe(it.impuestos_trasladados ?? 0, it.moneda)}
+                        </td>
+                        <td className="p-3 text-right font-mono font-semibold text-foreground">
                           {formatearMonedaDe(it.importe, it.moneda)}
                         </td>
                         <td className="p-3 text-right font-mono text-muted-foreground">

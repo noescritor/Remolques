@@ -3,6 +3,31 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - Tarea T4 (Ronda 2): Correcciones de seguridad RPC con FOR UPDATE, parser CFDI global, aislamiento multi-tenant y reporte de facturación
+**Herramienta:** Antigravity  
+**Tipo:** fix (cxp, rpc for update, multi-tenant isolation, cfdi parser, reportes facturacion)  
+**Referencia auditoría:** `COORDINACION/REVISIONES/T4_REVISION_CLAUDE.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql`: RPC `guardar_factura_con_partidas` con `SELECT ... FOR UPDATE`, validación estricta de pertenencia de proveedor y factura a `p_organizacion_id`, suma de pagos aislada por org, bloqueo de cambio de moneda/proveedor si existen pagos, validación de importe vs suma de partidas (`abs <= 0.05`), inserción atómica de `p_cfdi` y recreación de `v_facturas_proveedor_saldo` con columnas fiscales al final (`uuid_fiscal`, `subtotal`, `descuento`, `impuestos_trasladados`, `impuestos_retenidos`, etc.)
+- `docs/proveedores/verificacion_T4.sql`: verificación de vista con columnas fiscales, índice único parcial `uq_facturas_proveedor_org_uuid`, función RPC y ausencia de políticas non-SELECT
+- `docs/proveedores/prueba_T4.sql`: pruebas transaccionales multi-tenant completas con dos organizaciones, bloqueo de cruces de tenant, bloqueo de cambio de moneda/proveedor con pagos, validación de importe contra partidas, unicidad de UUID dentro del tenant y soporte del mismo UUID en tenants distintos
+- `supabase/functions/make-server-feea4382/motor/cfdi_parser.ts`: extracción de impuestos globales posterior a `</Conceptos>` (evita tomar impuestos de concepto único en facturas multi-concepto), validación de moneda (solo MXN/USD, rechazo de EUR u otras), advertencia en USD sin tipo de cambio o <= 1, advertencia de RFC receptor, validación de coherencia de total y límite de seguridad de 2MB
+- `supabase/functions/make-server-feea4382/motor/cfdi_parser.test.ts`: pruebas de parser con múltiples conceptos, monedas inválidas, advertencias de tipo de cambio y prevención XXE
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.ts`: pre-validación TypeScript de importe vs partidas, manejo limpio de errores sin filtrar internals de Postgres, previsualización sin truncado a 1000 con `.in()`, importación con re-parseo estricto e inserción atómica de factura + partidas + CFDI, reporte con filtro de estado a nivel BD, fecha de corte para TC y bandera `sin_tipo_cambio`
+- `supabase/functions/make-server-feea4382/motor/partidas_cfdi.test.ts`: soporte de `.in()` en cliente mock, pruebas de rechazo de importe discordante, re-parseo en servidor y rechazo de XML malicioso XXE
+- `supabase/functions/make-server-feea4382/index.ts`: rutas `PUT` y `POST` para `/cxp/facturas/:id/partidas`, enrutamiento de `PUT /cxp/facturas/:id` con partidas (incluso array vacío) vía `guardarFacturaConPartidasMotor`, sinónimos de parámetros en reporte (`desde`/`fecha_desde`, `hasta`/`fecha_hasta`, `filtro_fecha_tipo`/`criterio_fecha`)
+- `src/app/components/Finanzas/CxpReporteFacturacionTab.tsx`: columnas de `Subtotal` e `IVA` en tabla y exportación CSV con `Subtotal`, `Impuestos Trasladados` e `Impuestos Retenidos`, insignia visible `(TC estimado / sin registro a la fecha)` cuando no hay registro oficial
+**Qué cambió y por qué:**  
+- **1. Seguridad y Concurrencia en RPC:** Se implementó `SELECT ... FOR UPDATE` sobre `facturas_proveedor` para prevenir condiciones de carrera con pagos concurrentes (que antes podían provocar saldos negativos). Se validó estrictamente que la factura y el proveedor pertenezcan a la organización del usuario, impidiendo modificaciones o inyecciones de partidas cruzadas entre tenants.
+- **2. Consistencia Contable y Validaciones:** Se validó que el importe de la factura cuadre exactamente con la suma de las partidas (`abs(importe - suma_partidas) <= 0.05`). Si la factura ya cuenta con pagos registrados, se rechaza cualquier cambio de moneda o de proveedor (garantizando las reglas contables de 2R-16).
+- **3. Parser CFDI y Detección de Impuestos:** Se corrigió la extracción de impuestos para leer el nodo global `<Impuestos>` posterior a `</Conceptos>`, solucionando el problema donde facturas con múltiples conceptos solo capturaban el impuesto del primer concepto. Se añadió rechazo de monedas no soportadas (ej. EUR) y advertencias para USD sin tipo de cambio o RFC de receptor discrepante.
+- **4. Idempotencia y Transaccionalidad Atómica de CFDI:** El importador ahora procesa e inspecciona el XML en el servidor (validando tamaño y XXE) y delega la inserción de factura, partidas y comprobante fiscal a una sola transacción atómica vía RPC. El índice único parcial `uq_facturas_proveedor_org_uuid` previene registros duplicados dentro de la misma organización.
+- **5. Reporte de Facturación y UI:** Se actualizó la vista `v_facturas_proveedor_saldo` incorporando las columnas fiscales `uuid_fiscal`, `subtotal`, `descuento`, `impuestos_trasladados` e `impuestos_retenidos`. La interfaz y exportación CSV presentan el desglose fiscal completo y notifican claramente con una insignia cuando se utiliza un tipo de cambio estimado por falta de registro a la fecha.
+**Acciones manuales pendientes:**  
+- Correr `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql` en el SQL Editor de Supabase.  
+- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
+- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.  
+
 ## 2026-11-02 - Tarea T4: Proveedores — partidas por factura, importador XML CFDI 3.3/4.0, reporte de facturación y revisión general
 **Herramienta:** Antigravity  
 **Tipo:** feat (proveedores, cxp, facturas_proveedor, partidas, cfdi 3.3 y 4.0 xml, reporte facturacion, revision general proveedores)  

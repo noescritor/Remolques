@@ -116,3 +116,73 @@ Deno.test("cfdiAPartidasFactura genera conceptos, impuestos y descuentos", () =>
   assertEquals(partidas[2].tipo, "impuesto_trasladado");
   assertEquals(partidas[2].importe, 768);
 });
+
+Deno.test("CFDI con 2 conceptos toma impuestos globales (48.00) y no del primer concepto (16.00)", () => {
+  const xmlMultiConcepto = `<?xml version="1.0" encoding="utf-8"?>
+<cfdi:Comprobante Version="4.0" SubTotal="300.00" Moneda="MXN" Total="348.00" TipoDeComprobante="I">
+  <cfdi:Emisor Rfc="PAC010203XYZ" Nombre="PROVEEDOR ACEROS" />
+  <cfdi:Receptor Rfc="LEO120524ABC" Nombre="REMOLQUES LEOLCA" />
+  <cfdi:Conceptos>
+    <cfdi:Concepto Cantidad="1" Descripcion="Tornillos" ValorUnitario="100.00" Importe="100.00">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="100.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="16.00" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+    <cfdi:Concepto Cantidad="1" Descripcion="Tuercas" ValorUnitario="200.00" Importe="200.00">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="200.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="32.00" />
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+  </cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosTrasladados="48.00">
+    <cfdi:Traslados>
+      <cfdi:Traslado Base="300.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="48.00" />
+    </cfdi:Traslados>
+  </cfdi:Impuestos>
+  <cfdi:Complemento>
+    <tfd:TimbreFiscalDigital UUID="FFFFFFFF-EEEE-DDDD-CCCC-BBBBBBBBBBBB" />
+  </cfdi:Complemento>
+</cfdi:Comprobante>`;
+
+  const parsed = parsearCFDI(xmlMultiConcepto);
+  assertEquals(parsed.ok, true);
+  assertEquals(parsed.subtotal, 300);
+  assertEquals(parsed.impuestos_trasladados, 48); // 48 global, NO 16 del primer concepto
+  assertEquals(parsed.total, 348);
+  const partidas = cfdiAPartidasFactura(parsed);
+  // 2 conceptos (100 y 200) + 1 IVA trasladado (48) = 348 total
+  const sumaPartidas = partidas.reduce((acc, p) => acc + (p.tipo === "descuento" ? -p.importe : p.importe), 0);
+  assertEquals(sumaPartidas, 348);
+});
+
+Deno.test("Moneda no soportada (EUR) es rechazada con mensaje claro", () => {
+  const xmlEUR = `<?xml version="1.0" encoding="utf-8"?>
+<cfdi:Comprobante Version="4.0" SubTotal="100.00" Moneda="EUR" Total="116.00" TipoDeComprobante="I">
+  <cfdi:Emisor Rfc="PAC010203XYZ" Nombre="PROVEEDOR" />
+  <cfdi:Receptor Rfc="LEO120524ABC" Nombre="RECEPTOR" />
+  <cfdi:Complemento><tfd:TimbreFiscalDigital UUID="1111-2222-3333-4444" /></cfdi:Complemento>
+</cfdi:Comprobante>`;
+
+  const parsed = parsearCFDI(xmlEUR);
+  assertEquals(parsed.ok, false);
+  assertEquals(parsed.error?.includes("Moneda no soportada"), true);
+});
+
+Deno.test("CFDI USD sin tipo de cambio y receptor disconforme generan advertencias", () => {
+  const xmlUSD = `<?xml version="1.0" encoding="utf-8"?>
+<cfdi:Comprobante Version="4.0" SubTotal="100.00" Moneda="USD" Total="116.00" TipoDeComprobante="I">
+  <cfdi:Emisor Rfc="PAC010203XYZ" Nombre="PROVEEDOR" />
+  <cfdi:Receptor Rfc="OTRO123456XYZ" Nombre="OTRA EMPRESA" />
+  <cfdi:Complemento><tfd:TimbreFiscalDigital UUID="1111-2222-3333-4444" /></cfdi:Complemento>
+</cfdi:Comprobante>`;
+
+  const parsed = parsearCFDI(xmlUSD, "LEO120524ABC");
+  assertEquals(parsed.ok, true);
+  assertEquals(parsed.advertencias?.some(a => a.includes("sin tipo de cambio")), true);
+  assertEquals(parsed.advertencias?.some(a => a.includes("no coincide")), true);
+});
+

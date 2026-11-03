@@ -52,11 +52,18 @@ export interface CFDIParseado {
   };
   conceptos: ConceptoCFDI[];
   impuestos: ImpuestoCFDI[];
+  advertencias?: string[];
   error?: string;
 }
 
-// ── SEGURIDAD XXE / DTD ──
+// ── SEGURIDAD XXE / DTD / TAMAÑO ──
 export function validarSeguridadXML(xml: string): void {
+  if (typeof xml !== 'string' || !xml.trim()) {
+    throw new Error('El contenido XML es obligatorio');
+  }
+  if (xml.length > 2 * 1024 * 1024) {
+    throw new Error('El archivo XML excede el límite máximo de 2 MB');
+  }
   if (/<!DOCTYPE/i.test(xml) || /<!ENTITY/i.test(xml)) {
     throw new Error('XML rechazado por contener declaraciones DTD o entidades externas (XXE prevention)');
   }
@@ -75,7 +82,7 @@ function parseNumero(val: string | null, def = 0): number {
   return Number.isFinite(num) ? Math.round((num + Number.EPSILON) * 100) / 100 : def;
 }
 
-export function parsearCFDI(xmlStr: string): CFDIParseado {
+export function parsearCFDI(xmlStr: string, rfcOrganizacionEsperado?: string): CFDIParseado {
   validarSeguridadXML(xmlStr);
 
   // 1. Extraer etiqueta Comprobante
@@ -237,13 +244,48 @@ export function parsearCFDI(xmlStr: string): CFDIParseado {
   const nombreReceptor = getAttr(receptorAttrs, 'Nombre') || '';
   const usoCFDI = getAttr(receptorAttrs, 'UsoCFDI') || undefined;
 
-  // 5. Datos Generales de la Factura
+  // 5. Datos Generales de la Factura y Validación de Moneda
+  const advertencias: string[] = [];
+
   const serie = getAttr(compAttrs, 'Serie') || undefined;
   const folio = getAttr(compAttrs, 'Folio') || undefined;
   const fechaEmision = getAttr(compAttrs, 'Fecha') || '';
-  const monedaRaw = (getAttr(compAttrs, 'Moneda') || 'MXN').toUpperCase();
-  const moneda: 'MXN' | 'USD' = monedaRaw === 'USD' ? 'USD' : 'MXN';
-  const tipoCambio = parseNumero(getAttr(compAttrs, 'TipoCambio'), moneda === 'USD' ? 1.0 : 1.0);
+  const monedaRaw = (getAttr(compAttrs, 'Moneda') || 'MXN').toUpperCase().trim();
+
+  if (monedaRaw !== 'MXN' && monedaRaw !== 'USD' && monedaRaw !== 'PESO MEXICANO' && monedaRaw !== 'DOLARES' && monedaRaw !== 'DOLAR') {
+    return {
+      ok: false,
+      version,
+      tipo_comprobante: tipoComprobante,
+      uuid_fiscal: uuidFiscal,
+      fecha_emision: fechaEmision,
+      moneda: 'MXN',
+      tipo_cambio: 1,
+      subtotal: 0,
+      descuento: 0,
+      impuestos_trasladados: 0,
+      impuestos_retenidos: 0,
+      total: 0,
+      emisor: { rfc: rfcEmisor, nombre: nombreEmisor },
+      receptor: { rfc: rfcReceptor, nombre: nombreReceptor },
+      conceptos: [],
+      impuestos: [],
+      error: `Moneda no soportada (${monedaRaw}). Solo se admiten facturas en MXN o USD`,
+    };
+  }
+
+  const moneda: 'MXN' | 'USD' = (monedaRaw === 'USD' || monedaRaw.includes('DOL')) ? 'USD' : 'MXN';
+  const tcAttr = getAttr(compAttrs, 'TipoCambio');
+  const tipoCambio = parseNumero(tcAttr, 1.0);
+
+  if (moneda === 'USD' && (!tcAttr || tipoCambio <= 1)) {
+    advertencias.push('Factura en USD sin tipo de cambio especificado en el comprobante (se requiere tipo de cambio manual)');
+  }
+
+  if (rfcOrganizacionEsperado && rfcReceptor && rfcReceptor !== rfcOrganizacionEsperado.toUpperCase().trim()) {
+    advertencias.push(`El RFC del receptor (${rfcReceptor}) no coincide con el RFC de la empresa (${rfcOrganizacionEsperado.toUpperCase().trim()})`);
+  }
+
   const subtotal = parseNumero(getAttr(compAttrs, 'SubTotal'), 0);
   const descuento = parseNumero(getAttr(compAttrs, 'Descuento'), 0);
   const total = parseNumero(getAttr(compAttrs, 'Total'), 0);
@@ -270,13 +312,15 @@ export function parsearCFDI(xmlStr: string): CFDIParseado {
     });
   }
 
-  // 7. Extraer Impuestos Globales
+  // 7. Extraer Impuestos Globales (buscar después de </Conceptos> para no confundir con impuestos de cada concepto)
   const impuestos: ImpuestoCFDI[] = [];
   let impuestosTrasladados = 0;
   let impuestosRetenidos = 0;
 
-  // Buscar bloque Impuestos a nivel Comprobante
-  const impGlobalMatch = xmlStr.match(/<(?:\w+:)?Impuestos\b([^>]*?)(?:\/>|>([\s\S]*?)<\/(?:\w+:)?Impuestos>)/i);
+  const posFinConceptos = xmlStr.search(/<\/(?:\w+:)?Conceptos>/i);
+  const xmlPostConceptos = posFinConceptos !== -1 ? xmlStr.slice(posFinConceptos) : xmlStr;
+  const impGlobalMatch = xmlPostConceptos.match(/<(?:\w+:)?Impuestos\b([^>]*?)(?:\/>|>([\s\S]*?)<\/(?:\w+:)?Impuestos>)/i);
+
   if (impGlobalMatch) {
     const impGlobalAttrs = impGlobalMatch[1] || '';
     impuestosTrasladados = parseNumero(getAttr(impGlobalAttrs, 'TotalImpuestosTrasladados'), 0);
@@ -323,6 +367,12 @@ export function parsearCFDI(xmlStr: string): CFDIParseado {
     }
   }
 
+  // Validación de consistencia en el total del comprobante
+  const totalCalculado = Math.round((subtotal - descuento + impuestosTrasladados - impuestosRetenidos) * 100) / 100;
+  if (Math.abs(total - totalCalculado) > 0.05) {
+    advertencias.push(`Inconsistencia en total: Total declarado (${total}) difiere del cálculo subtotal (${subtotal}) - descuento (${descuento}) + traslados (${impuestosTrasladados}) - retenciones (${impuestosRetenidos}) = ${totalCalculado}`);
+  }
+
   return {
     ok: true,
     version,
@@ -353,6 +403,7 @@ export function parsearCFDI(xmlStr: string): CFDIParseado {
     },
     conceptos,
     impuestos,
+    advertencias: advertencias.length > 0 ? advertencias : undefined,
   };
 }
 
