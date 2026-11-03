@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { OrdenTrabajo } from '../../types';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -11,15 +11,16 @@ import {
   PackageCheck,
   CheckCircle2,
   AlertCircle,
-  Clock,
   Printer,
   RefreshCw,
   RotateCcw,
   Plus,
   Trash2,
+  Edit2,
   ChevronDown,
   ChevronRight,
   ShieldAlert,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { BASE_URL } from '../../utils/api';
 
@@ -36,8 +37,9 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
   const [operarios, setOperarios] = useState<any[]>([]);
   const [fasesExpandidas, setFasesExpandidas] = useState<Record<string, boolean>>({});
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [equipoFiltro, setEquipoFiltro] = useState<string>('todos');
 
-  // Modales secundarios
+  // Modal registrar entrega / reposicion
   const [modalEntregaOpen, setModalEntregaOpen] = useState(false);
   const [lineaSeleccionada, setLineaSeleccionada] = useState<any>(null);
   const [tipoEntrega, setTipoEntrega] = useState<'entrega' | 'reposicion'>('entrega');
@@ -59,7 +61,13 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
   const [manualUnidad, setManualUnidad] = useState('pz');
   const [manualCant, setManualCant] = useState(1);
 
-  const cargarDatosDespiece = async () => {
+  // Modal ajustar cantidad requerida
+  const [modalAjustarOpen, setModalAjustarOpen] = useState(false);
+  const [lineaAAjustar, setLineaAAjustar] = useState<any>(null);
+  const [nuevaCantRequerida, setNuevaCantRequerida] = useState<number>(1);
+  const [motivoAjuste, setMotivoAjuste] = useState('');
+
+  const cargarDatosDespiece = async (filtroEquipo = equipoFiltro) => {
     if (!orden) return;
     setLoading(true);
     setErrorMsg(null);
@@ -73,8 +81,12 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
       if (token) headers['Authorization'] = `Bearer ${token}`;
       if (orgId) headers['x-org-id'] = orgId;
 
-      const res = await fetch(`${BASE_URL}/ordenes-trabajo/${orden.id}/despiece`, { headers });
-      if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+      const query = filtroEquipo !== 'todos' ? `?equipo_indice=${encodeURIComponent(filtroEquipo)}` : '';
+      const res = await fetch(`${BASE_URL}/ordenes-trabajo/${orden.id}/despiece${query}`, { headers });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || `Error ${res.status}: ${res.statusText}`);
+      }
       const data = await res.json();
       setDatos(data);
 
@@ -96,9 +108,9 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
 
   useEffect(() => {
     if (open && orden) {
-      cargarDatosDespiece();
+      cargarDatosDespiece(equipoFiltro);
     }
-  }, [open, orden?.id]);
+  }, [open, orden?.id, equipoFiltro]);
 
   const handleGenerarDespiece = async (forzar = false) => {
     if (!orden) return;
@@ -123,7 +135,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
         const errJson = await res.json().catch(() => ({}));
         throw new Error(errJson.error || 'Error al generar despiece');
       }
-      await cargarDatosDespiece();
+      await cargarDatosDespiece(equipoFiltro);
     } catch (err: any) {
       console.error('Error generando despiece:', err);
       setErrorMsg(err.message || 'No se pudo generar el despiece');
@@ -180,7 +192,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
       }
 
       setModalEntregaOpen(false);
-      await cargarDatosDespiece();
+      await cargarDatosDespiece(equipoFiltro);
     } catch (err: any) {
       alert(err.message || 'Error al entregar');
     } finally {
@@ -220,12 +232,18 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
         throw new Error(errJson.error || 'Error al entregar fase');
       }
 
-      await cargarDatosDespiece();
+      await cargarDatosDespiece(equipoFiltro);
     } catch (err: any) {
       alert(err.message || 'Error al entregar fase');
     } finally {
       setProcesandoAccion(false);
     }
+  };
+
+  const handleAbrirAnular = (entrega: any) => {
+    setEntregaAAnular(entrega);
+    setMotivoAnulacion('');
+    setModalAnularOpen(true);
   };
 
   const handleConfirmarAnulacion = async () => {
@@ -261,12 +279,251 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
       }
 
       setModalAnularOpen(false);
-      await cargarDatosDespiece();
+      await cargarDatosDespiece(equipoFiltro);
     } catch (err: any) {
       alert(err.message || 'Error al anular');
     } finally {
       setProcesandoAccion(false);
     }
+  };
+
+  const handleAgregarLineaManual = async () => {
+    if (!orden || !manualDesc.trim()) return;
+    setProcesandoAccion(true);
+    try {
+      const { supabase: supa } = await import('../../utils/supabase/client');
+      const session = (await supa.auth.getSession()).data.session;
+      const token = session?.access_token;
+      const orgId = session?.user?.user_metadata?.organizacion_id || localStorage.getItem('org_id');
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      if (orgId) headers['x-org-id'] = orgId;
+
+      const res = await fetch(`${BASE_URL}/ordenes-trabajo/${orden.id}/despiece/lineas`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          fase_clave: manualFaseClave,
+          descripcion: manualDesc.trim(),
+          unidad: manualUnidad.trim() || 'pz',
+          cantidad_requerida: Number(manualCant) || 1,
+          equipo_indice: equipoFiltro !== 'todos' ? Number(equipoFiltro) : 1,
+        }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || 'Error al agregar partida');
+      }
+
+      setModalAgregarOpen(false);
+      setManualDesc('');
+      setManualCant(1);
+      await cargarDatosDespiece(equipoFiltro);
+    } catch (err: any) {
+      alert(err.message || 'Error al agregar partida manual');
+    } finally {
+      setProcesandoAccion(false);
+    }
+  };
+
+  const handleAbrirAjustar = (linea: any) => {
+    setLineaAAjustar(linea);
+    setNuevaCantRequerida(Number(linea.cantidad_requerida) || 1);
+    setMotivoAjuste('');
+    setModalAjustarOpen(true);
+  };
+
+  const handleConfirmarAjustar = async () => {
+    if (!lineaAAjustar || !orden) return;
+    if (!motivoAjuste.trim()) {
+      alert('El motivo del ajuste es obligatorio');
+      return;
+    }
+
+    setProcesandoAccion(true);
+    try {
+      const { supabase: supa } = await import('../../utils/supabase/client');
+      const session = (await supa.auth.getSession()).data.session;
+      const token = session?.access_token;
+      const orgId = session?.user?.user_metadata?.organizacion_id || localStorage.getItem('org_id');
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      if (orgId) headers['x-org-id'] = orgId;
+
+      const res = await fetch(`${BASE_URL}/ordenes-trabajo/${orden.id}/despiece/lineas/${lineaAAjustar.linea_id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({
+          cantidad_requerida: Number(nuevaCantRequerida),
+          motivo: motivoAjuste.trim(),
+        }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || 'Error al ajustar cantidad');
+      }
+
+      setModalAjustarOpen(false);
+      await cargarDatosDespiece(equipoFiltro);
+    } catch (err: any) {
+      alert(err.message || 'Error al ajustar cantidad');
+    } finally {
+      setProcesandoAccion(false);
+    }
+  };
+
+  const handleEliminarLineaManual = async (lineaId: string, desc: string) => {
+    if (!orden) return;
+    if (!window.confirm(`¿Estás seguro de eliminar la partida manual "${desc}"?`)) return;
+
+    setProcesandoAccion(true);
+    try {
+      const { supabase: supa } = await import('../../utils/supabase/client');
+      const session = (await supa.auth.getSession()).data.session;
+      const token = session?.access_token;
+      const orgId = session?.user?.user_metadata?.organizacion_id || localStorage.getItem('org_id');
+
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      if (orgId) headers['x-org-id'] = orgId;
+
+      const res = await fetch(`${BASE_URL}/ordenes-trabajo/${orden.id}/despiece/lineas/${lineaId}`, {
+        method: 'DELETE',
+        headers,
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || 'Error al eliminar línea');
+      }
+
+      await cargarDatosDespiece(equipoFiltro);
+    } catch (err: any) {
+      alert(err.message || 'Error al eliminar partida');
+    } finally {
+      setProcesandoAccion(false);
+    }
+  };
+
+  const handleExportarCSV = () => {
+    if (!datos?.lineas || datos.lineas.length === 0) {
+      alert('No hay líneas de despiece para exportar');
+      return;
+    }
+    const headers = [
+      'Fase',
+      'Descripción',
+      'Unidad',
+      'Cantidad Requerida',
+      'Cantidad Entregada',
+      'Cantidad Pendiente',
+      'Estado',
+      'Última Entrega Fecha',
+      'Último Operario',
+      'Origen',
+      'Equipo',
+    ];
+    const rows = datos.lineas.map((l: any) => [
+      `"${(l.fase_nombre || l.fase_clave || '').replace(/"/g, '""')}"`,
+      `"${(l.descripcion || '').replace(/"/g, '""')}"`,
+      `"${(l.unidad || 'pz').replace(/"/g, '""')}"`,
+      Number(l.cantidad_requerida) || 0,
+      Number(l.cantidad_entregada) || 0,
+      Number(l.cantidad_pendiente) || 0,
+      `"${(l.estado_entrega || '').replace(/"/g, '""')}"`,
+      `"${(l.ultima_entrega?.fecha || '').replace(/"/g, '""')}"`,
+      `"${(l.ultima_entrega?.operario_nombre || '').replace(/"/g, '""')}"`,
+      `"${(l.origen || '').replace(/"/g, '""')}"`,
+      l.equipo_indice || 1,
+    ]);
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `despiece_${orden?.nomenclatura_id || orden?.id || 'checklist'}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImprimirVale = () => {
+    if (!orden || !datos) return;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+    const clienteNombre = orden?.cliente?.nombre_razon_social || (orden?.cliente as any)?.nombre || '-';
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Vale de Entrega - Despiece OT ${orden.nomenclatura_id || orden.id}</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; margin: 20px; color: #111; }
+          h1 { font-size: 16px; margin-bottom: 4px; text-transform: uppercase; }
+          .meta { margin-bottom: 12px; border-bottom: 1px solid #ccc; padding-bottom: 8px; font-size: 10px; }
+          .meta p { margin: 2px 0; }
+          table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10px; }
+          th, td { border: 1px solid #ddd; padding: 4px 6px; text-align: left; }
+          th { background: #f4f4f5; text-transform: uppercase; font-weight: 600; }
+          .text-right { text-align: right; }
+          .firmas { margin-top: 36px; display: flex; justify-content: space-between; }
+          .firma-box { width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 4px; font-size: 10px; }
+        </style>
+      </head>
+      <body>
+        <h1>Vale de Entrega de Materiales y Checklist</h1>
+        <div class="meta">
+          <p><strong>Orden de Trabajo:</strong> ${orden.nomenclatura_id || orden.id} | <strong>NIV:</strong> ${orden.niv || 'N/A'}</p>
+          <p><strong>Modelo:</strong> ${orden.modelo || 'N/A'} | <strong>Cliente:</strong> ${clienteNombre}</p>
+          <p><strong>Fecha Impresión:</strong> ${new Date().toLocaleDateString('es-MX')} ${new Date().toLocaleTimeString('es-MX')}</p>
+          <p><strong>Avance Global:</strong> ${metricas.porcentaje_avance}% (${metricas.total_piezas_entregadas} de ${metricas.total_piezas_requeridas} pz)</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Fase</th>
+              <th>Descripción</th>
+              <th class="text-right">Req.</th>
+              <th class="text-right">Entregado</th>
+              <th class="text-right">Pendiente</th>
+              <th>Estado</th>
+              <th>Recibió</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${(datos.lineas || []).map((l: any) => `
+              <tr>
+                <td>${l.fase_nombre || l.fase_clave}</td>
+                <td>${l.descripcion}</td>
+                <td class="text-right">${l.cantidad_requerida} ${l.unidad || 'pz'}</td>
+                <td class="text-right">${l.cantidad_entregada}</td>
+                <td class="text-right">${l.cantidad_pendiente}</td>
+                <td>${l.estado_entrega}</td>
+                <td>${l.ultima_entrega ? `${l.ultima_entrega.operario_nombre} (${l.ultima_entrega.fecha})` : '-'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div class="firmas">
+          <div class="firma-box">Entrega (Almacén de Planta)</div>
+          <div class="firma-box">Recibe (Línea de Ensamble)</div>
+        </div>
+        <script>
+          window.onload = function() { window.print(); };
+        </script>
+      </body>
+      </html>
+    `;
+    printWindow.document.write(html);
+    printWindow.document.close();
   };
 
   const toggleFase = (clave: string) => {
@@ -288,6 +545,18 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
   // Agrupar líneas por fase
   const lineas = datos?.lineas || [];
   const fases = datos?.fases || [];
+
+  const equiposOpciones = useMemo(() => {
+    const set = new Set<number>();
+    lineas.forEach((l: any) => {
+      if (l.equipo_indice) set.add(Number(l.equipo_indice));
+    });
+    if (set.size === 0) {
+      const total = Number(orden?.caracteristicas?.total_equipos) || Number(orden?.caracteristicas?.unidad) || 1;
+      for (let i = 1; i <= total; i++) set.add(i);
+    }
+    return Array.from(set).sort((a, b) => a - b);
+  }, [lineas, orden]);
 
   const fasesAgrupadas = fases.map((f: any) => {
     const partidasDeFase = lineas.filter((l: any) => l.fase_clave === f.clave);
@@ -328,7 +597,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
               <Button
                 variant="outline"
                 size="sm"
-                onClick={cargarDatosDespiece}
+                onClick={() => cargarDatosDespiece(equipoFiltro)}
                 disabled={loading}
                 className="border-border text-xs"
               >
@@ -354,23 +623,88 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
           </div>
           <div className="bg-card/50 p-3 rounded-lg border border-border/50">
             <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-mono">Entregadas</p>
-            <p className="text-xl font-bold font-mono text-emerald-500 mt-0.5">{metricas.total_piezas_entregadas}</p>
+            <p className="text-xl font-bold font-mono text-primary mt-0.5">{metricas.total_piezas_entregadas}</p>
           </div>
           <div className="bg-card/50 p-3 rounded-lg border border-border/50">
             <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-mono">Pendientes</p>
-            <p className="text-xl font-bold font-mono text-amber-500 mt-0.5">{metricas.total_piezas_pendientes}</p>
+            <p className="text-xl font-bold font-mono text-muted-foreground mt-0.5">{metricas.total_piezas_pendientes}</p>
           </div>
           <div className="bg-card/50 p-3 rounded-lg border border-border/50">
             <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-mono">Avance de Armado</p>
             <div className="flex items-center gap-2 mt-1">
               <div className="flex-1 bg-muted rounded-full h-2.5 overflow-hidden">
                 <div
-                  className="bg-emerald-500 h-2.5 transition-all duration-500"
+                  className="bg-primary h-2.5 transition-all duration-500"
                   style={{ width: `${Math.min(100, metricas.porcentaje_avance)}%` }}
                 />
               </div>
               <span className="text-xs font-mono font-bold text-foreground">{metricas.porcentaje_avance}%</span>
             </div>
+          </div>
+        </div>
+
+        {/* Barra de herramientas y filtros */}
+        <div className="flex flex-wrap items-center justify-between gap-3 py-2 border-y border-border/40 my-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground font-medium">Equipo:</span>
+            <Select value={equipoFiltro} onValueChange={(val) => setEquipoFiltro(val)}>
+              <SelectTrigger className="w-[145px] h-8 text-xs border-border bg-background">
+                <SelectValue placeholder="Equipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos los equipos</SelectItem>
+                {equiposOpciones.map((eq) => (
+                  <SelectItem key={eq} value={String(eq)}>
+                    Equipo {eq}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setModalAgregarOpen(true)}
+              className="border-border text-xs h-8"
+            >
+              <Plus className="h-3.5 w-3.5 mr-1" />
+              Partida manual
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportarCSV}
+              className="border-border text-xs h-8"
+              disabled={!lineas.length}
+            >
+              <FileSpreadsheet className="h-3.5 w-3.5 mr-1" />
+              Exportar CSV
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleImprimirVale}
+              className="border-border text-xs h-8"
+              disabled={!lineas.length}
+            >
+              <Printer className="h-3.5 w-3.5 mr-1" />
+              Imprimir Vale
+            </Button>
+            {lineas.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleGenerarDespiece(false)}
+                disabled={generando}
+                className="text-xs h-8 text-muted-foreground hover:text-foreground"
+                title="Sincronizar despiece con receta sin sobreescribir entregas"
+              >
+                <RotateCcw className={`h-3 w-3 mr-1 ${generando ? 'animate-spin' : ''}`} />
+                Sincronizar BOM
+              </Button>
+            )}
           </div>
         </div>
 
@@ -395,7 +729,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
               const expandida = fasesExpandidas[fase.clave] !== false; // Abierto por defecto
 
               return (
-                <div key={fase.id} className="rounded-lg border border-border/60 overflow-hidden bg-card/30">
+                <div key={fase.id || fase.clave} className="rounded-lg border border-border/60 overflow-hidden bg-card/30">
                   <div
                     className="p-3 bg-muted/40 flex items-center justify-between cursor-pointer select-none hover:bg-muted/60 transition-colors"
                     onClick={() => toggleFase(fase.clave)}
@@ -418,12 +752,12 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
 
                     <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
                       <div className="text-right text-xs font-mono">
-                        <span className="text-emerald-500 font-bold">{piezasEnt}</span>
+                        <span className="text-primary font-bold">{piezasEnt}</span>
                         <span className="text-muted-foreground"> / {piezasReq} pz</span>
                       </div>
 
                       {completa ? (
-                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/30 text-[10px]">
+                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 text-[10px]">
                           Completa
                         </Badge>
                       ) : (
@@ -462,14 +796,19 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
                               <tr key={l.linea_id} className="hover:bg-muted/10">
                                 <td className="p-2">
                                   <div className="font-medium text-foreground">{l.descripcion}</div>
-                                  <div className="flex items-center gap-1.5 mt-0.5">
+                                  <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
                                     <span className="text-[10px] text-muted-foreground uppercase font-mono">
                                       {l.unidad || 'pz'}
                                     </span>
+                                    {l.equipo_indice && (
+                                      <Badge variant="outline" className="text-[9px] px-1 py-0 border-border">
+                                        Eq. {l.equipo_indice}
+                                      </Badge>
+                                    )}
                                     {l.sin_costo && (
                                       <Badge
                                         variant="outline"
-                                        className="text-[9px] border-amber-500/40 text-amber-500 bg-amber-500/10 px-1 py-0"
+                                        className="text-[9px] border-destructive/40 text-destructive bg-destructive/10 px-1 py-0"
                                       >
                                         Sin costo cargado
                                       </Badge>
@@ -482,17 +821,28 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
                                   </div>
                                 </td>
                                 <td className="p-2 text-right font-mono">{l.cantidad_requerida}</td>
-                                <td className="p-2 text-right font-mono font-bold text-emerald-500">
+                                <td className="p-2 text-right font-mono font-bold text-primary">
                                   {l.cantidad_entregada}
                                 </td>
-                                <td className="p-2 text-right font-mono font-bold text-amber-500">
+                                <td className="p-2 text-right font-mono font-bold text-muted-foreground">
                                   {l.cantidad_pendiente}
                                 </td>
                                 <td className="p-2 text-xs text-muted-foreground">
                                   {ult ? (
-                                    <div>
-                                      <span>{ult.operario_nombre}</span>
-                                      <div className="text-[10px] opacity-75">{ult.fecha}</div>
+                                    <div className="flex items-center justify-between gap-1">
+                                      <div>
+                                        <div className="font-medium text-foreground">{ult.operario_nombre}</div>
+                                        <div className="text-[10px] opacity-75">{ult.fecha} {ult.tipo === 'reposicion' ? '(reposición)' : ''}</div>
+                                      </div>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleAbrirAnular(ult)}
+                                        className="h-5 text-[10px] px-1 text-muted-foreground hover:text-destructive"
+                                        title="Anular esta entrega"
+                                      >
+                                        Anular
+                                      </Button>
                                     </div>
                                   ) : (
                                     <span className="italic opacity-50">Sin entregas</span>
@@ -500,12 +850,17 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
                                 </td>
                                 <td className="p-2 text-right space-x-1 whitespace-nowrap">
                                   {esCompleto ? (
-                                    <Badge
-                                      variant="outline"
-                                      className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[10px]"
-                                    >
-                                      ✓ Entregada
-                                    </Badge>
+                                    <div className="inline-flex flex-col items-end align-middle mr-1">
+                                      <Badge
+                                        variant="outline"
+                                        className="bg-primary/10 text-primary border-primary/20 text-[10px]"
+                                      >
+                                        ✓ Completa
+                                      </Badge>
+                                      <span className="text-[9px] text-muted-foreground mt-0.5">
+                                        Ya entregada completa {ult?.fecha ? `el ${ult.fecha}` : ''} {ult?.operario_nombre ? `a ${ult.operario_nombre}` : ''}
+                                      </span>
+                                    </div>
                                   ) : (
                                     <Button
                                       size="sm"
@@ -519,12 +874,34 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
                                   <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-6 text-[11px] px-1.5 text-amber-500 hover:text-amber-400"
+                                    className="h-6 text-[11px] px-1.5 text-muted-foreground hover:text-foreground"
                                     onClick={() => handleAbrirEntrega(l, 'reposicion')}
                                     title="Registrar reposición por daño o sustitución"
                                   >
-                                    + Reposición
+                                    + Reponer
                                   </Button>
+
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 text-[11px] px-1.5 text-muted-foreground hover:text-foreground"
+                                    onClick={() => handleAbrirAjustar(l)}
+                                    title="Ajustar cantidad requerida"
+                                  >
+                                    <Edit2 className="h-3 w-3" />
+                                  </Button>
+
+                                  {l.origen === 'manual' && Number(l.cantidad_entregada) === 0 && (
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 text-[11px] px-1 text-destructive hover:bg-destructive/10"
+                                      onClick={() => handleEliminarLineaManual(l.linea_id, l.descripcion)}
+                                      title="Eliminar partida manual"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  )}
                                 </td>
                               </tr>
                             );
@@ -554,9 +931,9 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
             <DialogHeader>
               <DialogTitle className="text-lg flex items-center gap-2">
                 {tipoEntrega === 'entrega' ? (
-                  <PackageCheck className="h-5 w-5 text-emerald-500" />
+                  <PackageCheck className="h-5 w-5 text-primary" />
                 ) : (
-                  <ShieldAlert className="h-5 w-5 text-amber-500" />
+                  <ShieldAlert className="h-5 w-5 text-destructive" />
                 )}
                 {tipoEntrega === 'entrega' ? 'Registrar Entrega de Material' : 'Registrar Reposición de Pieza'}
               </DialogTitle>
@@ -569,7 +946,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
                 <div className="flex gap-4 mt-1 text-xs font-mono text-muted-foreground">
                   <span>Requerida: {lineaSeleccionada?.cantidad_requerida}</span>
                   <span>Ya entregada: {lineaSeleccionada?.cantidad_entregada}</span>
-                  <span className="text-amber-500 font-bold">Pendiente: {lineaSeleccionada?.cantidad_pendiente}</span>
+                  <span className="text-primary font-bold">Pendiente: {lineaSeleccionada?.cantidad_pendiente}</span>
                 </div>
               </div>
 
@@ -616,7 +993,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
                 <Input
                   placeholder={
                     tipoEntrega === 'reposicion'
-                      ? 'Ej. Pieza doblada en montaje, sustitución por defecto...'
+                      ? 'Ej. Pieza doblada en montaje, defecto de fábrica...'
                       : 'Notas de entrega'
                   }
                   value={motivoEntrega}
@@ -633,9 +1010,186 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
               <Button
                 onClick={handleConfirmarEntrega}
                 disabled={procesandoAccion}
-                className={tipoEntrega === 'entrega' ? 'bg-primary text-primary-foreground' : 'bg-amber-600 hover:bg-amber-700 text-white'}
+                className={tipoEntrega === 'entrega' ? 'bg-primary text-primary-foreground' : 'bg-destructive text-destructive-foreground'}
               >
                 {procesandoAccion ? 'Registrando...' : 'Confirmar Entrega'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal Anular Entrega */}
+        <Dialog open={modalAnularOpen} onOpenChange={setModalAnularOpen}>
+          <DialogContent className="max-w-md bg-background border-border">
+            <DialogHeader>
+              <DialogTitle className="text-lg flex items-center gap-2">
+                <RotateCcw className="h-5 w-5 text-destructive" />
+                Anular Entrega Registrada
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 py-2">
+              <p className="text-xs text-muted-foreground">
+                Al anular esta entrega, el material regresará al saldo pendiente de la partida.
+              </p>
+              <div className="space-y-1.5">
+                <Label>Motivo de anulación (Obligatorio)</Label>
+                <Input
+                  placeholder="Ej. Error de captura, material devuelto al almacén..."
+                  value={motivoAnulacion}
+                  onChange={(e) => setMotivoAnulacion(e.target.value)}
+                  className="border-border"
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setModalAnularOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleConfirmarAnulacion}
+                disabled={procesandoAccion || !motivoAnulacion.trim()}
+              >
+                {procesandoAccion ? 'Anulando...' : 'Confirmar Anulación'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal Agregar Partida Manual */}
+        <Dialog open={modalAgregarOpen} onOpenChange={setModalAgregarOpen}>
+          <DialogContent className="max-w-md bg-background border-border">
+            <DialogHeader>
+              <DialogTitle className="text-lg flex items-center gap-2">
+                <Plus className="h-5 w-5 text-primary" />
+                Agregar Partida Manual al Despiece
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label>Fase de Producción</Label>
+                <Select value={manualFaseClave} onValueChange={setManualFaseClave}>
+                  <SelectTrigger className="border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(datos?.fases || []).map((f: any) => (
+                      <SelectItem key={f.clave} value={f.clave}>
+                        {f.nombre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Descripción de la pieza / material</Label>
+                <Input
+                  placeholder="Ej. Perno reforzado 3/4 x 5..."
+                  value={manualDesc}
+                  onChange={(e) => setManualDesc(e.target.value)}
+                  className="border-border"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label>Cantidad Requerida</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={manualCant}
+                    onChange={(e) => setManualCant(parseFloat(e.target.value) || 1)}
+                    className="font-mono border-border"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Unidad</Label>
+                  <Input
+                    value={manualUnidad}
+                    onChange={(e) => setManualUnidad(e.target.value)}
+                    className="border-border"
+                    placeholder="pz, m, kg..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setModalAgregarOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleAgregarLineaManual}
+                disabled={procesandoAccion || !manualDesc.trim()}
+                className="bg-primary text-primary-foreground"
+              >
+                {procesandoAccion ? 'Guardando...' : 'Agregar Partida'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal Ajustar Cantidad Requerida */}
+        <Dialog open={modalAjustarOpen} onOpenChange={setModalAjustarOpen}>
+          <DialogContent className="max-w-md bg-background border-border">
+            <DialogHeader>
+              <DialogTitle className="text-lg flex items-center gap-2">
+                <Edit2 className="h-5 w-5 text-primary" />
+                Ajustar Cantidad Requerida
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 py-2">
+              <div>
+                <Label className="text-xs text-muted-foreground">Pieza</Label>
+                <p className="font-semibold text-sm text-foreground">{lineaAAjustar?.descripcion}</p>
+                <div className="flex gap-4 mt-1 text-xs font-mono text-muted-foreground">
+                  <span>Requerida actual: {lineaAAjustar?.cantidad_requerida}</span>
+                  <span>Ya entregada: {lineaAAjustar?.cantidad_entregada}</span>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Nueva Cantidad Requerida</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min={Number(lineaAAjustar?.cantidad_entregada) || 0}
+                  value={nuevaCantRequerida}
+                  onChange={(e) => setNuevaCantRequerida(parseFloat(e.target.value) || 0)}
+                  className="font-mono border-border"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  No puede ser menor que la cantidad ya entregada ({lineaAAjustar?.cantidad_entregada || 0}).
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Motivo del Ajuste (Obligatorio)</Label>
+                <Input
+                  placeholder="Ej. Cambio de especificación en ingeniería, sobrante..."
+                  value={motivoAjuste}
+                  onChange={(e) => setMotivoAjuste(e.target.value)}
+                  className="border-border"
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setModalAjustarOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleConfirmarAjustar}
+                disabled={procesandoAccion || !motivoAjuste.trim()}
+                className="bg-primary text-primary-foreground"
+              >
+                {procesandoAccion ? 'Ajustando...' : 'Guardar Ajuste'}
               </Button>
             </DialogFooter>
           </DialogContent>

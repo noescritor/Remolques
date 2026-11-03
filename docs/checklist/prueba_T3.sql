@@ -1,29 +1,61 @@
 -- Prueba transaccional de T3 (Checklist de almacén)
--- Se ejecuta dentro de un bloque BEGIN ... ROLLBACK
+-- Se ejecuta dentro de un bloque BEGIN ... ROLLBACK para no dejar basura
 
 BEGIN;
 
 DO $$
 DECLARE
-    v_org_id UUID;
-    v_org2_id UUID := '00000000-0000-0000-0000-000000000002';
+    v_org_a UUID;
+    v_org_b UUID := '00000000-0000-0000-0000-000000000002';
+    v_cli_id TEXT := 'CLI-TEST-T3';
+    v_cot_id TEXT := 'COT-TEST-T3';
     v_ot_id UUID;
+    v_ot_b_id UUID;
     v_linea_id UUID;
+    v_linea_b_id UUID;
+    v_linea_manual_id UUID;
     v_res JSONB;
     v_entrega_id UUID;
     v_error_capturado BOOLEAN := false;
 BEGIN
-    SELECT id INTO v_org_id FROM organizaciones LIMIT 1;
-    IF v_org_id IS NULL THEN
+    SELECT id INTO v_org_a FROM organizaciones LIMIT 1;
+    IF v_org_a IS NULL THEN
         RAISE EXCEPTION 'No se encontró organización de prueba';
     END IF;
 
-    -- 1. Crear OT ficticia para la prueba
+    -- 0. Crear segunda organización si no existe
+    INSERT INTO organizaciones (id, nombre)
+    VALUES (v_org_b, 'Organización Test B')
+    ON CONFLICT (id) DO NOTHING;
+
+    -- 1. Crear cliente y cotización ficticios para satisfacer FKs
+    INSERT INTO clientes (id, organizacion_id, nombre_razon_social)
+    VALUES (v_cli_id, v_org_a, 'CLIENTE TEST CHECKLIST')
+    ON CONFLICT (id) DO NOTHING;
+
+    INSERT INTO cotizaciones (id, organizacion_id, cliente_id, folio, fecha)
+    VALUES (v_cot_id, v_org_a, v_cli_id, 'COT-TEST-999', CURRENT_DATE)
+    ON CONFLICT (id) DO NOTHING;
+
+    -- 2. Crear OT ficticia para la prueba en Org A
     INSERT INTO ordenes_trabajo (organizacion_id, cotizacion_id, cliente_id, nomenclatura_id, modelo, estado)
-    VALUES (v_org_id, 'COT-TEST-T3', 'CLI-TEST', 'NOM-T3', 'PLATAFORMA 2 40 FT', 'En Producción')
+    VALUES (v_org_a, v_cot_id, v_cli_id, 'NOM-T3', 'PLATAFORMA 2 40 FT', 'En Producción')
     RETURNING id INTO v_ot_id;
 
-    -- 2. Insertar línea de prueba (ej. 2 loderas requeridas)
+    -- Crear OT ficticia en Org B
+    INSERT INTO clientes (id, organizacion_id, nombre_razon_social)
+    VALUES ('CLI-TEST-B', v_org_b, 'CLIENTE B')
+    ON CONFLICT (id) DO NOTHING;
+
+    INSERT INTO cotizaciones (id, organizacion_id, cliente_id, folio, fecha)
+    VALUES ('COT-TEST-B', v_org_b, 'CLI-TEST-B', 'COT-B-999', CURRENT_DATE)
+    ON CONFLICT (id) DO NOTHING;
+
+    INSERT INTO ordenes_trabajo (organizacion_id, cotizacion_id, cliente_id, nomenclatura_id, modelo, estado)
+    VALUES (v_org_b, 'COT-TEST-B', 'CLI-TEST-B', 'NOM-T3-B', 'PLATAFORMA 3 40 FT', 'En Producción')
+    RETURNING id INTO v_ot_b_id;
+
+    -- 3. Insertar línea de prueba en Org A (ej. 2 loderas requeridas)
     INSERT INTO orden_despiece_lineas (
         organizacion_id,
         orden_trabajo_id,
@@ -33,19 +65,39 @@ BEGIN
         cantidad_requerida,
         clave_origen
     ) VALUES (
-        v_org_id,
+        v_org_a,
         v_ot_id,
         1,
         'paso_12',
         'LODERA LEOLCA BLANCA',
         2,
-        'paso_12::lodera::1'
+        'paso_12::lodera::base'
     )
     RETURNING id INTO v_linea_id;
 
-    -- 3. Entrega válida de 1 pieza
+    -- Insertar línea de prueba en Org B
+    INSERT INTO orden_despiece_lineas (
+        organizacion_id,
+        orden_trabajo_id,
+        equipo_indice,
+        fase_clave,
+        descripcion,
+        cantidad_requerida,
+        clave_origen
+    ) VALUES (
+        v_org_b,
+        v_ot_b_id,
+        1,
+        'paso_12',
+        'LODERA LEOLCA NEGRA',
+        4,
+        'paso_12::lodera_negra::base'
+    )
+    RETURNING id INTO v_linea_b_id;
+
+    -- 4. Entrega válida de 1 pieza en Org A -> pendiente debe ser 1
     v_res := registrar_entrega_despiece(
-        p_org_id := v_org_id,
+        p_org_id := v_org_a,
         p_linea_id := v_linea_id,
         p_cantidad := 1,
         p_tipo := 'entrega',
@@ -59,11 +111,11 @@ BEGIN
 
     v_entrega_id := (v_res->>'entrega_id')::uuid;
 
-    -- 4. Intento de sobre-entrega (intentar entregar 2 cuando solo queda 1) -> debe rechazar con excede_requerido
+    -- 5. Intento de sobre-entrega (intentar entregar 2 cuando solo queda 1) -> debe rechazar con excede_requerido
     v_error_capturado := false;
     BEGIN
         PERFORM registrar_entrega_despiece(
-            p_org_id := v_org_id,
+            p_org_id := v_org_a,
             p_linea_id := v_linea_id,
             p_cantidad := 2,
             p_tipo := 'entrega',
@@ -79,15 +131,15 @@ BEGIN
         RAISE EXCEPTION 'Fallo: Debió rechazar entrega que excede lo requerido';
     END IF;
 
-    -- 5. Reposición sin motivo -> debe rechazar
+    -- 6. Reposición sin motivo -> debe rechazar con motivo_requerido
     v_error_capturado := false;
     BEGIN
         PERFORM registrar_entrega_despiece(
-            p_org_id := v_org_id,
+            p_org_id := v_org_a,
             p_linea_id := v_linea_id,
             p_cantidad := 1,
             p_tipo := 'reposicion',
-            p_motivo := ''
+            p_motivo := '   '
         );
     EXCEPTION WHEN OTHERS THEN
         IF SQLERRM LIKE '%motivo_requerido%' THEN
@@ -99,9 +151,9 @@ BEGIN
         RAISE EXCEPTION 'Fallo: Reposición sin motivo debió ser rechazada';
     END IF;
 
-    -- 6. Reposición con motivo válido (ej. pieza rota) -> debe aceptar y no afectar lo pendiente
+    -- 7. Reposición con motivo válido -> debe aceptar y no reducir cantidad_pendiente
     v_res := registrar_entrega_despiece(
-        p_org_id := v_org_id,
+        p_org_id := v_org_a,
         p_linea_id := v_linea_id,
         p_cantidad := 1,
         p_tipo := 'reposicion',
@@ -112,18 +164,83 @@ BEGIN
         RAISE EXCEPTION 'Reposición no debe alterar cantidad_pendiente de entrega regular';
     END IF;
 
-    -- 7. Anulación de entrega inicial
+    -- 8. Probar ajuste de cantidad requerida (ajustar_cantidad_despiece)
+    -- Intentar reducir por debajo de lo ya entregado (1 entregado vs nueva requerida 0.5) -> debe fallar
+    v_error_capturado := false;
+    BEGIN
+        PERFORM ajustar_cantidad_despiece(
+            p_org_id := v_org_a,
+            p_linea_id := v_linea_id,
+            p_nueva_cantidad := 0.5,
+            p_motivo := 'Reducción excesiva'
+        );
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%excede_entregado%' THEN
+            v_error_capturado := true;
+        END IF;
+    END;
+
+    IF NOT v_error_capturado THEN
+        RAISE EXCEPTION 'Fallo: Debió rechazar ajuste por debajo de lo ya entregado';
+    END IF;
+
+    -- Ajuste válido a 3 piezas -> pendiente debe subir a 2
+    v_res := ajustar_cantidad_despiece(
+        p_org_id := v_org_a,
+        p_linea_id := v_linea_id,
+        p_nueva_cantidad := 3,
+        p_motivo := 'Se solicita 1 lodera de repuesto para chasis'
+    );
+
+    IF (v_res->>'pendiente')::numeric != 2 THEN
+        RAISE EXCEPTION 'Tras ajuste a 3 piezas con 1 entregada, pendiente debe ser 2, obtenido %', v_res->>'pendiente';
+    END IF;
+
+    -- 9. Trigger trg_lineas_requerida_vs_entregada: update directo por debajo de entregado debe abortar
+    v_error_capturado := false;
+    BEGIN
+        UPDATE orden_despiece_lineas
+        SET cantidad_requerida = 0.8
+        WHERE id = v_linea_id;
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%cantidad_requerida_invalida%' THEN
+            v_error_capturado := true;
+        END IF;
+    END;
+
+    IF NOT v_error_capturado THEN
+        RAISE EXCEPTION 'Fallo: Trigger debió impedir que UPDATE deje cantidad_requerida < entregado';
+    END IF;
+
+    -- 10. Anulación de entrega inicial -> pendiente debe regresar a 3
     v_res := anular_entrega_despiece(
-        p_org_id := v_org_id,
+        p_org_id := v_org_a,
         p_entrega_id := v_entrega_id,
         p_motivo := 'Error de captura por el almacenista'
     );
 
-    IF (v_res->>'pendiente')::numeric != 2 THEN
-        RAISE EXCEPTION 'Tras anular entrega de 1, el pendiente debe regresar a 2';
+    IF (v_res->>'pendiente')::numeric != 3 THEN
+        RAISE EXCEPTION 'Tras anular entrega de 1, el pendiente debe regresar a 3, obtenido %', v_res->>'pendiente';
     END IF;
 
-    -- 8. Probar cantidad fraccionaria (0.25 de consumible)
+    -- 11. Eliminar línea: no se puede eliminar si tiene entregas en el historial
+    v_error_capturado := false;
+    BEGIN
+        PERFORM eliminar_linea_despiece(
+            p_org_id := v_org_a,
+            p_linea_id := v_linea_id
+        );
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%linea_con_historial%' OR SQLERRM LIKE '%linea_no_eliminable%' THEN
+            v_error_capturado := true;
+        END IF;
+    END;
+
+    IF NOT v_error_capturado THEN
+        RAISE EXCEPTION 'Fallo: Debió impedir borrar línea con historial de entregas';
+    END IF;
+
+    -- 12. Crear línea manual y eliminarla limpiamente
     INSERT INTO orden_despiece_lineas (
         organizacion_id,
         orden_trabajo_id,
@@ -131,47 +248,49 @@ BEGIN
         fase_clave,
         descripcion,
         cantidad_requerida,
+        origen,
         clave_origen
     ) VALUES (
-        v_org_id,
+        v_org_a,
         v_ot_id,
         1,
         'paso_1',
-        'DISCO DE DESBASTE 9',
-        1,
-        'paso_1::disco_9::1'
+        'TORNILLO MANUAL EXTRA',
+        10,
+        'manual',
+        'manual::test::1'
     )
-    RETURNING id INTO v_linea_id;
+    RETURNING id INTO v_linea_manual_id;
 
-    v_res := registrar_entrega_despiece(
-        p_org_id := v_org_id,
-        p_linea_id := v_linea_id,
-        p_cantidad := 0.25,
-        p_tipo := 'entrega'
+    v_res := eliminar_linea_despiece(
+        p_org_id := v_org_a,
+        p_linea_id := v_linea_manual_id
     );
 
-    IF (v_res->>'pendiente')::numeric != 0.75 THEN
-        RAISE EXCEPTION 'Pendiente fraccionario esperado 0.75, obtenido %', v_res->>'pendiente';
+    IF (v_res->>'eliminada')::boolean != true THEN
+        RAISE EXCEPTION 'Línea manual sin entregas debió ser eliminada exitosamente';
     END IF;
 
-    -- 9. Aislamiento multi-org (operar con otra org debe fallar)
+    -- 13. Aislamiento multi-org: Org B intentando operar línea de Org A debe fallar
     v_error_capturado := false;
     BEGIN
         PERFORM registrar_entrega_despiece(
-            p_org_id := v_org2_id,
+            p_org_id := v_org_b,
             p_linea_id := v_linea_id,
-            p_cantidad := 0.25,
+            p_cantidad := 1,
             p_tipo := 'entrega'
         );
     EXCEPTION WHEN OTHERS THEN
-        v_error_capturado := true;
+        IF SQLERRM LIKE '%linea_no_encontrada%' THEN
+            v_error_capturado := true;
+        END IF;
     END;
 
     IF NOT v_error_capturado THEN
         RAISE EXCEPTION 'Fallo: Se permitió acceso cruzado entre organizaciones';
     END IF;
 
-    RAISE NOTICE 'Prueba transaccional T3 finalizada con éxito. Ejecutando ROLLBACK.';
+    RAISE NOTICE 'Prueba transaccional T3 completada exitosamente (0 errores). Ejecutando ROLLBACK.';
 END $$;
 
 ROLLBACK;

@@ -3165,6 +3165,40 @@ app.post("/ordenes-trabajo/:id/regenerar-ficha", async (c) => {
 
 // --- Checklist de Entregas Almacén -> Producción (T3) ---
 
+function manejarErrorDespiece(c: any, error: any) {
+  const msg = error?.message || "";
+  if (
+    msg.includes("excede_requerido") ||
+    msg.includes("excede_entregado") ||
+    msg.includes("linea_con_historial")
+  ) {
+    const limpio = msg.split(":").slice(1).join(":").trim() || msg;
+    return c.json({ error: limpio, codigo: msg.split(":")[0].trim() }, 409);
+  }
+  if (
+    msg.includes("motivo_requerido") ||
+    msg.includes("cantidad_invalida") ||
+    msg.includes("tipo_invalido") ||
+    msg.includes("descripcion_requerida") ||
+    msg.includes("linea_no_eliminable") ||
+    msg.includes("ya_anulada")
+  ) {
+    const limpio = msg.split(":").slice(1).join(":").trim() || msg;
+    return c.json({ error: limpio, codigo: msg.split(":")[0].trim() }, 400);
+  }
+  if (
+    msg.includes("linea_no_encontrada") ||
+    msg.includes("ot_no_encontrada") ||
+    msg.includes("fase_no_encontrada") ||
+    msg.includes("entrega_no_encontrada")
+  ) {
+    const limpio = msg.split(":").slice(1).join(":").trim() || msg;
+    return c.json({ error: limpio, codigo: msg.split(":")[0].trim() }, 404);
+  }
+  const { status, body } = formatearErrorRespuesta(error);
+  return c.json(body, status as any);
+}
+
 app.get("/ordenes-trabajo/:id/despiece", async (c) => {
   try {
     const supabase = (c.get("supabase") || getServiceClient()) as any;
@@ -3176,7 +3210,7 @@ app.get("/ordenes-trabajo/:id/despiece", async (c) => {
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error listando despiece OT:", error);
-    return c.json({ error: error.message || "Error al listar despiece" }, 500);
+    return manejarErrorDespiece(c, error);
   }
 });
 
@@ -3191,7 +3225,7 @@ app.post("/ordenes-trabajo/:id/despiece/generar", async (c) => {
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error generando despiece OT:", error);
-    return c.json({ error: error.message || "Error al generar despiece" }, 400);
+    return manejarErrorDespiece(c, error);
   }
 });
 
@@ -3202,8 +3236,8 @@ app.post("/ordenes-trabajo/:id/despiece/entregar", async (c) => {
     const user = c.get("user");
     const body = await c.req.json().catch(() => ({}));
 
-    if (!body.linea_id) return c.json({ error: "linea_id es requerido" }, 400);
-    if (!body.cantidad || body.cantidad <= 0) return c.json({ error: "cantidad inválida" }, 400);
+    if (!body.linea_id) return c.json({ error: "linea_id es requerido", codigo: "parametro_faltante" }, 400);
+    if (!body.cantidad || body.cantidad <= 0) return c.json({ error: "cantidad inválida", codigo: "cantidad_invalida" }, 400);
 
     const data = await registrarEntrega(supabase, {
       orgId,
@@ -3218,9 +3252,7 @@ app.post("/ordenes-trabajo/:id/despiece/entregar", async (c) => {
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error registrando entrega:", error);
-    const msg = error.message || "Error al registrar entrega";
-    const status = msg.includes("excede_requerido") ? 409 : msg.includes("motivo_requerido") ? 400 : 500;
-    return c.json({ error: msg }, status);
+    return manejarErrorDespiece(c, error);
   }
 });
 
@@ -3232,7 +3264,7 @@ app.post("/ordenes-trabajo/:id/despiece/entregar-fase", async (c) => {
     const otId = c.req.param("id");
     const body = await c.req.json().catch(() => ({}));
 
-    if (!body.fase_clave) return c.json({ error: "fase_clave es requerida" }, 400);
+    if (!body.fase_clave) return c.json({ error: "fase_clave es requerida", codigo: "parametro_faltante" }, 400);
 
     const data = await entregarFaseCompleta(supabase, {
       orgId,
@@ -3246,7 +3278,7 @@ app.post("/ordenes-trabajo/:id/despiece/entregar-fase", async (c) => {
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error entregando fase completa:", error);
-    return c.json({ error: error.message || "Error al entregar fase" }, 500);
+    return manejarErrorDespiece(c, error);
   }
 });
 
@@ -3257,8 +3289,8 @@ app.post("/ordenes-trabajo/:id/despiece/anular-entrega", async (c) => {
     const user = c.get("user");
     const body = await c.req.json().catch(() => ({}));
 
-    if (!body.entrega_id) return c.json({ error: "entrega_id es requerido" }, 400);
-    if (!body.motivo || !body.motivo.trim()) return c.json({ error: "motivo es obligatorio" }, 400);
+    if (!body.entrega_id) return c.json({ error: "entrega_id es requerido", codigo: "parametro_faltante" }, 400);
+    if (!body.motivo || !body.motivo.trim()) return c.json({ error: "motivo es obligatorio", codigo: "motivo_requerido" }, 400);
 
     const data = await anularEntrega(supabase, {
       orgId,
@@ -3269,7 +3301,7 @@ app.post("/ordenes-trabajo/:id/despiece/anular-entrega", async (c) => {
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error anulando entrega:", error);
-    return c.json({ error: error.message || "Error al anular entrega" }, 400);
+    return manejarErrorDespiece(c, error);
   }
 });
 
@@ -3280,9 +3312,9 @@ app.post("/ordenes-trabajo/:id/despiece/lineas", async (c) => {
     const otId = c.req.param("id");
     const body = await c.req.json().catch(() => ({}));
 
-    if (!body.descripcion || !body.descripcion.trim()) return c.json({ error: "descripcion es requerida" }, 400);
-    if (!body.fase_clave) return c.json({ error: "fase_clave es requerida" }, 400);
-    if (!body.cantidad || body.cantidad <= 0) return c.json({ error: "cantidad inválida" }, 400);
+    if (!body.descripcion || !body.descripcion.trim()) return c.json({ error: "descripcion es requerida", codigo: "descripcion_requerida" }, 400);
+    if (!body.fase_clave) return c.json({ error: "fase_clave es requerida", codigo: "parametro_faltante" }, 400);
+    if (!body.cantidad || body.cantidad <= 0) return c.json({ error: "cantidad inválida", codigo: "cantidad_invalida" }, 400);
 
     const data = await agregarLineaManual(supabase, {
       orgId,
@@ -3298,7 +3330,7 @@ app.post("/ordenes-trabajo/:id/despiece/lineas", async (c) => {
     return c.json(data, 201);
   } catch (error: any) {
     console.error("[make-server] Error agregando línea manual:", error);
-    return c.json({ error: error.message || "Error al agregar partida" }, 400);
+    return manejarErrorDespiece(c, error);
   }
 });
 
@@ -3306,14 +3338,15 @@ app.put("/ordenes-trabajo/:id/despiece/lineas/:lineaId", async (c) => {
   try {
     const supabase = getServiceClient();
     const orgId = c.get("organizacionId");
+    const user = c.get("user");
     const lineaId = c.req.param("lineaId");
     const body = await c.req.json().catch(() => ({}));
 
     if (body.nueva_cantidad === undefined || body.nueva_cantidad < 0) {
-      return c.json({ error: "nueva_cantidad inválida" }, 400);
+      return c.json({ error: "nueva_cantidad inválida", codigo: "cantidad_invalida" }, 400);
     }
     if (!body.motivo || !body.motivo.trim()) {
-      return c.json({ error: "motivo del ajuste es requerido" }, 400);
+      return c.json({ error: "motivo del ajuste es requerido", codigo: "motivo_requerido" }, 400);
     }
 
     const data = await ajustarCantidadRequerida(supabase, {
@@ -3321,11 +3354,12 @@ app.put("/ordenes-trabajo/:id/despiece/lineas/:lineaId", async (c) => {
       lineaId,
       nuevaCantidad: parseFloat(body.nueva_cantidad),
       motivo: body.motivo,
+      usuarioId: user?.id || null,
     });
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error ajustando cantidad requerida:", error);
-    return c.json({ error: error.message || "Error al ajustar cantidad" }, 400);
+    return manejarErrorDespiece(c, error);
   }
 });
 
@@ -3339,7 +3373,7 @@ app.delete("/ordenes-trabajo/:id/despiece/lineas/:lineaId", async (c) => {
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error eliminando línea manual:", error);
-    return c.json({ error: error.message || "Error al eliminar partida" }, 400);
+    return manejarErrorDespiece(c, error);
   }
 });
 

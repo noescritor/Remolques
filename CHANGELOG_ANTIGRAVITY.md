@@ -3,6 +3,32 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - Sub-bloque T3 (Ronda 2): Generación BOM real, RLS estricto, RPCs atómicas, hora México y UI completa
+**Herramienta:** Antigravity  
+**Tipo:** fix (checklist almacen, generacion bom real presupuestos, rls select only, rpc atomicas con for update, ui selector equipo csv e impresion)  
+**Rama:** `noche-t3-checklist`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_02_checklist_almacen.sql` (RLS solo `FOR SELECT` para `authenticated` con `get_current_org_id()`, `ON DELETE RESTRICT` en `linea_id`, trigger `trg_lineas_requerida_vs_entregada`, RPCs atómicas `ajustar_cantidad_despiece` y `eliminar_linea_despiece` con `FOR UPDATE`, fechas/horas con `America/Mexico_City`, mensajes plpgsql corregidos con `round()`).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.ts` (`generarDespieceOT` vincula presupuesto vía folio `PRE-*` o `datos.meta.cotizacion_id`, matching por `item_id`/`modelo_id`/`unidad`, clave determinista `fase::material::kit` sin índices volátiles, inserción idempotente con `ignoreDuplicates: true`, delegación a RPCs atómicas para ajuste y eliminación, validación de OT y fase en adición manual).
+- `supabase/functions/make-server-feea4382/index.ts` (función `manejarErrorDespiece` con códigos 400, 404, 409 y enmascaramiento de errores internos 500 con `formatearErrorRespuesta`).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.test.ts` (6 pruebas Deno pasando, cubriendo seguridad de cliente no privilegiado, generación determinista con folio real, RPCs atómicas y métricas).
+- `src/app/components/OrdenesTrabajo/ChecklistDespieceModal.tsx` (selector interactivo de equipo, modales para agregar partida manual, ajustar requerida con motivo y anular entrega con motivo, exportación a CSV, generación e impresión de vale con firmas, leyenda de entrega completa y tokens semánticos).
+- `docs/checklist/verificacion_T3.sql` (verificador actualizado comprobando las 7 entidades, trigger y 0 políticas no-SELECT, retornando `todo_ok = t`).
+- `docs/checklist/prueba_T3.sql` (prueba transaccional completa con seeding de organizaciones, clientes y cotizaciones, validando concurrencia, sobreentrega, reposición y aislamiento de dos organizaciones con 0 errores).
+**Qué cambió y por qué:**  
+- **1. Generación de BOM con datos reales (Hallazgos 1 y 2):** Se resolvió el error de columna inexistente `presupuestos.cotizacion_id` usando el folio `PRE-<folio>` o `datos.meta.cotizacion_id`. Se identifica el modelo desde `caracteristicas.modelo_id`/`unidad` para soportar órdenes de trabajo multi-equipo sin tomar siempre el primero.
+- **2. Idempotencia y protección de entregas existentes (Hallazgo 3):** Se eliminó el `upsert` destructivo; ahora se utiliza clave estable sin índice de array y se agregan únicamente piezas faltantes (`ignoreDuplicates: true`), protegiendo cualquier entrega previa.
+- **3. Zona horaria de México (Hallazgo 4):** Se configuraron los valores de fecha y hora por defecto en PostgreSQL usando `now() AT TIME ZONE 'America/Mexico_City'`.
+- **4. RLS estricto y seguridad en mutaciones (Hallazgos 6 y 14):** Se revocaron permisos de `INSERT`, `UPDATE` y `DELETE` directos a `authenticated`, dejándolos exclusivamente en `FOR SELECT` con `get_current_org_id()`. Las mutaciones operan únicamente a través de funciones RPC seguras con `service_role`.
+- **5. RPCs atómicas para ajuste y borrado (Hallazgo 7):** Se crearon `ajustar_cantidad_despiece` y `eliminar_linea_despiece` con bloqueo de fila `FOR UPDATE` y validaciones estrictas de historial.
+- **6. UI completa y funcional (Hallazgos 9 y 15):** Se integró el selector de equipo, exportación a CSV en navegador, vista previa imprimible del vale con firmas, modales para agregar y ajustar partidas, y texto explícito de entrega completa.
+- **Acciones manuales pendientes:**
+  - Correr `supabase/migrations/20261102_02_checklist_almacen.sql` en producción.
+  - Rebuild del backend en EasyPanel.
+  - Correr `docs/checklist/verificacion_T3.sql` comprobando `todo_ok = t`.
+
+
+
 ## 2026-11-02 - Sub-bloque T3 (Noche): Checklist de almacén -> producción por orden, equipo y fase
 **Herramienta:** Antigravity  
 **Tipo:** feat (checklist almacen, entregas parciales, reposicion, devolucion, avance por fase y equipo, rpc transaccional con FOR UPDATE)  

@@ -147,6 +147,9 @@ export async function listarDespieceOT(
 
 /**
  * Genera o actualiza idempotentemente las líneas de despiece para una Orden de Trabajo
+ * Localiza el BOM desde cotizaciones/presupuestos (PRE-<folio> o meta.cotizacion_id),
+ * asocia el equipo por item_id/modelo_id, genera claves estables sin índices volátiles,
+ * suma duplicados y nunca sobreescribe líneas ya existentes o entregadas.
  */
 export async function generarDespieceOT(
   serviceClient: any,
@@ -154,53 +157,89 @@ export async function generarDespieceOT(
 ) {
   const { otId, orgId, forzar } = parametros;
 
-  // 1. Obtener orden de trabajo
+  // 1. Obtener orden de trabajo con sus características
   const { data: ot, error: errOT } = await serviceClient
     .from("ordenes_trabajo")
-    .select("id, cotizacion_id, modelo, organizacion_id")
+    .select("id, cotizacion_id, modelo, caracteristicas, organizacion_id")
     .eq("id", otId)
     .eq("organizacion_id", orgId)
     .single();
 
   if (errOT || !ot) {
-    throw new Error("Orden de trabajo no encontrada o no pertenece a la organización");
+    throw new Error("ot_no_encontrada: Orden de trabajo no encontrada o no pertenece a la organización");
   }
 
-  // 2. Si ya existen líneas y no se fuerza, retornar conteo actual
-  const { count: lineasExistentes, error: errCount } = await serviceClient
-    .from("orden_despiece_lineas")
-    .select("id", { count: "exact", head: true })
-    .eq("orden_trabajo_id", otId)
-    .eq("organizacion_id", orgId);
+  // 2. Extraer identificadores del equipo
+  const caracteristicas = ot.caracteristicas || {};
+  const itemId = caracteristicas.item_id;
+  const modeloId = caracteristicas.modelo_id || caracteristicas.ficha?.modelo_id || ot.modelo;
+  const equipoIndice = Number(caracteristicas.unidad) || 1;
 
-  if (errCount) throw errCount;
-
-  if (lineasExistentes && lineasExistentes > 0 && !forzar) {
-    return {
-      creadas: 0,
-      existentes: lineasExistentes,
-      mensaje: "El despiece ya se encuentra generado para esta orden",
-    };
-  }
-
-  // 3. Buscar presupuesto asociado a la cotización
+  // 3. Buscar BOM en presupuesto asociado a la cotización
   let bomItems: any[] = [];
 
   if (ot.cotizacion_id) {
-    const { data: presupuesto } = await serviceClient
-      .from("presupuestos")
-      .select("datos")
-      .eq("cotizacion_id", ot.cotizacion_id)
+    // Consultar cotización para obtener folio oficial
+    const { data: cotizacion, error: errCotiz } = await serviceClient
+      .from("cotizaciones")
+      .select("id, folio")
+      .eq("id", ot.cotizacion_id)
       .eq("organizacion_id", orgId)
-      .limit(1)
       .maybeSingle();
 
+    if (errCotiz) {
+      console.error("[checklist] Error consultando cotización:", errCotiz);
+    }
+
+    let presupuesto: any = null;
+
+    if (cotizacion?.folio) {
+      const { data: pFolio, error: errPFolio } = await serviceClient
+        .from("presupuestos")
+        .select("id, datos")
+        .eq("organizacion_id", orgId)
+        .eq("folio", `PRE-${cotizacion.folio}`)
+        .maybeSingle();
+
+      if (errPFolio) {
+        console.error("[checklist] Error consultando presupuesto por folio:", errPFolio);
+      }
+      if (pFolio?.datos) {
+        presupuesto = pFolio;
+      }
+    }
+
+    if (!presupuesto) {
+      // Fallback: búsqueda por cotizacion_id dentro del jsonb meta
+      const { data: pList, error: errPList } = await serviceClient
+        .from("presupuestos")
+        .select("id, datos")
+        .eq("organizacion_id", orgId)
+        .limit(50);
+
+      if (errPList) {
+        console.error("[checklist] Error consultando presupuestos por lista:", errPList);
+      }
+
+      if (pList) {
+        presupuesto = pList.find(
+          (p: any) => p.datos?.meta?.cotizacion_id === ot.cotizacion_id
+        );
+      }
+    }
+
     if (presupuesto?.datos?.meta?.bom && Array.isArray(presupuesto.datos.meta.bom)) {
-      // Si meta.bom tiene formato agrupado por equipo o líneas directas
       const bomData = presupuesto.datos.meta.bom;
       if (bomData.length > 0 && bomData[0].lineas) {
-        // Formato array de equipos
-        bomItems = bomData[0].lineas;
+        // Formato array de equipos: buscar correspondencia por item_id o modelo_id
+        let equipoBom = bomData.find(
+          (b: any) => (itemId && b.item_id === itemId) || (modeloId && b.modelo_id === modeloId)
+        );
+        if (!equipoBom && bomData.length > 0) {
+          const idx = Math.min(equipoIndice - 1, bomData.length - 1);
+          equipoBom = bomData[Math.max(0, idx)];
+        }
+        bomItems = equipoBom?.lineas || [];
       } else {
         bomItems = bomData;
       }
@@ -208,18 +247,22 @@ export async function generarDespieceOT(
   }
 
   // 4. Si no hay BOM en presupuesto, buscar en receta_base del modelo
-  if (bomItems.length === 0 && ot.modelo) {
-    const { data: receta } = await serviceClient
+  if (bomItems.length === 0 && modeloId) {
+    const { data: receta, error: errReceta } = await serviceClient
       .from("receta_base")
       .select("material_id, cantidad, paso, fase_id, productos(nombre, unidad, costo)")
-      .eq("modelo_id", ot.modelo);
+      .eq("modelo_id", modeloId);
+
+    if (errReceta) {
+      console.error("[checklist] Error consultando receta_base:", errReceta);
+    }
 
     if (receta && receta.length > 0) {
       bomItems = receta.map((r: any) => ({
         material_id: r.material_id,
         nombre: r.productos?.nombre || "Material sin nombre",
         unidad: r.productos?.unidad || "pz",
-        cantidad: Number(r.cantidad) || 1,
+        cantidad: Number(r.cantidad) || 0,
         paso: r.paso || "Paso 1",
         fase_id: r.fase_id || null,
         sin_precio: !r.productos?.costo || r.productos?.costo === 0,
@@ -227,16 +270,20 @@ export async function generarDespieceOT(
     }
   }
 
-  // 5. Consultar catálogo de fases y equivalencias
-  const { data: fases } = await serviceClient
+  // 5. Consultar catálogo de fases y equivalencias de la organización
+  const { data: fases, error: errFases } = await serviceClient
     .from("fases_despiece")
     .select("id, clave, nombre")
     .eq("organizacion_id", orgId);
 
-  const { data: equiv } = await serviceClient
+  if (errFases) throw errFases;
+
+  const { data: equiv, error: errEquiv } = await serviceClient
     .from("fases_despiece_equivalencias")
     .select("paso_legacy, fase_id, fases_despiece(clave)")
     .eq("organizacion_id", orgId);
+
+  if (errEquiv) throw errEquiv;
 
   const mapaEquiv = new Map<string, { fase_id: string; clave: string }>();
   for (const eq of equiv || []) {
@@ -247,13 +294,16 @@ export async function generarDespieceOT(
     });
   }
 
-  // 6. Preparar líneas para inserción idempotente
-  const nuevasLineas: any[] = [];
-  const equipoIndice = 1;
+  // 6. Preparar y fusionar líneas por clave estable determinística
+  const mapaLineas = new Map<string, any>();
+  const normalizar = (s: string) =>
+    (s || "").trim().toLowerCase().replace(/[^a-z0-9_-]/g, "_");
 
-  for (let i = 0; i < bomItems.length; i++) {
-    const item = bomItems[i];
-    const nom = item.nombre || item.descripcion || `Pieza ${i + 1}`;
+  for (const item of bomItems) {
+    const cant = Number(item.cantidad) || 0;
+    if (cant <= 0) continue; // No inventar piezas si cantidad es nula o 0
+
+    const nom = (item.nombre || item.descripcion || "").trim() || "Pieza sin nombre";
     const pasoRaw = Array.isArray(item.paso) ? item.paso[0] : item.paso || "Paso 1";
     const pasoNorm = (pasoRaw || "").trim().toUpperCase();
 
@@ -265,7 +315,6 @@ export async function generarDespieceOT(
       faseId = match.fase_id;
       faseClave = match.clave;
     } else {
-      // Fallback a Paso 1
       const p1 = (fases || []).find((f: any) => f.clave === "paso_1");
       if (p1) {
         faseId = p1.id;
@@ -274,39 +323,68 @@ export async function generarDespieceOT(
     }
 
     const matId = item.material_id || null;
-    const claveOrigen = `${faseClave}::${matId || nom}::${item.kit || ""}::${equipoIndice}::${i}`;
+    const matClave = normalizar(matId || nom);
+    const faseClaveNorm = normalizar(faseClave);
+    const kitNorm = normalizar(item.kit || "base");
+    const claveOrigen = `${faseClaveNorm}::${matClave}::${kitNorm}`;
 
-    nuevasLineas.push({
-      organizacion_id: orgId,
-      orden_trabajo_id: otId,
-      equipo_indice: equipoIndice,
-      fase_id: faseId,
-      fase_clave: faseClave,
-      kit: item.kit || null,
-      material_id: matId,
-      descripcion: nom,
-      unidad: item.unidad || "pz",
-      cantidad_requerida: Math.max(0, Number(item.cantidad) || 1),
-      origen: "receta",
-      sin_costo: !!item.sin_precio,
-      clave_origen: claveOrigen,
-    });
+    if (mapaLineas.has(claveOrigen)) {
+      const existente = mapaLineas.get(claveOrigen);
+      existente.cantidad_requerida = Math.round((existente.cantidad_requerida + cant) * 10000) / 10000;
+    } else {
+      mapaLineas.set(claveOrigen, {
+        organizacion_id: orgId,
+        orden_trabajo_id: otId,
+        equipo_indice: equipoIndice,
+        fase_id: faseId,
+        fase_clave: faseClave,
+        kit: item.kit || null,
+        material_id: matId,
+        descripcion: nom,
+        unidad: item.unidad || "pz",
+        cantidad_requerida: Math.round(cant * 10000) / 10000,
+        origen: "receta",
+        sin_costo: !!item.sin_precio,
+        clave_origen: claveOrigen,
+      });
+    }
   }
 
-  if (nuevasLineas.length === 0) {
-    return { creadas: 0, mensaje: "No se encontraron piezas en el presupuesto ni receta del modelo" };
+  // 7. Consultar líneas existentes en la base de datos para no pisar lo ya entregado
+  const { data: lineasBD, error: errLineasBD } = await serviceClient
+    .from("orden_despiece_lineas")
+    .select("clave_origen")
+    .eq("orden_trabajo_id", otId)
+    .eq("equipo_indice", equipoIndice)
+    .eq("organizacion_id", orgId);
+
+  if (errLineasBD) throw errLineasBD;
+
+  const clavesExistentes = new Set((lineasBD || []).map((l: any) => l.clave_origen));
+  const lineasAInsertar = Array.from(mapaLineas.values()).filter(
+    (l) => !clavesExistentes.has(l.clave_origen)
+  );
+
+  if (lineasAInsertar.length === 0) {
+    return {
+      creadas: 0,
+      existentes: clavesExistentes.size,
+      mensaje: clavesExistentes.size > 0
+        ? "El despiece ya contiene todas las piezas requeridas (no se alteraron las existentes ni lo entregado)"
+        : "No se encontraron piezas en el presupuesto ni receta del modelo",
+    };
   }
 
-  // 7. Insertar líneas en lotes con ON CONFLICT DO NOTHING
   const { error: errInsert } = await serviceClient
     .from("orden_despiece_lineas")
-    .upsert(nuevasLineas, { onConflict: "orden_trabajo_id,equipo_indice,clave_origen" });
+    .insert(lineasAInsertar);
 
   if (errInsert) throw errInsert;
 
   return {
-    creadas: nuevasLineas.length,
-    mensaje: `Se generaron ${nuevasLineas.length} líneas de despiece por fases`,
+    creadas: lineasAInsertar.length,
+    existentes: clavesExistentes.size,
+    mensaje: `Se agregaron ${lineasAInsertar.length} líneas nuevas de despiece sin afectar las existentes`,
   };
 }
 
@@ -315,7 +393,7 @@ export async function generarDespieceOT(
  */
 export async function registrarEntrega(serviceClient: any, p: ParametrosEntrega) {
   if (!Number.isFinite(p.cantidad) || p.cantidad <= 0) {
-    throw new Error("La cantidad a entregar debe ser un número mayor a 0");
+    throw new Error("cantidad_invalida: La cantidad a entregar debe ser un número mayor a 0");
   }
 
   const { data, error } = await serviceClient.rpc("registrar_entrega_despiece", {
@@ -390,7 +468,7 @@ export async function entregarFaseCompleta(serviceClient: any, p: ParametrosEntr
  */
 export async function anularEntrega(serviceClient: any, p: ParametrosAnularEntrega) {
   if (!p.motivo || !p.motivo.trim()) {
-    throw new Error("El motivo de anulación es obligatorio");
+    throw new Error("motivo_requerido: El motivo de anulación es obligatorio");
   }
 
   const { data, error } = await serviceClient.rpc("anular_entrega_despiece", {
@@ -408,24 +486,40 @@ export async function anularEntrega(serviceClient: any, p: ParametrosAnularEntre
 }
 
 /**
- * Agrega una línea manual de despiece a una OT
+ * Agrega una línea manual de despiece a una OT validando tenencia
  */
 export async function agregarLineaManual(serviceClient: any, p: ParametrosLineaManual) {
   if (!p.descripcion || !p.descripcion.trim()) {
-    throw new Error("La descripción de la pieza es obligatoria");
+    throw new Error("descripcion_requerida: La descripción de la pieza es obligatoria");
   }
 
   if (!Number.isFinite(p.cantidadRequerida) || p.cantidadRequerida <= 0) {
-    throw new Error("La cantidad requerida debe ser mayor a 0");
+    throw new Error("cantidad_invalida: La cantidad requerida debe ser mayor a 0");
   }
 
-  // Resolver fase_id desde clave
-  const { data: fase } = await serviceClient
-    .from("fases_despiece")
+  // 1. Validar que la orden de trabajo pertenece a la organización
+  const { data: ot, error: errOT } = await serviceClient
+    .from("ordenes_trabajo")
     .select("id")
+    .eq("id", p.otId)
+    .eq("organizacion_id", p.orgId)
+    .single();
+
+  if (errOT || !ot) {
+    throw new Error("ot_no_encontrada: La orden de trabajo no existe o pertenece a otra organización");
+  }
+
+  // 2. Resolver y validar fase_id desde clave
+  const { data: fase, error: errFase } = await serviceClient
+    .from("fases_despiece")
+    .select("id, clave")
     .eq("organizacion_id", p.orgId)
     .eq("clave", p.faseClave)
-    .single();
+    .maybeSingle();
+
+  if (!fase) {
+    throw new Error("fase_no_encontrada: La fase especificada no existe en la organización");
+  }
 
   const equipoIndice = p.equipoIndice || 1;
   const claveOrigen = `manual::${Date.now()}::${Math.random().toString(36).substring(2, 7)}`;
@@ -437,12 +531,12 @@ export async function agregarLineaManual(serviceClient: any, p: ParametrosLineaM
         organizacion_id: p.orgId,
         orden_trabajo_id: p.otId,
         equipo_indice: equipoIndice,
-        fase_id: fase?.id || null,
-        fase_clave: p.faseClave,
+        fase_id: fase.id,
+        fase_clave: fase.clave,
         material_id: p.materialId || null,
         descripcion: p.descripcion.trim(),
         unidad: p.unidad || "pz",
-        cantidad_requerida: p.cantidadRequerida,
+        cantidad_requerida: Math.round(p.cantidadRequerida * 10000) / 10000,
         origen: "manual",
         sin_costo: false,
         clave_origen: claveOrigen,
@@ -457,77 +551,47 @@ export async function agregarLineaManual(serviceClient: any, p: ParametrosLineaM
 }
 
 /**
- * Ajusta la cantidad requerida de una línea
+ * Ajusta la cantidad requerida de una línea utilizando la RPC atómica con FOR UPDATE
  */
-export async function ajustarCantidadRequerida(serviceClient: any, p: ParametrosAjustarCantidad) {
+export async function ajustarCantidadRequerida(serviceClient: any, p: ParametrosAjustarCantidad & { usuarioId?: string | null }) {
   if (!Number.isFinite(p.nuevaCantidad) || p.nuevaCantidad < 0) {
-    throw new Error("La cantidad requerida no puede ser negativa");
+    throw new Error("cantidad_invalida: La cantidad requerida no puede ser negativa");
   }
 
   if (!p.motivo || !p.motivo.trim()) {
-    throw new Error("El motivo del ajuste es obligatorio");
+    throw new Error("motivo_requerido: El motivo del ajuste es obligatorio");
   }
 
-  // Verificar cantidad ya entregada
-  const { data: entregadoData } = await serviceClient
-    .from("orden_despiece_entregas")
-    .select("cantidad")
-    .eq("linea_id", p.lineaId)
-    .eq("organizacion_id", p.orgId)
-    .eq("anulada", false)
-    .eq("tipo", "entrega");
+  const { data, error } = await serviceClient.rpc("ajustar_cantidad_despiece", {
+    p_org_id: p.orgId,
+    p_linea_id: p.lineaId,
+    p_nueva_cantidad: p.nuevaCantidad,
+    p_motivo: p.motivo.trim(),
+    p_usuario_id: p.usuarioId || null,
+  });
 
-  const totalEntregado = (entregadoData || []).reduce(
-    (acc: number, cur: any) => acc + (Number(cur.cantidad) || 0),
-    0
-  );
-
-  if (p.nuevaCantidad < totalEntregado) {
-    throw new Error(
-      `No se puede reducir la cantidad requerida a ${p.nuevaCantidad} porque ya se han entregado ${totalEntregado} piezas`
-    );
+  if (error) {
+    throw new Error(error.message || "Error al ajustar cantidad requerida");
   }
 
-  const { data, error } = await serviceClient
-    .from("orden_despiece_lineas")
-    .update({
-      cantidad_requerida: p.nuevaCantidad,
-      notas: `Ajuste: ${p.motivo.trim()}`,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", p.lineaId)
-    .eq("organizacion_id", p.orgId)
-    .select()
-    .single();
-
-  if (error) throw error;
   return data;
 }
 
 /**
- * Elimina una línea manual si no tiene entregas realizadas
+ * Elimina una línea manual si no tiene entregas realizadas utilizando la RPC atómica
  */
 export async function eliminarLineaManual(
   serviceClient: any,
   p: { orgId: string; lineaId: string }
 ) {
-  const { count: entregasCount } = await serviceClient
-    .from("orden_despiece_entregas")
-    .select("id", { count: "exact", head: true })
-    .eq("linea_id", p.lineaId)
-    .eq("organizacion_id", p.orgId)
-    .eq("anulada", false);
+  const { data, error } = await serviceClient.rpc("eliminar_linea_despiece", {
+    p_org_id: p.orgId,
+    p_linea_id: p.lineaId,
+  });
 
-  if (entregasCount && entregasCount > 0) {
-    throw new Error("No se puede eliminar una partida que ya cuenta con entregas registradas");
+  if (error) {
+    throw new Error(error.message || "Error al eliminar partida");
   }
 
-  const { error } = await serviceClient
-    .from("orden_despiece_lineas")
-    .delete()
-    .eq("id", p.lineaId)
-    .eq("organizacion_id", p.orgId);
-
-  if (error) throw error;
-  return { success: true };
+  return data;
 }
