@@ -41,7 +41,7 @@ import {
   AccordionTrigger,
 } from '../ui/accordion';
 
-const BASE_URL = 'http://localhost:8000';
+import { BASE_URL } from '../../utils/api';
 
 interface RecetasEditorTabProps {
   getAuthToken?: () => Promise<string | null>;
@@ -628,7 +628,7 @@ export function RecetasEditorTab({ getAuthToken, modelos, onModelosChange }: Rec
                       {h.motivo && <div className="text-xs text-muted-foreground">{h.motivo}</div>}
                     </div>
                     <div className="text-right text-xs text-muted-foreground whitespace-nowrap">
-                      {new Date(h.created_at).toLocaleString('es-MX')}
+                      {new Date(h.created_at).toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}
                     </div>
                   </div>
                 ))}

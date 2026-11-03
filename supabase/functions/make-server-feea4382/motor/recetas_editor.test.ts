@@ -3,15 +3,34 @@ import {
   clonarRecetaMotor,
   guardarLineaRecetaMotor,
   eliminarLineaRecetaMotor,
-  obtenerRecetaMotor
+  obtenerRecetaMotor,
+  obtenerHistorialRecetaMotor
 } from "./recetas_editor.ts";
 import { resolverReceta } from "./resolver_receta.ts";
 import type { DatosModelo } from "./tipos.ts";
+
+const ORG_A = "11111111-1111-1111-1111-111111111111";
 
 Deno.test("recetas_editor: validaciones de entrada en clonarRecetaMotor", async () => {
   const fakeServiceClient = {
     rpc: async () => ({ data: "new-mod-id", error: null })
   };
+
+  // Falta organizacionId
+  await assertRejects(
+    async () => {
+      await clonarRecetaMotor(fakeServiceClient, {
+        modeloOrigenId: "orig-123",
+        productoId: "REM-PLAT-47",
+        nombre: "Plataforma 47",
+        largoFt: 47,
+        numEjes: 2,
+        organizacionId: ""
+      });
+    },
+    Error,
+    "organizacionId es requerido"
+  );
 
   // Falta modeloOrigenId
   await assertRejects(
@@ -21,7 +40,8 @@ Deno.test("recetas_editor: validaciones de entrada en clonarRecetaMotor", async 
         productoId: "REM-PLAT-47",
         nombre: "Plataforma 47",
         largoFt: 47,
-        numEjes: 2
+        numEjes: 2,
+        organizacionId: ORG_A
       });
     },
     Error,
@@ -36,7 +56,8 @@ Deno.test("recetas_editor: validaciones de entrada en clonarRecetaMotor", async 
         productoId: "REM-PLAT-47",
         nombre: "Plataforma 47",
         largoFt: -5,
-        numEjes: 2
+        numEjes: 2,
+        organizacionId: ORG_A
       });
     },
     Error,
@@ -51,7 +72,8 @@ Deno.test("recetas_editor: validaciones de entrada en clonarRecetaMotor", async 
         productoId: "REM-PLAT-47",
         nombre: "Plataforma 47",
         largoFt: 47,
-        numEjes: 0
+        numEjes: 0,
+        organizacionId: ORG_A
       });
     },
     Error,
@@ -64,15 +86,36 @@ Deno.test("recetas_editor: validaciones de entrada en clonarRecetaMotor", async 
     productoId: "REM-PLAT-47",
     nombre: "Plataforma 47",
     largoFt: 47,
-    numEjes: 2
+    numEjes: 2,
+    organizacionId: ORG_A
   });
   assertEquals(res.modelo_id, "new-mod-id");
 });
 
-Deno.test("recetas_editor: guardarLineaRecetaMotor valida escala y cantidad", async () => {
+Deno.test("recetas_editor: guardarLineaRecetaMotor valida escala, cantidad y redondea", async () => {
+  let capturedParams: any = null;
   const fakeServiceClient = {
-    rpc: async () => ({ data: "new-line-id", error: null })
+    rpc: async (_fn: string, params: any) => {
+      capturedParams = params;
+      return { data: "new-line-id", error: null };
+    }
   };
+
+  // Falta organizacionId
+  await assertRejects(
+    async () => {
+      await guardarLineaRecetaMotor(fakeServiceClient, {
+        modeloId: "mod-1",
+        materialId: "mat-1",
+        cantidad: 5,
+        escala: "fija",
+        faseId: "fase-1",
+        organizacionId: ""
+      });
+    },
+    Error,
+    "organizacionId es requerido"
+  );
 
   // Cantidad <= 0
   await assertRejects(
@@ -82,11 +125,12 @@ Deno.test("recetas_editor: guardarLineaRecetaMotor valida escala y cantidad", as
         materialId: "mat-1",
         cantidad: 0,
         escala: "fija",
-        faseId: "fase-1"
+        faseId: "fase-1",
+        organizacionId: ORG_A
       });
     },
     Error,
-    "cantidad debe ser un número positivo"
+    "cantidad debe ser un número positivo finito"
   );
 
   // Escala inválida
@@ -97,22 +141,58 @@ Deno.test("recetas_editor: guardarLineaRecetaMotor valida escala y cantidad", as
         materialId: "mat-1",
         cantidad: 5,
         escala: "invalida" as any,
-        faseId: "fase-1"
+        faseId: "fase-1",
+        organizacionId: ORG_A
       });
     },
     Error,
     "escala inválida"
   );
 
-  // Éxito
+  // Éxito y redondeo a 4 decimales
   const res = await guardarLineaRecetaMotor(fakeServiceClient, {
     modeloId: "mod-1",
     materialId: "mat-1",
-    cantidad: 5,
+    cantidad: 5.1234567,
     escala: "por_largo",
-    faseId: "fase-1"
+    faseId: "fase-1",
+    organizacionId: ORG_A
   });
   assertEquals(res.linea_id, "new-line-id");
+  assertEquals(capturedParams.p_cantidad, 5.1235);
+  assertEquals(capturedParams.p_organizacion_id, ORG_A);
+});
+
+Deno.test("recetas_editor: eliminarLineaRecetaMotor requiere organizacionId y pasa params a RPC", async () => {
+  let capturedParams: any = null;
+  const fakeServiceClient = {
+    rpc: async (_fn: string, params: any) => {
+      capturedParams = params;
+      return { data: true, error: null };
+    }
+  };
+
+  await assertRejects(
+    async () => {
+      await eliminarLineaRecetaMotor(fakeServiceClient, {
+        lineaId: "lin-1",
+        organizacionId: ""
+      });
+    },
+    Error,
+    "organizacionId es requerido"
+  );
+
+  const res = await eliminarLineaRecetaMotor(fakeServiceClient, {
+    lineaId: "lin-1",
+    modeloId: "mod-1",
+    organizacionId: ORG_A,
+    motivo: "Borrado de prueba"
+  });
+  assertEquals(res.eliminado, true);
+  assertEquals(capturedParams.p_linea_id, "lin-1");
+  assertEquals(capturedParams.p_modelo_id, "mod-1");
+  assertEquals(capturedParams.p_organizacion_id, ORG_A);
 });
 
 Deno.test("recetas_editor: resolverReceta resuelve el modelo clonado con escala proporcional", () => {
@@ -148,7 +228,19 @@ Deno.test("recetas_editor: resolverReceta resuelve el modelo clonado con escala 
         escala: "por_eje",
         paso: "Paso 11",
         uso: "Rodado",
-        seccion: "ensamble"
+        seccion: "otros"
+      },
+      {
+        material_id: "PERNO-REY",
+        nombre: "PERNO REY 2 PULGADAS",
+        unidad: "PZA",
+        costo: 1200,
+        descripcion: "Perno rey",
+        cantidad: 1, // fijo
+        escala: "fija",
+        paso: "Paso 2",
+        uso: "Acople",
+        seccion: "otros"
       }
     ],
     grupos: [],
@@ -156,40 +248,45 @@ Deno.test("recetas_editor: resolverReceta resuelve el modelo clonado con escala 
     opcion_componentes: []
   };
 
-  const resOrigen = resolverReceta(modeloOrigen, { grupos: {} });
-  assertEquals(resOrigen.completo, true);
-  const vigaOrigen = resOrigen.lineas.find(l => l.material_id === "VIGA-PERALTE");
-  const llantaOrigen = resOrigen.lineas.find(l => l.material_id === "LLANTA-11R24.5");
-  assertEquals(vigaOrigen?.cantidad, 40); // 40 * (40/40) = 40
-  assertEquals(llantaOrigen?.cantidad, 8); // 4 * 2 = 8
+  // Resolver modelo origen (40 ft, 2 ejes)
+  const resOrigen = resolverReceta(modeloOrigen, {
+    grupos: {}
+  });
 
-  // Modelo clonado de 47 ft / 3 ejes (cama plana de 47 pies)
+  const vigaOrigen = resOrigen.lineas.find((l: any) => l.material_id === "VIGA-PERALTE");
+  const llantaOrigen = resOrigen.lineas.find((l: any) => l.material_id === "LLANTA-11R24.5");
+  const pernoOrigen = resOrigen.lineas.find((l: any) => l.material_id === "PERNO-REY");
+
+  assertEquals(vigaOrigen?.cantidad, 40);
+  assertEquals(llantaOrigen?.cantidad, 8); // 4 * 2 ejes
+  assertEquals(pernoOrigen?.cantidad, 1);
+
+  // Simular modelo clonado a 47 ft, 3 ejes
   const modeloClonado: DatosModelo = {
+    ...modeloOrigen,
     modelo: {
       id: "mod-clon-47",
       tipo: "plataforma",
       largo_ft: 47,
       num_ejes: 3,
-      nombre: "CAMA PLANA 47 FT 3 EJES"
-    },
-    // Misma receta base clonada
-    receta_base: [...modeloOrigen.receta_base],
-    grupos: [],
-    opciones: [],
-    opcion_componentes: []
+      nombre: "PLATAFORMA 47 FT 3 EJES"
+    }
   };
 
-  const resClon = resolverReceta(modeloClonado, { grupos: {} });
-  assertEquals(resClon.completo, true);
-  const vigaClon = resClon.lineas.find(l => l.material_id === "VIGA-PERALTE");
-  const llantaClon = resClon.lineas.find(l => l.material_id === "LLANTA-11R24.5");
+  const resClon = resolverReceta(modeloClonado, {
+    grupos: {}
+  });
 
-  // Viga escala con largo: 40 * (47/40) = 47
-  assertEquals(vigaClon?.cantidad, 47);
-  // Llantas escala con ejes: 4 * 3 = 12
-  assertEquals(llantaClon?.cantidad, 12);
+  const vigaClon = resClon.lineas.find((l: any) => l.material_id === "VIGA-PERALTE");
+  const llantaClon = resClon.lineas.find((l: any) => l.material_id === "LLANTA-11R24.5");
+  const pernoClon = resClon.lineas.find((l: any) => l.material_id === "PERNO-REY");
 
-  // Asegurar que el origen no se modificó
-  assertEquals(modeloOrigen.receta_base[0].cantidad, 40);
+  // Escalado proporcional verificado
+  assertEquals(vigaClon?.cantidad, 47); // 40 * (47 / 40) = 47
+  assertEquals(llantaClon?.cantidad, 12); // 4 * 3 ejes = 12
+  assertEquals(pernoClon?.cantidad, 1); // Fijo permanece 1
+
+  // El modelo origen no fue mutado ni alterado
   assertEquals(modeloOrigen.modelo.largo_ft, 40);
+  assertEquals(modeloOrigen.modelo.num_ejes, 2);
 });

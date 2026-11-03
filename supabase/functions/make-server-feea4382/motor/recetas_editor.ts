@@ -7,6 +7,7 @@ export interface ClonarRecetaParams {
   nombre: string;
   largoFt: number;
   numEjes: number;
+  organizacionId: string;
   usuarioId?: string | null;
 }
 
@@ -16,6 +17,7 @@ export interface GuardarLineaParams {
   cantidad: number;
   escala: 'fija' | 'por_eje' | 'por_largo';
   faseId: string;
+  organizacionId: string;
   paso?: string | null;
   uso?: string | null;
   seccion?: string;
@@ -26,6 +28,8 @@ export interface GuardarLineaParams {
 
 export interface EliminarLineaParams {
   lineaId: string;
+  organizacionId: string;
+  modeloId?: string | null;
   usuarioId?: string | null;
   motivo?: string | null;
 }
@@ -40,6 +44,9 @@ export class HttpError extends Error {
 }
 
 export async function clonarRecetaMotor(serviceClient: any, params: ClonarRecetaParams) {
+  if (!params.organizacionId) {
+    throw new HttpError(400, 'organizacionId es requerido');
+  }
   if (!params.modeloOrigenId || typeof params.modeloOrigenId !== 'string') {
     throw new HttpError(400, 'modeloOrigenId es requerido');
   }
@@ -66,16 +73,17 @@ export async function clonarRecetaMotor(serviceClient: any, params: ClonarReceta
     p_nombre: nom,
     p_largo_ft: largo,
     p_num_ejes: ejes,
+    p_organizacion_id: params.organizacionId,
     p_usuario_id: params.usuarioId || null,
   });
 
   if (error) {
     const msg = error.message || '';
-    if (msg.includes('producto_id_duplicado')) {
+    if (msg.includes('producto_id_duplicado') || msg.includes('productos_pkey')) {
       throw new HttpError(409, `La clave de producto ${prodId} ya existe en el catálogo`);
     }
     if (msg.includes('modelo_origen_no_encontrado')) {
-      throw new HttpError(404, 'Modelo origen no encontrado');
+      throw new HttpError(404, 'Modelo origen no encontrado en la organización');
     }
     throw new HttpError(500, msg);
   }
@@ -83,19 +91,23 @@ export async function clonarRecetaMotor(serviceClient: any, params: ClonarReceta
   return { modelo_id: data };
 }
 
-export async function obtenerRecetaMotor(supabase: any, modeloId: string) {
+export async function obtenerRecetaMotor(supabase: any, orgId: string, modeloId: string) {
+  if (!orgId) {
+    throw new HttpError(400, 'organizacionId es requerido');
+  }
   if (!modeloId) {
     throw new HttpError(400, 'modeloId es requerido');
   }
 
   const { data: modelo, error: modErr } = await supabase
     .from('modelos')
-    .select('id, tipo, largo_ft, num_ejes, producto_id, costos_derivados_de, activo, productos(nombre)')
+    .select('id, tipo, largo_ft, num_ejes, producto_id, costos_derivados_de, activo, organizacion_id, productos(nombre)')
     .eq('id', modeloId)
+    .eq('organizacion_id', orgId)
     .single();
 
   if (modErr || !modelo) {
-    throw new HttpError(404, 'Modelo no encontrado');
+    throw new HttpError(404, 'Modelo no encontrado en la organización');
   }
 
   const { data: lineas, error: linErr } = await supabase
@@ -150,12 +162,16 @@ export async function obtenerRecetaMotor(supabase: any, modeloId: string) {
 }
 
 export async function guardarLineaRecetaMotor(serviceClient: any, params: GuardarLineaParams) {
+  if (!params.organizacionId) throw new HttpError(400, 'organizacionId es requerido');
   if (!params.modeloId) throw new HttpError(400, 'modeloId es requerido');
   if (!params.materialId) throw new HttpError(400, 'materialId es requerido');
-  const cant = Number(params.cantidad);
-  if (!Number.isFinite(cant) || cant <= 0) {
-    throw new HttpError(400, 'cantidad debe ser un número positivo');
+
+  const rawCant = Number(params.cantidad);
+  if (!Number.isFinite(rawCant) || rawCant <= 0) {
+    throw new HttpError(400, 'cantidad debe ser un número positivo finito');
   }
+  const cant = Math.round(rawCant * 10000) / 10000;
+
   if (!['fija', 'por_eje', 'por_largo'].includes(params.escala)) {
     throw new HttpError(400, 'escala inválida: debe ser fija, por_eje o por_largo');
   }
@@ -167,6 +183,7 @@ export async function guardarLineaRecetaMotor(serviceClient: any, params: Guarda
     p_cantidad: cant,
     p_escala: params.escala,
     p_fase_id: params.faseId,
+    p_organizacion_id: params.organizacionId,
     p_paso: params.paso || null,
     p_uso: params.uso || null,
     p_seccion: params.seccion || 'ensamble',
@@ -177,8 +194,12 @@ export async function guardarLineaRecetaMotor(serviceClient: any, params: Guarda
 
   if (error) {
     const msg = error.message || '';
-    if (msg.includes('material_no_encontrado')) throw new HttpError(404, 'Material no encontrado');
-    if (msg.includes('modelo_no_encontrado')) throw new HttpError(404, 'Modelo no encontrado');
+    if (msg.includes('material_no_encontrado')) throw new HttpError(404, 'Material no encontrado en la organización');
+    if (msg.includes('modelo_no_encontrado')) throw new HttpError(404, 'Modelo no encontrado en la organización');
+    if (msg.includes('fase_no_encontrada')) throw new HttpError(404, 'Fase no encontrada en la organización');
+    if (msg.includes('linea_no_encontrada')) throw new HttpError(404, 'Línea de receta no encontrada en el modelo');
+    if (msg.includes('cantidad_invalida')) throw new HttpError(400, 'La cantidad debe ser mayor a cero');
+    if (msg.includes('escala_invalida')) throw new HttpError(400, 'Escala inválida');
     throw new HttpError(500, msg);
   }
 
@@ -186,22 +207,28 @@ export async function guardarLineaRecetaMotor(serviceClient: any, params: Guarda
 }
 
 export async function eliminarLineaRecetaMotor(serviceClient: any, params: EliminarLineaParams) {
+  if (!params.organizacionId) throw new HttpError(400, 'organizacionId es requerido');
   if (!params.lineaId) throw new HttpError(400, 'lineaId es requerido');
 
   const { data, error } = await serviceClient.rpc('eliminar_linea_receta', {
     p_linea_id: params.lineaId,
+    p_organizacion_id: params.organizacionId,
+    p_modelo_id: params.modeloId || null,
     p_usuario_id: params.usuarioId || null,
     p_motivo: params.motivo || null,
   });
 
   if (error) {
-    throw new HttpError(500, error.message);
+    const msg = error.message || '';
+    if (msg.includes('linea_no_encontrada')) throw new HttpError(404, 'Línea de receta no encontrada en la organización');
+    throw new HttpError(500, msg);
   }
 
   return { eliminado: Boolean(data) };
 }
 
-export async function obtenerHistorialRecetaMotor(supabase: any, modeloId: string) {
+export async function obtenerHistorialRecetaMotor(supabase: any, orgId: string, modeloId: string) {
+  if (!orgId) throw new HttpError(400, 'organizacionId es requerido');
   if (!modeloId) throw new HttpError(400, 'modeloId es requerido');
 
   const { data, error } = await supabase
@@ -220,15 +247,21 @@ export async function obtenerHistorialRecetaMotor(supabase: any, modeloId: strin
       created_at,
       productos (nombre)
     `)
+    .eq('organizacion_id', orgId)
     .eq('modelo_id', modeloId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(501);
 
   if (error) {
     throw new HttpError(500, error.message);
   }
 
+  const truncado = (data || []).length > 500;
+  const items = truncado ? (data || []).slice(0, 500) : (data || []);
+
   return {
-    historial: (data || []).map((h: any) => ({
+    truncado,
+    historial: items.map((h: any) => ({
       ...h,
       material_nombre: h.productos?.nombre || null,
     })),

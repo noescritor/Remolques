@@ -3,6 +3,29 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - Sub-bloque T6 (Ronda 2): Correcciones de auditoría RLS, validación tenant, clonación sin costo hardcodeado y endpoints
+**Herramienta:** Antigravity  
+**Tipo:** fix (recetas, rls auditoria solo select, aislamiento tenant funciones plpgsql, validacion duplicados global, clonacion sin costo inventado, endpoints autorizacion)  
+**Rama:** `noche-t6-editor-recetas`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_04_editor_recetas.sql` (política RLS en `receta_base_historial` estrictamente `FOR SELECT TO authenticated` eliminando cualquier política permisiva `FOR ALL`; `clonar_receta_modelo` valida unicidad global en `productos`, no inserta columna inexistente `activo` en `productos`, asigna `costo = NULL`, copia `organizacion_id` a costos y procesos; `guardar_linea_receta` valida `organizacion_id`, pertenencia de modelo, material y fase al tenant, valida `cantidad > 0` y no NaN, redondea cantidad a 4 decimales; `eliminar_linea_receta` verifica pertenencia de la línea a la organización del usuario antes de borrar).
+- `docs/recetas/verificacion_T6.sql` (verificador actualizado con comprobación de `politicas_no_select = 0` y `todo_ok = true`).
+- `docs/recetas/prueba_T6.sql` (prueba transaccional corregida para utilizar esquema real de `organizaciones` y `fases_despiece`, validación cruzada entre 2 organizaciones y 0 errores).
+- `supabase/functions/make-server-feea4382/motor/recetas_editor.ts` (manejo de `organizacionId`, mapeo de errores SQL a códigos HTTP semánticos, redondeo a 4 decimales y truncado de historial a 500 registros).
+- `supabase/functions/make-server-feea4382/motor/recetas_editor.test.ts` (pruebas unitarias ampliadas con validación multi-tenant, redondeo y escalado proporcional).
+- `supabase/functions/make-server-feea4382/index.ts` (filtros multi-tenant en `GET /productos` y nuevo endpoint `GET /fases-despiece`, validación de permisos de edición `verificarPermisoEdicion` devolviendo 403 en todas las rutas de mutación de recetas).
+- `src/app/components/CatalogoCostos/RecetasEditorTab.tsx` (reemplazo de `BASE_URL` hardcodeado por importación centralizada de `../../utils/api`, formateo de fechas con timeZone `America/Mexico_City`).
+**Qué cambió y por qué:**  
+- **1. Política RLS estricta en auditoría (Hallazgo 1):** `receta_base_historial` ahora cuenta únicamente con política `FOR SELECT`. Se eliminó cualquier política `FOR ALL` o escritura directa vía PostgREST para impedir manipulación de bitácoras; todas las escrituras se realizan exclusivamente mediante las RPCs seguras en `SECURITY DEFINER`.
+- **2. Clonación limpia y validaciones (Hallazgo 2):** Se eliminó la asignación de costo hardcodeado (`costo` se mantiene en `NULL`), se eliminó la columna `activo` en inserción a `productos`, se asegura que `costos_modelo` y `procesos_manufactura` pertenezcan a la organización invocante, y se valida unicidad global de `producto_id` antes de crear registros.
+- **3. Integridad multi-inquilino en líneas (Hallazgos 3 y 4):** `guardar_linea_receta` y `eliminar_linea_receta` requieren `p_organizacion_id` y comprueban que modelo, material y fase pertenezcan estrictamente al mismo tenant, bloqueando manipulaciones entre organizaciones y redondeando cantidades a 4 decimales.
+- **4. Endpoints y Autorización en Deno (Hallazgo 5):** Se añadió verificación de rol/permiso `verificarPermisoEdicion` en todas las rutas de mutación (`POST /recetas/clonar`, `POST /recetas/:modeloId/lineas`, `PUT /recetas/:modeloId/lineas/:id`, `DELETE /recetas/:modeloId/lineas/:id`), devolviendo 403 Forbidden cuando el usuario carece de privilegios. Se enriqueció `GET /productos` con búsqueda y filtrado por tenant y se añadió `GET /fases-despiece`.
+- **5. Frontend React (Hallazgo 6):** Se eliminó la URL hardcodeada `http://localhost:8000` utilizando `BASE_URL` de la configuración de la app, y se ajustó la visualización de fechas de auditoría en la zona horaria oficial `America/Mexico_City`.
+**Acciones manuales pendientes:**  
+- Correr `supabase/migrations/20261102_04_editor_recetas.sql` en SQL Editor de Supabase.  
+- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
+- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.  
+
 ## 2026-11-02 - Sub-bloque T6 (Noche): Editor de recetas creadas por el usuario, clonación de modelos y auditoría
 **Herramienta:** Antigravity  
 **Tipo:** feat (modelos, recetas, clonacion, editor por fases, costos derivados, auditoria, migracion sql, backend hono, ui react)  

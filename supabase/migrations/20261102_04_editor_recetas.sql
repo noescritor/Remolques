@@ -22,19 +22,25 @@ CREATE TABLE IF NOT EXISTS public.receta_base_historial (
 
 ALTER TABLE public.receta_base_historial ENABLE ROW LEVEL SECURITY;
 
+-- Políticas RLS: SOLO SELECT para usuarios autenticados mediante get_current_org_id().
+-- Ninguna mutación directa (INSERT, UPDATE, DELETE) permitida a authenticated; solo funciones SECURITY DEFINER o service_role.
 DROP POLICY IF EXISTS "receta_historial_org_select" ON public.receta_base_historial;
+DROP POLICY IF EXISTS "receta_historial_org_all" ON public.receta_base_historial;
+
 CREATE POLICY "receta_historial_org_select" ON public.receta_base_historial
     FOR SELECT TO authenticated
-    USING (organizacion_id = (SELECT organizacion_id FROM public.usuarios WHERE id = auth.uid()));
-
-DROP POLICY IF EXISTS "receta_historial_org_all" ON public.receta_base_historial;
-CREATE POLICY "receta_historial_org_all" ON public.receta_base_historial
-    FOR ALL TO authenticated
-    USING (organizacion_id = (SELECT organizacion_id FROM public.usuarios WHERE id = auth.uid()))
-    WITH CHECK (organizacion_id = (SELECT organizacion_id FROM public.usuarios WHERE id = auth.uid()));
+    USING (organizacion_id = get_current_org_id());
 
 CREATE INDEX IF NOT EXISTS idx_receta_hist_modelo ON public.receta_base_historial(modelo_id);
 CREATE INDEX IF NOT EXISTS idx_receta_hist_org ON public.receta_base_historial(organizacion_id);
+
+-- Limpieza de sobrecargas previas de funciones RPC
+DROP FUNCTION IF EXISTS public.clonar_receta_modelo(UUID, TEXT, TEXT, NUMERIC, INT, UUID);
+DROP FUNCTION IF EXISTS public.clonar_receta_modelo(UUID, TEXT, TEXT, NUMERIC, INT, UUID, UUID);
+DROP FUNCTION IF EXISTS public.guardar_linea_receta(UUID, TEXT, NUMERIC, TEXT, UUID, TEXT, TEXT, TEXT, UUID, UUID, TEXT);
+DROP FUNCTION IF EXISTS public.guardar_linea_receta(UUID, TEXT, NUMERIC, TEXT, UUID, UUID, TEXT, TEXT, TEXT, UUID, UUID, TEXT);
+DROP FUNCTION IF EXISTS public.eliminar_linea_receta(UUID, UUID, TEXT);
+DROP FUNCTION IF EXISTS public.eliminar_linea_receta(UUID, UUID, UUID, UUID, TEXT);
 
 -- 2. Función Atómica: Clonar Receta a un Nuevo Modelo
 CREATE OR REPLACE FUNCTION public.clonar_receta_modelo(
@@ -43,6 +49,7 @@ CREATE OR REPLACE FUNCTION public.clonar_receta_modelo(
     p_nombre TEXT,
     p_largo_ft NUMERIC,
     p_num_ejes INT,
+    p_organizacion_id UUID,
     p_usuario_id UUID DEFAULT NULL
 )
 RETURNS UUID
@@ -56,37 +63,35 @@ DECLARE
     v_nuevo_modelo_id UUID;
     v_count_lineas INT := 0;
 BEGIN
-    -- Validar modelo origen y obtener organización y tipo
+    -- Validar modelo origen y verificar que pertenece a p_organizacion_id
     SELECT organizacion_id, tipo INTO v_org_id, v_tipo
     FROM public.modelos
-    WHERE id = p_modelo_origen_id;
+    WHERE id = p_modelo_origen_id AND organizacion_id = p_organizacion_id;
 
     IF v_org_id IS NULL THEN
-        RAISE EXCEPTION 'modelo_origen_no_encontrado: El modelo especificado no existe';
+        RAISE EXCEPTION 'modelo_origen_no_encontrado: El modelo especificado no existe o pertenece a otra organización';
     END IF;
 
-    -- Validar que no exista ya el producto_id en la organización
-    IF EXISTS (SELECT 1 FROM public.productos WHERE id = p_producto_id AND organizacion_id = v_org_id) THEN
+    -- Validar que no exista ya el producto_id en el catálogo (la PK es global)
+    IF EXISTS (SELECT 1 FROM public.productos WHERE id = p_producto_id) THEN
         RAISE EXCEPTION 'producto_id_duplicado: La clave % ya existe en el catálogo', p_producto_id;
     END IF;
 
-    -- 1. Insertar en productos (tipo producto_terminado)
+    -- 1. Insertar en productos (tipo producto_terminado, sin columna 'activo', costo NULL por catálogo sin precio)
     INSERT INTO public.productos (
         id,
         organizacion_id,
         nombre,
         tipo_item,
-        activo,
         unidad,
         costo
     ) VALUES (
         p_producto_id,
-        v_org_id,
+        p_organizacion_id,
         p_nombre,
         'producto_terminado',
-        true,
         'PZA',
-        0
+        NULL
     );
 
     -- 2. Insertar en modelos derivado del origen
@@ -99,7 +104,7 @@ BEGIN
         costos_derivados_de,
         activo
     ) VALUES (
-        v_org_id,
+        p_organizacion_id,
         p_producto_id,
         v_tipo,
         p_largo_ft,
@@ -137,14 +142,15 @@ BEGIN
 
     GET DIAGNOSTICS v_count_lineas = ROW_COUNT;
 
-    -- 4. Clonar costos_modelo y procesos_manufactura
+    -- 4. Clonar costos_modelo y procesos_manufactura (copiando organizacion_id)
     INSERT INTO public.costos_modelo (
         modelo_id,
         seccion,
         concepto,
         cantidad,
         costo_unitario,
-        escala
+        escala,
+        organizacion_id
     )
     SELECT
         v_nuevo_modelo_id,
@@ -152,7 +158,8 @@ BEGIN
         concepto,
         cantidad,
         costo_unitario,
-        escala
+        escala,
+        p_organizacion_id
     FROM public.costos_modelo
     WHERE modelo_id = p_modelo_origen_id;
 
@@ -162,7 +169,8 @@ BEGIN
         proceso,
         subproceso,
         minutos,
-        tarifa_hora
+        tarifa_hora,
+        organizacion_id
     )
     SELECT
         v_nuevo_modelo_id,
@@ -170,7 +178,8 @@ BEGIN
         proceso,
         subproceso,
         minutos,
-        tarifa_hora
+        tarifa_hora,
+        p_organizacion_id
     FROM public.procesos_manufactura
     WHERE modelo_id = p_modelo_origen_id;
 
@@ -183,7 +192,7 @@ BEGIN
         usuario_id,
         motivo
     ) VALUES (
-        v_org_id,
+        p_organizacion_id,
         v_nuevo_modelo_id,
         'clonar_modelo',
         jsonb_build_object(
@@ -202,9 +211,8 @@ BEGIN
 END;
 $$;
 
--- Permisos de la función de clonación
-REVOKE ALL ON FUNCTION public.clonar_receta_modelo(UUID, TEXT, TEXT, NUMERIC, INT, UUID) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.clonar_receta_modelo(UUID, TEXT, TEXT, NUMERIC, INT, UUID) TO service_role;
+REVOKE ALL ON FUNCTION public.clonar_receta_modelo(UUID, TEXT, TEXT, NUMERIC, INT, UUID, UUID) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.clonar_receta_modelo(UUID, TEXT, TEXT, NUMERIC, INT, UUID, UUID) TO service_role;
 
 -- 3. Función Atómica: Guardar o Modificar Línea de Receta
 CREATE OR REPLACE FUNCTION public.guardar_linea_receta(
@@ -213,6 +221,7 @@ CREATE OR REPLACE FUNCTION public.guardar_linea_receta(
     p_cantidad NUMERIC,
     p_escala TEXT,
     p_fase_id UUID,
+    p_organizacion_id UUID,
     p_paso TEXT DEFAULT NULL,
     p_uso TEXT DEFAULT NULL,
     p_seccion TEXT DEFAULT 'ensamble',
@@ -230,25 +239,39 @@ DECLARE
     v_res_linea_id UUID;
     v_ant_data JSONB := NULL;
     v_accion TEXT;
+    v_cant_redondeada NUMERIC;
 BEGIN
     -- Validar modelo y organización
-    SELECT organizacion_id INTO v_org_id FROM public.modelos WHERE id = p_modelo_id;
+    SELECT organizacion_id INTO v_org_id 
+    FROM public.modelos 
+    WHERE id = p_modelo_id AND organizacion_id = p_organizacion_id;
+
     IF v_org_id IS NULL THEN
-        RAISE EXCEPTION 'modelo_no_encontrado: El modelo especificado no existe';
+        RAISE EXCEPTION 'modelo_no_encontrado: El modelo especificado no existe o pertenece a otra organización';
     END IF;
 
     -- Validar que el material exista en la misma organización
-    IF NOT EXISTS (SELECT 1 FROM public.productos WHERE id = p_material_id AND organizacion_id = v_org_id) THEN
+    IF NOT EXISTS (SELECT 1 FROM public.productos WHERE id = p_material_id AND organizacion_id = p_organizacion_id) THEN
         RAISE EXCEPTION 'material_no_encontrado: La materia prima % no existe en la organización', p_material_id;
     END IF;
 
     -- Validar escala
-    IF p_escala NOT IN ('fija', 'por_eje', 'por_largo') THEN
+    IF p_escala IS NULL OR p_escala NOT IN ('fija', 'por_eje', 'por_largo') THEN
         RAISE EXCEPTION 'escala_invalida: La escala debe ser fija, por_eje o por_largo';
     END IF;
 
-    IF p_cantidad <= 0 THEN
-        RAISE EXCEPTION 'cantidad_invalida: La cantidad debe ser mayor a cero';
+    -- Validar cantidad
+    IF p_cantidad IS NULL OR p_cantidad = 'NaN'::numeric OR p_cantidad <= 0 THEN
+        RAISE EXCEPTION 'cantidad_invalida: La cantidad debe ser mayor a cero y no NaN';
+    END IF;
+
+    v_cant_redondeada := round(p_cantidad, 4);
+
+    -- Validar fase si se especifica
+    IF p_fase_id IS NOT NULL AND NOT EXISTS (
+        SELECT 1 FROM public.fases_despiece WHERE id = p_fase_id AND organizacion_id = p_organizacion_id
+    ) THEN
+        RAISE EXCEPTION 'fase_no_encontrada: La fase especificada no existe en la organización';
     END IF;
 
     IF p_linea_id IS NULL THEN
@@ -266,7 +289,7 @@ BEGIN
         ) VALUES (
             p_modelo_id,
             p_material_id,
-            p_cantidad,
+            v_cant_redondeada,
             p_escala,
             p_paso,
             p_uso,
@@ -279,25 +302,26 @@ BEGIN
         v_res_linea_id := p_linea_id;
 
         SELECT jsonb_build_object(
-            'material_id', material_id,
-            'cantidad', cantidad,
-            'escala', escala,
-            'paso', paso,
-            'uso', uso,
-            'seccion', seccion,
-            'fase_id', fase_id
+            'material_id', rb.material_id,
+            'cantidad', rb.cantidad,
+            'escala', rb.escala,
+            'paso', rb.paso,
+            'uso', rb.uso,
+            'seccion', rb.seccion,
+            'fase_id', rb.fase_id
         ) INTO v_ant_data
-        FROM public.receta_base
-        WHERE id = p_linea_id AND modelo_id = p_modelo_id;
+        FROM public.receta_base rb
+        JOIN public.modelos m ON m.id = rb.modelo_id
+        WHERE rb.id = p_linea_id AND rb.modelo_id = p_modelo_id AND m.organizacion_id = p_organizacion_id;
 
         IF v_ant_data IS NULL THEN
-            RAISE EXCEPTION 'linea_no_encontrada: La línea de receta % no existe', p_linea_id;
+            RAISE EXCEPTION 'linea_no_encontrada: La línea de receta % no existe o no pertenece al modelo', p_linea_id;
         END IF;
 
         UPDATE public.receta_base
         SET
             material_id = p_material_id,
-            cantidad = p_cantidad,
+            cantidad = v_cant_redondeada,
             escala = p_escala,
             paso = p_paso,
             uso = p_uso,
@@ -320,7 +344,7 @@ BEGIN
         usuario_id,
         motivo
     ) VALUES (
-        v_org_id,
+        p_organizacion_id,
         p_modelo_id,
         v_res_linea_id,
         v_accion,
@@ -329,7 +353,7 @@ BEGIN
         v_ant_data,
         jsonb_build_object(
             'material_id', p_material_id,
-            'cantidad', p_cantidad,
+            'cantidad', v_cant_redondeada,
             'escala', p_escala,
             'paso', p_paso,
             'uso', p_uso,
@@ -344,12 +368,14 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.guardar_linea_receta(UUID, TEXT, NUMERIC, TEXT, UUID, TEXT, TEXT, TEXT, UUID, UUID, TEXT) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.guardar_linea_receta(UUID, TEXT, NUMERIC, TEXT, UUID, TEXT, TEXT, TEXT, UUID, UUID, TEXT) TO service_role;
+REVOKE ALL ON FUNCTION public.guardar_linea_receta(UUID, TEXT, NUMERIC, TEXT, UUID, UUID, TEXT, TEXT, TEXT, UUID, UUID, TEXT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.guardar_linea_receta(UUID, TEXT, NUMERIC, TEXT, UUID, UUID, TEXT, TEXT, TEXT, UUID, UUID, TEXT) TO service_role;
 
 -- 4. Función Atómica: Eliminar Línea de Receta
 CREATE OR REPLACE FUNCTION public.eliminar_linea_receta(
     p_linea_id UUID,
+    p_organizacion_id UUID,
+    p_modelo_id UUID DEFAULT NULL,
     p_usuario_id UUID DEFAULT NULL,
     p_motivo TEXT DEFAULT NULL
 )
@@ -382,10 +408,12 @@ BEGIN
     INTO v_org_id, v_modelo_id, v_material_id, v_fase_id, v_ant_data
     FROM public.receta_base rb
     JOIN public.modelos m ON m.id = rb.modelo_id
-    WHERE rb.id = p_linea_id;
+    WHERE rb.id = p_linea_id 
+      AND m.organizacion_id = p_organizacion_id
+      AND (p_modelo_id IS NULL OR rb.modelo_id = p_modelo_id);
 
     IF v_ant_data IS NULL THEN
-        RAISE EXCEPTION 'linea_no_encontrada: La línea % no existe', p_linea_id;
+        RAISE EXCEPTION 'linea_no_encontrada: La línea % no existe en la organización especificada', p_linea_id;
     END IF;
 
     DELETE FROM public.receta_base WHERE id = p_linea_id;
@@ -402,7 +430,7 @@ BEGIN
         usuario_id,
         motivo
     ) VALUES (
-        v_org_id,
+        p_organizacion_id,
         v_modelo_id,
         p_linea_id,
         'eliminar_linea',
@@ -417,7 +445,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.eliminar_linea_receta(UUID, UUID, TEXT) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.eliminar_linea_receta(UUID, UUID, TEXT) TO service_role;
+REVOKE ALL ON FUNCTION public.eliminar_linea_receta(UUID, UUID, UUID, UUID, TEXT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.eliminar_linea_receta(UUID, UUID, UUID, UUID, TEXT) TO service_role;
 
 COMMIT;
