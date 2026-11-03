@@ -134,17 +134,40 @@ export async function obtenerCatalogoCotizador(supabase: any, orgId: string) {
   }
 
   const aceros = (acerosRaw || []).map((a: any) => {
-    const precios = (a.precios || []).slice().sort((p1: any, p2: any) =>
-      String(p2.actualizado_el || "").localeCompare(String(p1.actualizado_el || ""))
-    );
+    // REGLA DETERMINISTA DE RESOLUCIÓN DE PRECIOS:
+    // 1. Menor precio válido (> 0) primero (costo más competitivo de referencia)
+    // 2. Desempate alfabético estricto por proveedor (A-Z) para evitar azar cuando coinciden precios y actualizado_el
+    // 3. Desempate secundario por fecha de actualización más reciente
+    const precios = (a.precios || []).slice().sort((p1: any, p2: any) => {
+      const pr1 = p1.precio !== null && p1.precio !== undefined ? Number(p1.precio) : Infinity;
+      const pr2 = p2.precio !== null && p2.precio !== undefined ? Number(p2.precio) : Infinity;
+      if (pr1 !== pr2) {
+        return pr1 - pr2;
+      }
+      const prov1 = String(p1.proveedor || "").trim().toLowerCase();
+      const prov2 = String(p2.proveedor || "").trim().toLowerCase();
+      if (prov1 !== prov2) {
+        return prov1.localeCompare(prov2);
+      }
+      return String(p2.actualizado_el || "").localeCompare(String(p1.actualizado_el || ""));
+    });
+
     const precioVigente =
-      precios.length > 0 && precios[0].precio !== null && precios[0].precio !== undefined
+      precios.length > 0 && precios[0].precio !== null && precios[0].precio !== undefined && Number(precios[0].precio) !== Infinity
         ? Number(precios[0].precio)
         : null;
     const proveedorVigente = precios.length > 0 ? precios[0].proveedor : null;
     const incluyeIva = precios.length > 0 ? Boolean(precios[0].incluye_iva) : null;
     const fuente = precios.length > 0 ? (precios[0].fuente || "manual") : "sin_precio";
-    const unidad = (a.ancho_ft && a.largo_ft) ? "placa" : "kg";
+
+    // Unidad realista: no forzar 'kg' a perfiles vendidos por pieza o tramo comercial
+    let unidad = "pz / tramo";
+    if (a.ancho_ft && a.largo_ft) {
+      unidad = "placa";
+    } else if (/6\.10m|12\.20m|tramo|tubo|ptr|canal|angulo|solera|redondo|cuadrado/i.test(a.nombre || "")) {
+      unidad = "tramo";
+    }
+
     const dimensionesTexto =
       `${a.ancho_ft ? `${a.ancho_ft} ft` : ''} ${a.largo_ft ? `x ${a.largo_ft} ft` : ''}`.trim() || null;
 
@@ -161,9 +184,9 @@ export async function obtenerCatalogoCotizador(supabase: any, orgId: string) {
       largo_ft: a.largo_ft,
       unidad,
       precio: precioVigente,
-      precio_por_kg: precioVigente,
       proveedor: proveedorVigente,
       incluye_iva: incluyeIva,
+      total_proveedores: precios.length,
       precios_todos: precios.map((p: any) => ({
         id: p.id,
         proveedor: p.proveedor,

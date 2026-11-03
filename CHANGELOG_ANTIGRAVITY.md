@@ -3,6 +3,26 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-03 - Sub-bloque T1 (Corrección Ronda 3): Resolución determinista de precio mínimo de aceros, unidades tramo/placa y visor enriquecido
+**Herramienta:** Antigravity  
+**Tipo:** fix (catalogo_productos, precios_aceros, unidades_reales, tabla_cotizador, documentacion)  
+**Rama:** `noche-t1-catalogo`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.ts`:
+  - Resolución determinista de precio vigente para aceros cuando existen múltiples cotizaciones con la misma fecha de actualización (`actualizado_el` idéntico): toma el precio mínimo positivo (`precio > 0`), con desempate alfabético estricto por nombre de proveedor (`A-Z`) y secundario por fecha.
+  - Derivación realista de `unidad`: asigna `"placa"` si tiene ancho y largo ft, y `"tramo"` si es perfil longitudinal (6.10m, 12.20m, PTR, ángulo, canal, tubo, etc.), eliminando la forzatura de `"kg"`.
+  - Retiro del alias engañoso `precio_por_kg` y exposición de `total_proveedores` y `precios_todos` con el desglose completo de cotizaciones por proveedor.
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.test.ts`:
+  - Pruebas unitarias actualizadas simulando el caso real de la base de datos (23 materiales con idéntico `actualizado_el` y múltiples cotizaciones de proveedores como TANOS, FORTACERO, SERVIACERO), verificando selección de menor precio, desempate alfabético y unidades tramo/placa.
+- `src/app/components/Productos/ProductosList.tsx`:
+  - Tabla de Aceros del Cotizador actualizada: columnas "Material", "Tipo", "Dimensiones / Calibre", "Unidad", "Precio Vigente (mínimo)", "Proveedor Vigente", "IVA incl.", "Otros Precios / Proveedores", "Fuente".
+  - Retiradas columnas que no existen en el esquema real ("Peso", "Precio / metro").
+  - Agregado badge con conteo y tooltip/desglose de cotizaciones alternas de proveedores.
+- `docs/diagnostico/CATALOGO_PRODUCTOS.md`:
+  - Actualizado con hallazgos de Ronda 3: aclaración de que `productos` tiene 512 filas (la causa del síntoma no era corte a 1000 sino 501 productos con `categoria_id = NULL`), documentación de la regla de precio mínimo y unidades de aceros, y regla de prioridad de costos en opciones de configuración (`tipo_modelo = 'plataforma'` > primer costo disponible).
+**Acciones manuales pendientes:**
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel.
+
 ## 2026-11-02 - Sub-bloque T1 (Corrección Ronda 2): Alineación a esquema real de acero_precios, orden determinista y formatearErrorRespuesta
 **Herramienta:** Antigravity  
 **Tipo:** fix (catalogo_productos, esquema real acero_precios, formatearErrorRespuesta, ordenamiento determinista, sql diagnostico)  

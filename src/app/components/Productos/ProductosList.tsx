@@ -638,16 +638,18 @@ export function ProductosList({
                             <th className="p-3">Material</th>
                             <th className="p-3">Tipo</th>
                             <th className="p-3">Dimensiones / Calibre</th>
-                            <th className="p-3 text-right">Peso (kg/m o kg/pz)</th>
-                            <th className="p-3 text-right">Precio / kg</th>
-                            <th className="p-3 text-right">Precio / metro</th>
+                            <th className="p-3">Unidad</th>
+                            <th className="p-3 text-right">Precio Vigente (mínimo)</th>
+                            <th className="p-3">Proveedor Vigente</th>
+                            <th className="p-3 text-center">IVA incl.</th>
+                            <th className="p-3">Otros Precios / Proveedores</th>
                             <th className="p-3">Fuente</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-border/50">
                           {acerosFiltrados.length === 0 ? (
                             <tr>
-                              <td colSpan={7} className="p-8 text-center text-muted-foreground">
+                              <td colSpan={9} className="p-8 text-center text-muted-foreground">
                                 No se encontraron aceros o materiales
                               </td>
                             </tr>
@@ -657,12 +659,44 @@ export function ProductosList({
                                 <td className="p-3 font-medium text-foreground">{a.nombre}</td>
                                 <td className="p-3 text-muted-foreground uppercase">{a.tipo_material}</td>
                                 <td className="p-3 font-mono">{a.dimensiones_texto || a.espesor_in || '-'}</td>
-                                <td className="p-3 font-mono text-right">{a.peso_kg_m ? `${a.peso_kg_m} kg` : '-'}</td>
-                                <td className="p-3 font-mono text-right font-medium text-primary">
-                                  {a.precio_por_kg ? formatearMoneda(a.precio_por_kg) : '-'}
+                                <td className="p-3 font-mono">
+                                  <Badge variant="outline" className="text-[10px] uppercase font-mono">
+                                    {a.unidad || 'tramo'}
+                                  </Badge>
                                 </td>
-                                <td className="p-3 font-mono text-right">
-                                  {a.precio_por_metro ? formatearMoneda(a.precio_por_metro) : '-'}
+                                <td className="p-3 font-mono text-right font-medium text-primary">
+                                  {a.precio != null ? formatearMoneda(a.precio) : '-'}
+                                </td>
+                                <td className="p-3 font-medium text-foreground">
+                                  {a.proveedor || '-'}
+                                </td>
+                                <td className="p-3 text-center font-mono">
+                                  {a.incluye_iva === true ? (
+                                    <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary border-primary/20">
+                                      Sí
+                                    </Badge>
+                                  ) : a.incluye_iva === false ? (
+                                    <span className="text-muted-foreground text-[11px]">No</span>
+                                  ) : (
+                                    <span className="text-muted-foreground text-[11px]">-</span>
+                                  )}
+                                </td>
+                                <td className="p-3">
+                                  {a.precios_todos && a.precios_todos.length > 1 ? (
+                                    <div className="flex flex-col gap-0.5">
+                                      <Badge variant="secondary" className="text-[10px] w-fit font-normal">
+                                        {a.precios_todos.length} proveedores
+                                      </Badge>
+                                      <span
+                                        className="text-[10px] text-muted-foreground truncate max-w-[220px]"
+                                        title={a.precios_todos.map((p: any) => `${p.proveedor}: ${formatearMoneda(p.precio)}`).join(' | ')}
+                                      >
+                                        {a.precios_todos.map((p: any) => `${p.proveedor}: ${formatearMoneda(p.precio)}`).join(', ')}
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <span className="text-muted-foreground text-[11px]">1 cotización</span>
+                                  )}
                                 </td>
                                 <td className="p-3">
                                   <Badge variant="outline" className="text-[10px]">

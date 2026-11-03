@@ -185,21 +185,79 @@ Deno.test("catalogo_productos - 3. Catálogo del cotizador unifica aceros y opci
           precios: [
             {
               id: "pr-1",
+              proveedor: "PROVEEDOR CARO",
+              precio: 1300.00,
+              incluye_iva: false,
+              fuente: "lote_acero_2026",
+              actualizado_el: "2026-10-26T16:43:19.405Z",
+              notas: "Precio alto",
+            },
+            {
+              id: "pr-2",
               proveedor: "ACEROS NACIONALES",
               precio: 1250.50,
               incluye_iva: true,
               fuente: "lote_acero_2026",
-              actualizado_el: "2026-10-28T12:00:00Z",
-              notas: "Precio vigente",
+              // EXACTAMENTE LA MISMA FECHA DE ACTUALIZACIÓN:
+              actualizado_el: "2026-10-26T16:43:19.405Z",
+              notas: "Precio mínimo",
+            },
+          ],
+        },
+        // Caso real reproducido: 3 proveedores con el mismo actualizado_el y unidad tramo
+        {
+          id: "acero-angulo",
+          organizacion_id: ORG_ID,
+          nombre: "Angulo 3/16 X 1-1/2 a 6.10m",
+          tipo: "perfil",
+          ancho_ft: null,
+          largo_ft: null,
+          activo: true,
+          precios: [
+            {
+              id: "pr-tanos",
+              proveedor: "TANOS",
+              precio: 897.64,
+              incluye_iva: true,
+              actualizado_el: "2026-10-26T16:43:19.405Z",
             },
             {
-              id: "pr-2",
-              proveedor: "PROVEEDOR SECUNDARIO",
-              precio: 1300.00,
-              incluye_iva: false,
-              fuente: "cotizacion_anterior",
-              actualizado_el: "2026-10-15T09:00:00Z",
-              notas: "Precio histórico",
+              id: "pr-fortacero",
+              proveedor: "FORTACERO",
+              precio: 417.45,
+              incluye_iva: true,
+              actualizado_el: "2026-10-26T16:43:19.405Z",
+            },
+            {
+              id: "pr-serviacero",
+              proveedor: "SERVIACERO",
+              precio: 394.49,
+              incluye_iva: true,
+              actualizado_el: "2026-10-26T16:43:19.405Z",
+            },
+          ],
+        },
+        // Caso de empate de precio y fecha: desempate alfabético por proveedor
+        {
+          id: "acero-empate",
+          organizacion_id: ORG_ID,
+          nombre: "Solera 1/4 X 2 a 6.10m",
+          tipo: "solera",
+          ancho_ft: null,
+          largo_ft: null,
+          activo: true,
+          precios: [
+            {
+              id: "pr-b",
+              proveedor: "ZETA ACEROS",
+              precio: 500.00,
+              actualizado_el: "2026-10-26T16:43:19.405Z",
+            },
+            {
+              id: "pr-a",
+              proveedor: "ALFA METALES",
+              precio: 500.00,
+              actualizado_el: "2026-10-26T16:43:19.405Z",
             },
           ],
         },
@@ -225,21 +283,38 @@ Deno.test("catalogo_productos - 3. Catálogo del cotizador unifica aceros y opci
 
   const catalogo = await obtenerCatalogoCotizador(fake, ORG_ID);
 
-  assertEquals(catalogo.totalAceros, 1);
-  assertEquals(catalogo.total_aceros, 1);
+  assertEquals(catalogo.totalAceros, 3);
+  assertEquals(catalogo.total_aceros, 3);
   assertEquals(catalogo.totalOpciones, 1);
   assertEquals(catalogo.total_opciones, 1);
 
-  const acero = catalogo.aceros[0];
-  assertEquals(acero.id, "acero-1");
+  // 1. Acero con placa y 2 precios con idéntica fecha: elige el mínimo (1250.50 de ACEROS NACIONALES)
+  const acero = catalogo.aceros.find((a: any) => a.id === "acero-1");
   assertEquals(acero.nombre, 'IPR 4" x 102"');
   assertEquals(acero.unidad, "placa"); // Derivado de ancho_ft y largo_ft
-  assertEquals(acero.precio, 1250.50); // El más reciente según actualizado_el
+  assertEquals(acero.precio, 1250.50); // Mínimo precio
   assertEquals(acero.proveedor, "ACEROS NACIONALES");
   assertEquals(acero.incluye_iva, true);
-  assertEquals(acero.fuente, "lote_acero_2026");
+  assertEquals(acero.total_proveedores, 2);
   assertEquals(acero.precios_todos.length, 2);
 
+  // 2. Ángulo con 3 proveedores a la misma fecha: elige SERVIACERO a 394.49 y unidad 'tramo'
+  const angulo = catalogo.aceros.find((a: any) => a.id === "acero-angulo");
+  assertEquals(angulo.unidad, "tramo");
+  assertEquals(angulo.precio, 394.49); // Mínimo de los 3 proveedores (394.49 < 417.45 < 897.64)
+  assertEquals(angulo.proveedor, "SERVIACERO");
+  assertEquals(angulo.total_proveedores, 3);
+  assertEquals(angulo.precios_todos[0].proveedor, "SERVIACERO");
+  assertEquals(angulo.precios_todos[1].proveedor, "FORTACERO");
+  assertEquals(angulo.precios_todos[2].proveedor, "TANOS");
+
+  // 3. Empate de precio y fecha: desempata alfabéticamente (ALFA METALES antes de ZETA ACEROS)
+  const solera = catalogo.aceros.find((a: any) => a.id === "acero-empate");
+  assertEquals(solera.unidad, "tramo");
+  assertEquals(solera.precio, 500.00);
+  assertEquals(solera.proveedor, "ALFA METALES");
+
+  // 4. Opciones de configuración
   const opcion = catalogo.opciones[0];
   assertEquals(opcion.clave, "susp_flet_master");
   assertEquals(opcion.grupo, "Suspensión");
