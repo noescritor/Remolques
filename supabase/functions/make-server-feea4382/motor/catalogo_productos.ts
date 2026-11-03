@@ -49,14 +49,14 @@ export async function listarProductosPaginados(
     }
 
     if (filtros.sinCosto === true || filtros.sinCosto === "1" || filtros.sinCosto === "true") {
-      query = query.or("costo.is.null,costo.eq.0");
+      query = query.or("costo.is.null,costo.lte.0");
     }
 
     if (filtros.q && filtros.q.trim()) {
       query = query.ilike("nombre", `%${filtros.q.trim()}%`);
     }
 
-    query = query.order("nombre", { ascending: true });
+    query = query.order("nombre", { ascending: true }).order("id", { ascending: true });
     if (typeof query.range === "function") {
       query = query.range(offset, offset + limit - 1);
     }
@@ -90,7 +90,7 @@ export async function listarProductosPaginados(
       query = query.eq("organizacion_id", orgId);
     }
 
-    query = query.order("nombre", { ascending: true });
+    query = query.order("nombre", { ascending: true }).order("id", { ascending: true });
     if (typeof query.range === "function") {
       query = query.range(offset, offset + BATCH - 1);
     }
@@ -115,38 +115,64 @@ export async function listarProductosPaginados(
 /**
  * Consulta unificada del Catálogo del Cotizador (aceros y opciones de configuración)
  * para visualización en pestaña de solo lectura sin duplicar datos en productos.
+ * Utiliza el esquema real de acero_materiales y acero_precios (precio, actualizado_el, proveedor, incluye_iva).
  */
 export async function obtenerCatalogoCotizador(supabase: any, orgId: string) {
-  // 1. Aceros materiales con su precio vigente
+  // 1. Aceros materiales con sus precios históricos/vigentes
   const { data: acerosRaw, error: errAceros } = await supabase
     .from("acero_materiales")
     .select(`
-      id, organizacion_id, clave, nombre, tipo, ancho_ft, largo_ft, peso_kg, unidad, activo, notas,
-      precios:acero_precios(id, precio_unitario, fecha_vigencia, fuente)
+      id, organizacion_id, nombre, tipo, ancho_ft, largo_ft, activo, notas,
+      precios:acero_precios(id, proveedor, precio, incluye_iva, fuente, actualizado_el, notas)
     `)
     .eq("organizacion_id", orgId)
-    .order("nombre", { ascending: true });
+    .order("nombre", { ascending: true })
+    .order("id", { ascending: true });
 
   if (errAceros) {
     throw new Error(`Error consultando acero_materiales: ${errAceros.message}`);
   }
 
   const aceros = (acerosRaw || []).map((a: any) => {
-    const precios = (a.precios || []).sort((p1: any, p2: any) =>
-      (p2.fecha_vigencia || "").localeCompare(p1.fecha_vigencia || "")
+    const precios = (a.precios || []).slice().sort((p1: any, p2: any) =>
+      String(p2.actualizado_el || "").localeCompare(String(p1.actualizado_el || ""))
     );
-    const precioVigente = precios.length > 0 ? Number(precios[0].precio_unitario) : null;
-    const fuente = precios.length > 0 ? precios[0].fuente : "sin_precio";
+    const precioVigente =
+      precios.length > 0 && precios[0].precio !== null && precios[0].precio !== undefined
+        ? Number(precios[0].precio)
+        : null;
+    const proveedorVigente = precios.length > 0 ? precios[0].proveedor : null;
+    const incluyeIva = precios.length > 0 ? Boolean(precios[0].incluye_iva) : null;
+    const fuente = precios.length > 0 ? (precios[0].fuente || "manual") : "sin_precio";
+    const unidad = (a.ancho_ft && a.largo_ft) ? "placa" : "kg";
+    const dimensionesTexto =
+      `${a.ancho_ft ? `${a.ancho_ft} ft` : ''} ${a.largo_ft ? `x ${a.largo_ft} ft` : ''}`.trim() || null;
 
     return {
       id: a.id,
       tipo_origen: "acero",
-      clave: a.clave || "",
+      clave: a.id,
       nombre: a.nombre,
       tipo: a.tipo || "acero",
-      dimensiones: `${a.ancho_ft ? `${a.ancho_ft} ft` : ''} ${a.largo_ft ? `x ${a.largo_ft} ft` : ''}`.trim() || null,
-      unidad: a.unidad || "kg",
+      tipo_material: a.tipo || "acero",
+      dimensiones: dimensionesTexto,
+      dimensiones_texto: dimensionesTexto,
+      ancho_ft: a.ancho_ft,
+      largo_ft: a.largo_ft,
+      unidad,
       precio: precioVigente,
+      precio_por_kg: precioVigente,
+      proveedor: proveedorVigente,
+      incluye_iva: incluyeIva,
+      precios_todos: precios.map((p: any) => ({
+        id: p.id,
+        proveedor: p.proveedor,
+        precio: p.precio !== null && p.precio !== undefined ? Number(p.precio) : null,
+        incluye_iva: p.incluye_iva,
+        fuente: p.fuente,
+        actualizado_el: p.actualizado_el,
+        notas: p.notas || null,
+      })),
       fuente,
       activo: a.activo !== false,
       notas: a.notas || null,
@@ -162,7 +188,8 @@ export async function obtenerCatalogoCotizador(supabase: any, orgId: string) {
       costos:opcion_costos(id, tipo_modelo, costo_unitario, escala, fuente)
     `)
     .eq("organizacion_id", orgId)
-    .order("nombre", { ascending: true });
+    .order("nombre", { ascending: true })
+    .order("id", { ascending: true });
 
   if (errOpciones) {
     throw new Error(`Error consultando opciones_configuracion: ${errOpciones.message}`);
@@ -172,7 +199,9 @@ export async function obtenerCatalogoCotizador(supabase: any, orgId: string) {
     const costos = o.costos || [];
     // Tomar costo de plataforma o el primero disponible
     const costoPlat = costos.find((c: any) => c.tipo_modelo === "plataforma") || costos[0];
-    const costoUnit = costoPlat ? Number(costoPlat.costo_unitario) : null;
+    const costoUnit = costoPlat && costoPlat.costo_unitario !== null && costoPlat.costo_unitario !== undefined
+      ? Number(costoPlat.costo_unitario)
+      : null;
     const fuente = costoPlat ? costoPlat.fuente : "sin_costo";
     const escala = costoPlat ? costoPlat.escala : "fija";
 
@@ -180,10 +209,13 @@ export async function obtenerCatalogoCotizador(supabase: any, orgId: string) {
       id: o.id,
       tipo_origen: "opcion_cotizador",
       grupo: o.grupo?.nombre || o.grupo?.clave || "General",
+      grupo_nombre: o.grupo?.nombre || o.grupo?.clave || "General",
+      grupo_clave: o.grupo?.clave || "General",
       clave: o.clave,
       nombre: o.nombre,
       precio_venta: o.precio_venta !== null && o.precio_venta !== undefined ? Number(o.precio_venta) : null,
       costo: costoUnit,
+      costo_referencia: costoUnit,
       fuente,
       escala,
       activo: o.activo !== false,
@@ -195,6 +227,8 @@ export async function obtenerCatalogoCotizador(supabase: any, orgId: string) {
     aceros,
     opciones,
     totalAceros: aceros.length,
+    total_aceros: aceros.length,
     totalOpciones: opciones.length,
+    total_opciones: opciones.length,
   };
 }

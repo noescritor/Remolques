@@ -13,8 +13,7 @@ function createFakeClient(opts: {
   return {
     from(tableName: string) {
       const filters: Array<{ col: string; op: string; val: any }> = [];
-      let orderCol: string | null = null;
-      let orderAsc = true;
+      const orderCols: Array<{ col: string; asc: boolean }> = [];
       let rangeFrom: number | null = null;
       let rangeTo: number | null = null;
       let isOr = false;
@@ -31,16 +30,24 @@ function createFakeClient(opts: {
           }
         }
         if (orClause) {
-          // Soporte básico para "costo.is.null,costo.eq.0"
-          if (orClause.includes("costo.is.null") && orClause.includes("costo.eq.0")) {
-            res = res.filter((r) => r.costo === null || r.costo === undefined || Number(r.costo) === 0);
+          // Soporte básico para "costo.is.null,costo.lte.0" o "costo.is.null,costo.eq.0"
+          if (
+            orClause.includes("costo.is.null") &&
+            (orClause.includes("costo.eq.0") || orClause.includes("costo.lte.0"))
+          ) {
+            res = res.filter((r) => r.costo === null || r.costo === undefined || Number(r.costo) <= 0);
           }
         }
-        if (orderCol) {
+        if (orderCols.length > 0) {
           res.sort((a, b) => {
-            const va = a[orderCol!] ?? "";
-            const vb = b[orderCol!] ?? "";
-            return orderAsc ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+            for (const { col, asc } of orderCols) {
+              const va = a[col] ?? "";
+              const vb = b[col] ?? "";
+              if (va !== vb) {
+                return asc ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+              }
+            }
+            return 0;
           });
         }
         return res;
@@ -67,8 +74,7 @@ function createFakeClient(opts: {
           return builder;
         },
         order(col: string, options: { ascending?: boolean } = {}) {
-          orderCol = col;
-          orderAsc = options.ascending ?? true;
+          orderCols.push({ col, asc: options.ascending ?? true });
           return builder;
         },
         range(from: number, to: number) {
@@ -163,22 +169,38 @@ Deno.test("catalogo_productos - 2. Paginación explícita con límite, búsqueda
   assert(resSinCosto.productos.every((p: any) => p.costo === 0 || p.costo === null));
 });
 
-Deno.test("catalogo_productos - 3. Catálogo del cotizador unifica aceros y opciones sin duplicar en productos", async () => {
+Deno.test("catalogo_productos - 3. Catálogo del cotizador unifica aceros y opciones con esquema real y resolución de precio vigente", async () => {
   const fake = createFakeClient({
     tables: {
       acero_materiales: [
         {
           id: "acero-1",
           organizacion_id: ORG_ID,
-          clave: "IPR-4X102",
           nombre: 'IPR 4" x 102"',
           tipo: "viga",
           ancho_ft: 4,
           largo_ft: 8.5,
-          unidad: "pz",
           activo: true,
+          notas: "Viga para chasis",
           precios: [
-            { id: "pr-1", precio_unitario: 1250.50, fecha_vigencia: "2026-10-28", fuente: "lote_acero_2026" },
+            {
+              id: "pr-1",
+              proveedor: "ACEROS NACIONALES",
+              precio: 1250.50,
+              incluye_iva: true,
+              fuente: "lote_acero_2026",
+              actualizado_el: "2026-10-28T12:00:00Z",
+              notas: "Precio vigente",
+            },
+            {
+              id: "pr-2",
+              proveedor: "PROVEEDOR SECUNDARIO",
+              precio: 1300.00,
+              incluye_iva: false,
+              fuente: "cotizacion_anterior",
+              actualizado_el: "2026-10-15T09:00:00Z",
+              notas: "Precio histórico",
+            },
           ],
         },
       ],
@@ -204,17 +226,26 @@ Deno.test("catalogo_productos - 3. Catálogo del cotizador unifica aceros y opci
   const catalogo = await obtenerCatalogoCotizador(fake, ORG_ID);
 
   assertEquals(catalogo.totalAceros, 1);
+  assertEquals(catalogo.total_aceros, 1);
   assertEquals(catalogo.totalOpciones, 1);
+  assertEquals(catalogo.total_opciones, 1);
 
   const acero = catalogo.aceros[0];
-  assertEquals(acero.clave, "IPR-4X102");
-  assertEquals(acero.precio, 1250.50);
+  assertEquals(acero.id, "acero-1");
+  assertEquals(acero.nombre, 'IPR 4" x 102"');
+  assertEquals(acero.unidad, "placa"); // Derivado de ancho_ft y largo_ft
+  assertEquals(acero.precio, 1250.50); // El más reciente según actualizado_el
+  assertEquals(acero.proveedor, "ACEROS NACIONALES");
+  assertEquals(acero.incluye_iva, true);
   assertEquals(acero.fuente, "lote_acero_2026");
+  assertEquals(acero.precios_todos.length, 2);
 
   const opcion = catalogo.opciones[0];
   assertEquals(opcion.clave, "susp_flet_master");
   assertEquals(opcion.grupo, "Suspensión");
+  assertEquals(opcion.grupo_nombre, "Suspensión");
   assertEquals(opcion.precio_venta, 45000);
   assertEquals(opcion.costo, 38000);
+  assertEquals(opcion.costo_referencia, 38000);
   assertEquals(opcion.fuente, "costeo_leolca");
 });

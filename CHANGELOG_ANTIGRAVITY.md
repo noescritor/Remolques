@@ -3,6 +3,22 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - Sub-bloque T1 (Corrección Ronda 2): Alineación a esquema real de acero_precios, orden determinista y formatearErrorRespuesta
+**Herramienta:** Antigravity  
+**Tipo:** fix (catalogo_productos, esquema real acero_precios, formatearErrorRespuesta, ordenamiento determinista, sql diagnostico)  
+**Rama:** `noche-t1-catalogo`  
+**Archivos tocados:**  
+- `docs/diagnostico/catalogo_conteos.sql`: Corregido `acero_precios.precio_unitario` a `precio` real. Probado en PostgreSQL 17 con `ON_ERROR_STOP=1`.
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.ts`:
+  - `obtenerCatalogoCotizador` adaptado al esquema real de `acero_materiales` (sin `clave`, sin `unidad`, sin `peso_kg`) y `acero_precios` (`precio`, `actualizado_el`, `proveedor`, `incluye_iva`, `fuente`, `notas`).
+  - Ordenamiento determinista con `.order("nombre").order("id")` en modos paginado y retrocompatible.
+  - Filtro sin costo alineado con `costo.is.null,costo.lte.0`.
+  - Resolución del precio más reciente por `actualizado_el` y derivación de `unidad` ("placa" si tiene ancho/largo ft, "kg" si no).
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.test.ts`: Mock y pruebas actualizadas con el esquema real, soporte de ordenamiento multicolumna en `fakeClient` y verificación de resolución de precio vigente.
+- `supabase/functions/make-server-feea4382/index.ts`: Integrado `formatearErrorRespuesta(err)` en los bloques catch de `GET /productos` y `GET /catalogo-cotizador` para no filtrar mensajes internos de Postgres.
+**Acciones manuales pendientes:**
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel.
+
 ## 2026-11-02 - Sub-bloque T1 (Noche): Catálogo de productos completo, sin tope de 1000 filas, pestaña sin categoría, filtro sin costo y visor del cotizador
 **Herramienta:** Antigravity  
 **Tipo:** feat & fix (catalogo productos, paginacion postgrest sin tope 1000, conteos exactos, sin categoria, filtro sin costo, visor catalogo cotizador)  

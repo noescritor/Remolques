@@ -44,7 +44,7 @@ UNION ALL
 SELECT 
     'acero_precios' AS tabla,
     COUNT(*) AS total_filas,
-    COUNT(CASE WHEN precio_unitario IS NOT NULL AND precio_unitario > 0 THEN 1 END) AS filas_activas
+    COUNT(CASE WHEN precio IS NOT NULL AND precio > 0 THEN 1 END) AS filas_activas
 FROM acero_precios
 UNION ALL
 SELECT 

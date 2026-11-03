@@ -1572,7 +1572,8 @@ app.get("/productos", async (c) => {
     return c.json(resultado);
   } catch (error: any) {
     console.error("[make-server] Error fetching productos:", error);
-    return c.json({ error: error.message || "Error fetching productos" }, 500);
+    const { status, body } = formatearErrorRespuesta(error);
+    return c.json(body, status as any);
   }
 });
 
@@ -1584,7 +1585,8 @@ app.get("/catalogo-cotizador", async (c) => {
     return c.json(catalogo);
   } catch (error: any) {
     console.error("[make-server] Error fetching catalogo-cotizador:", error);
-    return c.json({ error: error.message || "Error al consultar catálogo del cotizador" }, 500);
+    const { status, body } = formatearErrorRespuesta(error);
+    return c.json(body, status as any);
   }
 });
 
