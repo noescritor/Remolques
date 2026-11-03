@@ -6,6 +6,7 @@ import {
   ajustarCantidadRequerida,
   eliminarLineaManual,
   agregarLineaManual,
+  entregarFaseCompleta,
 } from "./checklist_almacen.ts";
 
 function createFakeClient(opts: {
@@ -40,6 +41,7 @@ function createFakeClient(opts: {
         },
         order: () => builder,
         limit: () => builder,
+        range: (_start: number, _end: number) => builder,
         single: () => {
           const rows = getFilteredRows();
           return Promise.resolve({ data: rows[0] || null, error: rows.length ? null : { message: "No rows" } });
@@ -60,6 +62,26 @@ function createFakeClient(opts: {
             }),
             then: (resolve: any) => resolve({ data: arr, error: null }),
           };
+        },
+        upsert: (vals: any | any[], opts?: any) => {
+          const arr = Array.isArray(vals) ? vals : [vals];
+          if (!tables[tableName]) tables[tableName] = [];
+          for (const item of arr) {
+            const idx = tables[tableName].findIndex(
+              (r) =>
+                r.orden_trabajo_id === item.orden_trabajo_id &&
+                r.equipo_indice === item.equipo_indice &&
+                r.clave_origen === item.clave_origen
+            );
+            if (idx >= 0) {
+              if (!opts?.ignoreDuplicates) {
+                tables[tableName][idx] = { ...tables[tableName][idx], ...item };
+              }
+            } else {
+              tables[tableName].push({ ...item, id: item.id || `gen-${Date.now()}-${Math.random()}` });
+            }
+          }
+          return Promise.resolve({ data: arr, error: null });
         },
         update: (vals: any) => ({
           eq: (_col: string, val: any) => ({
@@ -83,9 +105,15 @@ function createFakeClient(opts: {
       function getFilteredRows() {
         let res = (tables[tableName] || []).map((r) => ({ ...r }));
         for (const f of filters) {
-          if (f.op === "eq") res = res.filter((r) => r[f.col] === f.val);
-          if (f.op === "gt") res = res.filter((r) => Number(r[f.col]) > Number(f.val));
-          if (f.op === "in") res = res.filter((r) => (f.val || []).includes(r[f.col]));
+          if (f.col === "datos->meta->>cotizacion_id") {
+            res = res.filter((r) => r.datos?.meta?.cotizacion_id === f.val);
+          } else if (f.op === "eq") {
+            res = res.filter((r) => r[f.col] === f.val);
+          } else if (f.op === "gt") {
+            res = res.filter((r) => Number(r[f.col]) > Number(f.val));
+          } else if (f.op === "in") {
+            res = res.filter((r) => (f.val || []).includes(r[f.col]));
+          }
         }
         return res;
       }
@@ -363,4 +391,233 @@ Deno.test("checklist_almacen - 6. eliminarLineaManual invoca RPC atómica y rech
   const resDel = await eliminarLineaManual(client, { orgId: ORG_A, lineaId: "linea-sin-historial" });
   assertEquals(resDel.success, true);
   assertEquals(resDel.eliminada, true);
+});
+
+Deno.test("checklist_almacen - 7. generarDespieceOT rechaza con bom_ambiguo si hay múltiples conceptos con el mismo modelo_id y sin item_id", async () => {
+  const client = createFakeClient({
+    tables: {
+      ordenes_trabajo: [
+        {
+          id: "ot-ambigua",
+          cotizacion_id: "cot-20",
+          modelo: "plataforma_40",
+          caracteristicas: {
+            // Sin item_id
+            modelo_id: "mod-40",
+          },
+          organizacion_id: ORG_A,
+        },
+      ],
+      cotizaciones: [
+        { id: "cot-20", folio: "2026-0099", organizacion_id: ORG_A },
+      ],
+      presupuestos: [
+        {
+          id: "pre-20",
+          folio: "PRE-2026-0099",
+          organizacion_id: ORG_A,
+          datos: {
+            meta: {
+              cotizacion_id: "cot-20",
+              bom: [
+                // Dos conceptos con el mismo modelo_id y sin item_id:
+                {
+                  modelo_id: "mod-40",
+                  descripcion: "PLATAFORMA 40 FT HENDRICKSON",
+                  lineas: [{ material_id: "mat-hend", nombre: "AMORTIGUADOR HEND", cantidad: 2, paso: "Paso 1" }],
+                },
+                {
+                  modelo_id: "mod-40",
+                  descripcion: "PLATAFORMA 40 FT FLEET MASTER",
+                  lineas: [{ material_id: "mat-fleet", nombre: "AMORTIGUADOR FLEET", cantidad: 2, paso: "Paso 1" }],
+                },
+              ],
+            },
+          },
+        },
+      ],
+      fases_despiece: [],
+      fases_despiece_equivalencias: [],
+      orden_despiece_lineas: [],
+    },
+  });
+
+  await assertRejects(
+    async () => {
+      await generarDespieceOT(client, { otId: "ot-ambigua", orgId: ORG_A });
+    },
+    Error,
+    "bom_ambiguo"
+  );
+});
+
+Deno.test("checklist_almacen - 8. generarDespieceOT: cambio de fase en regeneración no duplica la pieza y reporta cambios_no_aplicados", async () => {
+  const client = createFakeClient({
+    tables: {
+      ordenes_trabajo: [
+        {
+          id: "ot-cambio",
+          cotizacion_id: "cot-30",
+          modelo: "plataforma_40",
+          caracteristicas: { item_id: "item-p1", modelo_id: "mod-40" },
+          organizacion_id: ORG_A,
+        },
+      ],
+      cotizaciones: [{ id: "cot-30", folio: "2026-0150", organizacion_id: ORG_A }],
+      presupuestos: [
+        {
+          id: "pre-30",
+          folio: "PRE-2026-0150",
+          organizacion_id: ORG_A,
+          datos: {
+            meta: {
+              cotizacion_id: "cot-30",
+              bom: [
+                {
+                  item_id: "item-p1",
+                  descripcion: "PLATAFORMA 40",
+                  lineas: [
+                    // Ahora la viga está en Paso 2 y con cantidad 5
+                    { material_id: "mat-viga", nombre: "VIGA IPR", cantidad: 5, paso: "Paso 2" },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      ],
+      fases_despiece: [
+        { id: "f-1", clave: "paso_1", nombre: "Paso 1", organizacion_id: ORG_A },
+        { id: "f-2", clave: "paso_2", nombre: "Paso 2", organizacion_id: ORG_A },
+      ],
+      fases_despiece_equivalencias: [
+        { paso_legacy: "Paso 1", fase_id: "f-1", fases_despiece: { clave: "paso_1" }, organizacion_id: ORG_A },
+        { paso_legacy: "Paso 2", fase_id: "f-2", fases_despiece: { clave: "paso_2" }, organizacion_id: ORG_A },
+      ],
+      // Ya existía en la base con Paso 1 y cantidad 3 (clave_origen no incluye fase)
+      orden_despiece_lineas: [
+        {
+          id: "lin-existente-1",
+          orden_trabajo_id: "ot-cambio",
+          equipo_indice: 1,
+          clave_origen: "mat-viga::base",
+          material_id: "mat-viga",
+          descripcion: "VIGA IPR",
+          fase_id: "f-1",
+          fase_clave: "paso_1",
+          cantidad_requerida: 3,
+          organizacion_id: ORG_A,
+        },
+      ],
+    },
+  });
+
+  const res = await generarDespieceOT(client, { otId: "ot-cambio", orgId: ORG_A });
+  assertEquals(res.creadas, 0); // No se duplica
+  assertEquals(res.existentes, 1);
+  assertEquals(res.cambios_no_aplicados.length, 1);
+  assertEquals(res.cambios_no_aplicados[0].motivo, "fase_y_cantidad_distintas");
+  assertEquals(res.cambios_no_aplicados[0].cantidad_actual, 3);
+  assertEquals(res.cambios_no_aplicados[0].cantidad_nueva, 5);
+  assertEquals(res.cambios_no_aplicados[0].fase_actual, "paso_1");
+  assertEquals(res.cambios_no_aplicados[0].fase_nueva, "paso_2");
+});
+
+Deno.test("checklist_almacen - 9. entregarFaseCompleta invoca RPC atómica entregar_fase_despiece", async () => {
+  let rpcLlamado = false;
+  let argsRecibidos: any = null;
+
+  const client = createFakeClient({
+    tables: {
+      fases_despiece: [
+        { id: "fase-corte", clave: "corte", nombre: "Corte y Habilitado", organizacion_id: ORG_A },
+      ],
+    },
+    rpcHandler: (name, args) => {
+      if (name === "entregar_fase_despiece") {
+        rpcLlamado = true;
+        argsRecibidos = args;
+        return Promise.resolve({
+          data: { success: true, lineas_entregadas: 4, detalles: [] },
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: {}, error: null });
+    },
+  });
+
+  const res = await entregarFaseCompleta(client, {
+    orgId: ORG_A,
+    otId: "ot-123",
+    faseClave: "corte",
+    operarioId: "op-1",
+    operarioNombre: "Juan Perez",
+    usuarioId: "usr-admin",
+  });
+
+  assertEquals(rpcLlamado, true);
+  assertEquals(argsRecibidos.p_orden_trabajo_id, "ot-123");
+  assertEquals(argsRecibidos.p_fase_id, "fase-corte");
+  assertEquals(argsRecibidos.p_operario_nombre, "Juan Perez");
+  assertEquals(res.entregadas, 4);
+});
+
+Deno.test("checklist_almacen - 10. agregarLineaManual valida pertenencia de OT y de materialId a la organización", async () => {
+  const client = createFakeClient({
+    tables: {
+      ordenes_trabajo: [
+        { id: "ot-org-a", organizacion_id: ORG_A },
+      ],
+      productos: [
+        { id: "prod-org-a", organizacion_id: ORG_A },
+        { id: "prod-org-b", organizacion_id: "ORG_B_ID" },
+      ],
+      fases_despiece: [
+        { id: "fase-1", clave: "paso_1", organizacion_id: ORG_A },
+      ],
+      orden_despiece_lineas: [],
+    },
+  });
+
+  // Rechaza OT ajena
+  await assertRejects(
+    async () => {
+      await agregarLineaManual(client, {
+        orgId: "ORG_B_ID",
+        otId: "ot-org-a",
+        faseClave: "paso_1",
+        descripcion: "Placa",
+        cantidadRequerida: 2,
+      });
+    },
+    Error,
+    "ot_no_encontrada"
+  );
+
+  // Rechaza materialId de otra organización
+  await assertRejects(
+    async () => {
+      await agregarLineaManual(client, {
+        orgId: ORG_A,
+        otId: "ot-org-a",
+        faseClave: "paso_1",
+        descripcion: "Tornillo",
+        cantidadRequerida: 10,
+        materialId: "prod-org-b",
+      });
+    },
+    Error,
+    "material_no_encontrado"
+  );
+
+  // Éxito con material de la misma organización
+  const creada = await agregarLineaManual(client, {
+    orgId: ORG_A,
+    otId: "ot-org-a",
+    faseClave: "paso_1",
+    descripcion: "Tornillo Grado 8",
+    cantidadRequerida: 10,
+    materialId: "prod-org-a",
+  });
+  assertEquals(creada.descripcion, "Tornillo Grado 8");
 });

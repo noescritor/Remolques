@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS orden_despiece_lineas (
     descripcion TEXT NOT NULL,
     unidad TEXT NOT NULL DEFAULT 'pz',
     cantidad_requerida NUMERIC(14, 4) NOT NULL CHECK (cantidad_requerida >= 0),
-    origen TEXT NOT NULL DEFAULT 'receta' CHECK (origen IN ('receta', 'opcion', 'manual', 'ajuste')),
+    origen TEXT NOT NULL DEFAULT 'receta' CHECK (origen IN ('receta', 'opcion', 'manual', 'ajuste', 'receta_cruda')),
     sin_costo BOOLEAN NOT NULL DEFAULT false,
     clave_origen TEXT NOT NULL,
     notas TEXT,
@@ -34,6 +34,25 @@ CREATE TABLE IF NOT EXISTS orden_despiece_lineas (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     CONSTRAINT uq_orden_despiece_lineas_clave UNIQUE (orden_trabajo_id, equipo_indice, clave_origen)
 );
+
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'chk_despiece_origen' AND table_name = 'orden_despiece_lineas'
+    ) THEN
+        ALTER TABLE orden_despiece_lineas DROP CONSTRAINT chk_despiece_origen;
+    END IF;
+    -- Si la restricción inline no tenía nombre explícito pero fallara con receta_cruda, recreamos:
+    BEGIN
+        ALTER TABLE orden_despiece_lineas DROP CONSTRAINT IF EXISTS orden_despiece_lineas_origen_check;
+        ALTER TABLE orden_despiece_lineas
+            ADD CONSTRAINT orden_despiece_lineas_origen_check
+            CHECK (origen IN ('receta', 'opcion', 'manual', 'ajuste', 'receta_cruda'));
+    EXCEPTION WHEN OTHERS THEN
+        NULL;
+    END;
+END $$;
 
 ALTER TABLE orden_despiece_lineas ENABLE ROW LEVEL SECURITY;
 
@@ -52,6 +71,7 @@ CREATE INDEX IF NOT EXISTS idx_orden_despiece_lineas_fase ON orden_despiece_line
 CREATE TABLE IF NOT EXISTS orden_despiece_entregas (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organizacion_id UUID NOT NULL REFERENCES organizaciones(id) ON DELETE CASCADE,
+    orden_trabajo_id UUID REFERENCES ordenes_trabajo(id) ON DELETE CASCADE,
     linea_id UUID NOT NULL REFERENCES orden_despiece_lineas(id) ON DELETE RESTRICT,
     tipo TEXT NOT NULL DEFAULT 'entrega' CHECK (tipo IN ('entrega', 'reposicion')),
     cantidad NUMERIC(14, 4) NOT NULL CHECK (cantidad > 0),
@@ -68,9 +88,23 @@ CREATE TABLE IF NOT EXISTS orden_despiece_entregas (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Asegurar que si la tabla ya existía con ON DELETE CASCADE, se actualice a ON DELETE RESTRICT
+-- Asegurar columna orden_trabajo_id y actualizar a ON DELETE RESTRICT si ya existía
 DO $$
 BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'orden_despiece_entregas' AND column_name = 'orden_trabajo_id'
+    ) THEN
+        ALTER TABLE orden_despiece_entregas
+            ADD COLUMN orden_trabajo_id UUID REFERENCES ordenes_trabajo(id) ON DELETE CASCADE;
+    END IF;
+
+    -- Backfill de orden_trabajo_id a partir de la línea
+    UPDATE orden_despiece_entregas e
+    SET orden_trabajo_id = l.orden_trabajo_id
+    FROM orden_despiece_lineas l
+    WHERE e.linea_id = l.id AND e.orden_trabajo_id IS NULL;
+
     IF EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_name = 'orden_despiece_entregas_linea_id_fkey'
@@ -92,6 +126,7 @@ CREATE POLICY "orden_despiece_entregas_org_select" ON orden_despiece_entregas
     USING (organizacion_id = get_current_org_id());
 
 CREATE INDEX IF NOT EXISTS idx_orden_despiece_entregas_linea ON orden_despiece_entregas(linea_id);
+CREATE INDEX IF NOT EXISTS idx_orden_despiece_entregas_ot ON orden_despiece_entregas(orden_trabajo_id);
 CREATE INDEX IF NOT EXISTS idx_orden_despiece_entregas_operario ON orden_despiece_entregas(operario_id);
 
 -- 3. Trigger para garantizar que cantidad_requerida nunca sea menor a lo ya entregado
@@ -149,6 +184,7 @@ SELECT
     END AS estado_entrega,
     (
         SELECT jsonb_build_object(
+            'id', e_ult.id,
             'fecha', e_ult.fecha,
             'hora', e_ult.hora,
             'operario_nombre', COALESCE(op.nombre, e_ult.operario_nombre, 'Operario'),
@@ -156,7 +192,7 @@ SELECT
         )
         FROM orden_despiece_entregas e_ult
         LEFT JOIN operarios op ON e_ult.operario_id = op.id
-        WHERE e_ult.linea_id = l.id AND e_ult.anulada = false
+        WHERE e_ult.linea_id = l.id AND e_ult.anulada = false AND e_ult.tipo = 'entrega'
         ORDER BY e_ult.created_at DESC
         LIMIT 1
     ) AS ultima_entrega
@@ -191,8 +227,8 @@ DECLARE
     v_fecha_mx DATE;
     v_hora_mx TIME;
 BEGIN
-    IF p_cantidad IS NULL THEN
-        RAISE EXCEPTION 'cantidad_invalida: La cantidad es requerida';
+    IF p_cantidad IS NULL OR p_cantidad = 'NaN'::numeric THEN
+        RAISE EXCEPTION 'cantidad_invalida: La cantidad no es válida';
     END IF;
 
     v_cant := round(p_cantidad, 4);
@@ -241,6 +277,7 @@ BEGIN
     -- Insertar movimiento
     INSERT INTO orden_despiece_entregas (
         organizacion_id,
+        orden_trabajo_id,
         linea_id,
         tipo,
         cantidad,
@@ -252,6 +289,7 @@ BEGIN
         motivo
     ) VALUES (
         p_org_id,
+        v_linea.orden_trabajo_id,
         p_linea_id,
         p_tipo,
         v_cant,
@@ -309,7 +347,7 @@ BEGIN
         RAISE EXCEPTION 'motivo_requerido: Se requiere especificar el motivo de anulación';
     END IF;
 
-    -- Bloqueo de fila FOR UPDATE
+    -- Bloqueo de fila FOR UPDATE tanto de la entrega como de la línea de despiece
     SELECT * INTO v_entrega
     FROM orden_despiece_entregas
     WHERE id = p_entrega_id AND organizacion_id = p_org_id
@@ -318,6 +356,11 @@ BEGIN
     IF NOT FOUND THEN
         RAISE EXCEPTION 'entrega_no_encontrada: La entrega no existe o pertenece a otra organización';
     END IF;
+
+    SELECT * INTO v_linea
+    FROM orden_despiece_lineas
+    WHERE id = v_entrega.linea_id AND organizacion_id = p_org_id
+    FOR UPDATE;
 
     IF v_entrega.anulada THEN
         RAISE EXCEPTION 'ya_anulada: Esta entrega ya se encuentra anulada';
@@ -371,8 +414,8 @@ BEGIN
         RAISE EXCEPTION 'motivo_requerido: Se requiere especificar el motivo del ajuste';
     END IF;
 
-    IF p_nueva_cantidad IS NULL OR p_nueva_cantidad < 0 THEN
-        RAISE EXCEPTION 'cantidad_invalida: La cantidad requerida no puede ser negativa';
+    IF p_nueva_cantidad IS NULL OR p_nueva_cantidad = 'NaN'::numeric OR p_nueva_cantidad < 0 THEN
+        RAISE EXCEPTION 'cantidad_invalida: La cantidad requerida no es válida';
     END IF;
 
     v_nueva := round(p_nueva_cantidad, 4);
@@ -467,7 +510,114 @@ BEGIN
 END;
 $$;
 
--- 9. Seguridad estricta: REVOKE a PUBLIC, anon, authenticated; GRANT a service_role
+-- 9. Función atómica para entregar todas las piezas pendientes de una fase completa con bloqueo FOR UPDATE
+CREATE OR REPLACE FUNCTION entregar_fase_despiece(
+    p_org_id UUID,
+    p_orden_trabajo_id UUID,
+    p_equipo_indice INTEGER,
+    p_fase_id UUID,
+    p_operario_id UUID DEFAULT NULL,
+    p_operario_nombre TEXT DEFAULT NULL,
+    p_entregado_por UUID DEFAULT NULL
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_linea RECORD;
+    v_entregado NUMERIC(14, 4);
+    v_pendiente NUMERIC(14, 4);
+    v_fecha_mx DATE;
+    v_hora_mx TIME;
+    v_entregadas_count INTEGER := 0;
+    v_detalles JSONB := '[]'::jsonb;
+    v_entrega_id UUID;
+    v_op_nombre TEXT;
+BEGIN
+    v_op_nombre := trim(p_operario_nombre);
+    IF v_op_nombre IS NULL OR v_op_nombre = '' THEN
+        IF p_operario_id IS NOT NULL THEN
+            SELECT nombre INTO v_op_nombre FROM operarios WHERE id = p_operario_id;
+        END IF;
+    END IF;
+
+    IF v_op_nombre IS NULL OR v_op_nombre = '' THEN
+        RAISE EXCEPTION 'operario_requerido: Debe especificar el operario que recibe los materiales de la fase';
+    END IF;
+
+    v_fecha_mx := (now() AT TIME ZONE 'America/Mexico_City')::date;
+    v_hora_mx := (now() AT TIME ZONE 'America/Mexico_City')::time;
+
+    -- Iterar y bloquear TODAS las líneas de la fase para esta OT y equipo
+    FOR v_linea IN
+        SELECT *
+        FROM orden_despiece_lineas
+        WHERE organizacion_id = p_org_id
+          AND orden_trabajo_id = p_orden_trabajo_id
+          AND equipo_indice = p_equipo_indice
+          AND fase_id = p_fase_id
+        ORDER BY created_at ASC
+        FOR UPDATE
+    LOOP
+        -- Calcular lo entregado
+        SELECT COALESCE(SUM(cantidad), 0) INTO v_entregado
+        FROM orden_despiece_entregas
+        WHERE linea_id = v_linea.id AND anulada = false AND tipo = 'entrega';
+
+        v_pendiente := GREATEST(0, v_linea.cantidad_requerida - v_entregado);
+
+        IF v_pendiente > 0 THEN
+            INSERT INTO orden_despiece_entregas (
+                organizacion_id,
+                orden_trabajo_id,
+                linea_id,
+                tipo,
+                cantidad,
+                operario_id,
+                operario_nombre,
+                entregado_por,
+                fecha,
+                hora,
+                motivo
+            ) VALUES (
+                p_org_id,
+                p_orden_trabajo_id,
+                v_linea.id,
+                'entrega',
+                v_pendiente,
+                p_operario_id,
+                v_op_nombre,
+                p_entregado_por,
+                v_fecha_mx,
+                v_hora_mx,
+                'Entrega de fase completa'
+            )
+            RETURNING id INTO v_entrega_id;
+
+            v_entregadas_count := v_entregadas_count + 1;
+            v_detalles := v_detalles || jsonb_build_object(
+                'linea_id', v_linea.id,
+                'descripcion', v_linea.descripcion,
+                'cantidad_entregada', v_pendiente,
+                'entrega_id', v_entrega_id
+            );
+        END IF;
+    END LOOP;
+
+    RETURN jsonb_build_object(
+        'success', true,
+        'orden_trabajo_id', p_orden_trabajo_id,
+        'equipo_indice', p_equipo_indice,
+        'fase_id', p_fase_id,
+        'lineas_entregadas', v_entregadas_count,
+        'detalles', v_detalles
+    );
+END;
+$$;
+
+-- 10. Seguridad estricta: REVOKE a PUBLIC, anon, authenticated; GRANT a service_role
 REVOKE ALL ON FUNCTION registrar_entrega_despiece(UUID, UUID, NUMERIC, TEXT, UUID, TEXT, TEXT, UUID) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION registrar_entrega_despiece(UUID, UUID, NUMERIC, TEXT, UUID, TEXT, TEXT, UUID) TO service_role;
 
@@ -479,5 +629,8 @@ GRANT EXECUTE ON FUNCTION ajustar_cantidad_despiece(UUID, UUID, NUMERIC, TEXT, U
 
 REVOKE ALL ON FUNCTION eliminar_linea_despiece(UUID, UUID) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION eliminar_linea_despiece(UUID, UUID) TO service_role;
+
+REVOKE ALL ON FUNCTION entregar_fase_despiece(UUID, UUID, INTEGER, UUID, UUID, TEXT, UUID) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION entregar_fase_despiece(UUID, UUID, INTEGER, UUID, UUID, TEXT, UUID) TO service_role;
 
 COMMIT;

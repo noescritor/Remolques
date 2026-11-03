@@ -67,6 +67,21 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
   const [nuevaCantRequerida, setNuevaCantRequerida] = useState<number>(1);
   const [motivoAjuste, setMotivoAjuste] = useState('');
 
+  // Modal entregar fase completa
+  const [modalEntregarFaseOpen, setModalEntregarFaseOpen] = useState(false);
+  const [faseAEntregar, setFaseAEntregar] = useState<{ clave: string; nombre: string; pendientes: number } | null>(null);
+  const [faseOperarioId, setFaseOperarioId] = useState<string>('');
+  const [faseOperarioNombreManual, setFaseOperarioNombreManual] = useState<string>('');
+
+  // Modal historial de entregas por partida
+  const [modalHistorialOpen, setModalHistorialOpen] = useState(false);
+  const [lineaHistorial, setLineaHistorial] = useState<any>(null);
+
+  // Avisos de generación (cambios no aplicados, receta cruda, sin fase)
+  const [cambiosPresupuesto, setCambiosPresupuesto] = useState<any[]>([]);
+  const [avisoSinFase, setAvisoSinFase] = useState<number>(0);
+  const [avisoRecetaCruda, setAvisoRecetaCruda] = useState<boolean>(false);
+
   const cargarDatosDespiece = async (filtroEquipo = equipoFiltro) => {
     if (!orden) return;
     setLoading(true);
@@ -131,10 +146,26 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
         headers,
         body: JSON.stringify({ forzar }),
       });
+      const dataJson = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        throw new Error(errJson.error || 'Error al generar despiece');
+        const errorDesc = dataJson.codigo === 'bom_ambiguo' && dataJson.conceptos?.length
+          ? `${dataJson.error}: ${dataJson.conceptos.map((c: any) => c.descripcion).join(', ')}`
+          : dataJson.error || 'Error al generar despiece';
+        throw new Error(errorDesc);
       }
+
+      if (dataJson.cambios_no_aplicados && dataJson.cambios_no_aplicados.length > 0) {
+        setCambiosPresupuesto(dataJson.cambios_no_aplicados);
+      } else {
+        setCambiosPresupuesto([]);
+      }
+      if (dataJson.sin_fase) {
+        setAvisoSinFase(dataJson.sin_fase);
+      } else {
+        setAvisoSinFase(0);
+      }
+      setAvisoRecetaCruda(dataJson.advertencia === 'receta_cruda');
+
       await cargarDatosDespiece(equipoFiltro);
     } catch (err: any) {
       console.error('Error generando despiece:', err);
@@ -200,12 +231,23 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
     }
   };
 
-  const handleEntregarFaseCompleta = async (faseClave: string) => {
-    if (!orden) return;
-    const confirm = window.confirm(
-      `¿Deseas marcar como entregadas todas las piezas pendientes de la fase ${faseClave}?`
-    );
-    if (!confirm) return;
+  const handleAbrirEntregarFase = (faseClave: string, faseNombre: string, pendientes: number) => {
+    setFaseAEntregar({ clave: faseClave, nombre: faseNombre, pendientes });
+    setFaseOperarioId('');
+    setFaseOperarioNombreManual('');
+    setModalEntregarFaseOpen(true);
+  };
+
+  const handleConfirmarEntregarFase = async () => {
+    if (!faseAEntregar || !orden) return;
+    const opNombre = faseOperarioId
+      ? operarios.find((o) => o.id === faseOperarioId)?.nombre || faseOperarioNombreManual
+      : faseOperarioNombreManual;
+
+    if (!opNombre || !opNombre.trim()) {
+      alert('Debe especificar el operario que recibe los materiales de la fase');
+      return;
+    }
 
     setProcesandoAccion(true);
     try {
@@ -222,8 +264,10 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
         method: 'POST',
         headers,
         body: JSON.stringify({
-          fase_clave: faseClave,
-          operario_nombre: 'Entrega por lote de fase',
+          fase_clave: faseAEntregar.clave,
+          operario_id: faseOperarioId || null,
+          operario_nombre: opNombre.trim(),
+          equipo_indice: equipoFiltro === 'todos' ? undefined : parseInt(equipoFiltro, 10),
         }),
       });
 
@@ -232,6 +276,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
         throw new Error(errJson.error || 'Error al entregar fase');
       }
 
+      setModalEntregarFaseOpen(false);
       await cargarDatosDespiece(equipoFiltro);
     } catch (err: any) {
       alert(err.message || 'Error al entregar fase');
@@ -452,7 +497,17 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
     URL.revokeObjectURL(url);
   };
 
-  const handleImprimirVale = () => {
+  const esc = (str: any): string => {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+
+  const handleImprimirVale = (faseClaveFiltro?: string) => {
     if (!orden || !datos) return;
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
@@ -460,11 +515,19 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
       return;
     }
     const clienteNombre = orden?.cliente?.nombre_razon_social || (orden?.cliente as any)?.nombre || '-';
+    const lineasFiltradas = (datos.lineas || []).filter(
+      (l: any) => !faseClaveFiltro || l.fase_clave === faseClaveFiltro
+    );
+    const nombreFaseFiltro = faseClaveFiltro
+      ? lineasFiltradas[0]?.fase_nombre || faseClaveFiltro
+      : '';
+    const faseTitulo = faseClaveFiltro ? ` — Fase: ${nombreFaseFiltro}` : '';
+
     const html = `
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Vale de Entrega - Despiece OT ${orden.nomenclatura_id || orden.id}</title>
+        <title>Vale de Entrega - Despiece OT ${esc(orden.nomenclatura_id || orden.id)}${esc(faseTitulo)}</title>
         <style>
           body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; margin: 20px; color: #111; }
           h1 { font-size: 16px; margin-bottom: 4px; text-transform: uppercase; }
@@ -479,12 +542,12 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
         </style>
       </head>
       <body>
-        <h1>Vale de Entrega de Materiales y Checklist</h1>
+        <h1>Vale de Entrega de Materiales y Checklist${esc(faseTitulo)}</h1>
         <div class="meta">
-          <p><strong>Orden de Trabajo:</strong> ${orden.nomenclatura_id || orden.id} | <strong>NIV:</strong> ${orden.niv || 'N/A'}</p>
-          <p><strong>Modelo:</strong> ${orden.modelo || 'N/A'} | <strong>Cliente:</strong> ${clienteNombre}</p>
-          <p><strong>Fecha Impresión:</strong> ${new Date().toLocaleDateString('es-MX')} ${new Date().toLocaleTimeString('es-MX')}</p>
-          <p><strong>Avance Global:</strong> ${metricas.porcentaje_avance}% (${metricas.total_piezas_entregadas} de ${metricas.total_piezas_requeridas} pz)</p>
+          <p><strong>Orden de Trabajo:</strong> ${esc(orden.nomenclatura_id || orden.id)} | <strong>NIV:</strong> ${esc(orden.niv || 'N/A')}</p>
+          <p><strong>Modelo:</strong> ${esc(orden.modelo || 'N/A')} | <strong>Cliente:</strong> ${esc(clienteNombre)}</p>
+          <p><strong>Fecha Impresión:</strong> ${esc(new Date().toLocaleDateString('es-MX'))} ${esc(new Date().toLocaleTimeString('es-MX'))}</p>
+          <p><strong>Partidas:</strong> ${lineasFiltradas.length} | <strong>Avance Global:</strong> ${metricas.porcentaje_avance}% (${metricas.total_piezas_entregadas} de ${metricas.total_piezas_requeridas} pz)</p>
         </div>
         <table>
           <thead>
@@ -499,15 +562,15 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
             </tr>
           </thead>
           <tbody>
-            ${(datos.lineas || []).map((l: any) => `
+            ${lineasFiltradas.map((l: any) => `
               <tr>
-                <td>${l.fase_nombre || l.fase_clave}</td>
-                <td>${l.descripcion}</td>
-                <td class="text-right">${l.cantidad_requerida} ${l.unidad || 'pz'}</td>
-                <td class="text-right">${l.cantidad_entregada}</td>
-                <td class="text-right">${l.cantidad_pendiente}</td>
-                <td>${l.estado_entrega}</td>
-                <td>${l.ultima_entrega ? `${l.ultima_entrega.operario_nombre} (${l.ultima_entrega.fecha})` : '-'}</td>
+                <td>${esc(l.fase_nombre || l.fase_clave)}</td>
+                <td>${esc(l.descripcion)}</td>
+                <td class="text-right">${esc(l.cantidad_requerida)} ${esc(l.unidad || 'pz')}</td>
+                <td class="text-right">${esc(l.cantidad_entregada)}</td>
+                <td class="text-right">${esc(l.cantidad_pendiente)}</td>
+                <td>${esc(l.estado_entrega)}</td>
+                <td>${l.ultima_entrega ? `${esc(l.ultima_entrega.operario_nombre)} (${esc(l.ultima_entrega.fecha)})` : '-'}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -708,6 +771,49 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
           </div>
         </div>
 
+        {/* Alertas y avisos contextuales */}
+        <div className="space-y-2">
+          {(avisoRecetaCruda || lineas.some((l: any) => l.origen === 'receta_cruda')) && (
+            <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
+              <div>
+                <span className="font-semibold">Despiece de receta base cruda:</span> Esta orden no tiene presupuesto detallado resuelto; las partidas provienen de la receta base sin opciones ni escalas dinámicas. Verifique cantidades y materiales antes de entregar a producción.
+              </div>
+            </div>
+          )}
+
+          {cambiosPresupuesto.length > 0 && (
+            <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg text-xs text-blue-700 dark:text-blue-300">
+              <div className="flex items-center gap-2 font-semibold mb-1">
+                <AlertCircle className="h-4 w-4 text-blue-500" />
+                Se detectaron {cambiosPresupuesto.length} cambios en el presupuesto respecto a lo registrado:
+              </div>
+              <ul className="list-disc list-inside space-y-0.5 pl-2 opacity-90">
+                {cambiosPresupuesto.slice(0, 5).map((c: any, idx: number) => (
+                  <li key={idx}>
+                    <strong>{c.descripcion}</strong>: {c.motivo === 'cantidad_distinta' ? `Cant. en presupuesto ${c.cantidad_nueva} vs ${c.cantidad_actual} actual` : c.motivo === 'fase_distinta' ? `Fase ${c.fase_nueva} vs ${c.fase_actual}` : `Cant. ${c.cantidad_nueva} y fase ${c.fase_nueva}`}
+                  </li>
+                ))}
+                {cambiosPresupuesto.length > 5 && (
+                  <li>... y {cambiosPresupuesto.length - 5} partidas más.</li>
+                )}
+              </ul>
+              <p className="mt-1 text-[11px] opacity-75">
+                Para preservar el historial de entregas, ajuste manualmente las partidas correspondientes usando el botón de edición.
+              </p>
+            </div>
+          )}
+
+          {avisoSinFase > 0 && (
+            <div className="p-2.5 bg-muted border border-border/70 rounded-lg text-xs text-muted-foreground flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span>
+                {avisoSinFase} partidas no tienen asignada una equivalencia de fase registrada y se agruparon en Paso 1.
+              </span>
+            </div>
+          )}
+        </div>
+
         {/* Contenido principal */}
         {lineas.length === 0 ? (
           <div className="text-center py-12 bg-card/30 rounded-xl border border-dashed border-border/70 my-4">
@@ -757,19 +863,43 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
                       </div>
 
                       {completa ? (
-                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 text-[10px]">
-                          Completa
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 text-[10px]">
+                            Completa
+                          </Badge>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 text-xs border border-border/50 text-muted-foreground hover:bg-muted"
+                            onClick={() => handleImprimirVale(fase.clave)}
+                            title="Imprimir vale de entrega de esta fase"
+                          >
+                            <Printer className="h-3.5 w-3.5 mr-1" />
+                            Vale
+                          </Button>
+                        </div>
                       ) : (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-7 text-xs border-border hover:bg-muted"
-                          onClick={() => handleEntregarFaseCompleta(fase.clave)}
-                          disabled={procesandoAccion}
-                        >
-                          Entregar fase completa
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-xs border-border hover:bg-muted"
+                            onClick={() => handleAbrirEntregarFase(fase.clave, fase.nombre, piezasReq - piezasEnt)}
+                            disabled={procesandoAccion}
+                          >
+                            Entregar fase completa
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 text-xs border border-border/50 text-muted-foreground hover:bg-muted"
+                            onClick={() => handleImprimirVale(fase.clave)}
+                            title="Imprimir vale de entrega de esta fase"
+                          >
+                            <Printer className="h-3.5 w-3.5 mr-1" />
+                            Vale
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -813,6 +943,14 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
                                         Sin costo cargado
                                       </Badge>
                                     )}
+                                    {l.origen === 'receta_cruda' && (
+                                      <Badge
+                                        variant="outline"
+                                        className="text-[9px] border-amber-500/40 text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1 py-0"
+                                      >
+                                        Receta cruda
+                                      </Badge>
+                                    )}
                                     {l.origen === 'manual' && (
                                       <Badge variant="secondary" className="text-[9px] px-1 py-0">
                                         Manual
@@ -834,15 +972,30 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
                                         <div className="font-medium text-foreground">{ult.operario_nombre}</div>
                                         <div className="text-[10px] opacity-75">{ult.fecha} {ult.tipo === 'reposicion' ? '(reposición)' : ''}</div>
                                       </div>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handleAbrirAnular(ult)}
-                                        className="h-5 text-[10px] px-1 text-muted-foreground hover:text-destructive"
-                                        title="Anular esta entrega"
-                                      >
-                                        Anular
-                                      </Button>
+                                      <div className="flex items-center gap-1">
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => handleAbrirAnular(ult)}
+                                          className="h-5 text-[10px] px-1 text-muted-foreground hover:text-destructive"
+                                          title="Anular esta entrega"
+                                        >
+                                          Anular
+                                        </Button>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => {
+                                            const entregasDeLinea = (datos?.entregas || []).filter((e: any) => e.linea_id === l.linea_id);
+                                            setLineaHistorial({ ...l, entregas: entregasDeLinea });
+                                            setModalHistorialOpen(true);
+                                          }}
+                                          className="h-5 text-[10px] px-1 text-primary hover:underline"
+                                          title="Ver historial de movimientos"
+                                        >
+                                          Historial
+                                        </Button>
+                                      </div>
                                     </div>
                                   ) : (
                                     <span className="italic opacity-50">Sin entregas</span>
@@ -1190,6 +1343,178 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
                 className="bg-primary text-primary-foreground"
               >
                 {procesandoAccion ? 'Ajustando...' : 'Guardar Ajuste'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal Entregar Fase Completa con selección de operario */}
+        <Dialog open={modalEntregarFaseOpen} onOpenChange={setModalEntregarFaseOpen}>
+          <DialogContent className="max-w-md bg-background border-border">
+            <DialogHeader>
+              <DialogTitle className="text-lg flex items-center gap-2">
+                <PackageCheck className="h-5 w-5 text-primary" />
+                Entregar Fase Completa: {faseAEntregar?.nombre}
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 py-2">
+              <div className="p-3 bg-muted/40 rounded-lg text-xs space-y-1">
+                <p><strong>Fase:</strong> {faseAEntregar?.nombre} ({faseAEntregar?.clave})</p>
+                <p><strong>Partidas pendientes:</strong> {faseAEntregar?.pendientes} piezas por entregar en total</p>
+                <p className="text-muted-foreground text-[11px] mt-1">
+                  Esta acción registrará atómicamente la entrega de todas las piezas pendientes de esta fase en almacén.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Operario que recibe en línea de ensamble (Obligatorio)</Label>
+                {operarios.length > 0 ? (
+                  <div className="space-y-2">
+                    <Select
+                      value={faseOperarioId}
+                      onValueChange={(val) => {
+                        setFaseOperarioId(val);
+                        if (val !== 'otro') {
+                          const op = operarios.find((o) => o.id === val);
+                          if (op) setFaseOperarioNombreManual(op.nombre);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="border-border">
+                        <SelectValue placeholder="Seleccionar operario registrado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {operarios.map((op) => (
+                          <SelectItem key={op.id} value={op.id}>
+                            {op.nombre} {op.especialidad ? `(${op.especialidad})` : ''}
+                          </SelectItem>
+                        ))}
+                        <SelectItem value="otro">Otro (especificar nombre)</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {(faseOperarioId === 'otro' || !faseOperarioId) && (
+                      <Input
+                        placeholder="Nombre completo del operario que recibe..."
+                        value={faseOperarioNombreManual}
+                        onChange={(e) => setFaseOperarioNombreManual(e.target.value)}
+                        className="border-border"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <Input
+                    placeholder="Nombre completo del operario que recibe..."
+                    value={faseOperarioNombreManual}
+                    onChange={(e) => setFaseOperarioNombreManual(e.target.value)}
+                    className="border-border"
+                  />
+                )}
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setModalEntregarFaseOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleConfirmarEntregarFase}
+                disabled={procesandoAccion || (!faseOperarioId && !faseOperarioNombreManual.trim())}
+                className="bg-primary text-primary-foreground"
+              >
+                {procesandoAccion ? 'Entregando fase...' : 'Confirmar Entrega de Fase'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal Historial de Movimientos de la Partida */}
+        <Dialog open={modalHistorialOpen} onOpenChange={setModalHistorialOpen}>
+          <DialogContent className="max-w-2xl bg-background border-border">
+            <DialogHeader>
+              <DialogTitle className="text-lg flex items-center gap-2">
+                <ClipboardCheck className="h-5 w-5 text-primary" />
+                Historial de Entregas y Movimientos
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="py-2 space-y-3">
+              <div>
+                <p className="font-semibold text-sm text-foreground">{lineaHistorial?.descripcion}</p>
+                <div className="flex gap-4 mt-1 text-xs font-mono text-muted-foreground">
+                  <span>Requerida: {lineaHistorial?.cantidad_requerida} {lineaHistorial?.unidad || 'pz'}</span>
+                  <span>Entregada: {lineaHistorial?.cantidad_entregada}</span>
+                  <span className="text-primary font-bold">Pendiente: {lineaHistorial?.cantidad_pendiente}</span>
+                </div>
+              </div>
+
+              {(!lineaHistorial?.entregas || lineaHistorial.entregas.length === 0) ? (
+                <p className="text-xs text-muted-foreground italic py-4 text-center">
+                  No hay movimientos registrados para esta partida.
+                </p>
+              ) : (
+                <div className="overflow-x-auto border border-border/50 rounded-lg">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-muted/30 text-muted-foreground uppercase font-mono border-b border-border/40">
+                      <tr>
+                        <th className="p-2">Fecha/Hora</th>
+                        <th className="p-2">Tipo</th>
+                        <th className="p-2 text-right">Cantidad</th>
+                        <th className="p-2">Operario</th>
+                        <th className="p-2">Motivo</th>
+                        <th className="p-2">Estado</th>
+                        <th className="p-2 text-right">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/30">
+                      {lineaHistorial.entregas.map((e: any) => (
+                        <tr key={e.id} className={`hover:bg-muted/10 ${e.anulada ? 'opacity-60 bg-muted/20 line-through' : ''}`}>
+                          <td className="p-2 font-mono whitespace-nowrap">{e.fecha} {e.hora}</td>
+                          <td className="p-2">
+                            <Badge variant={e.tipo === 'reposicion' ? 'destructive' : 'outline'} className="text-[10px] px-1 py-0">
+                              {e.tipo}
+                            </Badge>
+                          </td>
+                          <td className="p-2 text-right font-mono font-bold">{e.cantidad}</td>
+                          <td className="p-2">{e.operario_nombre || e.operarios?.nombre || '-'}</td>
+                          <td className="p-2 text-[11px] max-w-[150px] truncate" title={e.motivo || ''}>{e.motivo || '-'}</td>
+                          <td className="p-2">
+                            {e.anulada ? (
+                              <span className="text-destructive font-semibold text-[10px]" title={e.motivo_anulacion || 'Anulada'}>
+                                Anulada
+                              </span>
+                            ) : (
+                              <span className="text-primary font-semibold text-[10px]">Activa</span>
+                            )}
+                          </td>
+                          <td className="p-2 text-right">
+                            {!e.anulada && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  setModalHistorialOpen(false);
+                                  handleAbrirAnular(e);
+                                }}
+                                className="h-6 text-[10px] px-2 text-destructive hover:bg-destructive/10"
+                                title="Anular este movimiento"
+                              >
+                                Anular
+                              </Button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setModalHistorialOpen(false)}>
+                Cerrar
               </Button>
             </DialogFooter>
           </DialogContent>

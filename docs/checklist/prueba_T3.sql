@@ -290,6 +290,89 @@ BEGIN
         RAISE EXCEPTION 'Fallo: Se permitió acceso cruzado entre organizaciones';
     END IF;
 
+    -- 14. Rechazar 'NaN'::numeric en registrar_entrega_despiece
+    v_error_capturado := false;
+    BEGIN
+        PERFORM registrar_entrega_despiece(
+            p_org_id := v_org_a,
+            p_linea_id := v_linea_id,
+            p_cantidad := 'NaN'::numeric,
+            p_tipo := 'entrega'
+        );
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%cantidad_invalida%' THEN
+            v_error_capturado := true;
+        END IF;
+    END;
+
+    IF NOT v_error_capturado THEN
+        RAISE EXCEPTION 'Fallo: Debió rechazar NaN en registrar_entrega_despiece';
+    END IF;
+
+    -- 15. Rechazar 'NaN'::numeric en ajustar_cantidad_despiece
+    v_error_capturado := false;
+    BEGIN
+        PERFORM ajustar_cantidad_despiece(
+            p_org_id := v_org_a,
+            p_linea_id := v_linea_id,
+            p_nueva_cantidad := 'NaN'::numeric,
+            p_motivo := 'Ajuste NaN'
+        );
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%cantidad_invalida%' THEN
+            v_error_capturado := true;
+        END IF;
+    END;
+
+    IF NOT v_error_capturado THEN
+        RAISE EXCEPTION 'Fallo: Debió rechazar NaN en ajustar_cantidad_despiece';
+    END IF;
+
+    -- 16. Probar entregar_fase_despiece atómico
+    DECLARE
+        v_fase_test_id UUID;
+        v_lin_fase_1 UUID;
+        v_lin_fase_2 UUID;
+        v_res_fase JSONB;
+    BEGIN
+        INSERT INTO fases_despiece (organizacion_id, clave, nombre, orden)
+        VALUES (v_org_a, 'paso_fase_test', 'Fase Test Atomica', 99)
+        ON CONFLICT (organizacion_id, clave) DO UPDATE SET nombre = EXCLUDED.nombre
+        RETURNING id INTO v_fase_test_id;
+
+        INSERT INTO orden_despiece_lineas (
+            organizacion_id, orden_trabajo_id, equipo_indice, fase_id, fase_clave,
+            descripcion, cantidad_requerida, clave_origen
+        ) VALUES
+        (v_org_a, v_ot_id, 1, v_fase_test_id, 'paso_fase_test', 'PIEZA FASE 1', 5, 'fase::test::p1');
+
+        INSERT INTO orden_despiece_lineas (
+            organizacion_id, orden_trabajo_id, equipo_indice, fase_id, fase_clave,
+            descripcion, cantidad_requerida, clave_origen
+        ) VALUES
+        (v_org_a, v_ot_id, 1, v_fase_test_id, 'paso_fase_test', 'PIEZA FASE 2', 3, 'fase::test::p2');
+
+        v_res_fase := entregar_fase_despiece(
+            p_org_id := v_org_a,
+            p_orden_trabajo_id := v_ot_id,
+            p_equipo_indice := 1,
+            p_fase_id := v_fase_test_id,
+            p_operario_nombre := 'Operario Fase Completa'
+        );
+
+        IF (v_res_fase->>'lineas_entregadas')::int != 2 THEN
+            RAISE EXCEPTION 'Fase completa debió entregar 2 líneas, entregó %', v_res_fase->>'lineas_entregadas';
+        END IF;
+
+        -- Verificar que las entregas registraron el orden_trabajo_id correctamente
+        IF NOT EXISTS (
+            SELECT 1 FROM orden_despiece_entregas
+            WHERE orden_trabajo_id = v_ot_id AND operario_nombre = 'Operario Fase Completa'
+        ) THEN
+            RAISE EXCEPTION 'Las entregas de fase no guardaron el orden_trabajo_id esperado';
+        END IF;
+    END;
+
     RAISE NOTICE 'Prueba transaccional T3 completada exitosamente (0 errores). Ejecutando ROLLBACK.';
 END $$;
 

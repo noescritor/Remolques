@@ -3167,6 +3167,14 @@ app.post("/ordenes-trabajo/:id/regenerar-ficha", async (c) => {
 
 function manejarErrorDespiece(c: any, error: any) {
   const msg = error?.message || "";
+  if (msg.includes("bom_ambiguo")) {
+    const limpio = msg.split(":").slice(1).join(":").trim() || msg;
+    return c.json({
+      error: limpio,
+      codigo: "bom_ambiguo",
+      conceptos: (error as any).conceptos || [],
+    }, 409);
+  }
   if (
     msg.includes("excede_requerido") ||
     msg.includes("excede_entregado") ||
@@ -3181,6 +3189,8 @@ function manejarErrorDespiece(c: any, error: any) {
     msg.includes("tipo_invalido") ||
     msg.includes("descripcion_requerida") ||
     msg.includes("linea_no_eliminable") ||
+    msg.includes("operario_requerido") ||
+    msg.includes("material_no_encontrado") ||
     msg.includes("ya_anulada")
   ) {
     const limpio = msg.split(":").slice(1).join(":").trim() || msg;
@@ -3234,6 +3244,7 @@ app.post("/ordenes-trabajo/:id/despiece/entregar", async (c) => {
     const supabase = getServiceClient();
     const orgId = c.get("organizacionId");
     const user = c.get("user");
+    const otId = c.req.param("id");
     const body = await c.req.json().catch(() => ({}));
 
     if (!body.linea_id) return c.json({ error: "linea_id es requerido", codigo: "parametro_faltante" }, 400);
@@ -3241,6 +3252,7 @@ app.post("/ordenes-trabajo/:id/despiece/entregar", async (c) => {
 
     const data = await registrarEntrega(supabase, {
       orgId,
+      otId,
       lineaId: body.linea_id,
       cantidad: parseFloat(body.cantidad),
       tipo: body.tipo || "entrega",
@@ -3287,6 +3299,7 @@ app.post("/ordenes-trabajo/:id/despiece/anular-entrega", async (c) => {
     const supabase = getServiceClient();
     const orgId = c.get("organizacionId");
     const user = c.get("user");
+    const otId = c.req.param("id");
     const body = await c.req.json().catch(() => ({}));
 
     if (!body.entrega_id) return c.json({ error: "entrega_id es requerido", codigo: "parametro_faltante" }, 400);
@@ -3294,6 +3307,7 @@ app.post("/ordenes-trabajo/:id/despiece/anular-entrega", async (c) => {
 
     const data = await anularEntrega(supabase, {
       orgId,
+      otId,
       entregaId: body.entrega_id,
       motivo: body.motivo,
       usuarioId: user?.id || null,
@@ -3339,6 +3353,7 @@ app.put("/ordenes-trabajo/:id/despiece/lineas/:lineaId", async (c) => {
     const supabase = getServiceClient();
     const orgId = c.get("organizacionId");
     const user = c.get("user");
+    const otId = c.req.param("id");
     const lineaId = c.req.param("lineaId");
     const body = await c.req.json().catch(() => ({}));
 
@@ -3351,6 +3366,7 @@ app.put("/ordenes-trabajo/:id/despiece/lineas/:lineaId", async (c) => {
 
     const data = await ajustarCantidadRequerida(supabase, {
       orgId,
+      otId,
       lineaId,
       nuevaCantidad: parseFloat(body.nueva_cantidad),
       motivo: body.motivo,
@@ -3367,9 +3383,10 @@ app.delete("/ordenes-trabajo/:id/despiece/lineas/:lineaId", async (c) => {
   try {
     const supabase = getServiceClient();
     const orgId = c.get("organizacionId");
+    const otId = c.req.param("id");
     const lineaId = c.req.param("lineaId");
 
-    const data = await eliminarLineaManual(supabase, { orgId, lineaId });
+    const data = await eliminarLineaManual(supabase, { orgId, otId, lineaId });
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error eliminando línea manual:", error);

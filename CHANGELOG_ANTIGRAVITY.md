@@ -3,6 +3,35 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-02 - Sub-bloque T3 (Ronda 3): Determinismo BOM por item_id, entrega de fase atómica, anulación con id/historial, saneamiento HTML y filtros OT
+**Herramienta:** Antigravity  
+**Tipo:** fix (checklist almacen, bom ambiguo 409, regeneracion con cambios_no_aplicados, entregar_fase_despiece atomico for update, saneamiento vale xss, historial entregas por linea)  
+**Rama:** `noche-t3-checklist`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.ts` (propagación de item_id e id en BomEquipoResumen y ItemPresupuestoInput).
+- `supabase/functions/make-server-feea4382/motor/generar_presupuesto_cotizacion.ts` (propagación de id e item_id en equipos válidos generados).
+- `supabase/migrations/20261102_02_checklist_almacen.sql` (columna `orden_trabajo_id` en `orden_despiece_entregas`, soporte para `receta_cruda` en constraint de origen, inclusión de `id` en `ultima_entrega` de `v_orden_despiece_avance`, RPC atómica `entregar_fase_despiece` con `FOR UPDATE`, rechazo de `NaN` en `registrar_entrega_despiece` y `ajustar_cantidad_despiece`, bloqueo dual de línea en `anular_entrega_despiece`).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.ts` (emparejamiento determinista por `item_id`, detección de ambigüedad `bom_ambiguo` con HTTP 409, consulta directa de presupuesto por `datos->meta->>cotizacion_id`, clave estable sin fase `material::kit` evitando duplicados en cambios de fase, detección y reporte de `cambios_no_aplicados` y conteo `sin_fase`, advertencia `receta_cruda`, inserción con `upsert(..., { ignoreDuplicates: true })`, validación estricta de pertenencia de OT en mutaciones y de material en `agregarLineaManual`, entrega por fase vía RPC atómica `entregar_fase_despiece`).
+- `supabase/functions/make-server-feea4382/index.ts` (manejo de error 409 `bom_ambiguo` con lista de conceptos en conflicto, pase obligatorio de `otId` en todas las rutas operativas).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.test.ts` (10 pruebas unitarias Deno cubriendo bom_ambiguo 409, regeneración con cambio de fase y detección de diferencias, RPC atómica entregarFaseCompleta y validación multi-org).
+- `src/app/components/OrdenesTrabajo/ChecklistDespieceModal.tsx` (saneamiento HTML contra XSS en vale imprimible con `esc()`, impresión de vale filtrada por fase activa, modal selector de operario para entrega de fase completa, botón y modal de Historial por partida con acción Anular individual por ID real de entrega, banners de advertencia para `receta_cruda`, `cambios_no_aplicados` y `sin_fase`).
+- `docs/checklist/verificacion_T3.sql` (verificador actualizado con comprobación de `entregar_fase_despiece` y columna `orden_trabajo_id` en entregas, `todo_ok = t`).
+- `docs/checklist/prueba_T3.sql` (prueba transaccional ampliada con casos para `NaN`, entrega de fase completa atómica y validación de `orden_trabajo_id`).
+**Qué cambió y por qué:**  
+- **1. Emparejamiento BOM determinista y 409 en ambigüedad (Hallazgo 1):** `presupuesto_desde_costeo.ts` y `generar_presupuesto_cotizacion.ts` ahora propagan `item_id`. `generarDespieceOT` empareja prioritariamente por `item_id`. Si falta `item_id`, solo empareja por `modelo_id` si existe una única coincidencia. Si existen 2 o más conceptos con el mismo modelo y sin `item_id`, se detiene y arroja error 409 `bom_ambiguo` con la lista de conceptos conflictivos, erradicando selecciones arbitrarias por índice.
+- **2. Anulación funcional e Historial de entregas por partida (Hallazgo 2):** Se expuso el `id` en `ultima_entrega` de `v_orden_despiece_avance`. En la interfaz, se implementó un modal de "Historial de movimientos" por línea consultando `datos.entregas` con botón individual de anulación por cada entrega activa, pasando el `entrega_id` real.
+- **3. Consulta directa de presupuesto (Hallazgo 3):** Se reemplazó el escaneo de 50 presupuestos por consulta directa indexada `.eq("datos->meta->>cotizacion_id", ot.cotizacion_id).maybeSingle()`.
+- **4. Despiece crudo advertido (Hallazgo 4):** Si la OT se genera desde receta base cruda, las líneas se marcan con `origen = 'receta_cruda'` y se emite la advertencia correspondiente al backend y frontend.
+- **5. Clave sin fase y detección de cambios (Hallazgo 5):** La clave determinista se definió como `${matClave}::${kitNorm}` sin incorporar la fase. Si una pieza cambia de fase o cantidad en el presupuesto, la regeneración no duplica la línea y retorna `cambios_no_aplicados`.
+- **6. Entrega de fase atómica con selector de operario (Hallazgo 6):** Creada la RPC `entregar_fase_despiece` que bloquea las líneas de la fase con `FOR UPDATE` y entrega todo atómicamente. La interfaz cuenta con modal con selector de operario.
+- **7. Saneamiento HTML en vale y filtro por fase (Hallazgo 7):** Se escaparon todos los campos interpolados en el vale impreso con `esc()` (`& < > " '`) previniendo DOM XSS y se agregó el filtro de vale por fase activa.
+- **8. Validación de pertenencia a OT y material multi-tenant (Hallazgo 13):** Las rutas de entrega, anulación, ajuste y borrado validan que la partida pertenezca a la OT del parámetro URL, y `agregarLineaManual` valida que el `materialId` pertenezca a la organización.
+- **9. Prevención de concurrencia y validaciones SQL (Hallazgos 11, 12, 14, 15):** Inserción con `upsert(..., { ignoreDuplicates: true })`, bloqueo `FOR UPDATE` dual en anulación (línea + entrega), rechazo de `NaN` en funciones de entrega y ajuste, y filtrado de reposiciones en `ultima_entrega`.
+- **Acciones manuales pendientes:**
+  - Ejecutar `supabase/migrations/20261102_02_checklist_almacen.sql` en Supabase/EasyPanel.
+  - Rebuild del servicio `remolques-api` y `remolques-web` en EasyPanel.
+  - Ejecutar `docs/checklist/verificacion_T3.sql` validando `todo_ok = true`.
+
 ## 2026-11-02 - Sub-bloque T2 (Ronda 3): Resolución de hallazgos R3 de árbol BOM, 0 duplicados, pasos reales 1:1, RLS estricto SELECT, aislamiento de modelos
 **Herramienta:** Antigravity  
 **Tipo:** fix (arbol bom excel 1 a 1, eliminacion de casi duplicados, suspension sustitutos cant 0, rls solo select authenticated, aislamiento modelos plataforma)  
