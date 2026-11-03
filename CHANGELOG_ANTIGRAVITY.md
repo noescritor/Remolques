@@ -26,6 +26,28 @@ Formato: entradas nuevas **arriba**.
   - Rebuild del servicio backend Deno en EasyPanel.
   - Correr `docs/checklist/verificacion_T3.sql` en SQL Editor para validar `todo_ok = true`.
 
+## 2026-11-02 - Sub-bloque T2 (Ronda 2): Correcciones de RLS, esquema real, carga de árbol, categorías y aislamiento
+**Herramienta:** Antigravity  
+**Tipo:** fix (despiece, rls get_current_org_id, esquema productos.notas, arbol bom, categorias, sin costo null, paso limpieza)  
+**Rama:** `noche-t2-despiece`  
+**Archivos tocados:**  
+- `scripts/generar_migracion_despiece.py` (corrección integral del generador: políticas RLS usando `get_current_org_id()`, `ADD COLUMN IF NOT EXISTS notas TEXT` a `productos`, asignación de `paso` y `fase_id` a las 680 líneas estructurales de `receta_base` que tenían paso nulo, mapeo de `paso = 'LIMPIEZA'` a `PASO 7`, actualización de `opcion_componentes` por bloque de configuración con estricto filtro de tenant `fe.organizacion_id = m.organizacion_id`, inferencia y creación de categorías en `categorias_producto`, `costo = NULL` y `precio_unitario = NULL` para productos sin precio, detección de duplicados normalizando operadores, signos y acentos).
+- `supabase/migrations/20261102_01_despiece_union.sql` (migración regenerada y probada 2 veces de forma idempotente contra PostgreSQL 17 local).
+- `docs/despiece/verificacion_T2.sql` (verificador actualizado con validación estricta de 0 cruces de tenant, 100% categorización de importados, 0 precios unitarios inventados, 100% de recetas con fase_id).
+- `docs/despiece/prueba_T2.sql` (prueba transaccional de 2 organizaciones simultáneas, validación de aislamiento RLS y conteos exactos).
+- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (análisis enriquecido con diff exacto contra `remolques`, discrepancias numéricas, conflictos de costo, lista de 22 pendientes de definir y diccionario completo de 27 normalizaciones).
+- `src/app/utils/fasesDespiece.ts` (agregado reconocimiento y mapeo de `LIMPIEZA` / `LAVADO` / `ESCOREO` a `paso_7`).
+- `src/app/utils/fasesDespiece.test.ts` (prueba unitaria añadida para `LIMPIEZA` -> `paso_7`).
+**Qué cambió y por qué:**  
+- **1. Corrección RLS y esquema real (Hallazgos 1 y 2):** Eliminada referencia a tabla inexistente `usuarios`; adoptado `get_current_org_id()`. Agregada columna `notas TEXT` a `productos` para almacenar trazabilidad `import-union-2026-11`.
+- **2. Carga de árbol de despiece y opciones (Hallazgo 3):** Poblados los `paso` y `fase_id` de los 680 componentes estructurales sin paso previo en `receta_base`, vinculados componentes de opciones (`suspension`, `patin`, `eje`, `retractil`, `pintura`, `piso`, `rines`, `llantas`, `multimodal`, `redilas`) con su respectiva fase.
+- **3. Aislamiento multi-inquilino (Hallazgo 4):** Resuelto el cruce de `fase_id` mediante joins explícitos `WHERE m.id = rb.modelo_id AND fe.organizacion_id = r_org.id AND m.organizacion_id = r_org.id`, garantizando 0 referencias cruzadas entre organizaciones.
+- **4. Precios y categorías (Hallazgos 5, 6 y 7):** Sin precio ahora almacena `costo = NULL` y `precio_unitario = NULL` (no 0). Se crearon 11 categorías estándar en `categorias_producto` y se asignó `categoria_id` a todos los productos importados. Se normalizaron nombres para reutilizar productos existentes idénticos salvo espacios/acentos.
+- **5. Mapeo de LIMPIEZA (Hallazgo 8):** Los registros con `paso = 'LIMPIEZA'` se mapean a `PASO 7` (Lavado y preparación) en base de datos y en `fasesDespiece.ts`.
+- **Acciones manuales pendientes:**
+  - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en producción.
+  - Ejecutar `docs/despiece/verificacion_T2.sql` comprobando `todo_ok = true`.
+
 ## 2026-11-02 - Sub-bloque T2 (Noche): Despiece por fases desde UNION DE LISTADOS, catálogo oficial y equivalencias
 **Herramienta:** Antigravity  
 **Tipo:** feat (despiece, catalogo de fases, equivalencias legacy, materias primas, arbol bom, deduccion referencia)  

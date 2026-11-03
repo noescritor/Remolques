@@ -87,6 +87,7 @@ export function resolverFaseDeLinea(
     return `paso_${matchPaso[1]}`;
   }
 
+  if (pasoNorm.includes("LIMPIEZA") || pasoNorm.includes("LAVADO") || pasoNorm.includes("ESCOREO")) return "paso_7";
   if (pasoNorm.includes("PINTURA")) return "paso_8";
   if (pasoNorm.includes("AIRE") || pasoNorm.includes("ABS")) return "paso_9";
   if (pasoNorm.includes("LUZ")) return "paso_10";

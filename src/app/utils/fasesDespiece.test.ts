@@ -59,6 +59,9 @@ Deno.test("fasesDespiece - 2. resolverFaseDeLinea mapea por paso legacy, equival
 
   const l5: LineaBOMGenerica = { nombre: "Fase directa", cantidad: 1, fase_clave: "paso_5" };
   assertEquals(resolverFaseDeLinea(l5, EQUIVALENCIAS_PRUEBA), "paso_5");
+
+  const l6: LineaBOMGenerica = { nombre: "Fosfato", cantidad: 1, paso: "LIMPIEZA" };
+  assertEquals(resolverFaseDeLinea(l6, EQUIVALENCIAS_PRUEBA), "paso_7");
 });
 
 Deno.test("fasesDespiece - 3. agruparBOMPorFases agrupa respetando el orden oficial y cuenta costos", () => {
