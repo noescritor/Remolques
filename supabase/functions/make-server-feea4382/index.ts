@@ -100,6 +100,10 @@ import {
   eliminarLineaRecetaMotor,
   obtenerHistorialRecetaMotor,
 } from "./motor/recetas_editor.ts";
+import {
+  listarProductosPaginados,
+  obtenerCatalogoCotizador,
+} from "./motor/catalogo_productos.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -1564,36 +1568,51 @@ app.delete("/clientes/:id", async (c) => {
 
 app.get("/productos", async (c) => {
   try {
-    const supabase = c.get("supabase") as SupabaseClient;
+    const supabase = c.get("supabase") as any;
     const orgId = (c as any).get("organizacionId") as string;
     const q = c.req.query("busqueda") || c.req.query("q");
     const tipo = c.req.query("tipo") || c.req.query("tipo_item");
-    const limitParam = c.req.query("limit");
-    const limit = limitParam ? parseInt(limitParam, 10) : null;
+    const categoria = c.req.query("categoria");
+    const sinCosto = c.req.query("sin_costo");
+    const paginado = c.req.query("paginado");
+    const page = c.req.query("page") ? parseInt(c.req.query("page")!, 10) : undefined;
+    const limit = c.req.query("limit") ? parseInt(c.req.query("limit")!, 10) : undefined;
 
-    let query = supabase.from('productos').select('*');
-    if (orgId) {
-      query = query.eq('organizacion_id', orgId);
-    }
-    if (tipo) {
-      query = query.eq('tipo_item', tipo);
-    }
-    if (q && q.trim()) {
-      const qSanitized = q.trim().replace(/[(),]/g, ' ').replace(/\s+/g, ' ').trim();
-      if (qSanitized) {
-        query = query.or(`nombre.ilike.%${qSanitized}%,id.ilike.%${qSanitized}%`);
-      }
-    }
-    if (limit && Number.isInteger(limit) && limit > 0) {
-      query = query.limit(limit);
+    const resultado = await listarProductosPaginados(supabase, orgId, {
+      q,
+      busqueda: q,
+      tipo,
+      tipo_item: tipo,
+      categoria,
+      sinCosto,
+      paginado,
+      page,
+      limit,
+    });
+
+    if (Array.isArray(resultado)) {
+      c.header("X-Total-Count", String(resultado.length));
+      return c.json(resultado);
     }
 
-    const { data, error } = await query;
-    if (error) throw error;
-    return c.json(data || []);
-  } catch (error) {
-    console.error('[make-server] Error fetching productos:', error);
-    return c.json({ error: 'Error fetching productos' }, 500);
+    return c.json(resultado);
+  } catch (error: any) {
+    console.error("[make-server] Error fetching productos:", error);
+    const { status, body } = formatearErrorRespuesta(error);
+    return c.json(body, status as any);
+  }
+});
+
+app.get("/catalogo-cotizador", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const catalogo = await obtenerCatalogoCotizador(supabase, orgId);
+    return c.json(catalogo);
+  } catch (error: any) {
+    console.error("[make-server] Error fetching catalogo-cotizador:", error);
+    const { status, body } = formatearErrorRespuesta(error);
+    return c.json(body, status as any);
   }
 });
 

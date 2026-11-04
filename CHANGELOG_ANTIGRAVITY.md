@@ -90,6 +90,26 @@ Formato: entradas nuevas **arriba**.
 - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en producción.
 - Ejecutar `docs/despiece/verificacion_T2.sql` comprobando `todo_ok = true`.
 
+## 2026-11-03 - Sub-bloque T1 (Corrección Ronda 3): Resolución determinista de precio mínimo de aceros, unidades tramo/placa y visor enriquecido
+**Herramienta:** Antigravity  
+**Tipo:** fix (catalogo_productos, precios_aceros, unidades_reales, tabla_cotizador, documentacion)  
+**Rama:** `noche-t1-catalogo`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.ts`:
+  - Resolución determinista de precio vigente para aceros cuando existen múltiples cotizaciones con la misma fecha de actualización (`actualizado_el` idéntico): toma el precio mínimo positivo (`precio > 0`), con desempate alfabético estricto por nombre de proveedor (`A-Z`) y secundario por fecha.
+  - Derivación realista de `unidad`: asigna `"placa"` si tiene ancho y largo ft, y `"tramo"` si es perfil longitudinal (6.10m, 12.20m, PTR, ángulo, canal, tubo, etc.), eliminando la forzatura de `"kg"`.
+  - Retiro del alias engañoso `precio_por_kg` y exposición de `total_proveedores` y `precios_todos` con el desglose completo de cotizaciones por proveedor.
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.test.ts`:
+  - Pruebas unitarias actualizadas simulando el caso real de la base de datos (23 materiales con idéntico `actualizado_el` y múltiples cotizaciones de proveedores como TANOS, FORTACERO, SERVIACERO), verificando selección de menor precio, desempate alfabético y unidades tramo/placa.
+- `src/app/components/Productos/ProductosList.tsx`:
+  - Tabla de Aceros del Cotizador actualizada: columnas "Material", "Tipo", "Dimensiones / Calibre", "Unidad", "Precio Vigente (mínimo)", "Proveedor Vigente", "IVA incl.", "Otros Precios / Proveedores", "Fuente".
+  - Retiradas columnas que no existen en el esquema real ("Peso", "Precio / metro").
+  - Agregado badge con conteo y tooltip/desglose de cotizaciones alternas de proveedores.
+- `docs/diagnostico/CATALOGO_PRODUCTOS.md`:
+  - Actualizado con hallazgos de Ronda 3: aclaración de que `productos` tiene 512 filas (la causa del síntoma no era corte a 1000 sino 501 productos con `categoria_id = NULL`), documentación de la regla de precio mínimo y unidades de aceros, y regla de prioridad de costos en opciones de configuración (`tipo_modelo = 'plataforma'` > primer costo disponible).
+**Acciones manuales pendientes:**
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel.
+
 ## 2026-11-02 - Sub-bloque T6 (Ronda 2): Correcciones de auditoría RLS, validación tenant, clonación sin costo hardcodeado y endpoints
 **Herramienta:** Antigravity  
 **Tipo:** fix (recetas, rls auditoria solo select, aislamiento tenant funciones plpgsql, validacion duplicados global, clonacion sin costo inventado, endpoints autorizacion)  
@@ -286,6 +306,51 @@ Formato: entradas nuevas **arriba**.
 - **5. Catálogo de productos:** Se dieron de alta 257 materias primas normalizadas con unidades inferidas (`PZA`, `L`, `M`, `KG`), conservando el texto original en la descripción y aplicando precios cuando estaban disponibles sin sobrescribir costos existentes.
 - **Acciones manuales pendientes:**
   - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en producción.
+
+## 2026-11-02 - Sub-bloque T1 (Corrección Ronda 2): Alineación a esquema real de acero_precios, orden determinista y formatearErrorRespuesta
+**Herramienta:** Antigravity  
+**Tipo:** fix (catalogo_productos, esquema real acero_precios, formatearErrorRespuesta, ordenamiento determinista, sql diagnostico)  
+**Rama:** `noche-t1-catalogo`  
+**Archivos tocados:**  
+- `docs/diagnostico/catalogo_conteos.sql`: Corregido `acero_precios.precio_unitario` a `precio` real. Probado en PostgreSQL 17 con `ON_ERROR_STOP=1`.
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.ts`:
+  - `obtenerCatalogoCotizador` adaptado al esquema real de `acero_materiales` (sin `clave`, sin `unidad`, sin `peso_kg`) y `acero_precios` (`precio`, `actualizado_el`, `proveedor`, `incluye_iva`, `fuente`, `notas`).
+  - Ordenamiento determinista con `.order("nombre").order("id")` en modos paginado y retrocompatible.
+  - Filtro sin costo alineado con `costo.is.null,costo.lte.0`.
+  - Resolución del precio más reciente por `actualizado_el` y derivación de `unidad` ("placa" si tiene ancho/largo ft, "kg" si no).
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.test.ts`: Mock y pruebas actualizadas con el esquema real, soporte de ordenamiento multicolumna en `fakeClient` y verificación de resolución de precio vigente.
+- `supabase/functions/make-server-feea4382/index.ts`: Integrado `formatearErrorRespuesta(err)` en los bloques catch de `GET /productos` y `GET /catalogo-cotizador` para no filtrar mensajes internos de Postgres.
+**Acciones manuales pendientes:**
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel.
+
+## 2026-11-02 - Sub-bloque T1 (Noche): Catálogo de productos completo, sin tope de 1000 filas, pestaña sin categoría, filtro sin costo y visor del cotizador
+**Herramienta:** Antigravity  
+**Tipo:** feat & fix (catalogo productos, paginacion postgrest sin tope 1000, conteos exactos, sin categoria, filtro sin costo, visor catalogo cotizador)  
+**Rama:** `noche-t1-catalogo`  
+**Archivos tocados:**  
+- `docs/diagnostico/CATALOGO_PRODUCTOS.md` (diagnóstico exhaustivo de causas: corte de 1000 de PostgREST, migración de BOMs con categoria_id null, y cotizador desacoplado en tablas independientes)
+- `docs/diagnostico/catalogo_conteos.sql` (consultas de solo lectura para auditar productos, conteo por categoría, nulos y tablas del cotizador)
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.ts` (motor backend con `listarProductosPaginados` que pagina por lotes de 1000 con `.range()` para no truncar a 1000, soporte de modo retrocompatible como array con cabecera `X-Total-Count`, modo paginado `{ productos, total, page, limit, truncado }`, y `obtenerCatalogoCotizador` que unifica aceros y opciones)
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.test.ts` (3 pruebas Deno de paginación retrocompatible, paginación explícita con truncado y catálogo del cotizador)
+- `supabase/functions/make-server-feea4382/index.ts` (conectado `GET /productos` a `listarProductosPaginados` y nueva ruta `GET /catalogo-cotizador`)
+- `src/app/utils/catalogoProductos.ts` (utilidades puras: `esProductoSinCosto`, `calcularCategoriasConConteo`, `filtrarProductosCatalogo` genérico)
+- `src/app/utils/catalogoProductos.test.ts` (3 pruebas Deno con casos de borde de costo, conteos y filtros)
+- `src/app/components/Productos/ProductosList.tsx` (interfaz renovada con selector de vista "General" vs "Catálogo Cotizador", badges con conteos reales en tabs de categorías, pestaña "Sin categoría", selector switch "Solo sin costo cargado", badge "Sin costo cargado" en lugar de $0, y visor de tablas de aceros y opciones del cotizador)
+**Qué cambió y por qué:**  
+- **1. Diagnóstico del problema reportado por Luis:** Luis solo veía categorías con 3, 2, 5, 1 productos porque:
+  a) PostgREST trunca a 1000 filas si no se usa `.range()`.
+  b) Las migraciones de recetas de producción insertaron cientos de materiales con `categoria_id IS NULL`, y la interfaz filtraba por `categoria_id === cat.id` sin ofrecer pestaña para ver los que no tenían categoría.
+  c) Los ítems del cotizador (`acero_materiales`, `opciones_configuracion`) nunca estuvieron en `productos`, sino en sus propias tablas de configuración.
+- **2. Paginación segura y sin límite de 1000 en el backend:** `listarProductosPaginados` recorre automáticamente en lotes de 1000 mediante `.range()` hasta agotar los registros, retornando la lista completa con `X-Total-Count` para clientes existentes (como `useSupabaseData.ts`), o un objeto `{ productos, total, page, limit, truncado }` si se solicita con `paginado=1`.
+- **3. Endpoints del cotizador expuestos:** Nueva ruta `GET /catalogo-cotizador` que reúne materiales de acero con sus precios por kg/m y opciones de configuración con sus costos de referencia sin duplicar filas en la tabla general de productos.
+- **4. UX del frontend:**
+  - Cada pestaña de categoría muestra su badge con el conteo exacto de productos.
+  - Pestaña "Sin categoría" disponible con su conteo para que ningún producto quede oculto.
+  - Filtro switch "Solo sin costo cargado" con badge numérico.
+  - Los productos sin costo (`null`, `undefined` o `0`) muestran un badge ámbar `"Sin costo cargado"` en lugar de $0.
+  - Pestaña "Catálogo Cotizador" que permite consultar en vivo las tablas de aceros y opciones configurables con buscador y recarga bajo demanda.
+- **Acciones manuales pendientes:**
+  - Rebuild de `remolques-api` en EasyPanel para activar las mejoras en el backend en producción.
 
 ## 2026-11-02 - T0: Orden de la casa (Housekeeping nocturno)
 **Herramienta:** Antigravity  
