@@ -44,6 +44,7 @@ export interface BomLineaResumen {
 }
 
 export interface BomEquipoResumen {
+  item_id?: string | null;
   descripcion: string;
   modelo_id?: string | null;
   cantidad: number;
@@ -86,6 +87,8 @@ export interface PresupuestoDatos {
 }
 
 export interface ItemPresupuestoInput {
+  id?: string | null;
+  item_id?: string | null;
   descripcion: string;
   cantidad: number;
   modelo_id?: string | null;
@@ -292,6 +295,7 @@ export function generarPresupuestoDesdeCosteo(
     // Guardar BOM por unidad (sin multiplicar por cantEquipo)
     if (bom) {
       bomResumen.push({
+        item_id: (item as any).id || (item as any).item_id || null,
         descripcion: item.descripcion,
         modelo_id: item.modelo_id,
         cantidad: cantEquipo,

@@ -128,6 +128,8 @@ export async function generarPresupuestoDeCotizacion(
 
       equiposValidos.push({
         item: {
+          id: item.id || rawItem.id || null,
+          item_id: item.id || rawItem.id || null,
           descripcion: desc,
           cantidad: Number(item.cantidad) > 0 ? Number(item.cantidad) : 1,
           modelo_id: modeloId

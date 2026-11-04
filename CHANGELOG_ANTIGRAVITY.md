@@ -3,6 +3,30 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-04 - Sub-bloque T3 (Ronda 4): FK RESTRICT en entregas, emparejamiento estricto por item_id (409 concepto_sin_bom), soporte de unidad en OT, validación de operario y pruebas RLS / concurrencia
+**Herramienta:** Antigravity  
+**Tipo:** fix (checklist almacen, fk restrict no cascade, 409 concepto_sin_bom, unidad ot equipo_indice, operario organizacion, rls dos usuarios, prueba concurrencia)  
+**Rama:** `noche-t3-checklist`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_02_checklist_almacen.sql` (Corrección de regresión: `orden_trabajo_id` en `orden_despiece_entregas` configurado como `ON DELETE RESTRICT` y `NOT NULL` tras backfill; validación de pertenencia de `p_operario_id` a `p_org_id` en `registrar_entrega_despiece` y `entregar_fase_despiece`; `GRANT SELECT` a `authenticated` y `REVOKE` de escrituras directas).
+- `supabase/functions/make-server-feea4382/index.ts` (Ruta `DELETE /cotizaciones/:id` actualizada para verificar si las OTs tienen entregas de almacén y responder 409 Conflict con mensaje explícito; manejo de error 409 `concepto_sin_bom` en `manejarErrorDespiece`; unificación de query params `equipo` y `equipo_indice`).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.ts` (Emparejamiento de BOM estrictamente por `item_id` sin fallback a `modelo_id` cuando `item_id` está presente, retornando 409 `concepto_sin_bom` con aviso para regenerar presupuesto; fallback a `modelo_id` limitado a OTs sin `item_id` con única coincidencia; `entregarFaseCompleta` y `agregarLineaManual` toman automáticamente `caracteristicas.unidad` de la OT; detección de truncado con `{ count: 'exact' }` y `.limit(1000)`).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.test.ts` (Fixtures con forma real de `BomEquipoResumen` incluyendo `modelo_id` y `paso` en arreglo; prueba para Caso a de Hendrickson vs Fleet Master con 409 `concepto_sin_bom`; prueba de unidad != 1 en entrega de fase y partidas manuales, alcanzando 216 pruebas Deno exitosas).
+- `src/app/components/OrdenesTrabajo/ChecklistDespieceModal.tsx` (Envío de la unidad real de la OT `caracteristicas.unidad` en entrega de fase y línea manual; alerta con mensaje retornado del backend `resData.mensaje` tras entrega de fase).
+- `docs/checklist/verificacion_T3.sql` (Verificador actualizado con comprobación de FK RESTRICT y columna `orden_trabajo_id NOT NULL`, retornando `todo_ok = true`).
+- `docs/checklist/prueba_T3.sql` (Prueba transaccional integral con bloqueo de borrado de OT y Cotización con entregas, entrega de fase en OT unidad 2, validación de operario y aislamiento RLS con dos usuarios de dos organizaciones).
+- `docs/checklist/prueba_concurrencia_dos_sesiones_T3.sql` (Guion de concurrencia y bloqueo FOR UPDATE entre dos sesiones simultáneas con `pg_sleep`).
+**Qué cambió y por qué:**  
+- **1. Prevención de borrado en cascada (Hallazgo 1 ALTA):** La FK `orden_trabajo_id` en `orden_despiece_entregas` es `ON DELETE RESTRICT` y `NOT NULL`. Borrar una OT o cotización con entregas es bloqueado por la BD. La ruta `DELETE /cotizaciones/:id` responde 409 si detecta entregas.
+- **2. Soporte para unidad de la OT (Hallazgo 2 ALTA):** El backend extrae la unidad desde `caracteristicas.unidad` de la OT sin depender de que el cliente mande `equipo_indice`, asegurando que OTs de unidades 2, 3... entreguen sus partidas y las líneas manuales pertenezcan al equipo correcto. La pantalla muestra la retroalimentación de la entrega.
+- **3. Emparejamiento BOM por item_id (Hallazgo 3 ALTA):** Si la OT tiene `item_id`, el emparejamiento es exclusivo por `item_id`. Si el concepto fue omitido del presupuesto, se rechaza con 409 `concepto_sin_bom` instruyendo regenerar el presupuesto, impidiendo que adopte piezas de otro concepto con el mismo modelo.
+- **4. Pruebas reales de RLS y concurrencia (Hallazgo 4 MEDIA):** Se incorporaron pruebas RLS transaccionales con `SET LOCAL ROLE authenticated` y dos usuarios, guion con `pg_sleep` para concurrencia en dos sesiones, y fixtures reales con `modelo_id` y arreglos de pasos.
+- **5. Parámetros unificados y validación de operario (Hallazgos 5 y 7 BAJA):** Soporte simultáneo para `equipo` y `equipo_indice`. Validación de que el operario pertenece a la organización antes de registrar o entregar materiales.
+- **6. Detección real de truncado (Hallazgo 6 BAJA):** Uso de `{ count: 'exact' }` y `.limit(1000)` para verificar con precisión el volumen de entregas.
+**Acciones manuales pendientes:**
+- Ejecutar `supabase/migrations/20261102_02_checklist_almacen.sql` en producción.
+- Rebuild de los servicios `remolques-api` y `remolques-web` en EasyPanel.
+- Ejecutar `docs/checklist/verificacion_T3.sql` comprobando `todo_ok = true`.
 
 ## 2026-11-03 - Sub-bloque T2 (Ronda 4): Resolución multitenant por nombre de producto en Bloque D (0 UUIDs), respeto de paso, cantidades reales y diff calculado
 **Herramienta:** Antigravity  
@@ -24,6 +48,35 @@ Formato: entradas nuevas **arriba**.
 **Acciones manuales pendientes:**
 - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en producción.
 - Ejecutar `docs/despiece/verificacion_T2.sql` comprobando `todo_ok = true`.
+
+## 2026-11-02 - Sub-bloque T3 (Ronda 3): Determinismo BOM por item_id, entrega de fase atómica, anulación con id/historial, saneamiento HTML y filtros OT
+**Herramienta:** Antigravity  
+**Tipo:** fix (checklist almacen, bom ambiguo 409, regeneracion con cambios_no_aplicados, entregar_fase_despiece atomico for update, saneamiento vale xss, historial entregas por linea)  
+**Rama:** `noche-t3-checklist`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/presupuesto_desde_costeo.ts` (propagación de item_id e id en BomEquipoResumen y ItemPresupuestoInput).
+- `supabase/functions/make-server-feea4382/motor/generar_presupuesto_cotizacion.ts` (propagación de id e item_id en equipos válidos generados).
+- `supabase/migrations/20261102_02_checklist_almacen.sql` (columna `orden_trabajo_id` en `orden_despiece_entregas`, soporte para `receta_cruda` en constraint de origen, inclusión de `id` en `ultima_entrega` de `v_orden_despiece_avance`, RPC atómica `entregar_fase_despiece` con `FOR UPDATE`, rechazo de `NaN` en `registrar_entrega_despiece` y `ajustar_cantidad_despiece`, bloqueo dual de línea en `anular_entrega_despiece`).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.ts` (emparejamiento determinista por `item_id`, detección de ambigüedad `bom_ambiguo` con HTTP 409, consulta directa de presupuesto por `datos->meta->>cotizacion_id`, clave estable sin fase `material::kit` evitando duplicados en cambios de fase, detección y reporte de `cambios_no_aplicados` y conteo `sin_fase`, advertencia `receta_cruda`, inserción con `upsert(..., { ignoreDuplicates: true })`, validación estricta de pertenencia de OT en mutaciones y de material en `agregarLineaManual`, entrega por fase vía RPC atómica `entregar_fase_despiece`).
+- `supabase/functions/make-server-feea4382/index.ts` (manejo de error 409 `bom_ambiguo` con lista de conceptos en conflicto, pase obligatorio de `otId` en todas las rutas operativas).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.test.ts` (10 pruebas unitarias Deno cubriendo bom_ambiguo 409, regeneración con cambio de fase y detección de diferencias, RPC atómica entregarFaseCompleta y validación multi-org).
+- `src/app/components/OrdenesTrabajo/ChecklistDespieceModal.tsx` (saneamiento HTML contra XSS en vale imprimible con `esc()`, impresión de vale filtrada por fase activa, modal selector de operario para entrega de fase completa, botón y modal de Historial por partida con acción Anular individual por ID real de entrega, banners de advertencia para `receta_cruda`, `cambios_no_aplicados` y `sin_fase`).
+- `docs/checklist/verificacion_T3.sql` (verificador actualizado con comprobación de `entregar_fase_despiece` y columna `orden_trabajo_id` en entregas, `todo_ok = t`).
+- `docs/checklist/prueba_T3.sql` (prueba transaccional ampliada con casos para `NaN`, entrega de fase completa atómica y validación de `orden_trabajo_id`).
+**Qué cambió y por qué:**  
+- **1. Emparejamiento BOM determinista y 409 en ambigüedad (Hallazgo 1):** `presupuesto_desde_costeo.ts` y `generar_presupuesto_cotizacion.ts` ahora propagan `item_id`. `generarDespieceOT` empareja prioritariamente por `item_id`. Si falta `item_id`, solo empareja por `modelo_id` si existe una única coincidencia. Si existen 2 o más conceptos con el mismo modelo y sin `item_id`, se detiene y arroja error 409 `bom_ambiguo` con la lista de conceptos conflictivos, erradicando selecciones arbitrarias por índice.
+- **2. Anulación funcional e Historial de entregas por partida (Hallazgo 2):** Se expuso el `id` en `ultima_entrega` de `v_orden_despiece_avance`. En la interfaz, se implementó un modal de "Historial de movimientos" por línea consultando `datos.entregas` con botón individual de anulación por cada entrega activa, pasando el `entrega_id` real.
+- **3. Consulta directa de presupuesto (Hallazgo 3):** Se reemplazó el escaneo de 50 presupuestos por consulta directa indexada `.eq("datos->meta->>cotizacion_id", ot.cotizacion_id).maybeSingle()`.
+- **4. Despiece crudo advertido (Hallazgo 4):** Si la OT se genera desde receta base cruda, las líneas se marcan con `origen = 'receta_cruda'` y se emite la advertencia correspondiente al backend y frontend.
+- **5. Clave sin fase y detección de cambios (Hallazgo 5):** La clave determinista se definió como `${matClave}::${kitNorm}` sin incorporar la fase. Si una pieza cambia de fase o cantidad en el presupuesto, la regeneración no duplica la línea y retorna `cambios_no_aplicados`.
+- **6. Entrega de fase atómica con selector de operario (Hallazgo 6):** Creada la RPC `entregar_fase_despiece` que bloquea las líneas de la fase con `FOR UPDATE` y entrega todo atómicamente. La interfaz cuenta con modal con selector de operario.
+- **7. Saneamiento HTML en vale y filtro por fase (Hallazgo 7):** Se escaparon todos los campos interpolados en el vale impreso con `esc()` (`& < > " '`) previniendo DOM XSS y se agregó el filtro de vale por fase activa.
+- **8. Validación de pertenencia a OT y material multi-tenant (Hallazgo 13):** Las rutas de entrega, anulación, ajuste y borrado validan que la partida pertenezca a la OT del parámetro URL, y `agregarLineaManual` valida que el `materialId` pertenezca a la organización.
+- **9. Prevención de concurrencia y validaciones SQL (Hallazgos 11, 12, 14, 15):** Inserción con `upsert(..., { ignoreDuplicates: true })`, bloqueo `FOR UPDATE` dual en anulación (línea + entrega), rechazo de `NaN` en funciones de entrega y ajuste, y filtrado de reposiciones en `ultima_entrega`.
+- **Acciones manuales pendientes:**
+  - Ejecutar `supabase/migrations/20261102_02_checklist_almacen.sql` en Supabase/EasyPanel.
+  - Rebuild del servicio `remolques-api` y `remolques-web` en EasyPanel.
+  - Ejecutar `docs/checklist/verificacion_T3.sql` validando `todo_ok = true`.
 
 ## 2026-11-02 - Sub-bloque T2 (Ronda 3): Resolución de hallazgos R3 de árbol BOM, 0 duplicados, pasos reales 1:1, RLS estricto SELECT, aislamiento de modelos
 **Herramienta:** Antigravity  
@@ -47,6 +100,30 @@ Formato: entradas nuevas **arriba**.
 - **Acciones manuales pendientes:**
   - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en EasyPanel/Supabase.
   - Ejecutar `docs/despiece/verificacion_T2.sql` validando `todo_ok = true`.
+
+## 2026-11-02 - Sub-bloque T3 (Ronda 2): Generación BOM real, RLS estricto, RPCs atómicas, hora México y UI completa
+**Herramienta:** Antigravity  
+**Tipo:** fix (checklist almacen, generacion bom real presupuestos, rls select only, rpc atomicas con for update, ui selector equipo csv e impresion)  
+**Rama:** `noche-t3-checklist`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_02_checklist_almacen.sql` (RLS solo `FOR SELECT` para `authenticated` con `get_current_org_id()`, `ON DELETE RESTRICT` en `linea_id`, trigger `trg_lineas_requerida_vs_entregada`, RPCs atómicas `ajustar_cantidad_despiece` y `eliminar_linea_despiece` con `FOR UPDATE`, fechas/horas con `America/Mexico_City`, mensajes plpgsql corregidos con `round()`).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.ts` (`generarDespieceOT` vincula presupuesto vía folio `PRE-*` o `datos.meta.cotizacion_id`, matching por `item_id`/`modelo_id`/`unidad`, clave determinista `fase::material::kit` sin índices volátiles, inserción idempotente con `ignoreDuplicates: true`, delegación a RPCs atómicas para ajuste y eliminación, validación de OT y fase en adición manual).
+- `supabase/functions/make-server-feea4382/index.ts` (función `manejarErrorDespiece` con códigos 400, 404, 409 y enmascaramiento de errores internos 500 con `formatearErrorRespuesta`).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.test.ts` (6 pruebas Deno pasando, cubriendo seguridad de cliente no privilegiado, generación determinista con folio real, RPCs atómicas y métricas).
+- `src/app/components/OrdenesTrabajo/ChecklistDespieceModal.tsx` (selector interactivo de equipo, modales para agregar partida manual, ajustar requerida con motivo y anular entrega con motivo, exportación a CSV, generación e impresión de vale con firmas, leyenda de entrega completa y tokens semánticos).
+- `docs/checklist/verificacion_T3.sql` (verificador actualizado comprobando las 7 entidades, trigger y 0 políticas no-SELECT, retornando `todo_ok = t`).
+- `docs/checklist/prueba_T3.sql` (prueba transaccional completa con seeding de organizaciones, clientes y cotizaciones, validando concurrencia, sobreentrega, reposición y aislamiento de dos organizaciones con 0 errores).
+**Qué cambió y por qué:**  
+- **1. Generación de BOM con datos reales (Hallazgos 1 y 2):** Se resolvió el error de columna inexistente `presupuestos.cotizacion_id` usando el folio `PRE-<folio>` o `datos.meta.cotizacion_id`. Se identifica el modelo desde `caracteristicas.modelo_id`/`unidad` para soportar órdenes de trabajo multi-equipo sin tomar siempre el primero.
+- **2. Idempotencia y protección de entregas existentes (Hallazgo 3):** Se eliminó el `upsert` destructivo; ahora se utiliza clave estable sin índice de array y se agregan únicamente piezas faltantes (`ignoreDuplicates: true`), protegiendo cualquier entrega previa.
+- **3. Zona horaria de México (Hallazgo 4):** Se configuraron los valores de fecha y hora por defecto en PostgreSQL usando `now() AT TIME ZONE 'America/Mexico_City'`.
+- **4. RLS estricto y seguridad en mutaciones (Hallazgos 6 y 14):** Se revocaron permisos de `INSERT`, `UPDATE` y `DELETE` directos a `authenticated`, dejándolos exclusivamente en `FOR SELECT` con `get_current_org_id()`. Las mutaciones operan únicamente a través de funciones RPC seguras con `service_role`.
+- **5. RPCs atómicas para ajuste y borrado (Hallazgo 7):** Se crearon `ajustar_cantidad_despiece` y `eliminar_linea_despiece` con bloqueo de fila `FOR UPDATE` y validaciones estrictas de historial.
+- **6. UI completa y funcional (Hallazgos 9 y 15):** Se integró el selector de equipo, exportación a CSV en navegador, vista previa imprimible del vale con firmas, modales para agregar y ajustar partidas, y texto explícito de entrega completa.
+- **Acciones manuales pendientes:**
+  - Correr `supabase/migrations/20261102_02_checklist_almacen.sql` en producción.
+  - Rebuild del backend en EasyPanel.
+  - Correr `docs/checklist/verificacion_T3.sql` comprobando `todo_ok = t`.
 
 ## 2026-11-02 - Sub-bloque T2 (Ronda 2): Correcciones de RLS, esquema real, carga de árbol, categorías y aislamiento
 **Herramienta:** Antigravity  

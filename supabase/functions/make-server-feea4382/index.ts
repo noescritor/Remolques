@@ -78,6 +78,16 @@ import {
   obtenerConciliacionProveedor,
   formatearErrorRespuesta,
 } from "./motor/cuentas_por_pagar.ts";
+import {
+  listarDespieceOT,
+  generarDespieceOT,
+  registrarEntrega,
+  entregarFaseCompleta,
+  anularEntrega,
+  agregarLineaManual,
+  ajustarCantidadRequerida,
+  eliminarLineaManual,
+} from "./motor/checklist_almacen.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -1777,13 +1787,48 @@ app.delete("/cotizaciones/:id", async (c) => {
     const supabase = c.get("supabase") as SupabaseClient;
     const id = c.req.param('id');
 
+    // Verificar si alguna orden de trabajo asociada a esta cotización tiene entregas registradas
+    const { data: ots } = await supabase
+      .from('ordenes_trabajo')
+      .select('id')
+      .eq('cotizacion_id', id);
+
+    if (ots && ots.length > 0) {
+      const otIds = ots.map((o: any) => o.id);
+      const { count: entregasCount } = await supabase
+        .from('orden_despiece_entregas')
+        .select('id', { count: 'exact', head: true })
+        .in('orden_trabajo_id', otIds);
+
+      if (entregasCount && entregasCount > 0) {
+        return c.json({
+          error: 'No se puede eliminar la cotización porque sus órdenes de trabajo ya cuentan con entregas de material registradas en almacén.',
+          codigo: 'cotizacion_con_entregas'
+        }, 409);
+      }
+    }
+
     // items and pagos should be cascade deleted by FK, but let's be safe for pagos
     await supabase.from('pagos').delete().eq('cotizacion_id', id);
     const { error } = await supabase.from('cotizaciones').delete().eq('id', id);
-    if (error) throw error;
+    if (error) {
+      if ((error as any).code === '23503' || (error as any).message?.includes('violates foreign key constraint') || (error as any).message?.includes('orden_despiece_entregas')) {
+        return c.json({
+          error: 'No se puede eliminar la cotización porque sus órdenes de trabajo tienen entregas de almacén asociadas.',
+          codigo: 'cotizacion_con_entregas'
+        }, 409);
+      }
+      throw error;
+    }
 
     return c.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === '23503' || error?.message?.includes('violates foreign key constraint') || error?.message?.includes('orden_despiece_entregas')) {
+      return c.json({
+        error: 'No se puede eliminar la cotización porque sus órdenes de trabajo tienen entregas de almacén asociadas.',
+        codigo: 'cotizacion_con_entregas'
+      }, 409);
+    }
     console.error('[make-server] Error deleting cotizacion:', error);
     return c.json({ error: 'Error deleting cotizacion' }, 500);
   }
@@ -3150,6 +3195,239 @@ app.post("/ordenes-trabajo/:id/regenerar-ficha", async (c) => {
         ? 409
         : 500);
     return c.json({ error: error.message }, status);
+  }
+});
+
+// --- Checklist de Entregas Almacén -> Producción (T3) ---
+
+function manejarErrorDespiece(c: any, error: any) {
+  const msg = error?.message || "";
+  if (msg.includes("bom_ambiguo") || msg.includes("concepto_sin_bom")) {
+    const limpio = msg.split(":").slice(1).join(":").trim() || msg;
+    return c.json({
+      error: limpio,
+      codigo: msg.includes("concepto_sin_bom") ? "concepto_sin_bom" : "bom_ambiguo",
+      conceptos: (error as any).conceptos || [],
+    }, 409);
+  }
+  if (
+    msg.includes("excede_requerido") ||
+    msg.includes("excede_entregado") ||
+    msg.includes("linea_con_historial")
+  ) {
+    const limpio = msg.split(":").slice(1).join(":").trim() || msg;
+    return c.json({ error: limpio, codigo: msg.split(":")[0].trim() }, 409);
+  }
+  if (
+    msg.includes("motivo_requerido") ||
+    msg.includes("cantidad_invalida") ||
+    msg.includes("tipo_invalido") ||
+    msg.includes("descripcion_requerida") ||
+    msg.includes("linea_no_eliminable") ||
+    msg.includes("operario_requerido") ||
+    msg.includes("operario_no_encontrado") ||
+    msg.includes("material_no_encontrado") ||
+    msg.includes("ya_anulada")
+  ) {
+    const limpio = msg.split(":").slice(1).join(":").trim() || msg;
+    return c.json({ error: limpio, codigo: msg.split(":")[0].trim() }, 400);
+  }
+  if (
+    msg.includes("linea_no_encontrada") ||
+    msg.includes("ot_no_encontrada") ||
+    msg.includes("fase_no_encontrada") ||
+    msg.includes("entrega_no_encontrada")
+  ) {
+    const limpio = msg.split(":").slice(1).join(":").trim() || msg;
+    return c.json({ error: limpio, codigo: msg.split(":")[0].trim() }, 404);
+  }
+  const { status, body } = formatearErrorRespuesta(error);
+  return c.json(body, status as any);
+}
+
+app.get("/ordenes-trabajo/:id/despiece", async (c) => {
+  try {
+    const supabase = (c.get("supabase") || getServiceClient()) as any;
+    const orgId = c.get("organizacionId");
+    const otId = c.req.param("id");
+    const equipoRaw = c.req.query("equipo") || c.req.query("equipo_indice");
+    const equipo = equipoRaw ? parseInt(equipoRaw, 10) : undefined;
+
+    const data = await listarDespieceOT(supabase, { otId, orgId, equipoIndice: equipo });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error listando despiece OT:", error);
+    return manejarErrorDespiece(c, error);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/despiece/generar", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const otId = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    const data = await generarDespieceOT(supabase, { otId, orgId, forzar: !!body.forzar });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error generando despiece OT:", error);
+    return manejarErrorDespiece(c, error);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/despiece/entregar", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const otId = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    if (!body.linea_id) return c.json({ error: "linea_id es requerido", codigo: "parametro_faltante" }, 400);
+    if (!body.cantidad || body.cantidad <= 0) return c.json({ error: "cantidad inválida", codigo: "cantidad_invalida" }, 400);
+
+    const data = await registrarEntrega(supabase, {
+      orgId,
+      otId,
+      lineaId: body.linea_id,
+      cantidad: parseFloat(body.cantidad),
+      tipo: body.tipo || "entrega",
+      operarioId: body.operario_id || null,
+      operarioNombre: body.operario_nombre || null,
+      motivo: body.motivo || null,
+      usuarioId: user?.id || null,
+    });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error registrando entrega:", error);
+    return manejarErrorDespiece(c, error);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/despiece/entregar-fase", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const otId = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    if (!body.fase_clave) return c.json({ error: "fase_clave es requerida", codigo: "parametro_faltante" }, 400);
+
+    const data = await entregarFaseCompleta(supabase, {
+      orgId,
+      otId,
+      faseClave: body.fase_clave,
+      equipoIndice: body.equipo_indice ? parseInt(body.equipo_indice, 10) : undefined,
+      operarioId: body.operario_id || null,
+      operarioNombre: body.operario_nombre || null,
+      usuarioId: user?.id || null,
+    });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error entregando fase completa:", error);
+    return manejarErrorDespiece(c, error);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/despiece/anular-entrega", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const otId = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    if (!body.entrega_id) return c.json({ error: "entrega_id es requerido", codigo: "parametro_faltante" }, 400);
+    if (!body.motivo || !body.motivo.trim()) return c.json({ error: "motivo es obligatorio", codigo: "motivo_requerido" }, 400);
+
+    const data = await anularEntrega(supabase, {
+      orgId,
+      otId,
+      entregaId: body.entrega_id,
+      motivo: body.motivo,
+      usuarioId: user?.id || null,
+    });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error anulando entrega:", error);
+    return manejarErrorDespiece(c, error);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/despiece/lineas", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const otId = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    if (!body.descripcion || !body.descripcion.trim()) return c.json({ error: "descripcion es requerida", codigo: "descripcion_requerida" }, 400);
+    if (!body.fase_clave) return c.json({ error: "fase_clave es requerida", codigo: "parametro_faltante" }, 400);
+    if (!body.cantidad || body.cantidad <= 0) return c.json({ error: "cantidad inválida", codigo: "cantidad_invalida" }, 400);
+
+    const data = await agregarLineaManual(supabase, {
+      orgId,
+      otId,
+      equipoIndice: body.equipo_indice ? parseInt(body.equipo_indice, 10) : 1,
+      faseClave: body.fase_clave,
+      materialId: body.material_id || null,
+      descripcion: body.descripcion,
+      unidad: body.unidad || "pz",
+      cantidadRequerida: parseFloat(body.cantidad),
+      notas: body.notas || null,
+    });
+    return c.json(data, 201);
+  } catch (error: any) {
+    console.error("[make-server] Error agregando línea manual:", error);
+    return manejarErrorDespiece(c, error);
+  }
+});
+
+app.put("/ordenes-trabajo/:id/despiece/lineas/:lineaId", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const otId = c.req.param("id");
+    const lineaId = c.req.param("lineaId");
+    const body = await c.req.json().catch(() => ({}));
+
+    if (body.nueva_cantidad === undefined || body.nueva_cantidad < 0) {
+      return c.json({ error: "nueva_cantidad inválida", codigo: "cantidad_invalida" }, 400);
+    }
+    if (!body.motivo || !body.motivo.trim()) {
+      return c.json({ error: "motivo del ajuste es requerido", codigo: "motivo_requerido" }, 400);
+    }
+
+    const data = await ajustarCantidadRequerida(supabase, {
+      orgId,
+      otId,
+      lineaId,
+      nuevaCantidad: parseFloat(body.nueva_cantidad),
+      motivo: body.motivo,
+      usuarioId: user?.id || null,
+    });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error ajustando cantidad requerida:", error);
+    return manejarErrorDespiece(c, error);
+  }
+});
+
+app.delete("/ordenes-trabajo/:id/despiece/lineas/:lineaId", async (c) => {
+  try {
+    const supabase = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const otId = c.req.param("id");
+    const lineaId = c.req.param("lineaId");
+
+    const data = await eliminarLineaManual(supabase, { orgId, otId, lineaId });
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error eliminando línea manual:", error);
+    return manejarErrorDespiece(c, error);
   }
 });
 
