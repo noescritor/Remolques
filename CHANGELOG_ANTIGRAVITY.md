@@ -69,6 +69,24 @@ Formato: entradas nuevas **arriba**.
 - Rebuild de los servicios `remolques-api` y `remolques-web` en EasyPanel.
 - Ejecutar `docs/checklist/verificacion_T3.sql` comprobando `todo_ok = true`.
 
+## 2026-11-04 - Tarea T5 (Ronda 4): Corrección de DEFAULT de fecha en DDL, precisión documental de pesajes de Dolly, supuestos de vigencia, concurrencia atómica de folios y autoridad del NIV
+**Herramienta:** Antigravity  
+**Tipo:** docs (propuesta normas, ddl fecha_emision now timezone, pesos dolly nom-035, supuestos vigencias, upsert folios atomico, regla autoridad niv)  
+**Referencia auditoría:** `COORDINACION/REVISIONES/T5_REVISION_CLAUDE.md`  
+**Archivos tocados:**  
+- `docs/propuestas/NORMAS_PROPUESTA.md`: corrección del `DEFAULT` de `fecha_emision` a `((now() AT TIME ZONE 'America/Mexico_City')::date)` eliminando el desfasamiento que arrojaba el día anterior en servidores UTC; rectificación de la atribución de tara (2,500 kg) y PBVD (34,000 kg) exclusivamente a la NOM-035 del Dolly (aclarando que las Cartas Factura carecen de campos de pesaje); marcación de las vigencias de 30 y 60 días como supuestos operativos por confirmar; precisión de la cita textual a SCT en 5 de los 10 documentos (las 3 cartas y las 2 NOM-012); confirmación del año modelo como sufijo `YY` del folio y remoción de la pregunta ya resuelta; estrategia de concurrencia atómica con `INSERT ... ON CONFLICT DO UPDATE` para inicializar y avanzar folios de años nuevos; definición de `unidades_fabricadas.niv` como fuente única de verdad canónica del NIV; y eliminación de `DEFAULT`s rígidos de una sola empresa en especificaciones de unidades.
+**Qué cambió y por qué:**  
+- **1. [MEDIA] Fecha de emisión en DDL con zona horaria de México:** Se corrigió `DEFAULT (CURRENT_DATE AT TIME ZONE 'America/Mexico_City')` que en PostgreSQL con zona horaria UTC evaluaba erróneamente la fecha del día anterior durante la mayor parte del día. Se actualizó a `DEFAULT ((now() AT TIME ZONE 'America/Mexico_City')::date)`.
+- **2. [MEDIA] Atribución documental estricta de pesajes del Dolly:** Se aclaró documentalmente que las 3 Cartas Factura no contienen información de peso ni PBVD. Los valores de tara `2,500 kg` y PBVD `34,000 kg` provienen exclusivamente de la constancia NOM-035 del Dolly.
+- **3. [MEDIA] Vigencias como supuestos por confirmar:** Se clarificó en §1, §2 y §6 que los plazos de vigencia de 30 y 60 días no obran en los 10 archivos `.docx` analizados y corresponden a supuestos operativos de la industria sujetos a confirmación con Leolca.
+- **4. [BAJA] SCT en 5 de 10 documentos:** Se precisó la estadística exacta: 5 documentos citan a SCT (3 Cartas Factura y 2 constancias NOM-012), mientras que NOM-035 y NOM-068 no la mencionan.
+- **5. [BAJA] Folio por año modelo confirmado:** Se formalizó la decisión de que `YY` corresponde al año modelo vehicular conforme a la respuesta de Luis en `PREGUNTAS_LUIS.md`, removiendo la pregunta redundante de §6.
+- **6. [BAJA] Concurrencia atómica en primer folio del año:** Se diseñó la asignación de folios mediante `INSERT ... ON CONFLICT DO UPDATE` para prevenir condiciones de carrera cuando se emite el primer folio de un nuevo año modelo.
+- **7. [BAJA] Autoridad canónica del NIV:** Se estableció que `unidades_fabricadas.niv` es la fuente única de verdad, y `ordenes_trabajo.niv` es un campo subordinado de referencia operacional actualizado solo por el RPC de emisión para OTs unitarias.
+- **8. [BAJA] Eliminación de defaults rígidos:** Se removieron los valores fijos hardcodeados en la tabla `unidades_fabricadas`, indicando que deben heredarse de la receta base, opciones o ficha del modelo.
+**Acciones manuales pendientes:**  
+- Tarea documental: no requiere migraciones SQL ni rebuild de servicios.
+
 ## 2026-11-03 - Sub-bloque T2 (Ronda 4): Resolución multitenant por nombre de producto en Bloque D (0 UUIDs), respeto de paso, cantidades reales y diff calculado
 **Herramienta:** Antigravity  
 **Tipo:** fix (resolucion nombre multitenant bloque d, eliminacion total uuids productos, paso intacto, cant real tabla 316, diff calculado s4, prueba multi-org b)  
@@ -351,6 +369,39 @@ Formato: entradas nuevas **arriba**.
   - Pestaña "Catálogo Cotizador" que permite consultar en vivo las tablas de aceros y opciones configurables con buscador y recarga bajo demanda.
 - **Acciones manuales pendientes:**
   - Rebuild de `remolques-api` en EasyPanel para activar las mejoras en el backend en producción.
+
+## 2026-11-02 - Sub-bloque T5 (Ronda 2): Anonimización total de datos, corrección técnica de dolly y enriquecimiento del análisis normativo
+**Herramienta:** Antigravity  
+**Tipo:** docs (propuesta normas, carta factura, noms 012 035 068, anonimizacion clientes, correccion tara y pbvd dolly, mapeo bd existe o crear, ddl rls y concurrencia)  
+**Rama:** `noche-t5-normas`  
+**Archivos tocados:**  
+- `docs/propuestas/NORMAS_PROPUESTA.md` (anonimización completa de nombres, RFCs, domicilios y NIVs; corrección de especificaciones de Dolly según documentos: tara 2,500 kg y PBVD 34,000 kg; adición de columna "Existe / Hay que crear" en la matriz de mapeo; clarificación de relación entre `ordenes_trabajo.niv` y `unidades_fabricadas.niv`; ajuste del DDL con RLS `get_current_org_id()`, `CHECK`s de estado, zona horaria `America/Mexico_City`, y tabla contador de folios con bloqueo `FOR UPDATE`; adición de 6 nuevas inconsistencias encontradas: razón social emisor vs marca, año modelo en folio `NNN/27`, sumatoria dispar de CDE ejes traseros, mezcla de separadores de miles/decimales, denominación de dolly como semirremolque, y SCT vs SICT; reporte de búsqueda sistemática de números sueltos previos al NIV; y precisión sobre 46 imágenes únicas de NOM-035).
+**Qué cambió y por qué:**  
+- **1. Anonimización Estricta (Hallazgo 1):** Se eliminó todo rastro de nombres reales de clientes, personas físicas, RFCs reales, domicilios particulares y NIVs completos, reemplazándolos por referencias genéricas (`CLIENTE A`, `RFC XAXX010101000`, `NIV ...044`, `3A9A...(17)`) dando cumplimiento cabal a la directiva de confidencialidad de datos.
+- **2. Especificaciones Reales del Dolly (Hallazgo 2):** Se rectificó la tara a `2,500 kg` y el PBVD a `34,000 kg` con base textual en los documentos originales, registrando explícitamente en el catálogo de inconsistencias la anomalía de asignar un PBVD de semirremolque de carga completa a un equipo dolly de enganche.
+- **3. Mapeo de Base de Datos y `ordenes_trabajo.niv` (Hallazgo 3):** Se añadió la columna explícita "Existe / Hay que crear" para cada campo, aclarando que `organizaciones` actual solo posee `(id, nombre, created_at, modulos)` y `clientes` carece de RFC y domicilio estructurado. Se analizó `ordenes_trabajo.niv` (que ya existe para OTs unitarias) y se sustentó por qué `unidades_fabricadas.niv` es indispensable para órdenes de manufactura con múltiples equipos (ej. 2 plataformas y 1 dolly).
+- **4. DDL con Buenas Prácticas Multi-Tenant (Hallazgo 4):** Se integraron políticas RLS con `get_current_org_id()`, restricciones `CHECK` en tipos y estados, fechas referenciadas a `America/Mexico_City`, y tabla `folios_consecutivos_normas` para control atómico de secuencias mediante `FOR UPDATE` evitando colisiones por concurrencia.
+- **5. Registro Exhaustivo de Inconsistencias (Hallazgo 5):** Se ampliaron las inconsistencias documentadas con la discrepancia legal de razón social emisor vs firma vs marca, el sufijo de año modelo en folios, la sumatoria errática del CDE con desglose idéntico, la mezcla de puntos y comas en pesajes, el uso legal de la figura de "semirremolque" para el dolly y la cita textual a SCT en lugar de SICT.
+- **6. Matices Técnicos y Búsqueda de Números Sueltos (Hallazgos 6 y 7):** Se aclaró la hipótesis de correlación NIV-folio sujeta a validación por Luis, se documentó la búsqueda sistemática de números sueltos previos al NIV en el XML (confirmando ausencia de números identificatorios huérfanos fuera de artefactos de diseño de Word), y se verificó que las 93 imágenes de NOM-035 corresponden a 46 imágenes únicas idénticas de componentes de homologación compartidas en los tres expedientes.
+**Acciones manuales pendientes:**  
+- Presentar propuesta a Luis con las 6 preguntas de clarificación.
+- Tarea documental: no requiere migraciones SQL ni rebuild de servicios.
+
+## 2026-11-02 - Tarea T5: Normas — Propuesta de integración de Carta Factura y NOMs 012, 035 y 068
+**Herramienta:** Antigravity  
+**Tipo:** docs (propuesta de arquitectura, modelo de datos, flujo de revision y analisis de inconsistencias en normas)  
+**Archivos tocados:**  
+- `docs/propuestas/NORMAS_PROPUESTA.md` (documento exhaustivo con mapeo de datos fijos/variables, evaluación de dos alternativas de ubicación, modelo de datos propuesto en Postgres, flujo de revisión humana obligatoria, análisis de inconsistencias encontradas en los 10 archivos Word originales y preguntas clave para Luis)
+**Qué cambió y por qué:**  
+- **1. Análisis de archivos en Normas/:** Se extrajo y examinó en UTF-8 el contenido de los 10 archivos `.docx` correspondientes a tres unidades representativas: Volteo 9.20 m (Folio 044/27), Plataforma 40 ft (Folio 064/27) y Dolly (Folio 066/27).
+- **2. Mapeo de datos fijos y variables:** Se estructuró la matriz completa de datos legales, técnicos, comerciales y vehiculares requeridos para Carta Factura, NOM-012 (pesos y dimensiones), NOM-035 (seguridad y pruebas físico-mecánicas) y NOM-068 (manifiesto de exención físico-mecánica por 2 años según DOF 2015), identificando su origen exacto en el sistema.
+- **3. Propuesta de ubicación (Expedientes de Unidad vs OT):** Se comparó la integración como pestaña de OT vs un módulo dedicado "Expedientes de Unidad". Se recomendó formalmente el módulo dedicado con acceso directo desde la OT, dado que el remolque físico trasciende a la manufactura para trámites vehiculares, reemplacamiento y reexpedición de constancias.
+- **4. Modelo de datos DDL:** Se propuso el esquema relacional con `unidades_fabricadas` (consecutivo anual `NNN/YY`, NIV con validación y deletreo, dimensiones, pesos y capacidades) y `documentos_unidad_normas` (snapshot inmutable JSONB, estado de revisión y archivo generado).
+- **5. Flujo de revisión humana obligatoria:** Se diseñó el proceso de emisión con estado de borrador y marca de agua, bloqueando la emisión definitiva hasta que un usuario autorizado coteje el NIV troquelado físico, báscula y constancia fiscal.
+- **6. Registro de inconsistencias:** Se documentaron 8 hallazgos e inconsistencias en los archivos fuente: discrepancias de años de norma (NOM-012 2017 vs 2014, NOM-035 2022 vs 2010), desalineación entre nombres de archivo y contenido ("VOLETO", archivos con nombre 40FT 3 EJES que describen Volteos de 2 ejes), fórmula jurídica errónea ("bajo propuesta de decir verdad"), faltas de paréntesis en deletreo de NIV, y la ausencia de NOM-012 y 068 en el caso del Dolly.
+**Acciones manuales pendientes:**  
+- Revisar propuesta con Luis para validar preguntas de diseño (generación de NIV, manejo del set de 93 imágenes de NOM-035 y normas para Dolly).  
+- No requiere migraciones ni rebuilds de servicios (tarea puramente documental).  
 
 ## 2026-11-02 - T0: Orden de la casa (Housekeeping nocturno)
 **Herramienta:** Antigravity  
