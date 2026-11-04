@@ -71,7 +71,7 @@ CREATE INDEX IF NOT EXISTS idx_orden_despiece_lineas_fase ON orden_despiece_line
 CREATE TABLE IF NOT EXISTS orden_despiece_entregas (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organizacion_id UUID NOT NULL REFERENCES organizaciones(id) ON DELETE CASCADE,
-    orden_trabajo_id UUID REFERENCES ordenes_trabajo(id) ON DELETE CASCADE,
+    orden_trabajo_id UUID NOT NULL REFERENCES ordenes_trabajo(id) ON DELETE RESTRICT,
     linea_id UUID NOT NULL REFERENCES orden_despiece_lineas(id) ON DELETE RESTRICT,
     tipo TEXT NOT NULL DEFAULT 'entrega' CHECK (tipo IN ('entrega', 'reposicion')),
     cantidad NUMERIC(14, 4) NOT NULL CHECK (cantidad > 0),
@@ -96,7 +96,7 @@ BEGIN
         WHERE table_name = 'orden_despiece_entregas' AND column_name = 'orden_trabajo_id'
     ) THEN
         ALTER TABLE orden_despiece_entregas
-            ADD COLUMN orden_trabajo_id UUID REFERENCES ordenes_trabajo(id) ON DELETE CASCADE;
+            ADD COLUMN orden_trabajo_id UUID;
     END IF;
 
     -- Backfill de orden_trabajo_id a partir de la línea
@@ -104,6 +104,22 @@ BEGIN
     SET orden_trabajo_id = l.orden_trabajo_id
     FROM orden_despiece_lineas l
     WHERE e.linea_id = l.id AND e.orden_trabajo_id IS NULL;
+
+    -- Suelta y recrea la FK con ON DELETE RESTRICT
+    IF EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'orden_despiece_entregas_orden_trabajo_id_fkey'
+        AND table_name = 'orden_despiece_entregas'
+    ) THEN
+        ALTER TABLE orden_despiece_entregas DROP CONSTRAINT orden_despiece_entregas_orden_trabajo_id_fkey;
+    END IF;
+
+    ALTER TABLE orden_despiece_entregas
+        ADD CONSTRAINT orden_despiece_entregas_orden_trabajo_id_fkey
+        FOREIGN KEY (orden_trabajo_id) REFERENCES ordenes_trabajo(id) ON DELETE RESTRICT;
+
+    -- Garantizar NOT NULL tras el backfill
+    ALTER TABLE orden_despiece_entregas ALTER COLUMN orden_trabajo_id SET NOT NULL;
 
     IF EXISTS (
         SELECT 1 FROM information_schema.table_constraints
@@ -243,6 +259,13 @@ BEGIN
 
     IF p_tipo = 'reposicion' AND (p_motivo IS NULL OR trim(p_motivo) = '') THEN
         RAISE EXCEPTION 'motivo_requerido: La reposición requiere especificar el motivo (ej. pieza dañada, defecto)';
+    END IF;
+
+    IF p_operario_id IS NOT NULL THEN
+        PERFORM 1 FROM operarios WHERE id = p_operario_id AND organizacion_id = p_org_id;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'operario_no_encontrado: El operario especificado no existe o pertenece a otra organización';
+        END IF;
     END IF;
 
     -- Bloqueo de fila FOR UPDATE
@@ -536,11 +559,13 @@ DECLARE
     v_entrega_id UUID;
     v_op_nombre TEXT;
 BEGIN
-    v_op_nombre := trim(p_operario_nombre);
-    IF v_op_nombre IS NULL OR v_op_nombre = '' THEN
-        IF p_operario_id IS NOT NULL THEN
-            SELECT nombre INTO v_op_nombre FROM operarios WHERE id = p_operario_id;
+    IF p_operario_id IS NOT NULL THEN
+        SELECT nombre INTO v_op_nombre FROM operarios WHERE id = p_operario_id AND organizacion_id = p_org_id;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'operario_no_encontrado: El operario especificado no existe o pertenece a otra organización';
         END IF;
+    ELSE
+        v_op_nombre := trim(p_operario_nombre);
     END IF;
 
     IF v_op_nombre IS NULL OR v_op_nombre = '' THEN
@@ -632,5 +657,12 @@ GRANT EXECUTE ON FUNCTION eliminar_linea_despiece(UUID, UUID) TO service_role;
 
 REVOKE ALL ON FUNCTION entregar_fase_despiece(UUID, UUID, INTEGER, UUID, UUID, TEXT, UUID) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION entregar_fase_despiece(UUID, UUID, INTEGER, UUID, UUID, TEXT, UUID) TO service_role;
+
+GRANT SELECT ON orden_despiece_lineas TO authenticated;
+GRANT SELECT ON orden_despiece_entregas TO authenticated;
+GRANT SELECT ON v_orden_despiece_avance TO authenticated;
+
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON orden_despiece_lineas FROM authenticated;
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON orden_despiece_entregas FROM authenticated;
 
 COMMIT;

@@ -3,6 +3,31 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-04 - Sub-bloque T3 (Ronda 4): FK RESTRICT en entregas, emparejamiento estricto por item_id (409 concepto_sin_bom), soporte de unidad en OT, validación de operario y pruebas RLS / concurrencia
+**Herramienta:** Antigravity  
+**Tipo:** fix (checklist almacen, fk restrict no cascade, 409 concepto_sin_bom, unidad ot equipo_indice, operario organizacion, rls dos usuarios, prueba concurrencia)  
+**Rama:** `noche-t3-checklist`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_02_checklist_almacen.sql` (Corrección de regresión: `orden_trabajo_id` en `orden_despiece_entregas` configurado como `ON DELETE RESTRICT` y `NOT NULL` tras backfill; validación de pertenencia de `p_operario_id` a `p_org_id` en `registrar_entrega_despiece` y `entregar_fase_despiece`; `GRANT SELECT` a `authenticated` y `REVOKE` de escrituras directas).
+- `supabase/functions/make-server-feea4382/index.ts` (Ruta `DELETE /cotizaciones/:id` actualizada para verificar si las OTs tienen entregas de almacén y responder 409 Conflict con mensaje explícito; manejo de error 409 `concepto_sin_bom` en `manejarErrorDespiece`; unificación de query params `equipo` y `equipo_indice`).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.ts` (Emparejamiento de BOM estrictamente por `item_id` sin fallback a `modelo_id` cuando `item_id` está presente, retornando 409 `concepto_sin_bom` con aviso para regenerar presupuesto; fallback a `modelo_id` limitado a OTs sin `item_id` con única coincidencia; `entregarFaseCompleta` y `agregarLineaManual` toman automáticamente `caracteristicas.unidad` de la OT; detección de truncado con `{ count: 'exact' }` y `.limit(1000)`).
+- `supabase/functions/make-server-feea4382/motor/checklist_almacen.test.ts` (Fixtures con forma real de `BomEquipoResumen` incluyendo `modelo_id` y `paso` en arreglo; prueba para Caso a de Hendrickson vs Fleet Master con 409 `concepto_sin_bom`; prueba de unidad != 1 en entrega de fase y partidas manuales, alcanzando 216 pruebas Deno exitosas).
+- `src/app/components/OrdenesTrabajo/ChecklistDespieceModal.tsx` (Envío de la unidad real de la OT `caracteristicas.unidad` en entrega de fase y línea manual; alerta con mensaje retornado del backend `resData.mensaje` tras entrega de fase).
+- `docs/checklist/verificacion_T3.sql` (Verificador actualizado con comprobación de FK RESTRICT y columna `orden_trabajo_id NOT NULL`, retornando `todo_ok = true`).
+- `docs/checklist/prueba_T3.sql` (Prueba transaccional integral con bloqueo de borrado de OT y Cotización con entregas, entrega de fase en OT unidad 2, validación de operario y aislamiento RLS con dos usuarios de dos organizaciones).
+- `docs/checklist/prueba_concurrencia_dos_sesiones_T3.sql` (Guion de concurrencia y bloqueo FOR UPDATE entre dos sesiones simultáneas con `pg_sleep`).
+**Qué cambió y por qué:**  
+- **1. Prevención de borrado en cascada (Hallazgo 1 ALTA):** La FK `orden_trabajo_id` en `orden_despiece_entregas` es `ON DELETE RESTRICT` y `NOT NULL`. Borrar una OT o cotización con entregas es bloqueado por la BD. La ruta `DELETE /cotizaciones/:id` responde 409 si detecta entregas.
+- **2. Soporte para unidad de la OT (Hallazgo 2 ALTA):** El backend extrae la unidad desde `caracteristicas.unidad` de la OT sin depender de que el cliente mande `equipo_indice`, asegurando que OTs de unidades 2, 3... entreguen sus partidas y las líneas manuales pertenezcan al equipo correcto. La pantalla muestra la retroalimentación de la entrega.
+- **3. Emparejamiento BOM por item_id (Hallazgo 3 ALTA):** Si la OT tiene `item_id`, el emparejamiento es exclusivo por `item_id`. Si el concepto fue omitido del presupuesto, se rechaza con 409 `concepto_sin_bom` instruyendo regenerar el presupuesto, impidiendo que adopte piezas de otro concepto con el mismo modelo.
+- **4. Pruebas reales de RLS y concurrencia (Hallazgo 4 MEDIA):** Se incorporaron pruebas RLS transaccionales con `SET LOCAL ROLE authenticated` y dos usuarios, guion con `pg_sleep` para concurrencia en dos sesiones, y fixtures reales con `modelo_id` y arreglos de pasos.
+- **5. Parámetros unificados y validación de operario (Hallazgos 5 y 7 BAJA):** Soporte simultáneo para `equipo` y `equipo_indice`. Validación de que el operario pertenece a la organización antes de registrar o entregar materiales.
+- **6. Detección real de truncado (Hallazgo 6 BAJA):** Uso de `{ count: 'exact' }` y `.limit(1000)` para verificar con precisión el volumen de entregas.
+**Acciones manuales pendientes:**
+- Ejecutar `supabase/migrations/20261102_02_checklist_almacen.sql` en producción.
+- Rebuild de los servicios `remolques-api` y `remolques-web` en EasyPanel.
+- Ejecutar `docs/checklist/verificacion_T3.sql` comprobando `todo_ok = true`.
+
 ## 2026-11-03 - Sub-bloque T2 (Ronda 4): Resolución multitenant por nombre de producto en Bloque D (0 UUIDs), respeto de paso, cantidades reales y diff calculado
 **Herramienta:** Antigravity  
 **Tipo:** fix (resolucion nombre multitenant bloque d, eliminacion total uuids productos, paso intacto, cant real tabla 316, diff calculado s4, prueba multi-org b)  

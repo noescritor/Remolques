@@ -276,16 +276,20 @@ Deno.test("checklist_almacen - 4. generarDespieceOT: localiza presupuesto por fo
                 {
                   item_id: "item-equipo-1",
                   descripcion: "CAMA BAJA",
-                  lineas: [{ nombre: "PIEZA CAMA BAJA", cantidad: 1, paso: "Paso 1" }],
+                  modelo_id: "mod-cama-baja",
+                  cantidad: 1,
+                  lineas: [{ nombre: "PIEZA CAMA BAJA", cantidad: 1, paso: ["Paso 1"] }],
                 },
                 {
                   item_id: "item-equipo-2",
                   descripcion: "PLATAFORMA 40",
+                  modelo_id: "mod-plat-40",
+                  cantidad: 1,
                   lineas: [
-                    { material_id: "mat-1", nombre: "VIGA IPR 4X102", cantidad: 2, paso: "Paso 1" },
+                    { material_id: "mat-1", nombre: "VIGA IPR 4X102", cantidad: 2, paso: ["Paso 1"] },
                     // Duplicado idéntico en otra parte de la receta (debe fusionarse a 3):
-                    { material_id: "mat-1", nombre: "VIGA IPR 4X102", cantidad: 1, paso: "Paso 1" },
-                    { material_id: "mat-2", nombre: "PLACA 3/8", cantidad: 4, paso: "CORTE" },
+                    { material_id: "mat-1", nombre: "VIGA IPR 4X102", cantidad: 1, paso: ["Paso 1"] },
+                    { material_id: "mat-2", nombre: "PLACA 3/8", cantidad: 4, paso: ["CORTE"] },
                   ],
                 },
               ],
@@ -529,6 +533,9 @@ Deno.test("checklist_almacen - 9. entregarFaseCompleta invoca RPC atómica entre
 
   const client = createFakeClient({
     tables: {
+      ordenes_trabajo: [
+        { id: "ot-123", organizacion_id: ORG_A, caracteristicas: { unidad: 1 } },
+      ],
       fases_despiece: [
         { id: "fase-corte", clave: "corte", nombre: "Corte y Habilitado", organizacion_id: ORG_A },
       ],
@@ -621,3 +628,125 @@ Deno.test("checklist_almacen - 10. agregarLineaManual valida pertenencia de OT y
   });
   assertEquals(creada.descripcion, "Tornillo Grado 8");
 });
+
+Deno.test("checklist_almacen - 11. Caso a: OT con item_id no presente en BOM arroja 409 concepto_sin_bom y no toma otro concepto con mismo modelo_id", async () => {
+  const client = createFakeClient({
+    tables: {
+      ordenes_trabajo: [
+        {
+          id: "ot-fleet-master",
+          cotizacion_id: "cot-dual",
+          modelo: "plataforma_40",
+          caracteristicas: {
+            item_id: "item-fleet-master",
+            unidad: 1,
+            modelo_id: "mod-plat-40",
+          },
+          organizacion_id: ORG_A,
+        },
+      ],
+      cotizaciones: [
+        {
+          id: "cot-dual",
+          folio: "2026-0099",
+          organizacion_id: ORG_A,
+        },
+      ],
+      presupuestos: [
+        {
+          id: "pre-dual",
+          folio: "PRE-2026-0099",
+          organizacion_id: ORG_A,
+          datos: {
+            meta: {
+              cotizacion_id: "cot-dual",
+              bom: [
+                {
+                  item_id: "item-hendrickson",
+                  descripcion: "PLATAFORMA 40 HENDRICKSON",
+                  modelo_id: "mod-plat-40", // Mismo modelo_id
+                  lineas: [
+                    { material_id: "mat-susp-hend", nombre: "AMORTIGUADOR HENDRICKSON", cantidad: 2, paso: ["Paso 5"] },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      ],
+      fases_despiece: [
+        { id: "f-5", clave: "paso_5", nombre: "Suspension", organizacion_id: ORG_A },
+      ],
+      orden_despiece_lineas: [],
+    },
+  });
+
+  // Al intentar generar despiece para la OT de Fleet Master (cuyo item_id no está en el BOM):
+  // DEBE fallar con error concepto_sin_bom y mensaje de regenerar presupuesto
+  const error = await assertRejects(
+    async () => {
+      await generarDespieceOT(client, { otId: "ot-fleet-master", orgId: ORG_A });
+    },
+    Error,
+    "concepto_sin_bom"
+  );
+
+  assert(error.message.includes("regenera el presupuesto"), "Debe indicar al usuario regenerar el presupuesto");
+
+  // Verificar que NO se crearon líneas en la BD con los materiales de Hendrickson
+  const { data: lineas } = await client.from("orden_despiece_lineas").select("*");
+  assertEquals((lineas || []).length, 0);
+});
+
+Deno.test("checklist_almacen - 12. Soporte de unidad != 1: entregarFaseCompleta y agregarLineaManual usan unidad de la OT", async () => {
+  let argsRecibidos: any = null;
+
+  const client = createFakeClient({
+    tables: {
+      ordenes_trabajo: [
+        {
+          id: "ot-u2",
+          organizacion_id: ORG_A,
+          caracteristicas: { unidad: 2 },
+        },
+      ],
+      fases_despiece: [
+        { id: "fase-pintura", clave: "paso_8", nombre: "Pintura", organizacion_id: ORG_A },
+      ],
+      orden_despiece_lineas: [],
+    },
+    rpcHandler: (name, args) => {
+      if (name === "entregar_fase_despiece") {
+        argsRecibidos = args;
+        return Promise.resolve({
+          data: { success: true, lineas_entregadas: 2, detalles: [] },
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: {}, error: null });
+    },
+  });
+
+  // 1. entregarFaseCompleta sin enviar equipoIndice -> debe tomar unidad 2 de la OT
+  const resFase = await entregarFaseCompleta(client, {
+    orgId: ORG_A,
+    otId: "ot-u2",
+    faseClave: "paso_8",
+    operarioNombre: "Pintor U2",
+  });
+
+  assertEquals(argsRecibidos.p_equipo_indice, 2);
+  assertEquals(resFase.entregadas, 2);
+
+  // 2. agregarLineaManual sin enviar equipoIndice -> debe asignar equipo_indice = 2
+  const lineaManual = await agregarLineaManual(client, {
+    orgId: ORG_A,
+    otId: "ot-u2",
+    faseClave: "paso_8",
+    descripcion: "Pintura extra U2",
+    cantidadRequerida: 1,
+  });
+
+  assertEquals(lineaManual.equipo_indice, 2);
+});
+

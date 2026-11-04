@@ -267,16 +267,19 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
           fase_clave: faseAEntregar.clave,
           operario_id: faseOperarioId || null,
           operario_nombre: opNombre.trim(),
-          equipo_indice: equipoFiltro === 'todos' ? undefined : parseInt(equipoFiltro, 10),
+          equipo_indice: equipoFiltro === 'todos' ? (orden.caracteristicas?.unidad || undefined) : parseInt(equipoFiltro, 10),
         }),
       });
 
+      const resData = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        throw new Error(errJson.error || 'Error al entregar fase');
+        throw new Error(resData.error || 'Error al entregar fase');
       }
 
       setModalEntregarFaseOpen(false);
+      if (resData.mensaje) {
+        alert(resData.mensaje);
+      }
       await cargarDatosDespiece(equipoFiltro);
     } catch (err: any) {
       alert(err.message || 'Error al entregar fase');
@@ -353,7 +356,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
           descripcion: manualDesc.trim(),
           unidad: manualUnidad.trim() || 'pz',
           cantidad_requerida: Number(manualCant) || 1,
-          equipo_indice: equipoFiltro !== 'todos' ? Number(equipoFiltro) : 1,
+          equipo_indice: equipoFiltro !== 'todos' ? Number(equipoFiltro) : (orden.caracteristicas?.unidad || 1),
         }),
       });
 

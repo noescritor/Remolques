@@ -78,19 +78,19 @@ export async function listarDespieceOT(
   if (errLineas) throw errLineas;
 
   // Consultar historial de entregas de la OT filtrando directamente por orden_trabajo_id
-  // con tope de 1000 filas para prevenir saturación de cabeceras/memoria
-  const { data: entregas, error: errEntregas } = await client
+  // con count exacto para saber con certeza si fue truncado
+  const { data: entregas, count: totalEntregasCount, error: errEntregas } = await client
     .from("orden_despiece_entregas")
-    .select("*, operarios(nombre)")
+    .select("*, operarios(nombre)", { count: "exact" })
     .eq("organizacion_id", orgId)
     .eq("orden_trabajo_id", otId)
     .order("created_at", { ascending: false })
-    .range(0, 1000);
+    .limit(1000);
 
   if (errEntregas) throw errEntregas;
 
-  const entregasTruncadas = (entregas || []).length > 1000;
-  const listaEntregas = entregasTruncadas ? (entregas || []).slice(0, 1000) : (entregas || []);
+  const entregasTruncadas = (totalEntregasCount ?? (entregas || []).length) > 1000;
+  const listaEntregas = entregas || [];
 
   // Consultar fases oficiales de la organización
   const { data: fases, error: errFases } = await client
@@ -238,13 +238,25 @@ export async function generarDespieceOT(
         // Formato array de equipos
         let equipoBom: any = null;
 
-        // 1. Intentar por item_id exacto
+        // 1. Si la OT tiene item_id: emparejar ÚNICAMENTE por item_id
         if (itemId) {
           equipoBom = bomData.find((b: any) => b.item_id === itemId);
-        }
-
-        // 2. Si no hay item_id o no coincidió, buscar por modelo_id solo si es inequívoco
-        if (!equipoBom && modeloId) {
+          if (!equipoBom) {
+            const err: any = new Error(
+              "concepto_sin_bom: El concepto de la orden de trabajo (" +
+                itemId +
+                ") no se encuentra en el presupuesto generado. Por favor regenera el presupuesto de la cotización."
+            );
+            err.codigo = "concepto_sin_bom";
+            err.conceptos = bomData.map((b: any) => ({
+              item_id: b.item_id || null,
+              modelo_id: b.modelo_id || null,
+              descripcion: b.descripcion || "",
+            }));
+            throw err;
+          }
+        } else if (modeloId) {
+          // 2. Respaldo por modelo_id SOLO para órdenes de trabajo sin item_id (ej. OTs históricas)
           const coincidencias = bomData.filter((b: any) => b.modelo_id === modeloId);
           if (coincidencias.length === 1) {
             equipoBom = coincidencias[0];
@@ -252,7 +264,7 @@ export async function generarDespieceOT(
             const err: any = new Error(
               "bom_ambiguo: Existen múltiples conceptos en el presupuesto con el modelo " +
                 modeloId +
-                " y la orden no tiene item_id específico asignado"
+                " y la orden no tiene item_id específico asignado. Por favor regenera el presupuesto."
             );
             err.codigo = "bom_ambiguo";
             err.conceptos = bomData.map((b: any) => ({
@@ -266,9 +278,9 @@ export async function generarDespieceOT(
 
         if (!equipoBom && bomData.length > 0) {
           const err: any = new Error(
-            "bom_ambiguo: No se encontró ningún concepto en el presupuesto que coincida con el equipo de la orden de trabajo"
+            "concepto_sin_bom: No se encontró ningún concepto en el presupuesto que coincida con el equipo de la orden de trabajo. Por favor regenera el presupuesto."
           );
-          err.codigo = "bom_ambiguo";
+          err.codigo = "concepto_sin_bom";
           err.conceptos = bomData.map((b: any) => ({
             item_id: b.item_id || null,
             modelo_id: b.modelo_id || null,
@@ -521,7 +533,23 @@ export async function registrarEntrega(serviceClient: any, p: ParametrosEntrega)
  * Entrega atómicamente todas las piezas pendientes de una fase completa para una OT
  */
 export async function entregarFaseCompleta(serviceClient: any, p: ParametrosEntregaFase) {
-  // 1. Obtener ID de la fase correspondiente
+  // 1. Obtener la orden de trabajo para determinar su unidad real
+  const { data: ot, error: errOT } = await serviceClient
+    .from("ordenes_trabajo")
+    .select("id, caracteristicas")
+    .eq("id", p.otId)
+    .eq("organizacion_id", p.orgId)
+    .single();
+
+  if (errOT || !ot) {
+    throw new Error("ot_no_encontrada: La orden de trabajo no existe o pertenece a otra organización");
+  }
+
+  // Tomar el equipo de la OT (caracteristicas.unidad) si no se especifica
+  const unidadOT = (ot.caracteristicas as any)?.unidad;
+  const equipoIndice = p.equipoIndice ?? (typeof unidadOT === "number" ? unidadOT : (parseInt(unidadOT, 10) || 1));
+
+  // 2. Obtener ID de la fase correspondiente
   const { data: fase, error: errFase } = await serviceClient
     .from("fases_despiece")
     .select("id, clave, nombre")
@@ -533,11 +561,11 @@ export async function entregarFaseCompleta(serviceClient: any, p: ParametrosEntr
     throw new Error("fase_no_encontrada: La fase especificada no existe en la organización");
   }
 
-  // 2. Invocar RPC atómica SECURITY DEFINER con bloqueo FOR UPDATE
+  // 3. Invocar RPC atómica SECURITY DEFINER con bloqueo FOR UPDATE
   const { data, error } = await serviceClient.rpc("entregar_fase_despiece", {
     p_org_id: p.orgId,
     p_orden_trabajo_id: p.otId,
-    p_equipo_indice: p.equipoIndice || 1,
+    p_equipo_indice: equipoIndice,
     p_fase_id: fase.id,
     p_operario_id: p.operarioId || null,
     p_operario_nombre: p.operarioNombre || null,
@@ -605,10 +633,10 @@ export async function agregarLineaManual(serviceClient: any, p: ParametrosLineaM
     throw new Error("cantidad_invalida: La cantidad requerida debe ser mayor a 0");
   }
 
-  // 1. Validar que la orden de trabajo pertenece a la organización
+  // 1. Validar que la orden de trabajo pertenece a la organización y obtener características
   const { data: ot, error: errOT } = await serviceClient
     .from("ordenes_trabajo")
-    .select("id")
+    .select("id, caracteristicas")
     .eq("id", p.otId)
     .eq("organizacion_id", p.orgId)
     .single();
@@ -643,7 +671,8 @@ export async function agregarLineaManual(serviceClient: any, p: ParametrosLineaM
     throw new Error("fase_no_encontrada: La fase especificada no existe en la organización");
   }
 
-  const equipoIndice = p.equipoIndice || 1;
+  const unidadOT = (ot.caracteristicas as any)?.unidad;
+  const equipoIndice = p.equipoIndice ?? (typeof unidadOT === "number" ? unidadOT : (parseInt(unidadOT, 10) || 1));
   const claveOrigen = `manual::${Date.now()}::${Math.random().toString(36).substring(2, 7)}`;
 
   const { data, error } = await serviceClient

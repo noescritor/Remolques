@@ -1787,13 +1787,48 @@ app.delete("/cotizaciones/:id", async (c) => {
     const supabase = c.get("supabase") as SupabaseClient;
     const id = c.req.param('id');
 
+    // Verificar si alguna orden de trabajo asociada a esta cotización tiene entregas registradas
+    const { data: ots } = await supabase
+      .from('ordenes_trabajo')
+      .select('id')
+      .eq('cotizacion_id', id);
+
+    if (ots && ots.length > 0) {
+      const otIds = ots.map((o: any) => o.id);
+      const { count: entregasCount } = await supabase
+        .from('orden_despiece_entregas')
+        .select('id', { count: 'exact', head: true })
+        .in('orden_trabajo_id', otIds);
+
+      if (entregasCount && entregasCount > 0) {
+        return c.json({
+          error: 'No se puede eliminar la cotización porque sus órdenes de trabajo ya cuentan con entregas de material registradas en almacén.',
+          codigo: 'cotizacion_con_entregas'
+        }, 409);
+      }
+    }
+
     // items and pagos should be cascade deleted by FK, but let's be safe for pagos
     await supabase.from('pagos').delete().eq('cotizacion_id', id);
     const { error } = await supabase.from('cotizaciones').delete().eq('id', id);
-    if (error) throw error;
+    if (error) {
+      if ((error as any).code === '23503' || (error as any).message?.includes('violates foreign key constraint') || (error as any).message?.includes('orden_despiece_entregas')) {
+        return c.json({
+          error: 'No se puede eliminar la cotización porque sus órdenes de trabajo tienen entregas de almacén asociadas.',
+          codigo: 'cotizacion_con_entregas'
+        }, 409);
+      }
+      throw error;
+    }
 
     return c.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === '23503' || error?.message?.includes('violates foreign key constraint') || error?.message?.includes('orden_despiece_entregas')) {
+      return c.json({
+        error: 'No se puede eliminar la cotización porque sus órdenes de trabajo tienen entregas de almacén asociadas.',
+        codigo: 'cotizacion_con_entregas'
+      }, 409);
+    }
     console.error('[make-server] Error deleting cotizacion:', error);
     return c.json({ error: 'Error deleting cotizacion' }, 500);
   }
@@ -3167,11 +3202,11 @@ app.post("/ordenes-trabajo/:id/regenerar-ficha", async (c) => {
 
 function manejarErrorDespiece(c: any, error: any) {
   const msg = error?.message || "";
-  if (msg.includes("bom_ambiguo")) {
+  if (msg.includes("bom_ambiguo") || msg.includes("concepto_sin_bom")) {
     const limpio = msg.split(":").slice(1).join(":").trim() || msg;
     return c.json({
       error: limpio,
-      codigo: "bom_ambiguo",
+      codigo: msg.includes("concepto_sin_bom") ? "concepto_sin_bom" : "bom_ambiguo",
       conceptos: (error as any).conceptos || [],
     }, 409);
   }
@@ -3190,6 +3225,7 @@ function manejarErrorDespiece(c: any, error: any) {
     msg.includes("descripcion_requerida") ||
     msg.includes("linea_no_eliminable") ||
     msg.includes("operario_requerido") ||
+    msg.includes("operario_no_encontrado") ||
     msg.includes("material_no_encontrado") ||
     msg.includes("ya_anulada")
   ) {
@@ -3214,7 +3250,8 @@ app.get("/ordenes-trabajo/:id/despiece", async (c) => {
     const supabase = (c.get("supabase") || getServiceClient()) as any;
     const orgId = c.get("organizacionId");
     const otId = c.req.param("id");
-    const equipo = c.req.query("equipo") ? parseInt(c.req.query("equipo")!, 10) : undefined;
+    const equipoRaw = c.req.query("equipo") || c.req.query("equipo_indice");
+    const equipo = equipoRaw ? parseInt(equipoRaw, 10) : undefined;
 
     const data = await listarDespieceOT(supabase, { otId, orgId, equipoIndice: equipo });
     return c.json(data);

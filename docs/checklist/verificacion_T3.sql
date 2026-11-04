@@ -11,7 +11,8 @@ WITH conteos AS (
         (SELECT count(*) FROM information_schema.routines WHERE routine_name = 'ajustar_cantidad_despiece') AS tiene_fn_ajustar,
         (SELECT count(*) FROM information_schema.routines WHERE routine_name = 'eliminar_linea_despiece') AS tiene_fn_eliminar,
         (SELECT count(*) FROM information_schema.routines WHERE routine_name = 'entregar_fase_despiece') AS tiene_fn_entregar_fase,
-        (SELECT count(*) FROM information_schema.columns WHERE table_name = 'orden_despiece_entregas' AND column_name = 'orden_trabajo_id') AS tiene_col_ot_en_entregas,
+        (SELECT count(*) FROM information_schema.columns WHERE table_name = 'orden_despiece_entregas' AND column_name = 'orden_trabajo_id' AND is_nullable = 'NO') AS tiene_col_ot_not_null,
+        (SELECT count(*) FROM information_schema.referential_constraints WHERE constraint_name = 'orden_despiece_entregas_orden_trabajo_id_fkey' AND delete_rule = 'RESTRICT') AS fk_ot_restrict,
         (SELECT count(*) FROM information_schema.triggers WHERE trigger_name = 'trg_lineas_requerida_vs_entregada') AS tiene_trigger,
         (SELECT count(*) FROM pg_policies WHERE tablename IN ('orden_despiece_lineas', 'orden_despiece_entregas') AND cmd <> 'SELECT') AS politicas_no_select
 )
@@ -24,7 +25,8 @@ SELECT
     tiene_fn_ajustar,
     tiene_fn_eliminar,
     tiene_fn_entregar_fase,
-    tiene_col_ot_en_entregas,
+    tiene_col_ot_not_null,
+    fk_ot_restrict,
     tiene_trigger,
     politicas_no_select,
     (
@@ -36,7 +38,8 @@ SELECT
         tiene_fn_ajustar = 1 AND
         tiene_fn_eliminar = 1 AND
         tiene_fn_entregar_fase = 1 AND
-        tiene_col_ot_en_entregas = 1 AND
+        tiene_col_ot_not_null = 1 AND
+        fk_ot_restrict = 1 AND
         tiene_trigger = 1 AND
         politicas_no_select = 0
     ) AS todo_ok
