@@ -1,6 +1,7 @@
 -- Migración 20261102_01_despiece_union.sql
--- T2 Ronda 3: Despiece oficial por fases desde UNION DE LISTADOS
--- Corrección integral: RLS estricto SELECT, sin duplicados, asignación de pasos reales y aislamiento de modelos
+-- T2 Ronda 4: Despiece oficial por fases desde UNION DE LISTADOS
+-- Corrección integral: CERO UUIDs de productos, resolución por nombre exacto dentro de la organización,
+-- respeto absoluto de receta_base.paso (solo asigna fase_id) y soporte multitenant estricto.
 
 BEGIN;
 
@@ -71,20 +72,16 @@ DO $$
 DECLARE
     r_org RECORD;
     v_fase_id UUID;
-    v_fase_1 UUID;
-    v_fase_2 UUID;
-    v_fase_3 UUID;
-    v_fase_4 UUID;
     v_fase_5 UUID;
     v_fase_6 UUID;
-    v_fase_7 UUID;
     v_fase_8 UUID;
-    v_fase_9 UUID;
-    v_fase_10 UUID;
     v_fase_11 UUID;
-    v_fase_12 UUID;
-    v_fase_extras UUID;
     v_fase_llantas_rines UUID;
+    v_fase_extras UUID;
+    r_acero RECORD;
+    v_mat_id TEXT;
+    v_mat_count INT;
+    v_target_fase_id UUID;
     v_opcion_id UUID;
 BEGIN
     FOR r_org IN SELECT id FROM organizaciones LOOP
@@ -477,135 +474,111 @@ BEGIN
         END IF;
 
 
-        -- Obtener IDs de fases para asignación estructurada
-        SELECT id INTO v_fase_1 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_1';
-        SELECT id INTO v_fase_2 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_2';
-        SELECT id INTO v_fase_3 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_3';
-        SELECT id INTO v_fase_4 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_4';
-        SELECT id INTO v_fase_5 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_5';
-        SELECT id INTO v_fase_6 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_6';
-        SELECT id INTO v_fase_7 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_7';
-        SELECT id INTO v_fase_8 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_8';
-        SELECT id INTO v_fase_9 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_9';
-        SELECT id INTO v_fase_10 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_10';
-        SELECT id INTO v_fase_11 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_11';
-        SELECT id INTO v_fase_12 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_12';
-        SELECT id INTO v_fase_extras FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'extras';
-        SELECT id INTO v_fase_llantas_rines FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'llantas_rines';
-
-        -- D. Asignar paso y fase_id a las 61 líneas de acero estructural en modelos de tipo 'plataforma'
+        -- D. Asignar fase_id a las 61 líneas de acero estructural en modelos de tipo 'plataforma'
         -- SOLO modelos.tipo = 'plataforma'. Dolly y Góndola NO se tocan.
+        -- Resuelve los productos por nombre exacto + organización + tipo_item = 'materia_prima'.
+        -- CERO UUIDs literales de productos en el código.
+        -- No se escribe receta_base.paso: se conserva intacto (NULL o previo), solo se fija fase_id.
+        FOR r_acero IN
+            SELECT * FROM (VALUES
 
-        -- Paso 1: Almas
-        UPDATE receta_base rb
-        SET paso = 'Paso 1', fase_id = v_fase_1
-        FROM modelos m
-        WHERE rb.modelo_id = m.id AND m.organizacion_id = r_org.id AND m.tipo = 'plataforma'
-          AND (rb.paso IS NULL OR rb.paso = '')
-          AND rb.material_id = '8e293a14-b9a3-4f5a-91a5-2f271f64c85f';
+                ('paso_1', 'ALMA (PLACA DE GRADO A-50 CAL. 1/4")'),
+                ('paso_2', 'SOLERA DE ALMA (SOLERA DE GRADO A-529 A 1/2" X 6")'),
+                ('paso_3', 'BORDA DELANTERA (PLACA DE GRADO A-36 CAL. 3/16")'),
+                ('paso_3', 'BORDA TRASERA (PLACA DE GRADO A-36 CAL. 3/16")'),
+                ('paso_3', 'PUENTES DE SUSPENSIÓN (PTR A 2 X 6")'),
+                ('paso_3', 'PLANCHA PARA LA QUINTA (PLACA DE GRADO A-36 CAL. 3/8")'),
+                ('paso_3', 'PUENTES TIPO J (PLACA DE GRADO A-36 CAL. 3/16")'),
+                ('paso_3', 'PUENTES DE LA PLANCHA (CANAL U 5")'),
+                ('paso_3', 'BOTONES (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_3', 'ATIZADORES INTERNOS (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_3', 'ATIZADORES EXTERNOS 27 CM (SOLERA DE GRADO A-36 A 3/8" X 2")'),
+                ('paso_3', 'ATIZADORES EXTERNOS 29CM'),
+                ('paso_3', 'JALON (PLACA DE GRADO A-36 CAL. 1/2")'),
+                ('paso_3', 'REFUERZO DE JALON (PLACA DE GRADO A-36 CAL. 3/8")'),
+                ('paso_3', 'PERNO REY (PERNO REY HOLLAND 3/8")'),
+                ('paso_3', 'TAPA PARA PERNO REY (CANAL U 6")'),
+                ('paso_4', 'KIT DE ALETAS 27 X 50 CM (PLACA DE GRADO A-36 CAL. 10)'),
+                ('paso_4', 'KIT DE ALETAS 27 X 60 CM'),
+                ('paso_4', 'KIT DE ALETAS 40 X 50 CM'),
+                ('paso_4', 'KIT DE ALETAS 40 X 60 CM'),
+                ('paso_4', 'KIT DE ALETAS 45 X 50 CM'),
+                ('paso_4', 'KIT DE ALETAS 45 X 60 CM'),
+                ('paso_4', 'ESQUINERO DELANTERO (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_4', 'ESQUINERO TRASERO (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_4', 'BUCHACAS (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_4', 'TUBOS LATERALES (TUBO DE 1 1/4" CED. 40)'),
+                ('paso_4', 'BASE PARA ESTRIBO PLACA TRASERA (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_4', 'BASE PARA ESTRIBO PLACA FRONTAL (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_4', 'BASE PARA ESTRIBO PLACA INTERMEDIA (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_4', 'CARGADOR (IPR DE 4")'),
+                ('paso_4', 'BORDAS LATERALES (CANAL U 6")'),
+                ('paso_5', 'BASE PARA TANQUES (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_5', 'BASE PARA PATINES PLACAS (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_5', 'BASE PARA PATINES SOLERA (SOLERA DE GRADO A-36 A 3/8" X 2")'),
+                ('paso_5', 'BASE PARA MANITAS (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_5', 'BASE PARA PERCHAS (SOLERA DE GRADO A-36 A 1/2" X 6")'),
+                ('paso_5', 'BASE PARA PLATOS (SOLERA DE GRADO A-36 A 1/2" X 3")'),
+                ('paso_5', 'PESTAÑAS (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_5', 'GANCHOS (REDONDO DE 1/2")'),
+                ('paso_5', 'PLAFONES OVALADOS (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_5', 'CARTABONES PARA JALON (PLACA DE GRADO A-36 CAL. 3/8")'),
+                ('paso_5', 'SOLERA PARA ESQUINEROS (PLACA DE GRADO A-36 CAL. 3/16")'),
+                ('paso_6', 'U PARA JALON (REDONDO DE 1")'),
+                ('paso_6', 'BASE PARA FOCO DE ABS (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_6', 'BASE PARA ABS (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_6', 'PORTA PLACAS (PLACA DE GRADO A-36 CAL. 10)'),
+                ('paso_6', 'CINCHO (SOLERA DE GRADO A-36 A 3/8" X 2")'),
+                ('paso_6', 'HERAJE PARA PATINES 110CM (PLACA DE GRADO A-36 CAL. 3/16")'),
+                ('paso_6', 'HERAJE PARA PATINES 125CM'),
+                ('paso_6', 'HERAJE PARA PATINES 70CM'),
+                ('paso_6', 'HERAJE PARA PATINES 67CM'),
+                ('paso_6', 'HERAJE PARA PATINES 23CM'),
+                ('paso_6', 'HERAJE PARA PATINES 7CM (SOLERA DE GRADO A-36 A 1/2" X 3")'),
+                ('paso_6', 'HERAJE PARA PATINES 27CM'),
+                ('paso_6', 'HERAJE PARA PATINES 30CM'),
+                ('paso_6', 'HERAJE PARA PATINES BUCHACA (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_6', 'PORTA LLANTAS (PLACA DE GRADO A-36 CAL. 1/4")'),
+                ('paso_6', 'PORTA LLANTAS (PLACA DE GRADO A-36 CAL. 1/4") #2'),
+                ('paso_6', 'PORTA LLANTAS (SOLERA DE GRADO A-36 A 1/2" X 3")'),
+                ('paso_6', 'ESTRIBO (PTR DE 4X4" A 6.10M)'),
+                ('paso_6', 'PORTA LODERAS (PLACA DE GRADO A-36 CAL. 12)')
 
-        -- Paso 2: Soleras de refuerzo de almas
-        UPDATE receta_base rb
-        SET paso = 'Paso 2', fase_id = v_fase_2
-        FROM modelos m
-        WHERE rb.modelo_id = m.id AND m.organizacion_id = r_org.id AND m.tipo = 'plataforma'
-          AND (rb.paso IS NULL OR rb.paso = '')
-          AND rb.material_id = '758e857b-665c-454a-9dbc-26488891e95a';
+            ) AS t(fase_clave, producto_nombre)
+        LOOP
+            -- 1. Resolver fase_id dentro de la organización
+            SELECT id INTO v_target_fase_id
+            FROM fases_despiece
+            WHERE organizacion_id = r_org.id AND clave = r_acero.fase_clave;
 
-        -- Paso 3: Estructura primaria, bordas, perno rey, puentes y atizadores
-        UPDATE receta_base rb
-        SET paso = 'Paso 3', fase_id = v_fase_3
-        FROM modelos m
-        WHERE rb.modelo_id = m.id AND m.organizacion_id = r_org.id AND m.tipo = 'plataforma'
-          AND (rb.paso IS NULL OR rb.paso = '')
-          AND rb.material_id IN (
-              '45daffba-3466-4f3e-8a8b-d60d3a8eeff1', -- BORDA DELANTERA
-              '20bc4eed-7cc3-4ff8-b2f9-9c0b9ef055ba', -- BORDA TRASERA
-              'a1df81f9-5cd9-480e-91ff-81c44f0c224a', -- PUENTES DE SUSPENSION
-              '4acae371-705c-4ce5-a44c-af1414282fa2', -- PLANCHA PARA LA QUINTA
-              '7a29e650-06d8-47da-ba00-dc6f1a2176be', -- PUENTES TIPO J
-              '227f6fd8-30cb-412d-ac73-de9ec9e396a1', -- PUENTES DE LA PLANCHA
-              '41f81b98-fde5-4153-8553-0f82c315b960', -- BOTONES
-              'b7579499-3821-458a-91d3-b1c5362c8265', -- ATIZADORES INTERNOS
-              '0b89cc55-b3c6-4bde-8bac-64be7885217b', -- ATIZADORES EXTERNOS 27 CM
-              '5096421e-9dd5-4354-b192-a903d05d4cf8', -- ATIZADORES EXTERNOS 29CM
-              '3c25ea9e-1567-4762-a403-3b95aaeb7c37', -- JALON
-              'ee8ca04a-e61d-4228-b57f-2884998abb1b', -- REFUERZO DE JALON
-              'c8faf622-7ee3-4f79-b92c-8058f23f2bad', -- PERNO REY
-              'ca6a49d8-d291-44d7-b85a-011e053cbedd'  -- TAPA PARA PERNO REY
-          );
+            IF v_target_fase_id IS NULL THEN
+                RAISE EXCEPTION 'Fase % no encontrada para la organizacion %', r_acero.fase_clave, r_org.id;
+            END IF;
 
-        -- Paso 4: Cargadores transversales IPR, bordas laterales, aletas, esquineros y buchacas
-        UPDATE receta_base rb
-        SET paso = 'Paso 4', fase_id = v_fase_4
-        FROM modelos m
-        WHERE rb.modelo_id = m.id AND m.organizacion_id = r_org.id AND m.tipo = 'plataforma'
-          AND (rb.paso IS NULL OR rb.paso = '')
-          AND rb.material_id IN (
-              '3738e243-6167-4360-a289-60e22f3a5574', -- KIT DE ALETAS 27 X 50 CM
-              'd7ac4c98-d74d-4784-9229-699f6cb1727f', -- KIT DE ALETAS 27 X 60 CM
-              'b0ae5871-8a57-4982-a985-3bdbef6d84b2', -- KIT DE ALETAS 40 X 50 CM
-              '42203533-e399-4048-bb88-edeb887b652a', -- KIT DE ALETAS 40 X 60 CM
-              '5ce2ea37-3c74-425a-baff-7de53e71860c', -- KIT DE ALETAS 45 X 50 CM
-              '77345584-2c98-4537-b228-7288048f98b4', -- KIT DE ALETAS 45 X 60 CM
-              '755dc358-f2dd-4dbc-a7da-5f2669fae852', -- ESQUINERO DELANTERO
-              'f19fa2d5-cf64-435f-92d6-1ec3240ef564', -- ESQUINERO TRASERO
-              '0193683f-1f70-4acc-adfa-d52ce23de90d', -- BUCHACAS
-              '137801d9-8eea-4309-8314-35d590b2f481', -- TUBOS LATERALES
-              '6d4da212-cd0d-4345-8cdf-44dc0579099d', -- BASE PARA ESTRIBO PLACA TRASERA
-              'bbabf8ed-47f4-4330-baf3-4b91bc8e0760', -- BASE PARA ESTRIBO PLACA FRONTAL
-              '75a6b9e2-56b3-4cba-a696-bf8ae4f07046', -- BASE PARA ESTRIBO PLACA INTERMEDIA
-              'c711eccd-c643-44f1-92cc-fc21503902ce', -- CARGADOR
-              '03d632b8-e0eb-4bc2-9928-b610e8ea79ea'  -- BORDAS LATERALES
-          );
+            -- 2. Resolver material_id por nombre exacto dentro de la organizacion
+            SELECT count(*), min(id) INTO v_mat_count, v_mat_id
+            FROM productos
+            WHERE organizacion_id = r_org.id
+              AND nombre = r_acero.producto_nombre
+              AND tipo_item = 'materia_prima';
 
-        -- Paso 5: Bases de suspensión, tanques, manitas y cartabones
-        UPDATE receta_base rb
-        SET paso = 'Paso 5', fase_id = v_fase_5
-        FROM modelos m
-        WHERE rb.modelo_id = m.id AND m.organizacion_id = r_org.id AND m.tipo = 'plataforma'
-          AND (rb.paso IS NULL OR rb.paso = '')
-          AND rb.material_id IN (
-              '438ad5b7-4f26-4872-a0d3-82c6759bebdd', -- BASE PARA TANQUES
-              '16bfb053-307c-4a89-80ee-5a8c193faf7c', -- BASE PARA PATINES PLACAS
-              'b7a97767-d7af-40cc-ba18-4b533b6da63f', -- BASE PARA PATINES SOLERA
-              '5af16bd7-31e4-4053-8742-55fe84d1a0ea', -- BASE PARA MANITAS
-              '7da6ed98-2b9e-41df-b36c-40d20970a598', -- BASE PARA PERCHAS
-              '5bfcef2f-9f89-484c-bf45-27c1233ad653', -- BASE PARA PLATOS
-              '705dda7a-2293-44c7-a7d3-8b6e34b97af5', -- PESTAÑAS
-              '249309a9-eb57-4f7e-9370-21946c68f3aa', -- GANCHOS
-              '21033076-8b49-41ee-bff0-925a2b8c6c1d', -- PLAFONES OVALADOS
-              '6a0f8a0a-0913-4f7b-a79e-6ba537aad8ee', -- CARTABONES PARA JALON
-              'c3632f71-dfe8-4f61-b410-5329e8320986'  -- SOLERA PARA ESQUINEROS
-          );
+            IF v_mat_count = 0 THEN
+                RAISE EXCEPTION 'Producto no encontrado: % (org: %, tipo_item: materia_prima)', r_acero.producto_nombre, r_org.id;
+            ELSIF v_mat_count > 1 THEN
+                RAISE EXCEPTION 'Producto ambiguo (% encontrados): % (org: %, tipo_item: materia_prima)', v_mat_count, r_acero.producto_nombre, r_org.id;
+            END IF;
 
-        -- Paso 6: Accesorios estructurales, herrajes de patines, porta llantas, estribo y porta loderas
-        UPDATE receta_base rb
-        SET paso = 'Paso 6', fase_id = v_fase_6
-        FROM modelos m
-        WHERE rb.modelo_id = m.id AND m.organizacion_id = r_org.id AND m.tipo = 'plataforma'
-          AND (rb.paso IS NULL OR rb.paso = '')
-          AND rb.material_id IN (
-              '79ff96c0-7a6e-4616-bc0a-05779054b21d', -- U PARA JALON
-              '64664069-1dfe-4003-bcfb-c888eb615653', -- BASE PARA FOCO DE ABS
-              '59d52996-44bf-4888-893e-da655ffded3e', -- BASE PARA ABS
-              '56cc0bee-2078-4fb9-94ab-974f1ea10449', -- PORTA PLACAS
-              'f99ae062-8396-43da-89bb-bc5c4ec157f2', -- CINCHO
-              'cd774fce-0f85-47df-a729-5f66df250f9b', -- HERAJE PARA PATINES 110CM
-              'a4fa05c4-9f9c-41dc-a499-f5f2126e5678', -- HERAJE PARA PATINES 125CM
-              '427b4801-dd67-4643-b7e9-9c064f3fdacb', -- HERAJE PARA PATINES 70CM
-              '3ceca9d3-9f50-4afd-abb3-28d06ffd6460', -- HERAJE PARA PATINES 67CM
-              '751108eb-fcbb-413b-a410-7eb73062f2a1', -- HERAJE PARA PATINES 23CM
-              '49f8c40d-3a98-4df9-870c-884032dff13b', -- HERAJE PARA PATINES 7CM
-              '81cd08c1-d585-42ec-b30e-de166cbac4b6', -- HERAJE PARA PATINES 27CM
-              '1fa437ef-fe29-4881-b8aa-12decec4f802', -- HERAJE PARA PATINES 30CM
-              '6da557b2-4cc6-4f5d-8aa3-9f90882ba611', -- HERAJE PARA PATINES BUCHACA
-              'f7bf645b-3f6b-4d0b-b284-f7b8f063ffca', -- PORTA LLANTAS 1
-              '34c47066-df57-4cba-95dd-d4d21d9db62a', -- PORTA LLANTAS 2
-              '867d7598-c6d9-421e-800c-be7386309009', -- PORTA LLANTAS 3
-              '9ee8fbd5-f3bb-4197-8c07-553e26e25df0', -- ESTRIBO
-              '83136b99-f8df-4754-8a0a-fa860b871b9c'  -- PORTA LODERAS
-          );
+            -- 3. Asignar fase_id en receta_base a los modelos de plataforma
+            -- SIN alterar receta_base.paso
+            UPDATE receta_base rb
+            SET fase_id = v_target_fase_id
+            FROM modelos m
+            WHERE rb.modelo_id = m.id
+              AND m.organizacion_id = r_org.id
+              AND m.tipo = 'plataforma'
+              AND rb.material_id = v_mat_id
+              AND (rb.fase_id IS NULL OR rb.fase_id != v_target_fase_id);
+        END LOOP;
 
         -- E. Asignar fase_id en receta_base a través de equivalencias para todos los modelos plataforma
         -- Respetando paso y uso originales (ej. AIRE, LUZ, TERMINADO, LIMPIEZA, EXTRAS)
@@ -620,6 +593,13 @@ BEGIN
           AND (rb.fase_id IS NULL OR rb.fase_id != fe.fase_id);
 
         -- F. Asignación de fase_id en opcion_componentes según catálogo y Excel oficial
+        SELECT id INTO v_fase_5 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_5';
+        SELECT id INTO v_fase_6 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_6';
+        SELECT id INTO v_fase_8 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_8';
+        SELECT id INTO v_fase_11 FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'paso_11';
+        SELECT id INTO v_fase_llantas_rines FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'llantas_rines';
+        SELECT id INTO v_fase_extras FROM fases_despiece WHERE organizacion_id = r_org.id AND clave = 'extras';
+
         -- 1. Suspensión y Retráctil -> Paso 5
         UPDATE opcion_componentes oc
         SET fase_id = v_fase_5
@@ -656,7 +636,7 @@ BEGIN
           AND g.clave = 'piso'
           AND (oc.fase_id IS NULL OR oc.fase_id != v_fase_11);
 
-        -- 5. Llantas y Rines -> llantas_rines
+        -- 5. Rines y Llantas -> Llantas y Rines
         UPDATE opcion_componentes oc
         SET fase_id = v_fase_llantas_rines
         FROM opciones_configuracion o, grupos_configuracion g
@@ -665,34 +645,31 @@ BEGIN
           AND g.clave IN ('rines', 'llantas')
           AND (oc.fase_id IS NULL OR oc.fase_id != v_fase_llantas_rines);
 
-        -- 6. Adicionales y Gancho -> extras
+        -- 6. Adicionales -> Extras
         UPDATE opcion_componentes oc
         SET fase_id = v_fase_extras
         FROM opciones_configuracion o, grupos_configuracion g
         WHERE oc.opcion_id = o.id AND o.grupo_id = g.id
           AND o.organizacion_id = r_org.id
-          AND g.clave IN ('gancho', 'adicionales')
+          AND g.clave IN ('adicionales', 'redilas')
           AND (oc.fase_id IS NULL OR oc.fase_id != v_fase_extras);
 
         -- G. Resolver alternativas en suspensión (ajuste de sustitutos a cantidad = 0 y rol = 'sustituto')
-        -- Hendrickson alta: Monroe 65512 es sustituto opcional (Excel Fila 80 cant = 0)
         SELECT id INTO v_opcion_id FROM opciones_configuracion WHERE organizacion_id = r_org.id AND clave = 'alta_hendrickson';
         IF v_opcion_id IS NOT NULL THEN
             UPDATE opcion_componentes
             SET cantidad = 0, rol = 'sustituto'
             WHERE opcion_id = v_opcion_id
               AND material_id IN (
-                  SELECT id FROM productos 
-                  WHERE organizacion_id = r_org.id 
+                  SELECT id FROM productos
+                  WHERE organizacion_id = r_org.id
                     AND (nombre ILIKE '%MONROE%65512%' OR nombre ILIKE '%MONRROE%65512%')
               );
         END IF;
 
-        -- Fleet Master: Amortiguadores FCR y Gabriel son sustitutos (Excel Filas 97, 98 cant = 0)
-        -- Cámaras AMPRO y FCR son sustitutos (Excel Filas 100, 101 cant = 0)
-        SELECT o.id INTO v_opcion_id 
-        FROM opciones_configuracion o 
-        JOIN grupos_configuracion g ON g.id = o.grupo_id 
+        SELECT o.id INTO v_opcion_id
+        FROM opciones_configuracion o
+        JOIN grupos_configuracion g ON g.id = o.grupo_id
         WHERE o.organizacion_id = r_org.id AND o.clave = 'fleet_master' AND g.clave = 'suspension';
 
         IF v_opcion_id IS NOT NULL THEN
@@ -700,8 +677,8 @@ BEGIN
             SET cantidad = 0, rol = 'sustituto'
             WHERE opcion_id = v_opcion_id
               AND material_id IN (
-                  SELECT id FROM productos 
-                  WHERE organizacion_id = r_org.id 
+                  SELECT id FROM productos
+                  WHERE organizacion_id = r_org.id
                     AND (nombre ILIKE '%AMORTIGUADOR%FCR%' OR nombre ILIKE '%AMORTIGUADOR%GABRIEL%')
               );
 
@@ -709,8 +686,8 @@ BEGIN
             SET cantidad = 0, rol = 'sustituto'
             WHERE opcion_id = v_opcion_id
               AND material_id IN (
-                  SELECT id FROM productos 
-                  WHERE organizacion_id = r_org.id 
+                  SELECT id FROM productos
+                  WHERE organizacion_id = r_org.id
                     AND (nombre ILIKE '%CAMARA%AMPRO%1R14-039%' OR nombre ILIKE '%CAMARA%FCR%1R14-039%')
               );
         END IF;

@@ -3,6 +3,27 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-03 - Sub-bloque T2 (Ronda 4): Resolución multitenant por nombre de producto en Bloque D (0 UUIDs), respeto de paso, cantidades reales y diff calculado
+**Herramienta:** Antigravity  
+**Tipo:** fix (resolucion nombre multitenant bloque d, eliminacion total uuids productos, paso intacto, cant real tabla 316, diff calculado s4, prueba multi-org b)  
+**Rama:** `noche-t2-despiece`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_01_despiece_union.sql` (Reescritura completa del Bloque D: resolución de productos por nombre exacto dentro de cada organización con `tipo_item = 'materia_prima'` y aborto vía `RAISE EXCEPTION` ante 0 o >1 coincidencias; cero UUIDs de productos; respeto de `receta_base.paso` dejándolo intacto y fijando únicamente `fase_id`; población multitenant idempotente).
+- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (Tabla de 316 filas con cantidades reales del Excel en 294 filas y '-' únicamente en las 22 que carecen de cantidad en el archivo fuente; correlación 1:1 estricta entre columna PROCESO y fase_clave con 0 discrepancias; asociaciones dudosas de pintura, pijas y piso movidas a Pendientes; diff recalculado estrictamente sin explicaciones inventadas en §4.1, corrección de costos en §4.2 y catálogo en §4.3).
+- `docs/despiece/verificacion_T2.sql` (Verificador SQL ajustado a los modelos sin depender de columnas inexistentes, validando `todo_ok = true`).
+- `docs/despiece/prueba_T2.sql` (Prueba transaccional que clona productos a Org B con `gen_random_uuid()`, ejecuta la lógica y verifica que tanto Org A como Org B tienen 202/202 líneas con fase y 0 líneas sin fase; prueba RLS con usuarios autenticados bajo SET LOCAL ROLE y aislamiento estricto, finalizando en ROLLBACK).
+- `docs/despiece/opcion_componentes_base.json`, `docs/despiece/productos_existentes_base.json`, `docs/despiece/receta_plataforma_40ft.json` (Insumos de catálogo versionados para reproducibilidad determinista del generador).
+- `scripts/generar_archivos_t2_ronda4.py` (Script generador determinista que produce la migración, verificador, prueba y análisis).
+**Qué cambió y por qué:**  
+- **1. Resolución por nombre sin UUIDs (Hallazgo 1 ALTA):** El bloque D ya no contiene ningún UUID literal de productos ni materiales. Cada material se resuelve dinámicamente por `nombre`, `organizacion_id` y `tipo_item = 'materia_prima'`, abortando si hay ambigüedad o ausencia. Probado con una segunda organización (Org B) con UUIDs aleatorios.
+- **2. Respeto de `receta_base.paso` (Hallazgo 2 MEDIA):** No se modifica `paso`; se deja intacto (NULL o texto previo) y únicamente se asigna `fase_id`.
+- **3. Cantidad real y fase = Proceso en Tabla §7 (Hallazgo 3 MEDIA):** Se vincularon las cantidades numéricas reales (`cantidad_raw`) del Excel (22 filas con '-' legítimo sin cantidad) y se alineó la fase con la columna PROCESO al 100% (0 contradicciones).
+- **4. Diff calculado sin suposiciones (Hallazgo 4 MEDIA):** Se corrigieron discrepancias reportadas (LIJA #80 10 vs 2, Atizadores 27 cm 8 vs 8, RONDANA 5/16 chasis 4 vs 4, precios unitarios de $50 y catálogo existente).
+- **5. Versionado de insumos del generador (Hallazgo 5 MEDIA):** Se añadieron los archivos JSON para garantizar que la migración pueda regenerarse byte a byte.
+**Acciones manuales pendientes:**
+- Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en producción.
+- Ejecutar `docs/despiece/verificacion_T2.sql` comprobando `todo_ok = true`.
+
 ## 2026-11-02 - Sub-bloque T2 (Ronda 3): Resolución de hallazgos R3 de árbol BOM, 0 duplicados, pasos reales 1:1, RLS estricto SELECT, aislamiento de modelos
 **Herramienta:** Antigravity  
 **Tipo:** fix (arbol bom excel 1 a 1, eliminacion de casi duplicados, suspension sustitutos cant 0, rls solo select authenticated, aislamiento modelos plataforma)  

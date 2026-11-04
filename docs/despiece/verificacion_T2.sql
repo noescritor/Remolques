@@ -1,5 +1,7 @@
--- Verificación de esquema y datos para T2 Ronda 3 (Despiece oficial por fases UNION)
--- Conteos exactos por organización, árbol BOM de PLATAFORMA 2 40 FT y cero discrepancias RLS
+-- Verificación de entrega T2 Ronda 4: Despiece por fases
+-- Cero UUIDs literales, validación multitenant y respeto de receta_base.paso
+
+\set ON_ERROR_STOP on
 
 WITH org_base AS (
     SELECT id AS org_id FROM organizaciones WHERE id = '00000000-0000-0000-0000-000000000001'
@@ -37,10 +39,10 @@ plat_rb_checks AS (
     FROM receta_base rb
     JOIN modelos m ON m.id = rb.modelo_id
     LEFT JOIN fases_despiece f ON f.id = rb.fase_id
-    WHERE m.id = '99c1b5a1-0161-43e1-8329-5e94e35a0012'
+    WHERE m.tipo = 'plataforma' AND m.largo_ft = 40 AND m.num_ejes = 2
+      AND m.organizacion_id = (SELECT org_id FROM org_base)
 ),
 non_plat_checks AS (
-    -- Verificar que Dolly y Góndola NO fueron alterados
     SELECT
         (SELECT count(CASE WHEN rb.fase_id IS NOT NULL THEN 1 END)
          FROM receta_base rb
@@ -48,7 +50,6 @@ non_plat_checks AS (
          WHERE m.tipo IN ('dolly', 'gondola')) AS dolly_gondola_alterados
 ),
 suspension_checks AS (
-    -- Alta Hendrickson: Monroe cant = 0 y sustituto
     SELECT
         (SELECT count(*) FROM opcion_componentes oc
          JOIN opciones_configuracion o ON o.id = oc.opcion_id
@@ -56,7 +57,6 @@ suspension_checks AS (
          WHERE o.clave = 'alta_hendrickson'
            AND (p.nombre ILIKE '%MONROE%65512%' OR p.nombre ILIKE '%MONRROE%65512%')
            AND oc.cantidad = 0 AND oc.rol = 'sustituto') AS monroe_sustituto_ok,
-        -- Fleet Master: FCR/Gabriel y AMPRO/FCR con cant = 0
         (SELECT count(*) FROM opcion_componentes oc
          JOIN opciones_configuracion o ON o.id = oc.opcion_id
          JOIN productos p ON p.id = oc.material_id
@@ -86,7 +86,6 @@ tenant_isolation AS (
          WHERE f.organizacion_id <> o.organizacion_id) AS opcion_fase_cruzada
 ),
 duplicate_checks AS (
-    -- Verificar que no se hayan creado duplicados casi idénticos en productos
     SELECT count(*) AS casi_duplicados
     FROM productos p1
     JOIN productos p2 ON p1.organizacion_id = p2.organizacion_id AND p1.id < p2.id
