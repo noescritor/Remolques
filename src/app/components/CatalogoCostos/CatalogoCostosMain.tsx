@@ -16,9 +16,11 @@ import {
   Loader2,
   ExternalLink,
   Info,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Layers
 } from 'lucide-react';
 import { ActualizarPrecios } from './ActualizarPrecios';
+import { RecetasEditorTab } from './RecetasEditorTab';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -216,26 +218,31 @@ export function CatalogoCostosMain({ session, organizacion }: CatalogoCostosProp
     cargarOpcionesTipo(tipoModelo);
   }, [tipoModelo]);
 
-  // 4. Cargar lista de modelos para pestaña Kits
-  useEffect(() => {
-    async function loadModelos() {
-      try {
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        const token = currentSession?.access_token;
-        const res = await fetch(`${BASE_URL}/modelos`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (res.ok) {
-          const json = await res.json();
-          setModelos(json || []);
-          if (json && json.length > 0 && !selectedModeloId) {
-            setSelectedModeloId(json[0].id);
-          }
+  const getAuthToken = async () => {
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    return currentSession?.access_token || null;
+  };
+
+  const loadModelos = async () => {
+    try {
+      const token = await getAuthToken();
+      const res = await fetch(`${BASE_URL}/modelos`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const json = await res.json();
+        setModelos(json || []);
+        if (json && json.length > 0 && !selectedModeloId) {
+          setSelectedModeloId(json[0].id);
         }
-      } catch (err) {
-        console.error('Error cargando modelos:', err);
       }
+    } catch (err) {
+      console.error('Error cargando modelos:', err);
     }
+  };
+
+  // 4. Cargar lista de modelos para pestaña Kits y Recetas
+  useEffect(() => {
     loadModelos();
   }, []);
 
@@ -674,7 +681,7 @@ export function CatalogoCostosMain({ session, organizacion }: CatalogoCostosProp
         }}
         className="space-y-4"
       >
-        <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 w-full bg-muted/50 p-1">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 w-full bg-muted/50 p-1">
           <TabsTrigger value="opciones" className="flex items-center gap-2 text-xs sm:text-sm">
             <Package className="h-4 w-4" />
             Opciones
@@ -682,6 +689,10 @@ export function CatalogoCostosMain({ session, organizacion }: CatalogoCostosProp
           <TabsTrigger value="kits" className="flex items-center gap-2 text-xs sm:text-sm">
             <Wrench className="h-4 w-4" />
             Kits y Mano de Obra
+          </TabsTrigger>
+          <TabsTrigger value="recetas" className="flex items-center gap-2 text-xs sm:text-sm">
+            <Layers className="h-4 w-4 text-primary" />
+            Recetas
           </TabsTrigger>
           <TabsTrigger value="utilidad" className="flex items-center gap-2 text-xs sm:text-sm">
             <TrendingUp className="h-4 w-4" />
@@ -1310,6 +1321,17 @@ export function CatalogoCostosMain({ session, organizacion }: CatalogoCostosProp
             onPreciosActualizados={() => {
               cargarOpcionesTipo(tipoModelo);
               if (selectedModeloId) cargarDetalleModelo(selectedModeloId);
+            }}
+          />
+        </TabsContent>
+
+        {/* ─── PESTAÑA 7: EDITOR DE RECETAS POR FASES (T6) ────────────────────── */}
+        <TabsContent value="recetas" className="space-y-4">
+          <RecetasEditorTab
+            getAuthToken={getAuthToken}
+            modelos={modelos}
+            onModelosChange={() => {
+              loadModelos();
             }}
           />
         </TabsContent>

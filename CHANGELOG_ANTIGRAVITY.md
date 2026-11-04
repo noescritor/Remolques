@@ -3,6 +3,25 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-04 - Sub-bloque T6 (Ronda 4): Columnas reales en fases-despiece, FOR UPDATE en líneas de receta, defensas SQL y pruebas de concurrencia
+**Herramienta:** Antigravity  
+**Tipo:** fix (columnas reales fases-despiece, bloqueo for update lineas y auditoria, sanitizacion busqueda postgrest, defensas sql redondeo y parametros, pruebas dos sesiones)  
+**Rama:** `noche-t6-editor-recetas`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/index.ts` (`GET /fases-despiece` selecciona estrictamente columnas reales `id, clave, nombre, subtitulo, orden, descripcion, activo`; `GET /productos` sanitiza comas y paréntesis con `replace(/[(),]/g, ' ')` para evitar errores de parseo de árbol lógico en PostgREST).
+- `supabase/migrations/20261102_04_editor_recetas.sql` (`receta_base_historial.modelo_id` nullable con `ON DELETE SET NULL`; bloqueo `FOR UPDATE OF rb` y control `IF NOT FOUND THEN RAISE 'linea_no_encontrada'` en `guardar_linea_receta` y `eliminar_linea_receta`; validación de `tipo_item = 'materia_prima'`; validación de `v_cant_redondeada <= 0` rechazando `0.00001`; validaciones defensivas de clave, largo positivo y ejes >= 1 en `clonar_receta_modelo`).
+- `supabase/functions/make-server-feea4382/motor/recetas_editor.test.ts` (4 pruebas Deno nuevas: mock de `GET /fases-despiece` con columnas reales, sanitización de búsqueda para `PTR (2x2)` y `SOLERA, 1/4`, aislamiento multi-tenant en `obtenerRecetaMotor` y rechazo 403 con `verificarPermisoEdicion`).
+- `docs/recetas/prueba_T6.sql` (ampliada con pruebas 10 a 14: NOT FOUND tras borrado, rechazo de `0.00001`, validaciones de clonación, rechazo de producto terminado como insumo y verificación de `ON DELETE SET NULL`).
+- `docs/recetas/prueba_concurrencia_dos_sesiones_T6.sql` (guion de concurrencia de dos sesiones documentando escenario A: 2→5 vs 2→7 con historial 5→7, y escenario B: borrado vs edición con rechazo `linea_no_encontrada`).
+**Qué cambió y por qué:**  
+- **1. Columnas reales en `GET /fases-despiece` (Hallazgo 1 MEDIA):** Corregida la consulta para no solicitar columnas inexistentes (`paso_numero`, `activa`), solicitando exclusivamente `id, clave, nombre, subtitulo, orden, descripcion, activo`. Probado con mock estricto en Deno.
+- **2. Bloqueo pesimista `FOR UPDATE OF rb` (Hallazgo 2 MEDIA):** `guardar_linea_receta` (rama UPDATE) y `eliminar_linea_receta` bloquean la fila con `FOR UPDATE OF rb` y verifican `IF NOT FOUND THEN RAISE 'linea_no_encontrada'`, eliminando carreras en el historial y ediciones de líneas ya borradas.
+- **3. Búsqueda de productos tolerante a comas y paréntesis (Hallazgo 3 BAJA):** En `GET /productos` se sanitizan caracteres que rompen el parser de lógica de PostgREST (`(`, `)`, `,`), permitiendo búsquedas como `"PTR (2x2)"` sin arrojar HTTP 500.
+- **4. Defensas en profundidad en SQL (Hallazgos 4, 5 y 6 BAJA):** Validación de insumos exclusivamente como `materia_prima`, validación de `v_cant_redondeada <= 0`, validación de clave no vacía, largo > 0 y ejes >= 1 en clonación, y auditoría resiliente con `ON DELETE SET NULL`.
+**Acciones manuales pendientes:**  
+- Correr `supabase/migrations/20261102_04_editor_recetas.sql` en SQL Editor de Supabase.  
+- Ejecutar Rebuild de `remolques-api` y `remolques-web` en EasyPanel.  
+
 ## 2026-11-04 - Sub-bloque T3 (Ronda 4): FK RESTRICT en entregas, emparejamiento estricto por item_id (409 concepto_sin_bom), soporte de unidad en OT, validación de operario y pruebas RLS / concurrencia
 **Herramienta:** Antigravity  
 **Tipo:** fix (checklist almacen, fk restrict no cascade, 409 concepto_sin_bom, unidad ot equipo_indice, operario organizacion, rls dos usuarios, prueba concurrencia)  
@@ -101,6 +120,7 @@ Formato: entradas nuevas **arriba**.
   - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en EasyPanel/Supabase.
   - Ejecutar `docs/despiece/verificacion_T2.sql` validando `todo_ok = true`.
 
+<<<<<<< HEAD
 ## 2026-11-02 - Sub-bloque T3 (Ronda 2): Generación BOM real, RLS estricto, RPCs atómicas, hora México y UI completa
 **Herramienta:** Antigravity  
 **Tipo:** fix (checklist almacen, generacion bom real presupuestos, rls select only, rpc atomicas con for update, ui selector equipo csv e impresion)  
@@ -124,6 +144,30 @@ Formato: entradas nuevas **arriba**.
   - Correr `supabase/migrations/20261102_02_checklist_almacen.sql` en producción.
   - Rebuild del backend en EasyPanel.
   - Correr `docs/checklist/verificacion_T3.sql` comprobando `todo_ok = t`.
+=======
+## 2026-11-02 - Sub-bloque T6 (Ronda 2): Correcciones de auditoría RLS, validación tenant, clonación sin costo hardcodeado y endpoints
+**Herramienta:** Antigravity  
+**Tipo:** fix (recetas, rls auditoria solo select, aislamiento tenant funciones plpgsql, validacion duplicados global, clonacion sin costo inventado, endpoints autorizacion)  
+**Rama:** `noche-t6-editor-recetas`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_04_editor_recetas.sql` (política RLS en `receta_base_historial` estrictamente `FOR SELECT TO authenticated` eliminando cualquier política permisiva `FOR ALL`; `clonar_receta_modelo` valida unicidad global en `productos`, no inserta columna inexistente `activo` en `productos`, asigna `costo = NULL`, copia `organizacion_id` a costos y procesos; `guardar_linea_receta` valida `organizacion_id`, pertenencia de modelo, material y fase al tenant, valida `cantidad > 0` y no NaN, redondea cantidad a 4 decimales; `eliminar_linea_receta` verifica pertenencia de la línea a la organización del usuario antes de borrar).
+- `docs/recetas/verificacion_T6.sql` (verificador actualizado con comprobación de `politicas_no_select = 0` y `todo_ok = true`).
+- `docs/recetas/prueba_T6.sql` (prueba transaccional corregida para utilizar esquema real de `organizaciones` y `fases_despiece`, validación cruzada entre 2 organizaciones y 0 errores).
+- `supabase/functions/make-server-feea4382/motor/recetas_editor.ts` (manejo de `organizacionId`, mapeo de errores SQL a códigos HTTP semánticos, redondeo a 4 decimales y truncado de historial a 500 registros).
+- `supabase/functions/make-server-feea4382/motor/recetas_editor.test.ts` (pruebas unitarias ampliadas con validación multi-tenant, redondeo y escalado proporcional).
+- `supabase/functions/make-server-feea4382/index.ts` (filtros multi-tenant en `GET /productos` y nuevo endpoint `GET /fases-despiece`, validación de permisos de edición `verificarPermisoEdicion` devolviendo 403 en todas las rutas de mutación de recetas).
+- `src/app/components/CatalogoCostos/RecetasEditorTab.tsx` (reemplazo de `BASE_URL` hardcodeado por importación centralizada de `../../utils/api`, formateo de fechas con timeZone `America/Mexico_City`).
+**Qué cambió y por qué:**  
+- **1. Política RLS estricta en auditoría (Hallazgo 1):** `receta_base_historial` ahora cuenta únicamente con política `FOR SELECT`. Se eliminó cualquier política `FOR ALL` o escritura directa vía PostgREST para impedir manipulación de bitácoras; todas las escrituras se realizan exclusivamente mediante las RPCs seguras en `SECURITY DEFINER`.
+- **2. Clonación limpia y validaciones (Hallazgo 2):** Se eliminó la asignación de costo hardcodeado (`costo` se mantiene en `NULL`), se eliminó la columna `activo` en inserción a `productos`, se asegura que `costos_modelo` y `procesos_manufactura` pertenezcan a la organización invocante, y se valida unicidad global de `producto_id` antes de crear registros.
+- **3. Integridad multi-inquilino en líneas (Hallazgos 3 y 4):** `guardar_linea_receta` y `eliminar_linea_receta` requieren `p_organizacion_id` y comprueban que modelo, material y fase pertenezcan estrictamente al mismo tenant, bloqueando manipulaciones entre organizaciones y redondeando cantidades a 4 decimales.
+- **4. Endpoints y Autorización en Deno (Hallazgo 5):** Se añadió verificación de rol/permiso `verificarPermisoEdicion` en todas las rutas de mutación (`POST /recetas/clonar`, `POST /recetas/:modeloId/lineas`, `PUT /recetas/:modeloId/lineas/:id`, `DELETE /recetas/:modeloId/lineas/:id`), devolviendo 403 Forbidden cuando el usuario carece de privilegios. Se enriqueció `GET /productos` con búsqueda y filtrado por tenant y se añadió `GET /fases-despiece`.
+- **5. Frontend React (Hallazgo 6):** Se eliminó la URL hardcodeada `http://localhost:8000` utilizando `BASE_URL` de la configuración de la app, y se ajustó la visualización de fechas de auditoría en la zona horaria oficial `America/Mexico_City`.
+**Acciones manuales pendientes:**  
+- Correr `supabase/migrations/20261102_04_editor_recetas.sql` en SQL Editor de Supabase.  
+- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
+- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.
+>>>>>>> d211e99
 
 ## 2026-11-02 - Sub-bloque T2 (Ronda 2): Correcciones de RLS, esquema real, carga de árbol, categorías y aislamiento
 **Herramienta:** Antigravity  

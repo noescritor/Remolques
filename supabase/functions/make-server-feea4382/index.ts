@@ -88,6 +88,13 @@ import {
   ajustarCantidadRequerida,
   eliminarLineaManual,
 } from "./motor/checklist_almacen.ts";
+import {
+  clonarRecetaMotor,
+  obtenerRecetaMotor,
+  guardarLineaRecetaMotor,
+  eliminarLineaRecetaMotor,
+  obtenerHistorialRecetaMotor,
+} from "./motor/recetas_editor.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -1553,12 +1560,54 @@ app.delete("/clientes/:id", async (c) => {
 app.get("/productos", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
-    const { data, error } = await supabase.from('productos').select('*');
+    const orgId = (c as any).get("organizacionId") as string;
+    const q = c.req.query("busqueda") || c.req.query("q");
+    const tipo = c.req.query("tipo") || c.req.query("tipo_item");
+    const limitParam = c.req.query("limit");
+    const limit = limitParam ? parseInt(limitParam, 10) : null;
+
+    let query = supabase.from('productos').select('*');
+    if (orgId) {
+      query = query.eq('organizacion_id', orgId);
+    }
+    if (tipo) {
+      query = query.eq('tipo_item', tipo);
+    }
+    if (q && q.trim()) {
+      const qSanitized = q.trim().replace(/[(),]/g, ' ').replace(/\s+/g, ' ').trim();
+      if (qSanitized) {
+        query = query.or(`nombre.ilike.%${qSanitized}%,id.ilike.%${qSanitized}%`);
+      }
+    }
+    if (limit && Number.isInteger(limit) && limit > 0) {
+      query = query.limit(limit);
+    }
+
+    const { data, error } = await query;
     if (error) throw error;
-    return c.json(data);
+    return c.json(data || []);
   } catch (error) {
     console.error('[make-server] Error fetching productos:', error);
     return c.json({ error: 'Error fetching productos' }, 500);
+  }
+});
+
+app.get("/fases-despiece", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const { data, error } = await supabase
+      .from("fases_despiece")
+      .select("id, clave, nombre, subtitulo, orden, descripcion, activo")
+      .eq("organizacion_id", orgId)
+      .eq("activo", true)
+      .order("orden", { ascending: true });
+
+    if (error) throw error;
+    return c.json({ fases: data || [] });
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
   }
 });
 
@@ -3822,6 +3871,140 @@ app.get("/cxp/proveedores/:id/conciliacion", async (c) => {
 
     const conciliacion = await obtenerConciliacionProveedor(supabase, orgId, id, corte);
     return c.json(conciliacion);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+// --- EDITOR DE RECETAS (T6) ---
+
+app.post("/recetas/clonar", async (c) => {
+  try {
+    const orgId = (c as any).get("organizacionId") as string;
+    const user = (c as any).get("user");
+    const serviceClient = getServiceClient();
+
+    const autorizado = await verificarPermisoEdicion(serviceClient, orgId, user?.id);
+    if (!autorizado) {
+      return c.json({ error: "No tienes permiso para clonar recetas o modelos" }, 403);
+    }
+
+    const body = await c.req.json();
+    const result = await clonarRecetaMotor(serviceClient, {
+      ...body,
+      organizacionId: orgId,
+      usuarioId: user?.id || null,
+    });
+    return c.json(result, 201);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.get("/recetas/:modeloId", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const modeloId = c.req.param("modeloId");
+    const result = await obtenerRecetaMotor(supabase, orgId, modeloId);
+    return c.json(result);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.post("/recetas/:modeloId/lineas", async (c) => {
+  try {
+    const orgId = (c as any).get("organizacionId") as string;
+    const user = (c as any).get("user");
+    const serviceClient = getServiceClient();
+
+    const autorizado = await verificarPermisoEdicion(serviceClient, orgId, user?.id);
+    if (!autorizado) {
+      return c.json({ error: "No tienes permiso para editar recetas" }, 403);
+    }
+
+    const modeloId = c.req.param("modeloId");
+    const body = await c.req.json();
+    const result = await guardarLineaRecetaMotor(serviceClient, {
+      ...body,
+      modeloId,
+      organizacionId: orgId,
+      usuarioId: user?.id || null,
+    });
+    return c.json(result, 201);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.put("/recetas/:modeloId/lineas/:id", async (c) => {
+  try {
+    const orgId = (c as any).get("organizacionId") as string;
+    const user = (c as any).get("user");
+    const serviceClient = getServiceClient();
+
+    const autorizado = await verificarPermisoEdicion(serviceClient, orgId, user?.id);
+    if (!autorizado) {
+      return c.json({ error: "No tienes permiso para editar recetas" }, 403);
+    }
+
+    const modeloId = c.req.param("modeloId");
+    const lineaId = c.req.param("id");
+    const body = await c.req.json();
+    const result = await guardarLineaRecetaMotor(serviceClient, {
+      ...body,
+      modeloId,
+      lineaId,
+      organizacionId: orgId,
+      usuarioId: user?.id || null,
+    });
+    return c.json(result);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.delete("/recetas/:modeloId/lineas/:id", async (c) => {
+  try {
+    const orgId = (c as any).get("organizacionId") as string;
+    const user = (c as any).get("user");
+    const serviceClient = getServiceClient();
+
+    const autorizado = await verificarPermisoEdicion(serviceClient, orgId, user?.id);
+    if (!autorizado) {
+      return c.json({ error: "No tienes permiso para editar recetas" }, 403);
+    }
+
+    const modeloId = c.req.param("modeloId");
+    const lineaId = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+    const result = await eliminarLineaRecetaMotor(serviceClient, {
+      lineaId,
+      modeloId,
+      organizacionId: orgId,
+      usuarioId: user?.id || null,
+      motivo: body?.motivo || null,
+    });
+    return c.json(result);
+  } catch (err: any) {
+    const { status, body } = formatearErrorRespuesta(err);
+    return c.json(body, status as any);
+  }
+});
+
+app.get("/recetas/:modeloId/historial", async (c) => {
+  try {
+    const supabase = (c as any).get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
+    const modeloId = c.req.param("modeloId");
+    const result = await obtenerHistorialRecetaMotor(supabase, orgId, modeloId);
+    return c.json(result);
   } catch (err: any) {
     const { status, body } = formatearErrorRespuesta(err);
     return c.json(body, status as any);
