@@ -3,6 +3,50 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-03 - Sub-bloque T2 (Ronda 4): Resolución multitenant por nombre de producto en Bloque D (0 UUIDs), respeto de paso, cantidades reales y diff calculado
+**Herramienta:** Antigravity  
+**Tipo:** fix (resolucion nombre multitenant bloque d, eliminacion total uuids productos, paso intacto, cant real tabla 316, diff calculado s4, prueba multi-org b)  
+**Rama:** `noche-t2-despiece`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_01_despiece_union.sql` (Reescritura completa del Bloque D: resolución de productos por nombre exacto dentro de cada organización con `tipo_item = 'materia_prima'` y aborto vía `RAISE EXCEPTION` ante 0 o >1 coincidencias; cero UUIDs de productos; respeto de `receta_base.paso` dejándolo intacto y fijando únicamente `fase_id`; población multitenant idempotente).
+- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (Tabla de 316 filas con cantidades reales del Excel en 294 filas y '-' únicamente en las 22 que carecen de cantidad en el archivo fuente; correlación 1:1 estricta entre columna PROCESO y fase_clave con 0 discrepancias; asociaciones dudosas de pintura, pijas y piso movidas a Pendientes; diff recalculado estrictamente sin explicaciones inventadas en §4.1, corrección de costos en §4.2 y catálogo en §4.3).
+- `docs/despiece/verificacion_T2.sql` (Verificador SQL ajustado a los modelos sin depender de columnas inexistentes, validando `todo_ok = true`).
+- `docs/despiece/prueba_T2.sql` (Prueba transaccional que clona productos a Org B con `gen_random_uuid()`, ejecuta la lógica y verifica que tanto Org A como Org B tienen 202/202 líneas con fase y 0 líneas sin fase; prueba RLS con usuarios autenticados bajo SET LOCAL ROLE y aislamiento estricto, finalizando en ROLLBACK).
+- `docs/despiece/opcion_componentes_base.json`, `docs/despiece/productos_existentes_base.json`, `docs/despiece/receta_plataforma_40ft.json` (Insumos de catálogo versionados para reproducibilidad determinista del generador).
+- `scripts/generar_archivos_t2_ronda4.py` (Script generador determinista que produce la migración, verificador, prueba y análisis).
+**Qué cambió y por qué:**  
+- **1. Resolución por nombre sin UUIDs (Hallazgo 1 ALTA):** El bloque D ya no contiene ningún UUID literal de productos ni materiales. Cada material se resuelve dinámicamente por `nombre`, `organizacion_id` y `tipo_item = 'materia_prima'`, abortando si hay ambigüedad o ausencia. Probado con una segunda organización (Org B) con UUIDs aleatorios.
+- **2. Respeto de `receta_base.paso` (Hallazgo 2 MEDIA):** No se modifica `paso`; se deja intacto (NULL o texto previo) y únicamente se asigna `fase_id`.
+- **3. Cantidad real y fase = Proceso en Tabla §7 (Hallazgo 3 MEDIA):** Se vincularon las cantidades numéricas reales (`cantidad_raw`) del Excel (22 filas con '-' legítimo sin cantidad) y se alineó la fase con la columna PROCESO al 100% (0 contradicciones).
+- **4. Diff calculado sin suposiciones (Hallazgo 4 MEDIA):** Se corrigieron discrepancias reportadas (LIJA #80 10 vs 2, Atizadores 27 cm 8 vs 8, RONDANA 5/16 chasis 4 vs 4, precios unitarios de $50 y catálogo existente).
+- **5. Versionado de insumos del generador (Hallazgo 5 MEDIA):** Se añadieron los archivos JSON para garantizar que la migración pueda regenerarse byte a byte.
+**Acciones manuales pendientes:**
+- Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en producción.
+- Ejecutar `docs/despiece/verificacion_T2.sql` comprobando `todo_ok = true`.
+
+## 2026-11-02 - Sub-bloque T2 (Ronda 3): Resolución de hallazgos R3 de árbol BOM, 0 duplicados, pasos reales 1:1, RLS estricto SELECT, aislamiento de modelos
+**Herramienta:** Antigravity  
+**Tipo:** fix (arbol bom excel 1 a 1, eliminacion de casi duplicados, suspension sustitutos cant 0, rls solo select authenticated, aislamiento modelos plataforma)  
+**Rama:** `noche-t2-despiece`  
+**Archivos tocados:**  
+- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (análisis enriquecido con tabla exhaustiva de las 316 filas del Excel, diff considerando uso en §4.1, lista completa de las 25 piezas de BD que no están en el Excel en §4.3, diff de opciones de suspensión y patines en §4.4, sección pendientes de definir completa en §5 con anomalías de fosfato, ptr sin precio y fila 248, patines y ejes corregidos a Paso 6)
+- `docs/despiece/union_listados_raw.json` (limpieza de "Material Jairo" en fila 145)
+- `supabase/migrations/20261102_01_despiece_union.sql` (migración reescrita: políticas RLS estrictamente FOR SELECT TO authenticated, sin políticas FOR ALL ni de escritura para authenticated; población de 14 fases y 22 equivalencias; asignación 1:1 de las 61 piezas estructurales sin paso a sus pasos exactos en modelos plataforma; preservación íntegra de pasos legados como AIRE, LUZ, TERMINADO, LIMPIEZA; actualización de fase_id vía equivalencias; ajuste de sustitutos en suspensiones Hendrickson alta y Fleet Master a cantidad = 0 y rol = sustituto; cero duplicados insertados en productos)
+- `docs/despiece/verificacion_T2.sql` (verificador actualizado con conteos exactos por fase para PLATAFORMA 2 40 FT: P1=3, P2=5, P3=22, P4=22, P5=16, P6=28, P7=4, P9=47, P10=29, P12=16, Extras=10, Total=202; validación de 0 políticas non-SELECT, 0 recetas cruzadas, 0 líneas de Dolly/Góndola alteradas, 0 casi-duplicados, retornando todo_ok = true)
+- `docs/despiece/prueba_T2.sql` (prueba transaccional RLS multi-tenant real con 2 usuarios y 2 organizaciones bajo SET LOCAL ROLE authenticated y request.jwt.claim.sub, comprobando aislamiento de lectura y bloqueo de INSERT para authenticated)
+- `scripts/generar_archivos_t2_ronda3.py` (script generador determinista que produce los 4 artefactos sin dependencias flotantes)
+**Qué cambió y por qué:**  
+- **1. Árbol BOM 1:1 desde el Excel (Hallazgo 1 y 2):** Se mapearon con exactitud las 61 piezas estructurales de `receta_base` que tenían `paso IS NULL` a sus pasos exactos del Excel sin heurísticas `ILIKE` genéricas. En `PLATAFORMA 2 40 FT`, las 202 líneas quedan 100% asociadas a su fase oficial correspondiente.
+- **2. Preservación de pasos y usos originales (Hallazgo 3):** Se preservaron íntegramente los pasos y usos originales (como `AIRE`, `LUZ`, `TERMINADO`, `LIMPIEZA`, `EXTRAS`). La fase oficial se asocia mediante `fase_id` utilizando `fases_despiece_equivalencias`.
+- **3. Aislamiento de modelos (Hallazgo 4):** Se filtraron estrictamente las actualizaciones de `receta_base` por `modelos.tipo = 'plataforma'`, dejando Dolly (33 líneas) y Góndola (98 líneas) 100% intactas.
+- **4. Eliminación de casi-duplicados y productos huérfanos (Hallazgos 5 y 6):** Mediante coincidencia canónica, todas las materias primas del Excel reutilizan el producto existente en el catálogo, resultando en 0 duplicados y 0 productos huérfanos.
+- **5. Alternativas en suspensión (Hallazgo 2):** En `alta_hendrickson`, Monroe 65512 queda con `cantidad = 0, rol = 'sustituto'`. En `fleet_master`, amortiguadores FCR/Gabriel y cámaras AMPRO/FCR quedan con `cantidad = 0, rol = 'sustituto'`, resolviendo la duplicación de 3 amortiguadores y 3 cámaras por eje.
+- **6. Patines y ejes a Paso 6 (Hallazgo 7):** Se corrigió la asignación de patines y ejes a `paso_6` conforme a la clasificación del Excel oficial.
+- **7. RLS estricto y prueba multi-tenant real (Hallazgos 8 y 9):** Políticas exclusivamente `FOR SELECT` para `authenticated`, revocando permisos de escritura. La prueba transaccional `prueba_T2.sql` ejecuta bajo `SET LOCAL ROLE authenticated` y `SET LOCAL request.jwt.claim.sub` con dos usuarios de dos organizaciones, validando aislamiento y denegación de escritura.
+- **Acciones manuales pendientes:**
+  - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en EasyPanel/Supabase.
+  - Ejecutar `docs/despiece/verificacion_T2.sql` validando `todo_ok = true`.
+
 ## 2026-11-02 - Sub-bloque T6 (Ronda 2): Correcciones de auditoría RLS, validación tenant, clonación sin costo hardcodeado y endpoints
 **Herramienta:** Antigravity  
 **Tipo:** fix (recetas, rls auditoria solo select, aislamiento tenant funciones plpgsql, validacion duplicados global, clonacion sin costo inventado, endpoints autorizacion)  
@@ -24,32 +68,7 @@ Formato: entradas nuevas **arriba**.
 **Acciones manuales pendientes:**  
 - Correr `supabase/migrations/20261102_04_editor_recetas.sql` en SQL Editor de Supabase.  
 - Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
-- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.  
-
-## 2026-11-02 - Sub-bloque T6 (Noche): Editor de recetas creadas por el usuario, clonación de modelos y auditoría
-**Herramienta:** Antigravity  
-**Tipo:** feat (modelos, recetas, clonacion, editor por fases, costos derivados, auditoria, migracion sql, backend hono, ui react)  
-**Rama:** `noche-t6-editor-recetas`  
-**Archivos tocados:**  
-- `docs/propuestas/EDITOR_RECETAS.md` (nota de diseño arquitectónico y análisis de viabilidad: motor dinámico sin tocar código, CHECKs de modelo, productos terminados, costos derivados y aclaración de plantillas comerciales vs de receta)
-- `supabase/migrations/20261102_04_editor_recetas.sql` (tabla `receta_base_historial` con RLS, RPCs atómicas `clonar_receta_modelo`, `guardar_linea_receta` y `eliminar_linea_receta` con permisos exclusivos a `service_role`)
-- `docs/recetas/verificacion_T6.sql` (script de verificación de esquema con `todo_ok = true`)
-- `docs/recetas/prueba_T6.sql` (prueba transaccional BEGIN...ROLLBACK de clonación, adición, edición, eliminación y auditoría sin alterar el modelo origen)
-- `supabase/functions/make-server-feea4382/motor/recetas_editor.ts` (motores de negocio `clonarRecetaMotor`, `obtenerRecetaMotor`, `guardarLineaRecetaMotor`, `eliminarLineaRecetaMotor`, `obtenerHistorialRecetaMotor`)
-- `supabase/functions/make-server-feea4382/motor/recetas_editor.test.ts` (3 pruebas unitarias Deno de validación, escalado proporcional en modelo clonado y preservación de origen)
-- `supabase/functions/make-server-feea4382/index.ts` (rutas REST `/recetas/clonar`, `/recetas/:modeloId`, `/recetas/:modeloId/lineas`, `/recetas/:modeloId/lineas/:id`, `/recetas/:modeloId/historial`)
-- `src/app/components/CatalogoCostos/RecetasEditorTab.tsx` (pestaña de edición de recetas por fases oficiales, modal de clonación "Nueva Receta Desde...", diálogo de agregar/editar materias primas y visor de historial de auditoría)
-- `src/app/components/CatalogoCostos/CatalogoCostosMain.tsx` (integración de la pestaña "Recetas" en la barra de navegación y carga reactiva de modelos)
-**Qué cambió y por qué:**  
-- **1. Análisis de Viabilidad y Nota de Diseño (`EDITOR_RECETAS.md`):** Se comprobó que `resolver_receta.ts` y `costeo.ts` resuelven modelos dinámicamente según `num_ejes`, `largo_ft`, `costos_derivados_de` y `aplica_a` sin requerir modificaciones de código TS en el motor. Se documentaron las restricciones de integridad (`CHECK (tipo IN (...))` en `modelos`, FK requerida en `productos`).
-- **2. Modelo e Idempotencia (`20261102_04_editor_recetas.sql`):** Se implementó la tabla `receta_base_historial` para registrar cada alta, modificación o baja de materias primas. La RPC `clonar_receta_modelo` permite clonar la receta base completa, kits y procesos de un modelo origen hacia una nueva clave de producto y modelo de forma atómica.
-- **3. Motores y Endpoints Deno:** Implementados endpoints seguros bajo `/recetas/*` con inyección de `serviceClient` para las funciones privilegiadas y captura de excepciones traducidas con códigos HTTP apropiados (400, 404, 409).
-- **4. Interfaz de Usuario React (`RecetasEditorTab.tsx`):** Pestaña dedicada con selector de modelo, botón "Nueva Receta Desde..." con modal intuitivo, acordeones por las 14 fases oficiales de despiece, tabla de materias primas con cálculo en vivo de subtotales, modales para agregar/modificar insumos con escala (`fija`, `por_eje`, `por_largo`) y cajón de trazabilidad histórica.
-- **5. Inmutabilidad de Presupuestos y OTs:** Las cotizaciones y órdenes de trabajo ya generadas permanecen congeladas con su snapshot en `meta.bom`; las modificaciones a la receta aplican exclusivamente a cotizaciones y despieces futuros.
-**Acciones manuales pendientes:**  
-- Correr `supabase/migrations/20261102_04_editor_recetas.sql` en SQL Editor de Supabase.  
-- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
-- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.  
+- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.
 
 ## 2026-11-02 - Sub-bloque T2 (Ronda 2): Correcciones de RLS, esquema real, carga de árbol, categorías y aislamiento
 **Herramienta:** Antigravity  
