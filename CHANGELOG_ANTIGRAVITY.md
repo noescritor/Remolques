@@ -3,6 +3,28 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-04 - Tarea T4 (Ronda 4): Corrección de signo en atraso con diasAtraso, exclusión de facturas canceladas, tolerancia 0.01 y ajuste SAT, mapeo 409/500 y ordenación
+**Herramienta:** Antigravity  
+**Tipo:** fix (cxp, reporte facturacion, atraso fecha corte, canceladas, cfdi redondeo sat, rpc tolerancia 0.01)  
+**Referencia auditoría:** `COORDINACION/REVISIONES/T4_REVISION_CLAUDE.md`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.ts`: reemplazo de `f.dias_vencimiento` por `diasAtraso(f.fecha_vencimiento, fechaCorte)` eliminando la inversión de signo que marcaba facturas vigentes como "vencidas"; exclusión de facturas canceladas en filtros ("abierta", "vencida", "pagada") y en los totales MXN/USD; eliminación del tipo de cambio fijo 20.0 cuando no hay registro oficial a la fecha de corte (estableciendo `equivalente_pesos` en null); ordenación por `fecha_emision` descendente y tope de `limite` a 1000; obtención de `dias_credito` del proveedor al importar lote con `proveedor_id`; manejo de error 409 para `uq_facturas_proveedor_folio` y `factura_cancelada`, y fallback a 500 interno genérico (con `console.error`) sin exponer texto interno de Postgres.
+- `supabase/functions/make-server-feea4382/motor/cfdi_parser.ts`: ajuste por redondeo fraccionario de SAT (partida automática `otro_cargo`/`descuento` cuando la suma de conceptos difiere del `Total` por decimales del SAT <= 0.50); reducción de tolerancia de consistencia de 0.05 a 0.01.
+- `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql`: RPC `guardar_factura_con_partidas` con rechazo de facturas canceladas (`factura_cancelada`) y tolerancia estricta de cuadratura ajustada de 0.05 a 0.01.
+- `supabase/functions/make-server-feea4382/index.ts`: requerimiento obligatorio de array en el campo `partidas` para `POST/PUT /cxp/facturas/:id/partidas` (responde 400 en lugar de eliminar todas las partidas) y tope de `limite` a 1000 en `/cxp/reportes/facturacion`.
+- `supabase/functions/make-server-feea4382/motor/partidas_cfdi.test.ts`: soporte para `.gt()` y `.neq()` en cliente mock; nuevas pruebas unitarias para 30 conceptos SAT con ajuste exacto a 348.17, cálculo de atraso con signo real de la vista, exclusión de canceladas de totales, detección de inconsistencia en total (previsualización), y mapeo de errores 409 y 500.
+- `docs/proveedores/prueba_T4.sql`: pruebas transaccionales agregadas para rechazar modificación de factura cancelada (`factura_cancelada`) y rechazar diferencia de 0.04 con tolerancia estricta de 0.01 (`importe_no_cuadra`).
+**Qué cambió y por qué:**  
+- **1. [ALTA] Corrección de signo en días de atraso:** La vista de Postgres reporta `dias_vencimiento = fecha_vencimiento - current_date` (positivo si faltan días para vencer). El motor usaba erróneamente este valor como si fuera atraso, provocando que facturas vigentes salieran como "+31 d vencidas" y las vencidas reales salieran como abiertas. Se corrigió para invocar consistentemente `diasAtraso(f.fecha_vencimiento, fechaCorte)` que calcula `fechaCorte - fecha_vencimiento` (negativo = por vencer / vigente, positivo = días de atraso).
+- **2. [MEDIA] Exclusión de facturas canceladas:** Se excluyeron las facturas con `estado = 'cancelada'` de los filtros de estado ("abierta", "vencida", "pagada") y del cálculo de totales activos MXN/USD en el reporte de facturación. En la base de datos, el RPC `guardar_factura_con_partidas` ahora rechaza cualquier intento de modificar una factura cancelada arrojando `factura_cancelada` (mapeada a HTTP 409).
+- **3. [MEDIA] Ocultamiento de errores internos de Postgres y mapeo 409:** Se mapeó `uq_facturas_proveedor_folio` a HTTP 409 ("Ya existe una factura con ese folio para este proveedor"). Cualquier otro error no controlado del RPC ahora responde HTTP 500 genérico con `console.error`, evitando exponer detalles internos de restricciones o tablas de la base de datos al usuario final.
+- **4. [MEDIA] Cuadratura CFDI con importes de más de 2 decimales y tolerancia 0.01:** Se redujo la tolerancia de cuadratura a 0.01 tanto en TypeScript como en SQL. Para comprobantes del SAT con hasta 6 decimales en conceptos (ej. 30 conceptos de 10.005000), `cfdiAPartidasFactura` genera automáticamente una partida de "Ajuste por redondeo de conceptos SAT" para garantizar que la suma neta de partidas coincida exactamente con el `Total` del CFDI.
+- **5. [BAJA] Tipo de cambio y parámetros de consulta:** Se eliminó el uso de 20.0 fijo cuando no hay tipo de cambio registrado a la fecha de corte, devolviendo `equivalente_pesos: null`. Se ordenó la consulta de facturación por `fecha_emision` descendente y se topó el parámetro `limite` a 1000.
+**Acciones manuales pendientes:**  
+- Correr `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql` en Supabase SQL Editor.  
+- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
+- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.  
+
 ## 2026-11-04 - Sub-bloque T6 (Ronda 4): Columnas reales en fases-despiece, FOR UPDATE en líneas de receta, defensas SQL y pruebas de concurrencia
 **Herramienta:** Antigravity  
 **Tipo:** fix (columnas reales fases-despiece, bloqueo for update lineas y auditoria, sanitizacion busqueda postgrest, defensas sql redondeo y parametros, pruebas dos sesiones)  
@@ -68,6 +90,82 @@ Formato: entradas nuevas **arriba**.
 - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en producción.
 - Ejecutar `docs/despiece/verificacion_T2.sql` comprobando `todo_ok = true`.
 
+## 2026-11-02 - Sub-bloque T6 (Ronda 2): Correcciones de auditoría RLS, validación tenant, clonación sin costo hardcodeado y endpoints
+**Herramienta:** Antigravity  
+**Tipo:** fix (recetas, rls auditoria solo select, aislamiento tenant funciones plpgsql, validacion duplicados global, clonacion sin costo inventado, endpoints autorizacion)  
+**Rama:** `noche-t6-editor-recetas`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_04_editor_recetas.sql` (política RLS en `receta_base_historial` estrictamente `FOR SELECT TO authenticated` eliminando cualquier política permisiva `FOR ALL`; `clonar_receta_modelo` valida unicidad global en `productos`, no inserta columna inexistente `activo` en `productos`, asigna `costo = NULL`, copia `organizacion_id` a costos y procesos; `guardar_linea_receta` valida `organizacion_id`, pertenencia de modelo, material y fase al tenant, valida `cantidad > 0` y no NaN, redondea cantidad a 4 decimales; `eliminar_linea_receta` verifica pertenencia de la línea a la organización del usuario antes de borrar).
+- `docs/recetas/verificacion_T6.sql` (verificador actualizado con comprobación de `politicas_no_select = 0` y `todo_ok = true`).
+- `docs/recetas/prueba_T6.sql` (prueba transaccional corregida para utilizar esquema real de `organizaciones` y `fases_despiece`, validación cruzada entre 2 organizaciones y 0 errores).
+- `supabase/functions/make-server-feea4382/motor/recetas_editor.ts` (manejo de `organizacionId`, mapeo de errores SQL a códigos HTTP semánticos, redondeo a 4 decimales y truncado de historial a 500 registros).
+- `supabase/functions/make-server-feea4382/motor/recetas_editor.test.ts` (pruebas unitarias ampliadas con validación multi-tenant, redondeo y escalado proporcional).
+- `supabase/functions/make-server-feea4382/index.ts` (filtros multi-tenant en `GET /productos` y nuevo endpoint `GET /fases-despiece`, validación de permisos de edición `verificarPermisoEdicion` devolviendo 403 en todas las rutas de mutación de recetas).
+- `src/app/components/CatalogoCostos/RecetasEditorTab.tsx` (reemplazo de `BASE_URL` hardcodeado por importación centralizada de `../../utils/api`, formateo de fechas con timeZone `America/Mexico_City`).
+**Qué cambió y por qué:**  
+- **1. Política RLS estricta en auditoría (Hallazgo 1):** `receta_base_historial` ahora cuenta únicamente con política `FOR SELECT`. Se eliminó cualquier política `FOR ALL` o escritura directa vía PostgREST para impedir manipulación de bitácoras; todas las escrituras se realizan exclusivamente mediante las RPCs seguras en `SECURITY DEFINER`.
+- **2. Clonación limpia y validaciones (Hallazgo 2):** Se eliminó la asignación de costo hardcodeado (`costo` se mantiene en `NULL`), se eliminó la columna `activo` en inserción a `productos`, se asegura que `costos_modelo` y `procesos_manufactura` pertenezcan a la organización invocante, y se valida unicidad global de `producto_id` antes de crear registros.
+- **3. Integridad multi-inquilino en líneas (Hallazgos 3 y 4):** `guardar_linea_receta` y `eliminar_linea_receta` requieren `p_organizacion_id` y comprueban que modelo, material y fase pertenezcan estrictamente al mismo tenant, bloqueando manipulaciones entre organizaciones y redondeando cantidades a 4 decimales.
+- **4. Endpoints y Autorización en Deno (Hallazgo 5):** Se añadió verificación de rol/permiso `verificarPermisoEdicion` en todas las rutas de mutación (`POST /recetas/clonar`, `POST /recetas/:modeloId/lineas`, `PUT /recetas/:modeloId/lineas/:id`, `DELETE /recetas/:modeloId/lineas/:id`), devolviendo 403 Forbidden cuando el usuario carece de privilegios. Se enriqueció `GET /productos` con búsqueda y filtrado por tenant y se añadió `GET /fases-despiece`.
+- **5. Frontend React (Hallazgo 6):** Se eliminó la URL hardcodeada `http://localhost:8000` utilizando `BASE_URL` de la configuración de la app, y se ajustó la visualización de fechas de auditoría en la zona horaria oficial `America/Mexico_City`.
+**Acciones manuales pendientes:**  
+- Correr `supabase/migrations/20261102_04_editor_recetas.sql` en SQL Editor de Supabase.  
+- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
+- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.
+
+## 2026-11-02 - Tarea T4 (Ronda 2): Correcciones de seguridad RPC con FOR UPDATE, parser CFDI global, aislamiento multi-tenant y reporte de facturación
+**Herramienta:** Antigravity  
+**Tipo:** fix (cxp, rpc for update, multi-tenant isolation, cfdi parser, reportes facturacion)  
+**Referencia auditoría:** `COORDINACION/REVISIONES/T4_REVISION_CLAUDE.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql`: RPC `guardar_factura_con_partidas` con `SELECT ... FOR UPDATE`, validación estricta de pertenencia de proveedor y factura a `p_organizacion_id`, suma de pagos aislada por org, bloqueo de cambio de moneda/proveedor si existen pagos, validación de importe vs suma de partidas (`abs <= 0.05`), inserción atómica de `p_cfdi` y recreación de `v_facturas_proveedor_saldo` con columnas fiscales al final (`uuid_fiscal`, `subtotal`, `descuento`, `impuestos_trasladados`, `impuestos_retenidos`, etc.)
+- `docs/proveedores/verificacion_T4.sql`: verificación de vista con columnas fiscales, índice único parcial `uq_facturas_proveedor_org_uuid`, función RPC y ausencia de políticas non-SELECT
+- `docs/proveedores/prueba_T4.sql`: pruebas transaccionales multi-tenant completas con dos organizaciones, bloqueo de cruces de tenant, bloqueo de cambio de moneda/proveedor con pagos, validación de importe contra partidas, unicidad de UUID dentro del tenant y soporte del mismo UUID en tenants distintos
+- `supabase/functions/make-server-feea4382/motor/cfdi_parser.ts`: extracción de impuestos globales posterior a `</Conceptos>` (evita tomar impuestos de concepto único en facturas multi-concepto), validación de moneda (solo MXN/USD, rechazo de EUR u otras), advertencia en USD sin tipo de cambio o <= 1, advertencia de RFC receptor, validación de coherencia de total y límite de seguridad de 2MB
+- `supabase/functions/make-server-feea4382/motor/cfdi_parser.test.ts`: pruebas de parser con múltiples conceptos, monedas inválidas, advertencias de tipo de cambio y prevención XXE
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.ts`: pre-validación TypeScript de importe vs partidas, manejo limpio de errores sin filtrar internals de Postgres, previsualización sin truncado a 1000 con `.in()`, importación con re-parseo estricto e inserción atómica de factura + partidas + CFDI, reporte con filtro de estado a nivel BD, fecha de corte para TC y bandera `sin_tipo_cambio`
+- `supabase/functions/make-server-feea4382/motor/partidas_cfdi.test.ts`: soporte de `.in()` en cliente mock, pruebas de rechazo de importe discordante, re-parseo en servidor y rechazo de XML malicioso XXE
+- `supabase/functions/make-server-feea4382/index.ts`: rutas `PUT` y `POST` para `/cxp/facturas/:id/partidas`, enrutamiento de `PUT /cxp/facturas/:id` con partidas (incluso array vacío) vía `guardarFacturaConPartidasMotor`, sinónimos de parámetros en reporte (`desde`/`fecha_desde`, `hasta`/`fecha_hasta`, `filtro_fecha_tipo`/`criterio_fecha`)
+- `src/app/components/Finanzas/CxpReporteFacturacionTab.tsx`: columnas de `Subtotal` e `IVA` en tabla y exportación CSV con `Subtotal`, `Impuestos Trasladados` e `Impuestos Retenidos`, insignia visible `(TC estimado / sin registro a la fecha)` cuando no hay registro oficial
+**Qué cambió y por qué:**  
+- **1. Seguridad y Concurrencia en RPC:** Se implementó `SELECT ... FOR UPDATE` sobre `facturas_proveedor` para prevenir condiciones de carrera con pagos concurrentes (que antes podían provocar saldos negativos). Se validó estrictamente que la factura y el proveedor pertenezcan a la organización del usuario, impidiendo modificaciones o inyecciones de partidas cruzadas entre tenants.
+- **2. Consistencia Contable y Validaciones:** Se validó que el importe de la factura cuadre exactamente con la suma de las partidas (`abs(importe - suma_partidas) <= 0.05`). Si la factura ya cuenta con pagos registrados, se rechaza cualquier cambio de moneda o de proveedor (garantizando las reglas contables de 2R-16).
+- **3. Parser CFDI y Detección de Impuestos:** Se corrigió la extracción de impuestos para leer el nodo global `<Impuestos>` posterior a `</Conceptos>`, solucionando el problema donde facturas con múltiples conceptos solo capturaban el impuesto del primer concepto. Se añadió rechazo de monedas no soportadas (ej. EUR) y advertencias para USD sin tipo de cambio o RFC de receptor discrepante.
+- **4. Idempotencia y Transaccionalidad Atómica de CFDI:** El importador ahora procesa e inspecciona el XML en el servidor (validando tamaño y XXE) y delega la inserción de factura, partidas y comprobante fiscal a una sola transacción atómica vía RPC. El índice único parcial `uq_facturas_proveedor_org_uuid` previene registros duplicados dentro de la misma organización.
+- **5. Reporte de Facturación y UI:** Se actualizó la vista `v_facturas_proveedor_saldo` incorporando las columnas fiscales `uuid_fiscal`, `subtotal`, `descuento`, `impuestos_trasladados` e `impuestos_retenidos`. La interfaz y exportación CSV presentan el desglose fiscal completo y notifican claramente con una insignia cuando se utiliza un tipo de cambio estimado por falta de registro a la fecha.
+**Acciones manuales pendientes:**  
+- Correr `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql` en el SQL Editor de Supabase.  
+- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
+- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.  
+
+## 2026-11-02 - Tarea T4: Proveedores — partidas por factura, importador XML CFDI 3.3/4.0, reporte de facturación y revisión general
+**Herramienta:** Antigravity  
+**Tipo:** feat (proveedores, cxp, facturas_proveedor, partidas, cfdi 3.3 y 4.0 xml, reporte facturacion, revision general proveedores)  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql` (tabla `factura_proveedor_partidas`, columnas fiscales en `facturas_proveedor` [`uuid_fiscal`, `subtotal`, `descuento`, `impuestos_trasladados`, `impuestos_retenidos`], función atómica `guardar_factura_con_partidas` validando `nuevo_total >= total_pagado`, RLS y vistas)
+- `docs/proveedores/verificacion_T4.sql` (script de verificación de esquema, columnas y constraints)
+- `docs/proveedores/prueba_T4.sql` (script de prueba transaccional para partidas, validación de saldo y unicidad UUID)
+- `supabase/functions/make-server-feea4382/motor/cfdi_parser.ts` (parser de CFDI 3.3 y 4.0 con prevención estricta de XXE/DTD, extracción de emisor, receptor, conceptos, impuestos y UUID fiscal)
+- `supabase/functions/make-server-feea4382/motor/cfdi_parser.test.ts` (pruebas unitarias para parsing CFDI 3.3, 4.0, rechazo de XXE/DTD y UUID repetido)
+- `supabase/functions/make-server-feea4382/motor/partidas_cfdi.test.ts` (pruebas de motor para partidas, nuevo_total >= total_pagado y endpoints)
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.ts` (motores de partidas `guardarFacturaConPartidasMotor`, `obtenerFacturaConPartidasMotor`, `obtenerReporteFacturacion`)
+- `supabase/functions/make-server-feea4382/index.ts` (rutas `/cxp/facturas/:id/partidas`, `/cxp/cfdi/previsualizar`, `/cxp/cfdi/importar`, `/cxp/reportes/facturacion`)
+- `src/app/types/index.ts` (tipos `FacturaProveedorPartida`, campos fiscales en `FacturaProveedor`, campos crediticios en `Proveedor`)
+- `src/app/components/Finanzas/CxpCfdiModal.tsx` (modal importador de XMLs CFDI con previsualización, detección de duplicados por UUID y leyenda obligatoria)
+- `src/app/components/Finanzas/CxpReporteFacturacionTab.tsx` (pestaña de reporte de facturación con filtros por emisión/vencimiento, totales MXN/USD, revaluación a pesos, exportación CSV con BOM UTF-8 e impresión)
+- `src/app/components/Finanzas/CxpFacturasTab.tsx` (soporte de partidas dinámicas en diálogo de factura y visualización de partidas en fila expandible)
+- `src/app/components/Finanzas/CuentasPorPagarMain.tsx` (integración de pestaña 'Reporte facturación' y botón importador CFDI)
+- `src/app/components/Proveedores/ProveedoresList.tsx` (campos de crédito y RFC, detección de RFCs duplicados con advertencia visual y botón 'Ver CxP')
+**Qué cambió y por qué:**  
+- **1. Partidas por factura (T4a):** Se creó la tabla `factura_proveedor_partidas` relacionada a `facturas_proveedor` con campos de descripción, unidad, cantidad, valor unitario, importe, descuentos e impuestos. La función RPC `guardar_factura_con_partidas` permite crear o actualizar facturas y sus partidas atómicamente, validando que el nuevo importe total no sea inferior a lo ya pagado. En el frontend se integró la edición de partidas con recálculo automático de totales y visualización detallada en el acordeón de cada factura.
+- **2. Importador CFDI XML 3.3/4.0 (T4b):** Se implementó un parser seguro contra inyecciones XXE/DTD (`cfdi_parser.ts`) compatible con CFDI versiones 3.3 y 4.0. Se añadieron endpoints para previsualizar lotes de XMLs (detectando facturas duplicadas por UUID fiscal o folios ya existentes) e importarlos automáticamente asociándolos o sugiriendo crear el proveedor. El modal `CxpCfdiModal.tsx` incluye la leyenda requerida: *"Importado desde XML; no validado con el SAT"*.
+- **3. Reporte de facturación de proveedores (T4c):** Se implementó `CxpReporteFacturacionTab.tsx` y endpoint `/cxp/reportes/facturacion` para consultar facturación por rango de fechas (emisión o vencimiento), proveedor, moneda y estado. Muestra totales separados en MXN y USD, el equivalente global en pesos mediante el tipo de cambio oficial, exportación a CSV con BOM UTF-8 y versión lista para impresión.
+- **4. Revisión y mejoras en Proveedores (T4d):** Se añadieron campos de RFC, razón social, días y límite de crédito a los formularios de proveedores. Se agregó detección visual de RFCs duplicados con badge de advertencia y botón de acceso directo "Ver CxP" que redirige con filtro a las facturas del proveedor.
+**Acciones manuales pendientes:**  
+- Correr `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql` en el SQL Editor de Supabase en producción.  
+- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
+- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.  
+
 ## 2026-11-02 - Sub-bloque T3 (Ronda 3): Determinismo BOM por item_id, entrega de fase atómica, anulación con id/historial, saneamiento HTML y filtros OT
 **Herramienta:** Antigravity  
 **Tipo:** fix (checklist almacen, bom ambiguo 409, regeneracion con cambios_no_aplicados, entregar_fase_despiece atomico for update, saneamiento vale xss, historial entregas por linea)  
@@ -97,30 +195,6 @@ Formato: entradas nuevas **arriba**.
   - Rebuild del servicio `remolques-api` y `remolques-web` en EasyPanel.
   - Ejecutar `docs/checklist/verificacion_T3.sql` validando `todo_ok = true`.
 
-## 2026-11-02 - Sub-bloque T2 (Ronda 3): Resolución de hallazgos R3 de árbol BOM, 0 duplicados, pasos reales 1:1, RLS estricto SELECT, aislamiento de modelos
-**Herramienta:** Antigravity  
-**Tipo:** fix (arbol bom excel 1 a 1, eliminacion de casi duplicados, suspension sustitutos cant 0, rls solo select authenticated, aislamiento modelos plataforma)  
-**Rama:** `noche-t2-despiece`  
-**Archivos tocados:**  
-- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (análisis enriquecido con tabla exhaustiva de las 316 filas del Excel, diff considerando uso en §4.1, lista completa de las 25 piezas de BD que no están en el Excel en §4.3, diff de opciones de suspensión y patines en §4.4, sección pendientes de definir completa en §5 con anomalías de fosfato, ptr sin precio y fila 248, patines y ejes corregidos a Paso 6)
-- `docs/despiece/union_listados_raw.json` (limpieza de "Material Jairo" en fila 145)
-- `supabase/migrations/20261102_01_despiece_union.sql` (migración reescrita: políticas RLS estrictamente FOR SELECT TO authenticated, sin políticas FOR ALL ni de escritura para authenticated; población de 14 fases y 22 equivalencias; asignación 1:1 de las 61 piezas estructurales sin paso a sus pasos exactos en modelos plataforma; preservación íntegra de pasos legados como AIRE, LUZ, TERMINADO, LIMPIEZA; actualización de fase_id vía equivalencias; ajuste de sustitutos en suspensiones Hendrickson alta y Fleet Master a cantidad = 0 y rol = sustituto; cero duplicados insertados en productos)
-- `docs/despiece/verificacion_T2.sql` (verificador actualizado con conteos exactos por fase para PLATAFORMA 2 40 FT: P1=3, P2=5, P3=22, P4=22, P5=16, P6=28, P7=4, P9=47, P10=29, P12=16, Extras=10, Total=202; validación de 0 políticas non-SELECT, 0 recetas cruzadas, 0 líneas de Dolly/Góndola alteradas, 0 casi-duplicados, retornando todo_ok = true)
-- `docs/despiece/prueba_T2.sql` (prueba transaccional RLS multi-tenant real con 2 usuarios y 2 organizaciones bajo SET LOCAL ROLE authenticated y request.jwt.claim.sub, comprobando aislamiento de lectura y bloqueo de INSERT para authenticated)
-- `scripts/generar_archivos_t2_ronda3.py` (script generador determinista que produce los 4 artefactos sin dependencias flotantes)
-**Qué cambió y por qué:**  
-- **1. Árbol BOM 1:1 desde el Excel (Hallazgo 1 y 2):** Se mapearon con exactitud las 61 piezas estructurales de `receta_base` que tenían `paso IS NULL` a sus pasos exactos del Excel sin heurísticas `ILIKE` genéricas. En `PLATAFORMA 2 40 FT`, las 202 líneas quedan 100% asociadas a su fase oficial correspondiente.
-- **2. Preservación de pasos y usos originales (Hallazgo 3):** Se preservaron íntegramente los pasos y usos originales (como `AIRE`, `LUZ`, `TERMINADO`, `LIMPIEZA`, `EXTRAS`). La fase oficial se asocia mediante `fase_id` utilizando `fases_despiece_equivalencias`.
-- **3. Aislamiento de modelos (Hallazgo 4):** Se filtraron estrictamente las actualizaciones de `receta_base` por `modelos.tipo = 'plataforma'`, dejando Dolly (33 líneas) y Góndola (98 líneas) 100% intactas.
-- **4. Eliminación de casi-duplicados y productos huérfanos (Hallazgos 5 y 6):** Mediante coincidencia canónica, todas las materias primas del Excel reutilizan el producto existente en el catálogo, resultando en 0 duplicados y 0 productos huérfanos.
-- **5. Alternativas en suspensión (Hallazgo 2):** En `alta_hendrickson`, Monroe 65512 queda con `cantidad = 0, rol = 'sustituto'`. En `fleet_master`, amortiguadores FCR/Gabriel y cámaras AMPRO/FCR quedan con `cantidad = 0, rol = 'sustituto'`, resolviendo la duplicación de 3 amortiguadores y 3 cámaras por eje.
-- **6. Patines y ejes a Paso 6 (Hallazgo 7):** Se corrigió la asignación de patines y ejes a `paso_6` conforme a la clasificación del Excel oficial.
-- **7. RLS estricto y prueba multi-tenant real (Hallazgos 8 y 9):** Políticas exclusivamente `FOR SELECT` para `authenticated`, revocando permisos de escritura. La prueba transaccional `prueba_T2.sql` ejecuta bajo `SET LOCAL ROLE authenticated` y `SET LOCAL request.jwt.claim.sub` con dos usuarios de dos organizaciones, validando aislamiento y denegación de escritura.
-- **Acciones manuales pendientes:**
-  - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en EasyPanel/Supabase.
-  - Ejecutar `docs/despiece/verificacion_T2.sql` validando `todo_ok = true`.
-
-<<<<<<< HEAD
 ## 2026-11-02 - Sub-bloque T3 (Ronda 2): Generación BOM real, RLS estricto, RPCs atómicas, hora México y UI completa
 **Herramienta:** Antigravity  
 **Tipo:** fix (checklist almacen, generacion bom real presupuestos, rls select only, rpc atomicas con for update, ui selector equipo csv e impresion)  
@@ -144,30 +218,29 @@ Formato: entradas nuevas **arriba**.
   - Correr `supabase/migrations/20261102_02_checklist_almacen.sql` en producción.
   - Rebuild del backend en EasyPanel.
   - Correr `docs/checklist/verificacion_T3.sql` comprobando `todo_ok = t`.
-=======
-## 2026-11-02 - Sub-bloque T6 (Ronda 2): Correcciones de auditoría RLS, validación tenant, clonación sin costo hardcodeado y endpoints
+
+## 2026-11-02 - Sub-bloque T2 (Ronda 3): Resolución de hallazgos R3 de árbol BOM, 0 duplicados, pasos reales 1:1, RLS estricto SELECT, aislamiento de modelos
 **Herramienta:** Antigravity  
-**Tipo:** fix (recetas, rls auditoria solo select, aislamiento tenant funciones plpgsql, validacion duplicados global, clonacion sin costo inventado, endpoints autorizacion)  
-**Rama:** `noche-t6-editor-recetas`  
+**Tipo:** fix (arbol bom excel 1 a 1, eliminacion de casi duplicados, suspension sustitutos cant 0, rls solo select authenticated, aislamiento modelos plataforma)  
+**Rama:** `noche-t2-despiece`  
 **Archivos tocados:**  
-- `supabase/migrations/20261102_04_editor_recetas.sql` (política RLS en `receta_base_historial` estrictamente `FOR SELECT TO authenticated` eliminando cualquier política permisiva `FOR ALL`; `clonar_receta_modelo` valida unicidad global en `productos`, no inserta columna inexistente `activo` en `productos`, asigna `costo = NULL`, copia `organizacion_id` a costos y procesos; `guardar_linea_receta` valida `organizacion_id`, pertenencia de modelo, material y fase al tenant, valida `cantidad > 0` y no NaN, redondea cantidad a 4 decimales; `eliminar_linea_receta` verifica pertenencia de la línea a la organización del usuario antes de borrar).
-- `docs/recetas/verificacion_T6.sql` (verificador actualizado con comprobación de `politicas_no_select = 0` y `todo_ok = true`).
-- `docs/recetas/prueba_T6.sql` (prueba transaccional corregida para utilizar esquema real de `organizaciones` y `fases_despiece`, validación cruzada entre 2 organizaciones y 0 errores).
-- `supabase/functions/make-server-feea4382/motor/recetas_editor.ts` (manejo de `organizacionId`, mapeo de errores SQL a códigos HTTP semánticos, redondeo a 4 decimales y truncado de historial a 500 registros).
-- `supabase/functions/make-server-feea4382/motor/recetas_editor.test.ts` (pruebas unitarias ampliadas con validación multi-tenant, redondeo y escalado proporcional).
-- `supabase/functions/make-server-feea4382/index.ts` (filtros multi-tenant en `GET /productos` y nuevo endpoint `GET /fases-despiece`, validación de permisos de edición `verificarPermisoEdicion` devolviendo 403 en todas las rutas de mutación de recetas).
-- `src/app/components/CatalogoCostos/RecetasEditorTab.tsx` (reemplazo de `BASE_URL` hardcodeado por importación centralizada de `../../utils/api`, formateo de fechas con timeZone `America/Mexico_City`).
+- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (análisis enriquecido con tabla exhaustiva de las 316 filas del Excel, diff considerando uso en §4.1, lista completa de las 25 piezas de BD que no están en el Excel en §4.3, diff de opciones de suspensión y patines en §4.4, sección pendientes de definir completa en §5 con anomalías de fosfato, ptr sin precio y fila 248, patines y ejes corregidos a Paso 6)
+- `docs/despiece/union_listados_raw.json` (limpieza de "Material Jairo" en fila 145)
+- `supabase/migrations/20261102_01_despiece_union.sql` (migración reescrita: políticas RLS estrictamente FOR SELECT TO authenticated, sin políticas FOR ALL ni de escritura para authenticated; población de 14 fases y 22 equivalencias; asignación 1:1 de las 61 piezas estructurales sin paso a sus pasos exactos en modelos plataforma; preservación íntegra de pasos legados como AIRE, LUZ, TERMINADO, LIMPIEZA; actualización de fase_id vía equivalencias; ajuste de sustitutos en suspensiones Hendrickson alta y Fleet Master a cantidad = 0 y rol = sustituto; cero duplicados insertados en productos)
+- `docs/despiece/verificacion_T2.sql` (verificador actualizado con conteos exactos por fase para PLATAFORMA 2 40 FT: P1=3, P2=5, P3=22, P4=22, P5=16, P6=28, P7=4, P9=47, P10=29, P12=16, Extras=10, Total=202; validación de 0 políticas non-SELECT, 0 recetas cruzadas, 0 líneas de Dolly/Góndola alteradas, 0 casi-duplicados, retornando todo_ok = true)
+- `docs/despiece/prueba_T2.sql` (prueba transaccional RLS multi-tenant real con 2 usuarios y 2 organizaciones bajo SET LOCAL ROLE authenticated y request.jwt.claim.sub, comprobando aislamiento de lectura y bloqueo de INSERT para authenticated)
+- `scripts/generar_archivos_t2_ronda3.py` (script generador determinista que produce los 4 artefactos sin dependencias flotantes)
 **Qué cambió y por qué:**  
-- **1. Política RLS estricta en auditoría (Hallazgo 1):** `receta_base_historial` ahora cuenta únicamente con política `FOR SELECT`. Se eliminó cualquier política `FOR ALL` o escritura directa vía PostgREST para impedir manipulación de bitácoras; todas las escrituras se realizan exclusivamente mediante las RPCs seguras en `SECURITY DEFINER`.
-- **2. Clonación limpia y validaciones (Hallazgo 2):** Se eliminó la asignación de costo hardcodeado (`costo` se mantiene en `NULL`), se eliminó la columna `activo` en inserción a `productos`, se asegura que `costos_modelo` y `procesos_manufactura` pertenezcan a la organización invocante, y se valida unicidad global de `producto_id` antes de crear registros.
-- **3. Integridad multi-inquilino en líneas (Hallazgos 3 y 4):** `guardar_linea_receta` y `eliminar_linea_receta` requieren `p_organizacion_id` y comprueban que modelo, material y fase pertenezcan estrictamente al mismo tenant, bloqueando manipulaciones entre organizaciones y redondeando cantidades a 4 decimales.
-- **4. Endpoints y Autorización en Deno (Hallazgo 5):** Se añadió verificación de rol/permiso `verificarPermisoEdicion` en todas las rutas de mutación (`POST /recetas/clonar`, `POST /recetas/:modeloId/lineas`, `PUT /recetas/:modeloId/lineas/:id`, `DELETE /recetas/:modeloId/lineas/:id`), devolviendo 403 Forbidden cuando el usuario carece de privilegios. Se enriqueció `GET /productos` con búsqueda y filtrado por tenant y se añadió `GET /fases-despiece`.
-- **5. Frontend React (Hallazgo 6):** Se eliminó la URL hardcodeada `http://localhost:8000` utilizando `BASE_URL` de la configuración de la app, y se ajustó la visualización de fechas de auditoría en la zona horaria oficial `America/Mexico_City`.
-**Acciones manuales pendientes:**  
-- Correr `supabase/migrations/20261102_04_editor_recetas.sql` en SQL Editor de Supabase.  
-- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
-- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.
->>>>>>> d211e99
+- **1. Árbol BOM 1:1 desde el Excel (Hallazgo 1 y 2):** Se mapearon con exactitud las 61 piezas estructurales de `receta_base` que tenían `paso IS NULL` a sus pasos exactos del Excel sin heurísticas `ILIKE` genéricas. En `PLATAFORMA 2 40 FT`, las 202 líneas quedan 100% asociadas a su fase oficial correspondiente.
+- **2. Preservación de pasos y usos originales (Hallazgo 3):** Se preservaron íntegramente los pasos y usos originales (como `AIRE`, `LUZ`, `TERMINADO`, `LIMPIEZA`, `EXTRAS`). La fase oficial se asocia mediante `fase_id` utilizando `fases_despiece_equivalencias`.
+- **3. Aislamiento de modelos (Hallazgo 4):** Se filtraron estrictamente las actualizaciones de `receta_base` por `modelos.tipo = 'plataforma'`, dejando Dolly (33 líneas) y Góndola (98 líneas) 100% intactas.
+- **4. Eliminación de casi-duplicados y productos huérfanos (Hallazgos 5 y 6):** Mediante coincidencia canónica, todas las materias primas del Excel reutilizan el producto existente en el catálogo, resultando en 0 duplicados y 0 productos huérfanos.
+- **5. Alternativas en suspensión (Hallazgo 2):** En `alta_hendrickson`, Monroe 65512 queda con `cantidad = 0, rol = 'sustituto'`. En `fleet_master`, amortiguadores FCR/Gabriel y cámaras AMPRO/FCR quedan con `cantidad = 0, rol = 'sustituto'`, resolviendo la duplicación de 3 amortiguadores y 3 cámaras por eje.
+- **6. Patines y ejes a Paso 6 (Hallazgo 7):** Se corrigió la asignación de patines y ejes a `paso_6` conforme a la clasificación del Excel oficial.
+- **7. RLS estricto y prueba multi-tenant real (Hallazgos 8 y 9):** Políticas exclusivamente `FOR SELECT` para `authenticated`, revocando permisos de escritura. La prueba transaccional `prueba_T2.sql` ejecuta bajo `SET LOCAL ROLE authenticated` y `SET LOCAL request.jwt.claim.sub` con dos usuarios de dos organizaciones, validando aislamiento y denegación de escritura.
+- **Acciones manuales pendientes:**
+  - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en EasyPanel/Supabase.
+  - Ejecutar `docs/despiece/verificacion_T2.sql` validando `todo_ok = true`.
 
 ## 2026-11-02 - Sub-bloque T2 (Ronda 2): Correcciones de RLS, esquema real, carga de árbol, categorías y aislamiento
 **Herramienta:** Antigravity  

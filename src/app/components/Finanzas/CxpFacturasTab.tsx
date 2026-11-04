@@ -19,8 +19,14 @@ import {
   Clock,
   CheckCircle2,
   Calendar,
+  Trash2,
+  PlusCircle,
+  Layers,
+  FileCode,
 } from 'lucide-react';
 import { formatearMonedaDe, Moneda, fechaLocalISO } from '../../utils/cuentasPorPagar';
+import { BASE_URL } from '../../utils/api';
+import { CxpCfdiModal } from './CxpCfdiModal';
 import { toast } from 'sonner';
 
 interface FacturasTabProps {
@@ -36,6 +42,8 @@ interface FacturasTabProps {
   onCancelarFactura: (id: string) => Promise<void>;
   onRegistrarPago: (facturaId: string, payload: any) => Promise<void>;
   onAnularPago: (pagoId: string, motivo: string) => Promise<void>;
+  getAuthToken?: () => Promise<string>;
+  onRecargarFacturas?: () => Promise<void>;
 }
 
 export function CxpFacturasTab({
@@ -51,6 +59,8 @@ export function CxpFacturasTab({
   onCancelarFactura,
   onRegistrarPago,
   onAnularPago,
+  getAuthToken,
+  onRecargarFacturas,
 }: FacturasTabProps) {
   // Filtros locales
   const [estadoFiltro, setEstadoFiltro] = useState<string>('todas');
@@ -58,8 +68,54 @@ export function CxpFacturasTab({
   const [soloVencidas, setSoloVencidas] = useState<boolean>(false);
   const [busqueda, setBusqueda] = useState<string>('');
 
-  // Filas expandidas (para ver pagos)
+  // Filas expandidas (para ver pagos y partidas)
   const [expandidas, setExpandidas] = useState<Record<string, boolean>>({});
+
+  // Diálogo Importar CFDI
+  const [modalCfdiOpen, setModalCfdiOpen] = useState(false);
+
+  // Partidas de la factura en edición/creación
+  const [partidas, setPartidas] = useState<Array<{
+    tipo: 'concepto' | 'impuesto_trasladado' | 'retencion' | 'descuento' | 'otro_cargo';
+    descripcion: string;
+    cantidad: number;
+    precio_unitario: number;
+    importe: number;
+    tasa_o_cuota?: number;
+  }>>([]);
+
+  // Cache de partidas cargadas por factura
+  const [partidasCargadas, setPartidasCargadas] = useState<Record<string, any[]>>({});
+  const [cargandoPartidas, setCargandoPartidas] = useState<Record<string, boolean>>({});
+
+  const cargarPartidasDeFactura = async (facturaId: string) => {
+    if (partidasCargadas[facturaId] || cargandoPartidas[facturaId] || !getAuthToken) return;
+    setCargandoPartidas((prev) => ({ ...prev, [facturaId]: true }));
+    try {
+      const token = await getAuthToken();
+      const res = await fetch(`${BASE_URL}/cxp/facturas/${facturaId}/partidas`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPartidasCargadas((prev) => ({ ...prev, [facturaId]: data.partidas || [] }));
+      }
+    } catch (err) {
+      console.error('Error cargando partidas de factura:', err);
+    } finally {
+      setCargandoPartidas((prev) => ({ ...prev, [facturaId]: false }));
+    }
+  };
+
+  const toggleExpand = (id: string) => {
+    setExpandidas((prev) => {
+      const nuevo = !prev[id];
+      if (nuevo) {
+        cargarPartidasDeFactura(id);
+      }
+      return { ...prev, [id]: nuevo };
+    });
+  };
 
   // Diálogo Nueva/Editar Factura
   const [modalFacturaOpen, setModalFacturaOpen] = useState(false);
@@ -98,10 +154,6 @@ export function CxpFacturasTab({
   const [pagoAnulando, setPagoAnulando] = useState<any | null>(null);
   const [motivoAnular, setMotivoAnular] = useState('');
   const [anulando, setAnulando] = useState(false);
-
-  const toggleExpand = (id: string) => {
-    setExpandidas((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
 
   // Filtrado en memoria
   const facturasFiltradas = useMemo(() => {
@@ -149,10 +201,74 @@ export function CxpFacturasTab({
     }
   };
 
+  const recalcularTotalPartidas = (partidasActuales: any[]) => {
+    if (partidasActuales.length === 0) return;
+    let conceptos = 0;
+    let traslados = 0;
+    let otros = 0;
+    let retenciones = 0;
+    let descuentos = 0;
+
+    for (const p of partidasActuales) {
+      const imp = parseFloat(p.importe) || 0;
+      if (p.tipo === 'concepto') conceptos += imp;
+      else if (p.tipo === 'impuesto_trasladado') traslados += imp;
+      else if (p.tipo === 'otro_cargo') otros += imp;
+      else if (p.tipo === 'retencion') retenciones += imp;
+      else if (p.tipo === 'descuento') descuentos += imp;
+    }
+
+    const net = Math.max(0, Math.round((conceptos + traslados + otros - retenciones - descuentos) * 100) / 100);
+    setFormFactura((prev) => ({ ...prev, importe: net.toFixed(2) }));
+  };
+
+  const agregarPartida = (tipo: 'concepto' | 'impuesto_trasladado' | 'retencion' | 'descuento' | 'otro_cargo' = 'concepto') => {
+    const descDefecto =
+      tipo === 'impuesto_trasladado'
+        ? 'IVA 16%'
+        : tipo === 'retencion'
+        ? 'Retención de IVA'
+        : tipo === 'descuento'
+        ? 'Descuento'
+        : '';
+    const nueva = {
+      tipo,
+      descripcion: descDefecto,
+      cantidad: 1,
+      precio_unitario: 0,
+      importe: 0,
+      tasa_o_cuota: tipo === 'impuesto_trasladado' ? 0.16 : undefined,
+    };
+    const actualizadas = [...partidas, nueva];
+    setPartidas(actualizadas);
+  };
+
+  const actualizarPartida = (index: number, campo: string, valor: any) => {
+    const copia = [...partidas];
+    const actual = { ...copia[index], [campo]: valor };
+
+    if (campo === 'cantidad' || campo === 'precio_unitario') {
+      const cant = campo === 'cantidad' ? parseFloat(valor) || 0 : parseFloat(actual.cantidad) || 0;
+      const pu = campo === 'precio_unitario' ? parseFloat(valor) || 0 : parseFloat(actual.precio_unitario) || 0;
+      actual.importe = Math.round(cant * pu * 100) / 100;
+    }
+
+    copia[index] = actual;
+    setPartidas(copia);
+    recalcularTotalPartidas(copia);
+  };
+
+  const eliminarPartida = (index: number) => {
+    const copia = partidas.filter((_, i) => i !== index);
+    setPartidas(copia);
+    recalcularTotalPartidas(copia);
+  };
+
   const abrirNuevaFactura = () => {
     const emision = fechaLocalISO();
     const vencimiento = handleEmisionOrDiasChange(emision, 30);
     setFacturaEditando(null);
+    setPartidas([]);
     setFormFactura({
       proveedor_id: proveedorFiltro && proveedorFiltro !== 'todos' ? proveedorFiltro : (proveedores[0]?.id || ''),
       sucursal: '',
@@ -169,8 +285,9 @@ export function CxpFacturasTab({
     setModalFacturaOpen(true);
   };
 
-  const abrirEditarFactura = (f: any) => {
+  const abrirEditarFactura = async (f: any) => {
     setFacturaEditando(f);
+    setPartidas([]);
     setFormFactura({
       proveedor_id: f.proveedor_id,
       sucursal: f.sucursal || '',
@@ -185,6 +302,23 @@ export function CxpFacturasTab({
       concepto: f.concepto || '',
     });
     setModalFacturaOpen(true);
+
+    if (getAuthToken) {
+      try {
+        const token = await getAuthToken();
+        const res = await fetch(`${BASE_URL}/cxp/facturas/${f.id}/partidas`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.partidas && data.partidas.length > 0) {
+            setPartidas(data.partidas);
+          }
+        }
+      } catch (e) {
+        console.error('Error cargando partidas:', e);
+      }
+    }
   };
 
   const handleSubmitFactura = async (e: React.FormEvent) => {
@@ -205,24 +339,41 @@ export function CxpFacturasTab({
 
     try {
       setGuardandoFactura(true);
+      const payloadEnvio: any = {
+        ...formFactura,
+        importe: impNum,
+        dias_credito: Number(formFactura.dias_credito),
+        tipo_cambio_emision: formFactura.tipo_cambio_emision ? parseFloat(formFactura.tipo_cambio_emision) : null,
+      };
+
+      if (partidas.length > 0) {
+        payloadEnvio.partidas = partidas;
+        let subtotal = 0;
+        let traslados = 0;
+        let retenciones = 0;
+        let descuentos = 0;
+        for (const p of partidas) {
+          const imp = parseFloat(p.importe as any) || 0;
+          if (p.tipo === 'concepto') subtotal += imp;
+          else if (p.tipo === 'impuesto_trasladado') traslados += imp;
+          else if (p.tipo === 'retencion') retenciones += imp;
+          else if (p.tipo === 'descuento') descuentos += imp;
+        }
+        payloadEnvio.subtotal = Math.round(subtotal * 100) / 100;
+        payloadEnvio.impuestos_trasladados = Math.round(traslados * 100) / 100;
+        payloadEnvio.impuestos_retenidos = Math.round(retenciones * 100) / 100;
+        payloadEnvio.descuento = Math.round(descuentos * 100) / 100;
+      }
+
       if (facturaEditando) {
-        await onActualizarFactura(facturaEditando.id, {
-          ...formFactura,
-          importe: impNum,
-          dias_credito: Number(formFactura.dias_credito),
-          tipo_cambio_emision: formFactura.tipo_cambio_emision ? parseFloat(formFactura.tipo_cambio_emision) : null,
-        });
+        await onActualizarFactura(facturaEditando.id, payloadEnvio);
         toast.success('Factura actualizada con éxito');
       } else {
-        await onCrearFactura({
-          ...formFactura,
-          importe: impNum,
-          dias_credito: Number(formFactura.dias_credito),
-          tipo_cambio_emision: formFactura.tipo_cambio_emision ? parseFloat(formFactura.tipo_cambio_emision) : null,
-        });
+        await onCrearFactura(payloadEnvio);
         toast.success('Factura registrada con éxito');
       }
       setModalFacturaOpen(false);
+      if (onRecargarFacturas) onRecargarFacturas();
     } catch (err: any) {
       toast.error('Error al guardar factura', { description: err.message });
     } finally {
@@ -399,14 +550,27 @@ export function CxpFacturasTab({
               </label>
             </div>
 
-            <Button
-              type="button"
-              onClick={abrirNuevaFactura}
-              className="h-9 text-xs gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 shrink-0"
-            >
-              <Plus className="w-4 h-4" />
-              Nueva Factura
-            </Button>
+            <div className="flex items-center gap-2">
+              {getAuthToken && onRecargarFacturas && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setModalCfdiOpen(true)}
+                  className="h-9 text-xs gap-1.5 border-primary/50 text-primary hover:bg-primary/10 shrink-0"
+                >
+                  <FileCode className="w-4 h-4" />
+                  Importar XML (CFDI)
+                </Button>
+              )}
+              <Button
+                type="button"
+                onClick={abrirNuevaFactura}
+                className="h-9 text-xs gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                Nueva Factura
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -596,10 +760,66 @@ export function CxpFacturasTab({
                           </td>
                         </tr>
 
-                        {/* Fila expandible con pagos */}
+                        {/* Fila expandible con partidas y pagos */}
                         {esExpandida && (
                           <tr className="bg-muted/15 border-b border-border/40">
-                            <td colSpan={11} className="py-3 px-8">
+                            <td colSpan={11} className="py-3 px-8 space-y-4">
+                              {/* 1. Detalle de Partidas (T4a) */}
+                              <div className="space-y-2">
+                                <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center justify-between">
+                                  <span className="flex items-center gap-1.5">
+                                    <Layers className="h-3.5 w-3.5 text-primary" />
+                                    Partidas y Desglose de Factura ({partidasCargadas[f.id]?.length || 0})
+                                  </span>
+                                  {f.uuid_fiscal && (
+                                    <span className="text-[10px] font-mono text-muted-foreground font-normal">
+                                      UUID: {f.uuid_fiscal}
+                                    </span>
+                                  )}
+                                </div>
+                                {cargandoPartidas[f.id] ? (
+                                  <div className="p-3 text-xs text-muted-foreground text-center">Cargando partidas...</div>
+                                ) : partidasCargadas[f.id] && partidasCargadas[f.id].length > 0 ? (
+                                  <div className="rounded border border-border/50 bg-card overflow-hidden">
+                                    <table className="w-full text-left text-[11px]">
+                                      <thead>
+                                        <tr className="bg-muted/30 border-b border-border/50 text-muted-foreground">
+                                          <th className="py-1.5 px-3">Tipo</th>
+                                          <th className="py-1.5 px-3">Descripción</th>
+                                          <th className="py-1.5 px-3 text-center">Cant.</th>
+                                          <th className="py-1.5 px-3 text-right">P. Unitario</th>
+                                          <th className="py-1.5 px-3 text-right">Importe</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody className="divide-y divide-border/40 font-mono">
+                                        {partidasCargadas[f.id].map((part: any, pIdx: number) => (
+                                          <tr key={pIdx}>
+                                            <td className="py-1.5 px-3 font-sans">
+                                              <span className="capitalize px-1.5 py-0.5 rounded text-[10px] bg-muted font-medium">
+                                                {part.tipo.replace('_', ' ')}
+                                              </span>
+                                            </td>
+                                            <td className="py-1.5 px-3 font-sans text-foreground">
+                                              {part.descripcion}
+                                            </td>
+                                            <td className="py-1.5 px-3 text-center">{part.cantidad}</td>
+                                            <td className="py-1.5 px-3 text-right">{formatearMonedaDe(part.precio_unitario, f.moneda)}</td>
+                                            <td className="py-1.5 px-3 text-right font-bold text-foreground">
+                                              {formatearMonedaDe(part.importe, f.moneda)}
+                                            </td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                ) : (
+                                  <div className="p-2.5 rounded border border-border/40 bg-card text-[11px] text-muted-foreground italic">
+                                    Factura sin partidas desglosadas (importe registrado a nivel general).
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* 2. Historial de Pagos */}
                               <div className="space-y-2">
                                 <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center justify-between">
                                   <span>Historial de Pagos de la Factura ({pagos.length})</span>
@@ -688,7 +908,7 @@ export function CxpFacturasTab({
 
       {/* DIÁLOGO: NUEVA / EDITAR FACTURA */}
       <Dialog open={modalFacturaOpen} onOpenChange={setModalFacturaOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto bg-card text-foreground border-border">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold">
               {facturaEditando ? 'Editar Factura de Proveedor' : 'Registrar Nueva Factura'}
@@ -854,6 +1074,148 @@ export function CxpFacturasTab({
                   className="text-xs h-9"
                 />
               </div>
+            </div>
+
+            {/* SECCIÓN DE PARTIDAS (T4a) */}
+            <div className="space-y-2.5 border-t border-border pt-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <Layers className="h-4 w-4 text-primary" />
+                    Desglose de Partidas y Cargos ({partidas.length})
+                  </span>
+                  <p className="text-[11px] text-muted-foreground">
+                    Opcional: Desglosa conceptos, IVA, retenciones y descuentos. El importe total se actualiza en vivo.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => agregarPartida('concepto')}
+                    className="h-7 text-[11px] px-2 text-primary border-primary/30"
+                  >
+                    + Concepto
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => agregarPartida('impuesto_trasladado')}
+                    className="h-7 text-[11px] px-2 text-blue-600 dark:text-blue-400 border-blue-500/30"
+                  >
+                    + IVA 16%
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => agregarPartida('retencion')}
+                    className="h-7 text-[11px] px-2 text-red-600 dark:text-red-400 border-red-500/30"
+                  >
+                    + Retención
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => agregarPartida('descuento')}
+                    className="h-7 text-[11px] px-2 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                  >
+                    + Descuento
+                  </Button>
+                </div>
+              </div>
+
+              {partidas.length > 0 ? (
+                <div className="border border-border rounded-lg overflow-hidden max-h-56 overflow-y-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="bg-muted text-muted-foreground text-[10px] uppercase font-semibold">
+                      <tr>
+                        <th className="p-2 w-32">Tipo</th>
+                        <th className="p-2">Descripción</th>
+                        <th className="p-2 text-center w-16">Cant.</th>
+                        <th className="p-2 text-right w-24">P. Unit.</th>
+                        <th className="p-2 text-right w-24">Importe</th>
+                        <th className="p-2 text-center w-10"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {partidas.map((p, idx) => (
+                        <tr key={idx} className="hover:bg-muted/30">
+                          <td className="p-1.5">
+                            <select
+                              value={p.tipo}
+                              onChange={(e) => actualizarPartida(idx, 'tipo', e.target.value)}
+                              className="text-xs h-7 rounded border border-border bg-background px-1 py-0 w-full"
+                            >
+                              <option value="concepto">Concepto</option>
+                              <option value="impuesto_trasladado">IVA Trasladado</option>
+                              <option value="retencion">Retención</option>
+                              <option value="descuento">Descuento</option>
+                              <option value="otro_cargo">Flete / Otro</option>
+                            </select>
+                          </td>
+                          <td className="p-1.5">
+                            <Input
+                              type="text"
+                              value={p.descripcion}
+                              onChange={(e) => actualizarPartida(idx, 'descripcion', e.target.value)}
+                              placeholder="Descripción de la partida..."
+                              className="text-xs h-7"
+                            />
+                          </td>
+                          <td className="p-1.5">
+                            <Input
+                              type="number"
+                              step="any"
+                              min="0.01"
+                              value={p.cantidad}
+                              onChange={(e) => actualizarPartida(idx, 'cantidad', e.target.value)}
+                              className="text-xs h-7 text-center font-mono"
+                            />
+                          </td>
+                          <td className="p-1.5">
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              value={p.precio_unitario}
+                              onChange={(e) => actualizarPartida(idx, 'precio_unitario', e.target.value)}
+                              className="text-xs h-7 text-right font-mono"
+                            />
+                          </td>
+                          <td className="p-1.5">
+                            <Input
+                              type="number"
+                              step="0.01"
+                              value={p.importe}
+                              onChange={(e) => actualizarPartida(idx, 'importe', e.target.value)}
+                              className="text-xs h-7 text-right font-mono font-medium"
+                            />
+                          </td>
+                          <td className="p-1.5 text-center">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => eliminarPartida(idx)}
+                              className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="p-3 text-center text-xs text-muted-foreground border border-dashed border-border/80 rounded-lg bg-muted/10">
+                  Sin partidas desglosadas. Puede capturar el importe total directamente arriba o agregar partidas individuales con los botones.
+                </div>
+              )}
             </div>
 
             <DialogFooter className="pt-2">
@@ -1082,6 +1444,16 @@ export function CxpFacturasTab({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* DIÁLOGO: IMPORTAR FACTURAS DESDE XML CFDI (T4b) */}
+      {getAuthToken && onRecargarFacturas && (
+        <CxpCfdiModal
+          open={modalCfdiOpen}
+          onOpenChange={setModalCfdiOpen}
+          getAuthToken={getAuthToken}
+          onImportExitoso={onRecargarFacturas}
+        />
+      )}
     </div>
   );
 }

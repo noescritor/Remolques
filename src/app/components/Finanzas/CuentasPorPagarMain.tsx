@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
-import { LayoutDashboard, FileText, DollarSign, Scale, ShoppingCart } from 'lucide-react';
+import { LayoutDashboard, FileText, DollarSign, Scale, ShoppingCart, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { BASE_URL } from '../../utils/api';
 import { supabase } from '../../utils/supabase/client';
@@ -9,6 +9,7 @@ import { CxpResumenTab } from './CxpResumenTab';
 import { CxpFacturasTab } from './CxpFacturasTab';
 import { CxpPagosTab } from './CxpPagosTab';
 import { CxpConciliacionTab } from './CxpConciliacionTab';
+import { CxpReporteFacturacionTab } from './CxpReporteFacturacionTab';
 import { CuentasPorPagar } from './CuentasPorPagar';
 import { CompraProveedor, PagoProveedor, Proveedor, Producto } from '../../types';
 import { fechaLocalISO } from '../../utils/cuentasPorPagar';
@@ -29,7 +30,7 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
   // Tab activo sincronizado con URL
   const tabUrl = searchParams.get('tab') || 'resumen';
   const [activeTab, setActiveTab] = useState<string>(
-    ['resumen', 'facturas', 'pagos', 'conciliacion', 'compras'].includes(tabUrl) ? tabUrl : 'resumen'
+    ['resumen', 'facturas', 'pagos', 'conciliacion', 'reporte', 'compras'].includes(tabUrl) ? tabUrl : 'resumen'
   );
 
   // Filtro de proveedor
@@ -49,7 +50,7 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
 
   useEffect(() => {
     const tabFromUrl = searchParams.get('tab');
-    if (tabFromUrl && ['resumen', 'facturas', 'pagos', 'conciliacion', 'compras'].includes(tabFromUrl)) {
+    if (tabFromUrl && ['resumen', 'facturas', 'pagos', 'conciliacion', 'reporte', 'compras'].includes(tabFromUrl)) {
       setActiveTab(tabFromUrl);
     }
   }, [searchParams]);
@@ -322,6 +323,14 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
           </TabsTrigger>
 
           <TabsTrigger
+            value="reporte"
+            className="flex items-center gap-2 py-2 px-4 text-xs font-medium data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all"
+          >
+            <BarChart3 className="h-4 w-4" />
+            Reporte de Facturación
+          </TabsTrigger>
+
+          <TabsTrigger
             value="compras"
             className="flex items-center gap-2 py-2 px-4 text-xs font-medium data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all"
           >
@@ -358,6 +367,8 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
             onCancelarFactura={handleCancelarFactura}
             onRegistrarPago={handleRegistrarPago}
             onAnularPago={handleAnularPago}
+            getAuthToken={getAuthToken}
+            onRecargarFacturas={fetchFacturas}
           />
         </TabsContent>
 
@@ -369,6 +380,13 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
           <CxpConciliacionTab
             proveedores={props.proveedores || []}
             proveedorInicial={proveedorFiltro}
+          />
+        </TabsContent>
+
+        <TabsContent value="reporte" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
+          <CxpReporteFacturacionTab
+            proveedores={props.proveedores || []}
+            getAuthToken={getAuthToken}
           />
         </TabsContent>
 
