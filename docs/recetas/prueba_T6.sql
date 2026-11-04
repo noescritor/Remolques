@@ -314,6 +314,133 @@ BEGIN
         RAISE EXCEPTION 'Faltan registros de auditoría en receta_base_historial (encontrados %)', v_hist_count;
     END IF;
 
+    -- =========================================================================
+    -- PRUEBA 10: Rechazar modificar una línea que ya fue eliminada (NOT FOUND)
+    -- =========================================================================
+    v_catch_error := false;
+    BEGIN
+        PERFORM public.guardar_linea_receta(
+            v_nuevo_modelo_id,
+            v_mat_a_id,
+            7.0,
+            'fija',
+            v_fase_a_id,
+            v_org_a,
+            'Paso 1',
+            'Intento editar línea borrada',
+            'ensamble',
+            v_linea_id,
+            v_user_a,
+            'Edición fantasma'
+        );
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%linea_no_encontrada%' THEN
+            v_catch_error := true;
+        END IF;
+    END;
+    IF NOT v_catch_error THEN
+        RAISE EXCEPTION 'No se rechazó la edición de una línea ya eliminada';
+    END IF;
+
+    -- =========================================================================
+    -- PRUEBA 11: Rechazar cantidad 0.00001 que redondea a 0.0000
+    -- =========================================================================
+    v_catch_error := false;
+    BEGIN
+        PERFORM public.guardar_linea_receta(
+            v_nuevo_modelo_id,
+            v_mat_a_id,
+            0.00001,
+            'fija',
+            v_fase_a_id,
+            v_org_a
+        );
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%cantidad_invalida%' THEN
+            v_catch_error := true;
+        END IF;
+    END;
+    IF NOT v_catch_error THEN
+        RAISE EXCEPTION 'No se rechazó la cantidad que redondea a cero (0.00001)';
+    END IF;
+
+    -- =========================================================================
+    -- PRUEBA 12: Rechazar clonación con parámetros inválidos (largo -5, ejes 0, clave vacía)
+    -- =========================================================================
+    v_catch_error := false;
+    BEGIN
+        PERFORM public.clonar_receta_modelo(
+            v_origen_id,
+            '   ',
+            'CLON INVALIDO',
+            40,
+            2,
+            v_org_a
+        );
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%producto_id_invalido%' THEN
+            v_catch_error := true;
+        END IF;
+    END;
+    IF NOT v_catch_error THEN
+        RAISE EXCEPTION 'No se rechazó clave de producto vacía en clonar_receta_modelo';
+    END IF;
+
+    v_catch_error := false;
+    BEGIN
+        PERFORM public.clonar_receta_modelo(
+            v_origen_id,
+            'REM-CLON-INV-LARGO',
+            'CLON LARGO NEGATIVO',
+            -5,
+            2,
+            v_org_a
+        );
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%largo_invalido%' THEN
+            v_catch_error := true;
+        END IF;
+    END;
+    IF NOT v_catch_error THEN
+        RAISE EXCEPTION 'No se rechazó largo <= 0 en clonar_receta_modelo';
+    END IF;
+
+    -- =========================================================================
+    -- PRUEBA 13: Rechazar agregar un modelo/producto terminado como materia prima
+    -- =========================================================================
+    v_catch_error := false;
+    BEGIN
+        PERFORM public.guardar_linea_receta(
+            v_nuevo_modelo_id,
+            'REM-PRUEBA-T6-47FT',
+            1.0,
+            'fija',
+            v_fase_a_id,
+            v_org_a
+        );
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%material_no_encontrado%' THEN
+            v_catch_error := true;
+        END IF;
+    END;
+    IF NOT v_catch_error THEN
+        RAISE EXCEPTION 'No se rechazó agregar producto_terminado como materia_prima';
+    END IF;
+
+    -- =========================================================================
+    -- PRUEBA 14: Validar ON DELETE SET NULL en receta_base_historial
+    -- =========================================================================
+    -- Al borrar el modelo recién creado, sus registros de auditoría deben sobrevivir con modelo_id = NULL
+    DELETE FROM public.modelos WHERE id = v_nuevo_modelo_id;
+
+    SELECT count(*) INTO v_hist_count
+    FROM public.receta_base_historial
+    WHERE modelo_id IS NULL AND organizacion_id = v_org_a;
+
+    IF v_hist_count < 3 THEN
+        RAISE EXCEPTION 'ON DELETE SET NULL falló: el historial no sobrevivió a la eliminación del modelo (encontrados %)', v_hist_count;
+    END IF;
+
     RAISE NOTICE 'PRUEBA TRANSACCIONAL T6: EXITOSA (0 errores)';
 END $$;
 

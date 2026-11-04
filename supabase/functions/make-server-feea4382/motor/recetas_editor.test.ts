@@ -290,3 +290,172 @@ Deno.test("recetas_editor: resolverReceta resuelve el modelo clonado con escala 
   assertEquals(modeloOrigen.modelo.largo_ft, 40);
   assertEquals(modeloOrigen.modelo.num_ejes, 2);
 });
+
+Deno.test("recetas_editor: mock de GET /fases-despiece usa únicamente columnas reales de fases_despiece", async () => {
+  // Las columnas reales de fases_despiece son:
+  // id, organizacion_id, clave, nombre, subtitulo, orden, descripcion, activo, created_at, updated_at
+  const fasesRealesBD = [
+    {
+      id: "fase-1",
+      organizacion_id: ORG_A,
+      clave: "paso_1",
+      nombre: "Paso 1",
+      subtitulo: "Chasis",
+      orden: 1,
+      descripcion: "Corte y armado de vigas",
+      activo: true,
+      created_at: "2026-11-01T00:00:00Z",
+      updated_at: "2026-11-01T00:00:00Z",
+    },
+    {
+      id: "fase-2",
+      organizacion_id: ORG_A,
+      clave: "paso_2",
+      nombre: "Paso 2",
+      subtitulo: "Planchón",
+      orden: 2,
+      descripcion: "Perno rey y planchón",
+      activo: true,
+      created_at: "2026-11-01T00:00:00Z",
+      updated_at: "2026-11-01T00:00:00Z",
+    }
+  ];
+
+  // Mock que falla si se pide una columna inexistente como paso_numero o activa
+  const columnasPermitidas = new Set([
+    "id", "organizacion_id", "clave", "nombre", "subtitulo", "orden", "descripcion", "activo", "created_at", "updated_at"
+  ]);
+
+  const mockSupabase = {
+    from: (table: string) => {
+      assertEquals(table, "fases_despiece");
+      return {
+        select: (cols: string) => {
+          const colList = cols.split(",").map((c) => c.trim());
+          for (const col of colList) {
+            if (!columnasPermitidas.has(col)) {
+              throw new Error(`column "${col}" does not exist`);
+            }
+          }
+          return {
+            eq: (_col1: string, _val1: any) => ({
+              eq: (_col2: string, _val2: any) => ({
+                order: (_col3: string, _opt: any) => ({
+                  data: fasesRealesBD.map((f: any) => {
+                    const row: any = {};
+                    for (const c of colList) row[c] = f[c];
+                    return row;
+                  }),
+                  error: null
+                })
+              })
+            })
+          };
+        }
+      };
+    }
+  };
+
+  // Simular la consulta exacta de GET /fases-despiece
+  const { data, error } = await mockSupabase
+    .from("fases_despiece")
+    .select("id, clave, nombre, subtitulo, orden, descripcion, activo")
+    .eq("organizacion_id", ORG_A)
+    .eq("activo", true)
+    .order("orden", { ascending: true });
+
+  assertEquals(error, null);
+  assertEquals(data?.length, 2);
+  assertEquals(data?.[0].nombre, "Paso 1");
+  assertEquals(data?.[0].subtitulo, "Chasis");
+  assertEquals(data?.[0].activo, true);
+  // Confirmar que no hay paso_numero ni activa
+  assertEquals((data?.[0] as any).paso_numero, undefined);
+  assertEquals((data?.[0] as any).activa, undefined);
+});
+
+Deno.test("recetas_editor: búsqueda en productos sanitiza caracteres especiales como comas y paréntesis", () => {
+  // Simular la función de sanitización usada en GET /productos
+  const sanitizar = (q: string) => q.trim().replace(/[(),]/g, ' ').replace(/\s+/g, ' ').trim();
+
+  const casoParentesis = "PTR (2x2)";
+  assertEquals(sanitizar(casoParentesis), "PTR 2x2");
+
+  const casoComa = "SOLERA, 1/4 X 2";
+  assertEquals(sanitizar(casoComa), "SOLERA 1/4 X 2");
+
+  const casoMixto = "TUBO (1-1/4, CEDULA 40)";
+  assertEquals(sanitizar(casoMixto), "TUBO 1-1/4 CEDULA 40");
+
+  // El string resultante no contiene caracteres que rompan el parser PostgREST
+  const res = sanitizar(casoParentesis);
+  assertEquals(res.includes("("), false);
+  assertEquals(res.includes(")"), false);
+  assertEquals(res.includes(","), false);
+});
+
+Deno.test("recetas_editor: aislamiento multi-tenant en obtenerRecetaMotor rechaza modelo de otra organización", async () => {
+  const ORG_B = "22222222-2222-2222-2222-222222222222";
+  const mockSupabase = {
+    from: (table: string) => {
+      if (table === "modelos") {
+        return {
+          select: () => ({
+            eq: (_c1: string, modId: string) => ({
+              eq: (_c2: string, orgId: string) => ({
+                single: async () => {
+                  // Solo encuentra el modelo si pertenece a la misma organización
+                  if (orgId === ORG_B && modId === "mod-b") {
+                    return {
+                      data: { id: "mod-b", organizacion_id: ORG_B, productos: { nombre: "Modelo B" } },
+                      error: null
+                    };
+                  }
+                  return { data: null, error: { message: "Row not found" } };
+                }
+              })
+            })
+          })
+        };
+      }
+      return {};
+    }
+  };
+
+  // Org A intentando leer modelo de Org B debe dar 404
+  await assertRejects(
+    async () => {
+      await obtenerRecetaMotor(mockSupabase, ORG_A, "mod-b");
+    },
+    Error,
+    "Modelo no encontrado en la organización"
+  );
+});
+
+Deno.test("recetas_editor: control de permisos de edición responde 403 Forbidden para usuarios sin rol editor", async () => {
+  // Simular cliente de perfiles de usuario
+  const mockServiceClient = {
+    from: (table: string) => {
+      assertEquals(table, "perfiles_organizacion");
+      return {
+        select: () => ({
+          eq: () => ({
+            eq: () => ({
+              maybeSingle: async () => ({
+                // Usuario con rol 'usuario' (solo lectura / operador)
+                data: { rol: "usuario" },
+                error: null
+              })
+            })
+          })
+        })
+      };
+    }
+  };
+
+  // Importar y probar verificarPermisoEdicion directamente
+  const { verificarPermisoEdicion } = await import("./catalogo_costos.ts");
+  const autorizado = await verificarPermisoEdicion(mockServiceClient, ORG_A, "user-sin-permiso");
+  assertEquals(autorizado, false);
+});
+

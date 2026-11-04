@@ -1564,7 +1564,10 @@ app.get("/productos", async (c) => {
       query = query.eq('tipo_item', tipo);
     }
     if (q && q.trim()) {
-      query = query.or(`nombre.ilike.%${q.trim()}%,id.ilike.%${q.trim()}%`);
+      const qSanitized = q.trim().replace(/[(),]/g, ' ').replace(/\s+/g, ' ').trim();
+      if (qSanitized) {
+        query = query.or(`nombre.ilike.%${qSanitized}%,id.ilike.%${qSanitized}%`);
+      }
     }
     if (limit && Number.isInteger(limit) && limit > 0) {
       query = query.limit(limit);
@@ -1585,9 +1588,9 @@ app.get("/fases-despiece", async (c) => {
     const orgId = (c as any).get("organizacionId") as string;
     const { data, error } = await supabase
       .from("fases_despiece")
-      .select("id, clave, nombre, orden, paso_numero, descripcion, activa")
+      .select("id, clave, nombre, subtitulo, orden, descripcion, activo")
       .eq("organizacion_id", orgId)
-      .eq("activa", true)
+      .eq("activo", true)
       .order("orden", { ascending: true });
 
     if (error) throw error;

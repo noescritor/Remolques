@@ -8,7 +8,7 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS public.receta_base_historial (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organizacion_id UUID NOT NULL REFERENCES public.organizaciones(id) ON DELETE CASCADE,
-    modelo_id UUID NOT NULL REFERENCES public.modelos(id) ON DELETE CASCADE,
+    modelo_id UUID REFERENCES public.modelos(id) ON DELETE SET NULL,
     linea_id UUID,
     accion TEXT NOT NULL CHECK (accion IN ('clonar_modelo', 'crear_linea', 'modificar_linea', 'eliminar_linea')),
     material_id TEXT REFERENCES public.productos(id) ON DELETE SET NULL,
@@ -19,6 +19,22 @@ CREATE TABLE IF NOT EXISTS public.receta_base_historial (
     motivo TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Asegurar compatibilidad si la tabla ya existía previamente
+ALTER TABLE public.receta_base_historial ALTER COLUMN modelo_id DROP NOT NULL;
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE constraint_name = 'receta_base_historial_modelo_id_fkey' 
+          AND table_name = 'receta_base_historial'
+    ) THEN
+        ALTER TABLE public.receta_base_historial DROP CONSTRAINT receta_base_historial_modelo_id_fkey;
+        ALTER TABLE public.receta_base_historial 
+            ADD CONSTRAINT receta_base_historial_modelo_id_fkey 
+            FOREIGN KEY (modelo_id) REFERENCES public.modelos(id) ON DELETE SET NULL;
+    END IF;
+END $$;
 
 ALTER TABLE public.receta_base_historial ENABLE ROW LEVEL SECURITY;
 
@@ -63,6 +79,19 @@ DECLARE
     v_nuevo_modelo_id UUID;
     v_count_lineas INT := 0;
 BEGIN
+    -- Validar parámetros de entrada
+    IF p_producto_id IS NULL OR btrim(p_producto_id) = '' THEN
+        RAISE EXCEPTION 'producto_id_invalido: La clave del producto no puede estar vacía';
+    END IF;
+
+    IF p_largo_ft IS NULL OR p_largo_ft <= 0 OR p_largo_ft = 'NaN'::numeric THEN
+        RAISE EXCEPTION 'largo_invalido: El largo en pies debe ser un número positivo finito';
+    END IF;
+
+    IF p_num_ejes IS NULL OR p_num_ejes < 1 THEN
+        RAISE EXCEPTION 'ejes_invalido: El número de ejes debe ser un entero mayor o igual a 1';
+    END IF;
+
     -- Validar modelo origen y verificar que pertenece a p_organizacion_id
     SELECT organizacion_id, tipo INTO v_org_id, v_tipo
     FROM public.modelos
@@ -250,9 +279,14 @@ BEGIN
         RAISE EXCEPTION 'modelo_no_encontrado: El modelo especificado no existe o pertenece a otra organización';
     END IF;
 
-    -- Validar que el material exista en la misma organización
-    IF NOT EXISTS (SELECT 1 FROM public.productos WHERE id = p_material_id AND organizacion_id = p_organizacion_id) THEN
-        RAISE EXCEPTION 'material_no_encontrado: La materia prima % no existe en la organización', p_material_id;
+    -- Validar que el material exista en la misma organización y sea de tipo materia_prima
+    IF NOT EXISTS (
+        SELECT 1 FROM public.productos 
+        WHERE id = p_material_id 
+          AND organizacion_id = p_organizacion_id
+          AND tipo_item = 'materia_prima'
+    ) THEN
+        RAISE EXCEPTION 'material_no_encontrado: La materia prima % no existe en la organización o no es de tipo materia_prima', p_material_id;
     END IF;
 
     -- Validar escala
@@ -261,11 +295,15 @@ BEGIN
     END IF;
 
     -- Validar cantidad
-    IF p_cantidad IS NULL OR p_cantidad = 'NaN'::numeric OR p_cantidad <= 0 THEN
-        RAISE EXCEPTION 'cantidad_invalida: La cantidad debe ser mayor a cero y no NaN';
+    IF p_cantidad IS NULL OR p_cantidad = 'NaN'::numeric THEN
+        RAISE EXCEPTION 'cantidad_invalida: La cantidad no puede ser nula ni NaN';
     END IF;
 
     v_cant_redondeada := round(p_cantidad, 4);
+
+    IF v_cant_redondeada <= 0 THEN
+        RAISE EXCEPTION 'cantidad_invalida: La cantidad redondeada debe ser mayor a cero';
+    END IF;
 
     -- Validar fase si se especifica
     IF p_fase_id IS NOT NULL AND NOT EXISTS (
@@ -312,7 +350,8 @@ BEGIN
         ) INTO v_ant_data
         FROM public.receta_base rb
         JOIN public.modelos m ON m.id = rb.modelo_id
-        WHERE rb.id = p_linea_id AND rb.modelo_id = p_modelo_id AND m.organizacion_id = p_organizacion_id;
+        WHERE rb.id = p_linea_id AND rb.modelo_id = p_modelo_id AND m.organizacion_id = p_organizacion_id
+        FOR UPDATE OF rb;
 
         IF v_ant_data IS NULL THEN
             RAISE EXCEPTION 'linea_no_encontrada: La línea de receta % no existe o no pertenece al modelo', p_linea_id;
@@ -329,6 +368,10 @@ BEGIN
             fase_id = p_fase_id,
             updated_at = now()
         WHERE id = p_linea_id;
+
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'linea_no_encontrada: La línea de receta % no fue encontrada para actualizar', p_linea_id;
+        END IF;
     END IF;
 
     -- Registrar auditoría
@@ -410,13 +453,18 @@ BEGIN
     JOIN public.modelos m ON m.id = rb.modelo_id
     WHERE rb.id = p_linea_id 
       AND m.organizacion_id = p_organizacion_id
-      AND (p_modelo_id IS NULL OR rb.modelo_id = p_modelo_id);
+      AND (p_modelo_id IS NULL OR rb.modelo_id = p_modelo_id)
+    FOR UPDATE OF rb;
 
     IF v_ant_data IS NULL THEN
         RAISE EXCEPTION 'linea_no_encontrada: La línea % no existe en la organización especificada', p_linea_id;
     END IF;
 
     DELETE FROM public.receta_base WHERE id = p_linea_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'linea_no_encontrada: La línea % no fue encontrada para eliminar', p_linea_id;
+    END IF;
 
     -- Registrar auditoría
     INSERT INTO public.receta_base_historial (
