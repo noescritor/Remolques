@@ -42,8 +42,16 @@ function createFakeClient(initialState: any = {}) {
           filters.push((row: any) => row[col] >= val);
           return queryObj;
         },
+        gt(col: string, val: any) {
+          filters.push((row: any) => row[col] > val);
+          return queryObj;
+        },
         lte(col: string, val: any) {
           filters.push((row: any) => row[col] <= val);
+          return queryObj;
+        },
+        neq(col: string, val: any) {
+          filters.push((row: any) => row[col] !== val);
           return queryObj;
         },
         in(col: string, vals: any[]) {
@@ -207,6 +215,9 @@ Deno.test("previsualizarCFDIsMotor detecta duplicados y proveedores nuevos", asy
   <cfdi:Emisor Rfc="PAC010203XYZ" Nombre="ACEROS CORDOBA" />
   <cfdi:Receptor Rfc="LEO120524ABC" />
   <cfdi:Conceptos><cfdi:Concepto Cantidad="1" Descripcion="Material" Importe="100.00" ValorUnitario="100.00"/></cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosTrasladados="16.00">
+    <cfdi:Traslados><cfdi:Traslado Impuesto="002" TasaOCuota="0.160000" Importe="16.00"/></cfdi:Traslados>
+  </cfdi:Impuestos>
   <cfdi:Complemento><tfd:TimbreFiscalDigital UUID="UUID-TOTALMENTE-NUEVO-1"/></cfdi:Complemento>
 </cfdi:Comprobante>`;
 
@@ -215,6 +226,9 @@ Deno.test("previsualizarCFDIsMotor detecta duplicados y proveedores nuevos", asy
   <cfdi:Emisor Rfc="PAC010203XYZ" Nombre="ACEROS CORDOBA" />
   <cfdi:Receptor Rfc="LEO120524ABC" />
   <cfdi:Conceptos><cfdi:Concepto Cantidad="1" Descripcion="Material" Importe="100.00" ValorUnitario="100.00"/></cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosTrasladados="16.00">
+    <cfdi:Traslados><cfdi:Traslado Impuesto="002" TasaOCuota="0.160000" Importe="16.00"/></cfdi:Traslados>
+  </cfdi:Impuestos>
   <cfdi:Complemento><tfd:TimbreFiscalDigital UUID="YA-EXISTE-UUID-1234"/></cfdi:Complemento>
 </cfdi:Comprobante>`;
 
@@ -329,4 +343,261 @@ Deno.test("importarCFDIsMotor re-parsea en el servidor y rechaza XML malicioso",
   assertEquals(res.detalles[1].ok, true);
   assertEquals(res.detalles[1].uuid_fiscal, "UUID-VALIDO-777");
 });
+
+Deno.test("importarCFDIsMotor con 30 conceptos de 10.005000 cuadra exactamente con total y genera ajuste", async () => {
+  const fake = createFakeClient({
+    proveedores: [
+      { id: PROV_A, organizacion_id: ORG_A, rfc: "PAC010203XYZ", nombre: "ACEROS CORDOBA", dias_credito: 15 },
+    ],
+  });
+
+  // Generar 30 conceptos de 10.005000 -> SubTotal 300.15, IVA 48.02, Total 348.17
+  const conceptosXml = Array.from({ length: 30 }, (_, i) => 
+    `<cfdi:Concepto ClaveProdServ="01010101" Cantidad="1" ClaveUnidad="H87" Descripcion="Tornillo especial ${i + 1}" ValorUnitario="10.005000" Importe="10.005000"/>`
+  ).join("\n    ");
+
+  const xml30Conceptos = `<?xml version="1.0" encoding="utf-8"?>
+<cfdi:Comprobante Version="4.0" Folio="30CONC" Fecha="2026-10-25T12:00:00" SubTotal="300.15" Total="348.17" Moneda="MXN" TipoDeComprobante="I">
+  <cfdi:Emisor Rfc="PAC010203XYZ" Nombre="ACEROS CORDOBA"/>
+  <cfdi:Receptor Rfc="LEO120524ABC" Nombre="LEOLCA"/>
+  <cfdi:Conceptos>
+    ${conceptosXml}
+  </cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosTrasladados="48.02">
+    <cfdi:Traslados>
+      <cfdi:Traslado Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="48.02"/>
+    </cfdi:Traslados>
+  </cfdi:Impuestos>
+  <cfdi:Complemento><tfd:TimbreFiscalDigital UUID="30-CONCEPTOS-UUID-EXACTO"/></cfdi:Complemento>
+</cfdi:Comprobante>`;
+
+  const res = await importarCFDIsMotor(fake, ORG_A, [
+    {
+      nombre_archivo: "factura_30_conceptos.xml",
+      xml_contenido: xml30Conceptos,
+      proveedor_id: PROV_A,
+    },
+  ]);
+
+  assertEquals(res.total_solicitadas, 1);
+  assertEquals(res.importadas, 1);
+  assertEquals(res.detalles[0].ok, true);
+  assertEquals(res.detalles[0].uuid_fiscal, "30-CONCEPTOS-UUID-EXACTO");
+
+  // Verificar que el RPC recibió la llamada con los días de crédito del proveedor (15) y no 30 hardcodeados
+  assertEquals(fake.state.rpcCalls.length, 1);
+  assertEquals(fake.state.rpcCalls[0].params.p_dias_credito, 15);
+  assertEquals(fake.state.rpcCalls[0].params.p_importe, 348.17);
+
+  // Verificar que se incluyó una partida de ajuste por redondeo para que la suma neta sea exactamente 348.17
+  const partidas = fake.state.rpcCalls[0].params.p_partidas;
+  const partidaAjuste = partidas.find((p: any) => p.descripcion.includes("Ajuste por redondeo"));
+  assertEquals(Boolean(partidaAjuste), true);
+  assertEquals(partidaAjuste.tipo, "descuento");
+  assertEquals(partidaAjuste.importe, 0.15);
+});
+
+Deno.test("obtenerReporteFacturacion usa diasAtraso con fecha de corte y maneja signo real de la vista", async () => {
+  // En la vista real:
+  // - Factura vigente que vence en 31 días: dias_vencimiento = +31, estado_vencimiento = 'al_corriente'
+  // - Factura vencida hace 4 días: dias_vencimiento = -4, estado_vencimiento = 'vencida'
+  const fake = createFakeClient({
+    tipos_cambio: [
+      { organizacion_id: ORG_A, moneda: "USD", valor: 20.00, fecha: "2026-10-20" },
+    ],
+    v_facturas_proveedor_saldo: [
+      {
+        id: "f-vigente",
+        organizacion_id: ORG_A,
+        proveedor_id: PROV_A,
+        folio: "F-VIGENTE",
+        fecha_emision: "2026-10-01",
+        fecha_vencimiento: "2026-11-28", // +31 días respecto a 2026-10-28
+        dias_vencimiento: 31, // Signo real de la vista (positivo = faltan días)
+        estado_vencimiento: "al_corriente",
+        moneda: "MXN",
+        importe: 1000,
+        pagado: 0,
+        saldo: 1000,
+        estado: "abierta",
+        proveedor: { id: PROV_A, nombre: "PROV VIGENTE", rfc: "PVIG010101AAA" },
+      },
+      {
+        id: "f-vencida",
+        organizacion_id: ORG_A,
+        proveedor_id: PROV_A,
+        folio: "F-VENCIDA",
+        fecha_emision: "2026-09-24",
+        fecha_vencimiento: "2026-10-24", // -4 días respecto a 2026-10-28
+        dias_vencimiento: -4, // Signo real de la vista (negativo = vencida)
+        estado_vencimiento: "vencida",
+        moneda: "MXN",
+        importe: 2000,
+        pagado: 0,
+        saldo: 2000,
+        estado: "abierta",
+        proveedor: { id: PROV_A, nombre: "PROV VENCIDO", rfc: "PVEN020202BBB" },
+      },
+    ],
+  });
+
+  const reporte = await obtenerReporteFacturacion(fake, ORG_A, { corte: "2026-10-28" });
+
+  const fVig = reporte.items.find((it: any) => it.id === "f-vigente");
+  const fVen = reporte.items.find((it: any) => it.id === "f-vencida");
+
+  // Factura vigente: dias_atraso debe ser -31 (no atrasada), estado debe ser 'abierta' (NO 'vencida')
+  assertEquals(fVig.dias_atraso, -31);
+  assertEquals(fVig.estado, "abierta");
+
+  // Factura vencida: dias_atraso debe ser +4 (4 días de atraso), estado debe ser 'vencida'
+  assertEquals(fVen.dias_atraso, 4);
+  assertEquals(fVen.estado, "vencida");
+});
+
+Deno.test("obtenerReporteFacturacion excluye facturas canceladas de totales", async () => {
+  const fake = createFakeClient({
+    v_facturas_proveedor_saldo: [
+      {
+        id: "f-activa",
+        organizacion_id: ORG_A,
+        proveedor_id: PROV_A,
+        folio: "F-ACTIVA",
+        fecha_emision: "2026-10-01",
+        fecha_vencimiento: "2026-10-31",
+        moneda: "MXN",
+        importe: 1000,
+        pagado: 0,
+        saldo: 1000,
+        estado: "abierta",
+        proveedor: { id: PROV_A, nombre: "ACEROS CORDOBA", rfc: "PAC010203XYZ" },
+      },
+      {
+        id: "f-cancelada",
+        organizacion_id: ORG_A,
+        proveedor_id: PROV_A,
+        folio: "F-CANCELADA",
+        fecha_emision: "2026-10-02",
+        fecha_vencimiento: "2026-11-02",
+        moneda: "MXN",
+        importe: 777,
+        pagado: 0,
+        saldo: 777,
+        estado: "cancelada",
+        proveedor: { id: PROV_A, nombre: "ACEROS CORDOBA", rfc: "PAC010203XYZ" },
+      },
+    ],
+  });
+
+  // Reporte sin filtro ("todas")
+  const reporteTodas = await obtenerReporteFacturacion(fake, ORG_A, { corte: "2026-10-28" });
+  assertEquals(reporteTodas.items.length, 2);
+  // Los totales NO deben sumar los 777 de la cancelada
+  assertEquals(reporteTodas.totales_mxn.total, 1000);
+  assertEquals(reporteTodas.totales_mxn.saldo, 1000);
+
+  // Reporte con filtro "abierta"
+  const reporteAbierta = await obtenerReporteFacturacion(fake, ORG_A, { corte: "2026-10-28", estado: "abierta" });
+  assertEquals(reporteAbierta.items.length, 1);
+  assertEquals(reporteAbierta.items[0].id, "f-activa");
+});
+
+Deno.test("guardarFacturaConPartidasMotor maneja 409 para uq_folio y factura_cancelada, y 500 para errores internos", async () => {
+  // Test uq_facturas_proveedor_folio
+  const fakeFolioDup = {
+    rpc() {
+      return Promise.resolve({
+        data: null,
+        error: { message: 'duplicate key value violates unique constraint "uq_facturas_proveedor_folio"' },
+      });
+    },
+  };
+
+  await assertRejects(
+    async () => {
+      await guardarFacturaConPartidasMotor(fakeFolioDup, ORG_A, null, {
+        proveedor_id: PROV_A,
+        folio: "DUP-001",
+        fecha_emision: "2026-10-15",
+        moneda: "MXN",
+        importe: 100,
+        partidas: [{ tipo: "concepto", descripcion: "Item", cantidad: 1, precio_unitario: 100, importe: 100 }],
+      });
+    },
+    Error,
+    "Ya existe una factura con ese folio para este proveedor"
+  );
+
+  // Test factura_cancelada
+  const fakeCancelada = {
+    rpc() {
+      return Promise.resolve({
+        data: null,
+        error: { message: 'factura_cancelada: No se puede modificar una factura que ya ha sido cancelada' },
+      });
+    },
+  };
+
+  await assertRejects(
+    async () => {
+      await guardarFacturaConPartidasMotor(fakeCancelada, ORG_A, "fact-cancelada-id", {
+        proveedor_id: PROV_A,
+        folio: "CANC-001",
+        fecha_emision: "2026-10-15",
+        moneda: "MXN",
+        importe: 100,
+        partidas: [{ tipo: "concepto", descripcion: "Item", cantidad: 1, precio_unitario: 100, importe: 100 }],
+      });
+    },
+    Error,
+    "No se puede modificar una factura que ya ha sido cancelada"
+  );
+
+  // Test error no controlado -> 500 genérico sin filtrar texto interno
+  const fakeUnhandled = {
+    rpc() {
+      return Promise.resolve({
+        data: null,
+        error: { message: 'check constraint "factura_proveedor_partidas_cantidad_check" failed (raw postgres detail)' },
+      });
+    },
+  };
+
+  await assertRejects(
+    async () => {
+      await guardarFacturaConPartidasMotor(fakeUnhandled, ORG_A, null, {
+        proveedor_id: PROV_A,
+        folio: "UNH-001",
+        fecha_emision: "2026-10-15",
+        moneda: "MXN",
+        importe: 100,
+        partidas: [{ tipo: "concepto", descripcion: "Item", cantidad: 1, precio_unitario: 100, importe: 100 }],
+      });
+    },
+    Error,
+    "Error interno al guardar la factura con partidas"
+  );
+});
+
+Deno.test("previsualizarCFDIsMotor detecta inconsistencia en total y marca estado inconsistente", async () => {
+  const fake = createFakeClient();
+
+  const xmlInconsistente = `<?xml version="1.0" encoding="utf-8"?>
+<cfdi:Comprobante Version="3.3" Folio="999" Fecha="2026-10-25" SubTotal="100.00" Total="999.00" Moneda="MXN" TipoDeComprobante="I">
+  <cfdi:Emisor Rfc="PAC010203XYZ" Nombre="ACEROS CORDOBA" />
+  <cfdi:Receptor Rfc="LEO120524ABC" />
+  <cfdi:Conceptos><cfdi:Concepto Cantidad="1" Descripcion="Material" Importe="100.00" ValorUnitario="100.00"/></cfdi:Conceptos>
+  <cfdi:Complemento><tfd:TimbreFiscalDigital UUID="UUID-INCONSISTENTE-999"/></cfdi:Complemento>
+</cfdi:Comprobante>`;
+
+  const res = await previsualizarCFDIsMotor(fake, ORG_A, [
+    { nombre: "inconsistente.xml", contenido: xmlInconsistente },
+  ]);
+
+  assertEquals(res.total_archivos, 1);
+  assertEquals(res.validos_count, 0);
+  assertEquals(res.resultados[0].estado, "inconsistente");
+  assertEquals(res.resultados[0].motivo.includes("no coincide"), true);
+});
+
 

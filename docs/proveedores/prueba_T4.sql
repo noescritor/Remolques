@@ -239,6 +239,44 @@ BEGIN
     ASSERT v_vista_row.estado = 'abierta', 'El estado de la factura debe ser abierta';
     ASSERT v_vista_row.estado_vencimiento = 'al_corriente', 'El estado de vencimiento debe ser al_corriente';
 
+    -- 11. CASO 8: Rechazar modificación de factura cancelada
+    UPDATE facturas_proveedor SET estado = 'cancelada' WHERE id = v_factura_b;
+    v_error_disparado := false;
+    BEGIN
+        PERFORM guardar_factura_con_partidas(
+            v_org_b, v_factura_b, v_prov_b, 'FAC-B-001', 'SUCURSAL B',
+            CURRENT_DATE, 15, CURRENT_DATE + 15, 'MXN', 2320.00, 1.0,
+            'Intento de editar cancelada', 'BBBBBBBB-2222-3333-4444-555555555555',
+            2000.00, 0, 320.00, 0, '[]'::jsonb
+        );
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%factura_cancelada%' THEN
+            v_error_disparado := true;
+        END IF;
+    END;
+    ASSERT v_error_disparado = true, 'Debió rechazar modificación de factura cancelada';
+
+    -- 12. CASO 9: Tolerancia estricta de cuadratura a 0.01 (116.04 vs 116.00 debe fallar)
+    v_error_disparado := false;
+    BEGIN
+        PERFORM guardar_factura_con_partidas(
+            v_org_a, NULL, v_prov_a, 'FAC-TOL-001', 'MATRIZ',
+            CURRENT_DATE, 30, CURRENT_DATE + 30, 'MXN',
+            116.04, -- Diferencia de 0.04 contra 116.00 (debe fallar con tolerancia 0.01)
+            1.0, 'Factura fuera de tolerancia 0.01',
+            'UUID-TOL-001', 100.00, 0, 16.00, 0,
+            jsonb_build_array(
+                jsonb_build_object('tipo', 'concepto', 'descripcion', 'Item', 'cantidad', 1, 'precio_unitario', 100.00, 'importe', 100.00),
+                jsonb_build_object('tipo', 'impuesto_trasladado', 'descripcion', 'IVA', 'cantidad', 1, 'precio_unitario', 16.00, 'importe', 16.00)
+            )
+        );
+    EXCEPTION WHEN OTHERS THEN
+        IF SQLERRM LIKE '%importe_no_cuadra%' THEN
+            v_error_disparado := true;
+        END IF;
+    END;
+    ASSERT v_error_disparado = true, 'Debió rechazar diferencia de 0.04 con tolerancia de 0.01';
+
     RAISE NOTICE 'PRUEBA TRANSACCIONAL T4: EXITOSA (0 errores)';
 END $$;
 

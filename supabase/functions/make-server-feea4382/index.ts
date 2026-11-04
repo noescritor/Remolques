@@ -3605,6 +3605,10 @@ app.post("/cxp/facturas/:id/partidas", async (c) => {
     const id = c.req.param("id");
     const body = await c.req.json();
 
+    if (!body || !Array.isArray(body.partidas)) {
+      return c.json({ error: "El campo 'partidas' es requerido y debe ser un arreglo" }, 400);
+    }
+
     const resultado = await guardarFacturaConPartidasMotor(serviceClient, orgId, id, body);
     return c.json(resultado);
   } catch (err: any) {
@@ -3619,6 +3623,10 @@ app.put("/cxp/facturas/:id/partidas", async (c) => {
     const orgId = (c as any).get("organizacionId") as string;
     const id = c.req.param("id");
     const body = await c.req.json();
+
+    if (!body || !Array.isArray(body.partidas)) {
+      return c.json({ error: "El campo 'partidas' es requerido y debe ser un arreglo" }, 400);
+    }
 
     const resultado = await guardarFacturaConPartidasMotor(serviceClient, orgId, id, body);
     return c.json(resultado);
@@ -3672,7 +3680,7 @@ app.get("/cxp/reportes/facturacion", async (c) => {
       moneda: queryParams.moneda || undefined,
       estado: queryParams.estado || undefined,
       corte: queryParams.corte || undefined,
-      limite: queryParams.limite ? parseInt(queryParams.limite, 10) : 500,
+      limite: queryParams.limite ? Math.min(Math.max(1, parseInt(queryParams.limite, 10)), 1000) : 500,
     });
     return c.json(resultado);
   } catch (err: any) {

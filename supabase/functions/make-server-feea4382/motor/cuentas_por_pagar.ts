@@ -1484,7 +1484,7 @@ export async function guardarFacturaConPartidasMotor(
       }
     }
     sumaPartidas = redondearCentavos(sumaPartidas);
-    if (Math.abs(importe - sumaPartidas) > 0.05) {
+    if (Math.abs(importe - sumaPartidas) > 0.01) {
       const err: any = new Error(`El importe de la factura (${importe}) no coincide con la suma calculada de las partidas (${sumaPartidas})`);
       err.status = 400;
       throw err;
@@ -1531,6 +1531,11 @@ export async function guardarFacturaConPartidasMotor(
       err.status = 400;
       throw err;
     }
+    if (msg.includes("factura_cancelada")) {
+      const err: any = new Error("No se puede modificar una factura que ya ha sido cancelada");
+      err.status = 409;
+      throw err;
+    }
     if (msg.includes("no_se_puede_cambiar_moneda_con_pagos")) {
       const err: any = new Error("No se puede cambiar la moneda de una factura que ya tiene pagos registrados");
       err.status = 409;
@@ -1551,8 +1556,14 @@ export async function guardarFacturaConPartidasMotor(
       err.status = 409;
       throw err;
     }
-    const err: any = new Error(`Error al guardar factura: ${msg.split('\n')[0]}`);
-    err.status = 400;
+    if (msg.includes("uq_facturas_proveedor_folio") || (msg.includes("duplicate key") && msg.includes("folio"))) {
+      const err: any = new Error("Ya existe una factura con ese folio para este proveedor");
+      err.status = 409;
+      throw err;
+    }
+    console.error("Error no controlado al guardar factura con partidas:", error);
+    const err: any = new Error("Error interno al guardar la factura con partidas");
+    err.status = 500;
     throw err;
   }
 
@@ -1572,7 +1583,10 @@ export async function obtenerPartidasFactura(
     .order("orden", { ascending: true });
 
   if (error) {
-    throw new Error(`Error al obtener partidas de factura: ${error.message}`);
+    console.error("Error al obtener partidas de factura:", error);
+    const err: any = new Error("Error interno al obtener las partidas de la factura");
+    err.status = 500;
+    throw err;
   }
   return data || [];
 }
@@ -1695,10 +1709,26 @@ export async function previsualizarCFDIsMotor(
     const provExistente = provMapByRfc[rfcEmisor];
     const partidas = cfdiAPartidasFactura(parsed);
 
+    const tieneInconsistencia = parsed.advertencias && parsed.advertencias.some((adv: string) =>
+      adv.toLowerCase().includes("inconsistencia en total")
+    );
+
+    const estadoFinal = tieneInconsistencia
+      ? "inconsistente"
+      : provExistente
+      ? "valido"
+      : "proveedor_nuevo";
+
+    const motivoFinal = tieneInconsistencia
+      ? "El total declarado del CFDI no coincide con el cálculo de SubTotal e Impuestos"
+      : provExistente
+      ? "Listo para importar"
+      : "Proveedor no encontrado en catálogo; se creará al confirmar";
+
     resultados.push({
       nombre,
-      estado: provExistente ? "valido" : "proveedor_nuevo",
-      motivo: provExistente ? "Listo para importar" : "Proveedor no encontrado en catálogo; se creará al confirmar",
+      estado: estadoFinal,
+      motivo: motivoFinal,
       cfdi: parsed,
       proveedor_id: provExistente ? provExistente.id : null,
       proveedor_nombre: provExistente ? provExistente.nombre : parsed.emisor.nombre,
@@ -1823,6 +1853,16 @@ export async function importarCFDIsMotor(
         } else {
           throw new Error(`Proveedor con RFC ${cfdi.emisor.rfc} no existe y no se autorizó crearlo`);
         }
+      } else {
+        const { data: prov } = await serviceClient
+          .from("proveedores")
+          .select("dias_credito")
+          .eq("organizacion_id", orgId)
+          .eq("id", provId)
+          .limit(1);
+        if (prov && prov.length > 0 && prov[0].dias_credito !== undefined && prov[0].dias_credito !== null) {
+          diasCredito = Number(prov[0].dias_credito);
+        }
       }
 
       const fechaEmisionISO = (cfdi.fecha_emision || "").slice(0, 10);
@@ -1914,7 +1954,7 @@ export async function obtenerReporteFacturacion(
     limite?: number;
   }
 ) {
-  const limite = filtros.limite || 500;
+  const limite = Math.min(Math.max(1, Number(filtros.limite) || 500), 1000);
   const fechaCorte = filtros.corte && esFechaValida(filtros.corte) ? filtros.corte : hoyMexicoISO();
 
   // 1. Obtener tipo de cambio vigente a la fecha de corte
@@ -1946,7 +1986,8 @@ export async function obtenerReporteFacturacion(
       uuid_fiscal, subtotal, impuestos_trasladados, impuestos_retenidos,
       proveedor:proveedores(id, nombre, razon_social, rfc)
     `)
-    .eq("organizacion_id", orgId);
+    .eq("organizacion_id", orgId)
+    .order("fecha_emision", { ascending: false });
 
   if (filtros.proveedor_id && filtros.proveedor_id !== "todos") {
     q = q.eq("proveedor_id", filtros.proveedor_id);
@@ -1959,11 +2000,11 @@ export async function obtenerReporteFacturacion(
   // Filtrar estado a nivel base de datos antes de aplicar limit
   if (filtros.estado && filtros.estado !== "todas") {
     if (filtros.estado === "abierta") {
-      q = q.gt("saldo", 0);
+      q = q.gt("saldo", 0).neq("estado", "cancelada");
     } else if (filtros.estado === "pagada") {
-      q = q.lte("saldo", 0);
+      q = q.lte("saldo", 0).neq("estado", "cancelada");
     } else if (filtros.estado === "vencida") {
-      q = q.eq("estado_vencimiento", "vencida").gt("saldo", 0);
+      q = q.eq("estado_vencimiento", "vencida").gt("saldo", 0).neq("estado", "cancelada");
     } else if (filtros.estado === "cancelada") {
       q = q.eq("estado", "cancelada");
     }
@@ -1994,9 +2035,7 @@ export async function obtenerReporteFacturacion(
     const subtotal = Number(f.subtotal || importe);
     const impuestos_trasladados = Number(f.impuestos_trasladados || 0);
     const impuestos_retenidos = Number(f.impuestos_retenidos || 0);
-    const dias = f.dias_vencimiento !== undefined && f.dias_vencimiento !== null 
-      ? Number(f.dias_vencimiento) 
-      : diasAtraso(f.fecha_vencimiento, fechaCorte);
+    const dias = diasAtraso(f.fecha_vencimiento, fechaCorte);
 
     let estadoCalculado = f.estado;
     if (f.estado !== "cancelada") {
@@ -2033,9 +2072,13 @@ export async function obtenerReporteFacturacion(
     };
   });
 
-  // Totales por moneda
-  const mxnItems = items.filter((it: any) => it.moneda === "MXN");
-  const usdItems = items.filter((it: any) => it.moneda === "USD");
+  // Totales por moneda: excluir canceladas a menos que el filtro sea explícitamente cancelada
+  const itemsParaTotales = filtros.estado === "cancelada"
+    ? items
+    : items.filter((it: any) => it.estado !== "cancelada");
+
+  const mxnItems = itemsParaTotales.filter((it: any) => it.moneda === "MXN");
+  const usdItems = itemsParaTotales.filter((it: any) => it.moneda === "USD");
 
   const totalesMXN = {
     total: redondearCentavos(mxnItems.reduce((acc: number, it: any) => acc + it.importe, 0)),
@@ -2051,12 +2094,17 @@ export async function obtenerReporteFacturacion(
     cantidad: usdItems.length,
   };
 
-  const equivalentePesos = redondearCentavos(totalesMXN.total + (totalesUSD.total * tcUSD));
-  const saldoEquivalentePesos = redondearCentavos(totalesMXN.saldo + (totalesUSD.saldo * tcUSD));
+  const equivalentePesos = sinTipoCambio
+    ? (totalesUSD.total > 0 ? null : totalesMXN.total)
+    : redondearCentavos(totalesMXN.total + (totalesUSD.total * tcUSD));
+
+  const saldoEquivalentePesos = sinTipoCambio
+    ? (totalesUSD.saldo > 0 ? null : totalesMXN.saldo)
+    : redondearCentavos(totalesMXN.saldo + (totalesUSD.saldo * tcUSD));
 
   return {
     corte: fechaCorte,
-    tc_vigente: { valor: tcUSD, fecha: tcFecha, sin_tipo_cambio: sinTipoCambio },
+    tc_vigente: { valor: sinTipoCambio ? null : tcUSD, fecha: tcFecha, sin_tipo_cambio: sinTipoCambio },
     totales_mxn: totalesMXN,
     totales_usd: totalesUSD,
     equivalente_pesos: equivalentePesos,

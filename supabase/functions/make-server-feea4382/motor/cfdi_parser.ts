@@ -369,7 +369,7 @@ export function parsearCFDI(xmlStr: string, rfcOrganizacionEsperado?: string): C
 
   // Validación de consistencia en el total del comprobante
   const totalCalculado = Math.round((subtotal - descuento + impuestosTrasladados - impuestosRetenidos) * 100) / 100;
-  if (Math.abs(total - totalCalculado) > 0.05) {
+  if (Math.abs(total - totalCalculado) > 0.01) {
     advertencias.push(`Inconsistencia en total: Total declarado (${total}) difiere del cálculo subtotal (${subtotal}) - descuento (${descuento}) + traslados (${impuestosTrasladados}) - retenciones (${impuestosRetenidos}) = ${totalCalculado}`);
   }
 
@@ -499,6 +499,38 @@ export function cfdiAPartidasFactura(cfdi: CFDIParseado): Array<{
       precio_unitario: cfdi.impuestos_retenidos,
       importe: cfdi.impuestos_retenidos,
     });
+  }
+
+  // 4. Ajuste por redondeo si la suma neta de partidas difiere del Total del comprobante por decimales fraccionarios
+  let sumaPartidas = 0;
+  for (const p of partidas) {
+    if (p.tipo === 'descuento' || p.tipo === 'retencion') {
+      sumaPartidas -= p.importe;
+    } else {
+      sumaPartidas += p.importe;
+    }
+  }
+  sumaPartidas = Math.round(sumaPartidas * 100) / 100;
+  const diff = Math.round((cfdi.total - sumaPartidas) * 100) / 100;
+
+  if (diff !== 0 && Math.abs(diff) <= 0.50) {
+    if (diff > 0) {
+      partidas.push({
+        tipo: 'otro_cargo',
+        descripcion: 'Ajuste por redondeo de conceptos SAT',
+        cantidad: 1,
+        precio_unitario: diff,
+        importe: diff,
+      });
+    } else {
+      partidas.push({
+        tipo: 'descuento',
+        descripcion: 'Ajuste por redondeo de conceptos SAT',
+        cantidad: 1,
+        precio_unitario: Math.abs(diff),
+        importe: Math.abs(diff),
+      });
+    }
   }
 
   return partidas;

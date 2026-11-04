@@ -219,6 +219,11 @@ BEGIN
                 USING ERRCODE = 'P0002';
         END IF;
 
+        IF v_factura.estado = 'cancelada' THEN
+            RAISE EXCEPTION 'factura_cancelada: No se puede modificar una factura que ya ha sido cancelada'
+                USING ERRCODE = '23514';
+        END IF;
+
         -- Sumar pagos vigentes con aislamiento estricto de organización
         SELECT COALESCE(SUM(round(monto, 2)), 0)
         INTO v_total_pagado
@@ -267,7 +272,7 @@ BEGIN
             END IF;
         END LOOP;
 
-        IF abs(v_importe_redondeado - v_suma_partidas) > 0.05 THEN
+        IF abs(v_importe_redondeado - v_suma_partidas) > 0.01 THEN
             RAISE EXCEPTION 'importe_no_cuadra: El importe de la factura (%) no coincide con la suma neta de las partidas (%)',
                 v_importe_redondeado, v_suma_partidas
                 USING ERRCODE = '22000',

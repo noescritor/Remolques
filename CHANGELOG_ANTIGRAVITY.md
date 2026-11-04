@@ -3,6 +3,28 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-04 - Tarea T4 (Ronda 4): Corrección de signo en atraso con diasAtraso, exclusión de facturas canceladas, tolerancia 0.01 y ajuste SAT, mapeo 409/500 y ordenación
+**Herramienta:** Antigravity  
+**Tipo:** fix (cxp, reporte facturacion, atraso fecha corte, canceladas, cfdi redondeo sat, rpc tolerancia 0.01)  
+**Referencia auditoría:** `COORDINACION/REVISIONES/T4_REVISION_CLAUDE.md`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.ts`: reemplazo de `f.dias_vencimiento` por `diasAtraso(f.fecha_vencimiento, fechaCorte)` eliminando la inversión de signo que marcaba facturas vigentes como "vencidas"; exclusión de facturas canceladas en filtros ("abierta", "vencida", "pagada") y en los totales MXN/USD; eliminación del tipo de cambio fijo 20.0 cuando no hay registro oficial a la fecha de corte (estableciendo `equivalente_pesos` en null); ordenación por `fecha_emision` descendente y tope de `limite` a 1000; obtención de `dias_credito` del proveedor al importar lote con `proveedor_id`; manejo de error 409 para `uq_facturas_proveedor_folio` y `factura_cancelada`, y fallback a 500 interno genérico (con `console.error`) sin exponer texto interno de Postgres.
+- `supabase/functions/make-server-feea4382/motor/cfdi_parser.ts`: ajuste por redondeo fraccionario de SAT (partida automática `otro_cargo`/`descuento` cuando la suma de conceptos difiere del `Total` por decimales del SAT <= 0.50); reducción de tolerancia de consistencia de 0.05 a 0.01.
+- `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql`: RPC `guardar_factura_con_partidas` con rechazo de facturas canceladas (`factura_cancelada`) y tolerancia estricta de cuadratura ajustada de 0.05 a 0.01.
+- `supabase/functions/make-server-feea4382/index.ts`: requerimiento obligatorio de array en el campo `partidas` para `POST/PUT /cxp/facturas/:id/partidas` (responde 400 en lugar de eliminar todas las partidas) y tope de `limite` a 1000 en `/cxp/reportes/facturacion`.
+- `supabase/functions/make-server-feea4382/motor/partidas_cfdi.test.ts`: soporte para `.gt()` y `.neq()` en cliente mock; nuevas pruebas unitarias para 30 conceptos SAT con ajuste exacto a 348.17, cálculo de atraso con signo real de la vista, exclusión de canceladas de totales, detección de inconsistencia en total (previsualización), y mapeo de errores 409 y 500.
+- `docs/proveedores/prueba_T4.sql`: pruebas transaccionales agregadas para rechazar modificación de factura cancelada (`factura_cancelada`) y rechazar diferencia de 0.04 con tolerancia estricta de 0.01 (`importe_no_cuadra`).
+**Qué cambió y por qué:**  
+- **1. [ALTA] Corrección de signo en días de atraso:** La vista de Postgres reporta `dias_vencimiento = fecha_vencimiento - current_date` (positivo si faltan días para vencer). El motor usaba erróneamente este valor como si fuera atraso, provocando que facturas vigentes salieran como "+31 d vencidas" y las vencidas reales salieran como abiertas. Se corrigió para invocar consistentemente `diasAtraso(f.fecha_vencimiento, fechaCorte)` que calcula `fechaCorte - fecha_vencimiento` (negativo = por vencer / vigente, positivo = días de atraso).
+- **2. [MEDIA] Exclusión de facturas canceladas:** Se excluyeron las facturas con `estado = 'cancelada'` de los filtros de estado ("abierta", "vencida", "pagada") y del cálculo de totales activos MXN/USD en el reporte de facturación. En la base de datos, el RPC `guardar_factura_con_partidas` ahora rechaza cualquier intento de modificar una factura cancelada arrojando `factura_cancelada` (mapeada a HTTP 409).
+- **3. [MEDIA] Ocultamiento de errores internos de Postgres y mapeo 409:** Se mapeó `uq_facturas_proveedor_folio` a HTTP 409 ("Ya existe una factura con ese folio para este proveedor"). Cualquier otro error no controlado del RPC ahora responde HTTP 500 genérico con `console.error`, evitando exponer detalles internos de restricciones o tablas de la base de datos al usuario final.
+- **4. [MEDIA] Cuadratura CFDI con importes de más de 2 decimales y tolerancia 0.01:** Se redujo la tolerancia de cuadratura a 0.01 tanto en TypeScript como en SQL. Para comprobantes del SAT con hasta 6 decimales en conceptos (ej. 30 conceptos de 10.005000), `cfdiAPartidasFactura` genera automáticamente una partida de "Ajuste por redondeo de conceptos SAT" para garantizar que la suma neta de partidas coincida exactamente con el `Total` del CFDI.
+- **5. [BAJA] Tipo de cambio y parámetros de consulta:** Se eliminó el uso de 20.0 fijo cuando no hay tipo de cambio registrado a la fecha de corte, devolviendo `equivalente_pesos: null`. Se ordenó la consulta de facturación por `fecha_emision` descendente y se topó el parámetro `limite` a 1000.
+**Acciones manuales pendientes:**  
+- Correr `supabase/migrations/20261102_03_facturas_partidas_cfdi.sql` en Supabase SQL Editor.  
+- Ejecutar Rebuild del servicio `remolques-api` en EasyPanel.  
+- Ejecutar Rebuild del servicio `remolques-web` en EasyPanel.  
+
 ## 2026-11-02 - Tarea T4 (Ronda 2): Correcciones de seguridad RPC con FOR UPDATE, parser CFDI global, aislamiento multi-tenant y reporte de facturación
 **Herramienta:** Antigravity  
 **Tipo:** fix (cxp, rpc for update, multi-tenant isolation, cfdi parser, reportes facturacion)  
