@@ -13,8 +13,8 @@
 |---|---|---|---|---|---|
 | **T0** | Orden de la casa (`.gitignore`, SQL/prompts sueltos, `XML_FACTURAS/`) | `noche-t0-housekeeping` | `102b594` | **APROBADO por Claude** (`REVISIONES/T0_REVISION_CLAUDE.md`) | `REPORTES/T0_REPORTE_ANTY.md` |
 | **T1** | Catálogo completo de productos, paginación, "Sin costo cargado", visor cotizador | `noche-t1-catalogo` | `5c3bf4d` | **LISTO_PARA_REVISION (Ronda 2)** | `REPORTES/T1_REPORTE_ANTY_R2.md` |
-| **T2** | Despiece por 14 fases desde `UNION DE LISTADOS ACTULIZADO (1).xlsx` | `noche-t2-despiece` | `31b02c0` | **LISTO_PARA_REVISION (Ronda 3)** | `REPORTES/T2_REPORTE_ANTY_R3.md` |
-| **T3** | Checklist de entregas almacén → producción por OT, equipo y fase | `noche-t3-checklist` | `e86926c` | **LISTO_PARA_REVISION (Ronda 3)** | `REPORTES/T3_REPORTE_ANTY_R3.md` |
+| **T2** | Despiece por 14 fases desde `UNION DE LISTADOS ACTULIZADO (1).xlsx` | `noche-t2-despiece` | `ec25c46` | **LISTO_PARA_REVISION (Ronda 4)** | `REPORTES/T2_REPORTE_ANTY_R4.md` |
+| **T3** | Checklist de entregas almacén → producción por OT, equipo y fase | `noche-t3-checklist` | `e86926c` | **EN_PROCESO** | `REPORTES/T3_REPORTE_ANTY_R3.md` |
 | **T4** | Proveedores: partidas por factura, importador XML CFDI 3.3/4.0, reporte de facturación | `noche-t4-proveedores` | `48f028d` | **LISTO_PARA_REVISION (Ronda 2)** | `REPORTES/T4_REPORTE_ANTY_R2.md` |
 | **T5** | Normas: propuesta de integración de Carta Factura y NOMs 012, 035, 068 (documento) | `noche-t5-normas` | `45e6949` | **LISTO_PARA_REVISION (Ronda 2)** | `REPORTES/T5_REPORTE_ANTY_R2.md` |
 | **T6** | Editor de recetas creadas por usuario, clonación de modelos y auditoría | `noche-t6-editor-recetas` | `31dbd5f` | **LISTO_PARA_REVISION (Ronda 2)** | `REPORTES/T6_REPORTE_ANTY_R2.md` |
