@@ -3,6 +3,96 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+
+## 2026-11-03 - Sub-bloque T2 (Ronda 4): Resolución multitenant por nombre de producto en Bloque D (0 UUIDs), respeto de paso, cantidades reales y diff calculado
+**Herramienta:** Antigravity  
+**Tipo:** fix (resolucion nombre multitenant bloque d, eliminacion total uuids productos, paso intacto, cant real tabla 316, diff calculado s4, prueba multi-org b)  
+**Rama:** `noche-t2-despiece`  
+**Archivos tocados:**  
+- `supabase/migrations/20261102_01_despiece_union.sql` (Reescritura completa del Bloque D: resolución de productos por nombre exacto dentro de cada organización con `tipo_item = 'materia_prima'` y aborto vía `RAISE EXCEPTION` ante 0 o >1 coincidencias; cero UUIDs de productos; respeto de `receta_base.paso` dejándolo intacto y fijando únicamente `fase_id`; población multitenant idempotente).
+- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (Tabla de 316 filas con cantidades reales del Excel en 294 filas y '-' únicamente en las 22 que carecen de cantidad en el archivo fuente; correlación 1:1 estricta entre columna PROCESO y fase_clave con 0 discrepancias; asociaciones dudosas de pintura, pijas y piso movidas a Pendientes; diff recalculado estrictamente sin explicaciones inventadas en §4.1, corrección de costos en §4.2 y catálogo en §4.3).
+- `docs/despiece/verificacion_T2.sql` (Verificador SQL ajustado a los modelos sin depender de columnas inexistentes, validando `todo_ok = true`).
+- `docs/despiece/prueba_T2.sql` (Prueba transaccional que clona productos a Org B con `gen_random_uuid()`, ejecuta la lógica y verifica que tanto Org A como Org B tienen 202/202 líneas con fase y 0 líneas sin fase; prueba RLS con usuarios autenticados bajo SET LOCAL ROLE y aislamiento estricto, finalizando en ROLLBACK).
+- `docs/despiece/opcion_componentes_base.json`, `docs/despiece/productos_existentes_base.json`, `docs/despiece/receta_plataforma_40ft.json` (Insumos de catálogo versionados para reproducibilidad determinista del generador).
+- `scripts/generar_archivos_t2_ronda4.py` (Script generador determinista que produce la migración, verificador, prueba y análisis).
+**Qué cambió y por qué:**  
+- **1. Resolución por nombre sin UUIDs (Hallazgo 1 ALTA):** El bloque D ya no contiene ningún UUID literal de productos ni materiales. Cada material se resuelve dinámicamente por `nombre`, `organizacion_id` y `tipo_item = 'materia_prima'`, abortando si hay ambigüedad o ausencia. Probado con una segunda organización (Org B) con UUIDs aleatorios.
+- **2. Respeto de `receta_base.paso` (Hallazgo 2 MEDIA):** No se modifica `paso`; se deja intacto (NULL o texto previo) y únicamente se asigna `fase_id`.
+- **3. Cantidad real y fase = Proceso en Tabla §7 (Hallazgo 3 MEDIA):** Se vincularon las cantidades numéricas reales (`cantidad_raw`) del Excel (22 filas con '-' legítimo sin cantidad) y se alineó la fase con la columna PROCESO al 100% (0 contradicciones).
+- **4. Diff calculado sin suposiciones (Hallazgo 4 MEDIA):** Se corrigieron discrepancias reportadas (LIJA #80 10 vs 2, Atizadores 27 cm 8 vs 8, RONDANA 5/16 chasis 4 vs 4, precios unitarios de $50 y catálogo existente).
+- **5. Versionado de insumos del generador (Hallazgo 5 MEDIA):** Se añadieron los archivos JSON para garantizar que la migración pueda regenerarse byte a byte.
+**Acciones manuales pendientes:**
+- Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en producción.
+- Ejecutar `docs/despiece/verificacion_T2.sql` comprobando `todo_ok = true`.
+
+## 2026-11-02 - Sub-bloque T2 (Ronda 3): Resolución de hallazgos R3 de árbol BOM, 0 duplicados, pasos reales 1:1, RLS estricto SELECT, aislamiento de modelos
+**Herramienta:** Antigravity  
+**Tipo:** fix (arbol bom excel 1 a 1, eliminacion de casi duplicados, suspension sustitutos cant 0, rls solo select authenticated, aislamiento modelos plataforma)  
+**Rama:** `noche-t2-despiece`  
+**Archivos tocados:**  
+- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (análisis enriquecido con tabla exhaustiva de las 316 filas del Excel, diff considerando uso en §4.1, lista completa de las 25 piezas de BD que no están en el Excel en §4.3, diff de opciones de suspensión y patines en §4.4, sección pendientes de definir completa en §5 con anomalías de fosfato, ptr sin precio y fila 248, patines y ejes corregidos a Paso 6)
+- `docs/despiece/union_listados_raw.json` (limpieza de "Material Jairo" en fila 145)
+- `supabase/migrations/20261102_01_despiece_union.sql` (migración reescrita: políticas RLS estrictamente FOR SELECT TO authenticated, sin políticas FOR ALL ni de escritura para authenticated; población de 14 fases y 22 equivalencias; asignación 1:1 de las 61 piezas estructurales sin paso a sus pasos exactos en modelos plataforma; preservación íntegra de pasos legados como AIRE, LUZ, TERMINADO, LIMPIEZA; actualización de fase_id vía equivalencias; ajuste de sustitutos en suspensiones Hendrickson alta y Fleet Master a cantidad = 0 y rol = sustituto; cero duplicados insertados en productos)
+- `docs/despiece/verificacion_T2.sql` (verificador actualizado con conteos exactos por fase para PLATAFORMA 2 40 FT: P1=3, P2=5, P3=22, P4=22, P5=16, P6=28, P7=4, P9=47, P10=29, P12=16, Extras=10, Total=202; validación de 0 políticas non-SELECT, 0 recetas cruzadas, 0 líneas de Dolly/Góndola alteradas, 0 casi-duplicados, retornando todo_ok = true)
+- `docs/despiece/prueba_T2.sql` (prueba transaccional RLS multi-tenant real con 2 usuarios y 2 organizaciones bajo SET LOCAL ROLE authenticated y request.jwt.claim.sub, comprobando aislamiento de lectura y bloqueo de INSERT para authenticated)
+- `scripts/generar_archivos_t2_ronda3.py` (script generador determinista que produce los 4 artefactos sin dependencias flotantes)
+**Qué cambió y por qué:**  
+- **1. Árbol BOM 1:1 desde el Excel (Hallazgo 1 y 2):** Se mapearon con exactitud las 61 piezas estructurales de `receta_base` que tenían `paso IS NULL` a sus pasos exactos del Excel sin heurísticas `ILIKE` genéricas. En `PLATAFORMA 2 40 FT`, las 202 líneas quedan 100% asociadas a su fase oficial correspondiente.
+- **2. Preservación de pasos y usos originales (Hallazgo 3):** Se preservaron íntegramente los pasos y usos originales (como `AIRE`, `LUZ`, `TERMINADO`, `LIMPIEZA`, `EXTRAS`). La fase oficial se asocia mediante `fase_id` utilizando `fases_despiece_equivalencias`.
+- **3. Aislamiento de modelos (Hallazgo 4):** Se filtraron estrictamente las actualizaciones de `receta_base` por `modelos.tipo = 'plataforma'`, dejando Dolly (33 líneas) y Góndola (98 líneas) 100% intactas.
+- **4. Eliminación de casi-duplicados y productos huérfanos (Hallazgos 5 y 6):** Mediante coincidencia canónica, todas las materias primas del Excel reutilizan el producto existente en el catálogo, resultando en 0 duplicados y 0 productos huérfanos.
+- **5. Alternativas en suspensión (Hallazgo 2):** En `alta_hendrickson`, Monroe 65512 queda con `cantidad = 0, rol = 'sustituto'`. En `fleet_master`, amortiguadores FCR/Gabriel y cámaras AMPRO/FCR quedan con `cantidad = 0, rol = 'sustituto'`, resolviendo la duplicación de 3 amortiguadores y 3 cámaras por eje.
+- **6. Patines y ejes a Paso 6 (Hallazgo 7):** Se corrigió la asignación de patines y ejes a `paso_6` conforme a la clasificación del Excel oficial.
+- **7. RLS estricto y prueba multi-tenant real (Hallazgos 8 y 9):** Políticas exclusivamente `FOR SELECT` para `authenticated`, revocando permisos de escritura. La prueba transaccional `prueba_T2.sql` ejecuta bajo `SET LOCAL ROLE authenticated` y `SET LOCAL request.jwt.claim.sub` con dos usuarios de dos organizaciones, validando aislamiento y denegación de escritura.
+- **Acciones manuales pendientes:**
+  - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en EasyPanel/Supabase.
+  - Ejecutar `docs/despiece/verificacion_T2.sql` validando `todo_ok = true`.
+
+## 2026-11-02 - Sub-bloque T2 (Ronda 2): Correcciones de RLS, esquema real, carga de árbol, categorías y aislamiento
+**Herramienta:** Antigravity  
+**Tipo:** fix (despiece, rls get_current_org_id, esquema productos.notas, arbol bom, categorias, sin costo null, paso limpieza)  
+**Rama:** `noche-t2-despiece`  
+**Archivos tocados:**  
+- `scripts/generar_migracion_despiece.py` (corrección integral del generador: políticas RLS usando `get_current_org_id()`, `ADD COLUMN IF NOT EXISTS notas TEXT` a `productos`, asignación de `paso` y `fase_id` a las 680 líneas estructurales de `receta_base` que tenían paso nulo, mapeo de `paso = 'LIMPIEZA'` a `PASO 7`, actualización de `opcion_componentes` por bloque de configuración con estricto filtro de tenant `fe.organizacion_id = m.organizacion_id`, inferencia y creación de categorías en `categorias_producto`, `costo = NULL` y `precio_unitario = NULL` para productos sin precio, detección de duplicados normalizando operadores, signos y acentos).
+- `supabase/migrations/20261102_01_despiece_union.sql` (migración regenerada y probada 2 veces de forma idempotente contra PostgreSQL 17 local).
+- `docs/despiece/verificacion_T2.sql` (verificador actualizado con validación estricta de 0 cruces de tenant, 100% categorización de importados, 0 precios unitarios inventados, 100% de recetas con fase_id).
+- `docs/despiece/prueba_T2.sql` (prueba transaccional de 2 organizaciones simultáneas, validación de aislamiento RLS y conteos exactos).
+- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (análisis enriquecido con diff exacto contra `remolques`, discrepancias numéricas, conflictos de costo, lista de 22 pendientes de definir y diccionario completo de 27 normalizaciones).
+- `src/app/utils/fasesDespiece.ts` (agregado reconocimiento y mapeo de `LIMPIEZA` / `LAVADO` / `ESCOREO` a `paso_7`).
+- `src/app/utils/fasesDespiece.test.ts` (prueba unitaria añadida para `LIMPIEZA` -> `paso_7`).
+**Qué cambió y por qué:**  
+- **1. Corrección RLS y esquema real (Hallazgos 1 y 2):** Eliminada referencia a tabla inexistente `usuarios`; adoptado `get_current_org_id()`. Agregada columna `notas TEXT` a `productos` para almacenar trazabilidad `import-union-2026-11`.
+- **2. Carga de árbol de despiece y opciones (Hallazgo 3):** Poblados los `paso` y `fase_id` de los 680 componentes estructurales sin paso previo en `receta_base`, vinculados componentes de opciones (`suspension`, `patin`, `eje`, `retractil`, `pintura`, `piso`, `rines`, `llantas`, `multimodal`, `redilas`) con su respectiva fase.
+- **3. Aislamiento multi-inquilino (Hallazgo 4):** Resuelto el cruce de `fase_id` mediante joins explícitos `WHERE m.id = rb.modelo_id AND fe.organizacion_id = r_org.id AND m.organizacion_id = r_org.id`, garantizando 0 referencias cruzadas entre organizaciones.
+- **4. Precios y categorías (Hallazgos 5, 6 y 7):** Sin precio ahora almacena `costo = NULL` y `precio_unitario = NULL` (no 0). Se crearon 11 categorías estándar en `categorias_producto` y se asignó `categoria_id` a todos los productos importados. Se normalizaron nombres para reutilizar productos existentes idénticos salvo espacios/acentos.
+- **5. Mapeo de LIMPIEZA (Hallazgo 8):** Los registros con `paso = 'LIMPIEZA'` se mapean a `PASO 7` (Lavado y preparación) en base de datos y en `fasesDespiece.ts`.
+- **Acciones manuales pendientes:**
+  - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en producción.
+  - Ejecutar `docs/despiece/verificacion_T2.sql` comprobando `todo_ok = true`.
+
+## 2026-11-02 - Sub-bloque T2 (Noche): Despiece por fases desde UNION DE LISTADOS, catálogo oficial y equivalencias
+**Herramienta:** Antigravity  
+**Tipo:** feat (despiece, catalogo de fases, equivalencias legacy, materias primas, arbol bom, deduccion referencia)  
+**Rama:** `noche-t2-despiece`  
+**Archivos tocados:**  
+- `docs/despiece/ANALISIS_UNION_LISTADOS.md` (análisis exhaustivo de las 316 filas de `UNION DE LISTADOS ACTULIZADO (1).xlsx`, deducción de la unidad de referencia Plataforma 2 ejes 40 FT, árbol de 14 fases, bloques de opciones, normalización de typos y registro de anomalías)
+- `docs/despiece/union_listados_raw.json` (extracción estructurada en JSON de las 316 filas para reproducibilidad)
+- `scripts/analizar_union.py` (script de análisis de openpyxl y generación del reporte de despiece)
+- `scripts/generar_migracion_despiece.py` (script generador de la migración SQL, verificador y pruebas transaccionales)
+- `supabase/migrations/20261102_01_despiece_union.sql` (migración idempotente con creación de `fases_despiece`, `fases_despiece_equivalencias`, columnas `fase_id` en `receta_base` y `opcion_componentes`, población de 14 fases por organización, equivalencias de pasos legados, actualización de `fase_id` en registros existentes y alta de 257 materias primas con nota `import-union-2026-11`)
+- `docs/despiece/verificacion_T2.sql` (script de verificación de esquema y conteos con `todo_ok = true`)
+- `docs/despiece/prueba_T2.sql` (prueba transaccional BEGIN...ROLLBACK de integridad relacional, asignación de fase_id y JOIN)
+- `src/app/utils/fasesDespiece.ts` (utilidades puras: `normalizarClavePaso`, `resolverFaseDeLinea`, `agruparBOMPorFases`)
+- `src/app/utils/fasesDespiece.test.ts` (3 pruebas unitarias Deno de normalización, mapeo y agrupación por fases)
+**Qué cambió y por qué:**  
+- **1. Análisis y deducción de la unidad de referencia:** Se comprobó que el Excel corresponde a la **PLATAFORMA DE 2 EJES Y 40 PIES (PLATAFORMA 2 40 FT)** por la presencia de 38 cargadores IPR 4" x 102", 2 almas de viga, 4 soleras de almas para 40 ft, y kit de frenos ABS de 2 ejes (2 tanques, 4 cámaras).
+- **2. Catálogo oficial de fases (`fases_despiece`):** Se crearon 14 fases oficiales con el nombre y proceso del Excel (`Paso 1` a `Paso 6`, `PASO 7` a `PASO 12`, `EXTRAS` y `LLANTAS Y RINES`), con orden, subtítulos y aislamiento RLS multi-tenant.
+- **3. Tabla de equivalencias (`fases_despiece_equivalencias`):** Mapea pasos legados (`PASO 1..6`, `AIRE`, `LUZ`, `PINTURA`, `PISOS`, `TERMINADO`, `EXTRAS`, `RINES`, `LLANTAS`) a `fase_id` oficial, permitiendo actualizar registros existentes sin romper el campo `paso` legado.
+- **4. Vinculación relacional:** Se agregó columna `fase_id UUID REFERENCES fases_despiece(id)` tanto a `receta_base` como a `opcion_componentes`, y se retro-pobló automáticamente para todos los componentes existentes.
+- **5. Catálogo de productos:** Se dieron de alta 257 materias primas normalizadas con unidades inferidas (`PZA`, `L`, `M`, `KG`), conservando el texto original en la descripción y aplicando precios cuando estaban disponibles sin sobrescribir costos existentes.
+- **Acciones manuales pendientes:**
+  - Ejecutar `supabase/migrations/20261102_01_despiece_union.sql` en producción.
+
 ## 2026-11-02 - T0: Orden de la casa (Housekeeping nocturno)
 **Herramienta:** Antigravity  
 **Tipo:** chore (housekeeping, gitignore, versionado de prompts y migraciones previas)  
