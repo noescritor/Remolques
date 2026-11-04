@@ -3,6 +3,27 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-04 - Integración de tareas aprobadas (T0, T1, T2, T3, T4, T5, T6)
+**Herramienta:** Antigravity  
+**Tipo:** merge / integration (housekeeping, catalogo productos paginado, despiece union, checklist entregas, facturas partidas cfdi, editor recetas, normas propuesta)  
+**Rama:** `integracion-2026-11-04`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/index.ts`: integración de rutas de todas las tareas (Checklist Almacén, Editor de Recetas, CxP Partidas y CFDI, Catálogo Cotizador) y unificación de `GET /productos` para satisfacer concurrentemente la paginación de T1 y el filtrado por tipo/límite/sanitización de T6.
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.ts`: exportación de `sanitizarBusquedaPostgrest` que previene errores PostgREST 500 al buscar cadenas con comas o paréntesis como `PTR (2x2)` o `SOLERA, 1/4`, soporte de `tipo`/`tipo_item`, recorte con `limit` cuando no se solicita paginación explícita (T6), y paginación en lotes de 1000 cuando no hay paginado ni límite (T1).
+- `supabase/functions/make-server-feea4382/motor/catalogo_productos.test.ts`: 5 pruebas unitarias Deno agregadas para validar sanitización de búsqueda, filtrado por tipo de ítem, equivalencia del alias `busqueda`, recuperación de >1000 productos sin truncado y respeto del parámetro `limit = 5`.
+- `CHANGELOG_ANTIGRAVITY.md`: consolidación cronológica ordenada de todas las bitácoras de las 7 tareas sin duplicados ni omisiones.
+- `docs/propuestas/NORMAS_PROPUESTA.md`: integración documental de T5 vía squash merge, garantizando 0 exposición de clientes, NIVs ni RFCs reales.
+- Migraciones probadas en conjunto: `20261031_01_concha_110_redilas_85.sql` (T0), `20261102_01_despiece_union.sql` (T2), `20261102_02_checklist_almacen.sql` (T3), `20261102_03_facturas_partidas_cfdi.sql` (T4), `20261102_04_editor_recetas.sql` (T6).
+**Qué cambió y por qué:**  
+- **1. Rama de integración única:** Se ensamblaron en orden estricto los commits aprobados de la Ronda 4 sobre `main` (`ccff3d5`): T0 (`102b594`), T2 (`ec25c46`), T3 (`c917ac7`), T6 (`d211e99`), T4 (`44e9813`), T1 (`e77a2af`) y T5 (`0065bc6` squash). Se descartó la carpeta `COORDINACION/` en cada paso para mantener la rama limpia.
+- **2. Unificación de `GET /productos`:** Se resolvió el conflicto de comportamiento entre T1 y T6 delegando toda la lógica al motor `catalogo_productos.ts`. La ruta atiende `q` y `busqueda`, `tipo` y `tipo_item`, `categoria`, `sin_costo`, `paginado`, `page` y `limit`. En modo sin paginado con `limit`, devuelve el arreglo recortado (requerido por el editor de recetas de T6). En modo sin paginado ni límite, recupera todos los registros sin tope de 1000 (requerido por el frontend global).
+- **3. Validación de migraciones en conjunto:** Se ejecutaron las 5 migraciones en base desechable Postgres 17 local con `ON_ERROR_STOP=1`, seguido de una segunda pasada que confirmó 100% de idempotencia con conteos exactos idénticos (`receta_base`: 2090, `opcion_componentes`: 181, `productos`: 512, `modelos`: 13). Se corrieron todos los verificadores y pruebas transaccionales (`verificacion_T2.sql`, `prueba_T2.sql`, `verificacion_T3.sql`, `prueba_T3.sql`, `verificacion_T4.sql`, `prueba_T4.sql`, `verificacion_T6.sql`, `prueba_T6.sql`), todos arrojando `todo_ok = true` y 0 errores. Se validó adicionalmente un orden alterno de migraciones sin fallos.
+- **4. Suite de verificación global (11/11 OK):** La verificación `npm run verificar -- --limpio` pasó al 100%, con 252 pruebas Deno exitosas (0 fallos), 44 errores de TypeScript (por debajo del baseline de 55), build de Vite exitoso, y arranque del servidor confirmado en HEAD limpio.
+**Acciones manuales pendientes:**  
+- Revisión de la rama de integración por Claude Code.  
+- Aprobación y merge a `main` por parte de Luis.  
+- Ejecución secuencial de las 5 migraciones en Supabase SQL Editor de producción y Rebuild en EasyPanel.
+
 ## 2026-11-04 - Tarea T4 (Ronda 4): Corrección de signo en atraso con diasAtraso, exclusión de facturas canceladas, tolerancia 0.01 y ajuste SAT, mapeo 409/500 y ordenación
 **Herramienta:** Antigravity  
 **Tipo:** fix (cxp, reporte facturacion, atraso fecha corte, canceladas, cfdi redondeo sat, rpc tolerancia 0.01)  
