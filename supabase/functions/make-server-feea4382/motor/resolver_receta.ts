@@ -1,5 +1,10 @@
 import type { DatosModelo, Configuracion, Resultado, LineaResultado } from "./tipos.ts";
 import { validarCompatibilidad, fusionarFilasConfig, normalizarClaveOpcion } from "./reglas_compatibilidad.ts";
+import {
+  calcularCantidadEscalada,
+  resolverVolumenGondola,
+  VOLUMEN_BASE_GONDOLA_M3
+} from "./escalas.ts";
 
 export function resolverReceta(datos: DatosModelo, configuracion: Configuracion): Resultado {
   const lineasMap = new Map<string, LineaResultado>();
@@ -10,6 +15,14 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
   const sin_precio: string[] = [];
   let costo_parcial = 0;
   let completo = true;
+
+  const volumenM3 = datos.modelo.tipo === "gondola"
+    ? resolverVolumenGondola(configuracion, datos.opciones)
+    : VOLUMEN_BASE_GONDOLA_M3;
+
+  if (datos.modelo.tipo === "gondola" && volumenM3 === 30) {
+    advertencias.push("Costo de 30 m³ estimado por proporción sobre 45 m³; pendiente despiece real");
+  }
 
   const tieneAcero = (datos.receta_base || []).some(rb => rb.seccion === 'acero');
   const secciones_pendientes: string[] = tieneAcero ? [] : ["acero"];
@@ -92,12 +105,11 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
 
   // Resolve scale
   const calcularCantidad = (cantidadBase: number, escala: string): number => {
-    if (escala === 'por_eje') {
-      return cantidadBase * datos.modelo.num_ejes;
-    } else if (escala === 'por_largo') {
-      return cantidadBase * (datos.modelo.largo_ft / 40.0);
-    }
-    return cantidadBase; // fija
+    return calcularCantidadEscalada(cantidadBase, escala, {
+      num_ejes: datos.modelo.num_ejes,
+      largo_ft: datos.modelo.largo_ft,
+      volumen_m3: volumenM3
+    });
   };
 
   // 1. Process base recipe

@@ -4,6 +4,8 @@
  * con trazabilidad en costos_historial y verificación de permisos.
  */
 
+import { calcularCantidadEscalada, VOLUMEN_BASE_GONDOLA_M3 } from "./escalas.ts";
+
 export interface ResumenOpcionItem {
   opcion_id: string;
   grupo_id: string;
@@ -236,8 +238,8 @@ export async function guardarOpcionCosto(
   if (!["plataforma", "dolly", "gondola"].includes(body.tipo_modelo)) {
     throw new Error("tipo_modelo inválido (plataforma, dolly, gondola)");
   }
-  if (!["fija", "por_eje", "por_largo"].includes(body.escala)) {
-    throw new Error("escala inválida (fija, por_eje, por_largo)");
+  if (!["fija", "por_eje", "por_largo", "por_volumen"].includes(body.escala)) {
+    throw new Error("escala inválida (fija, por_eje, por_largo, por_volumen)");
   }
   if (typeof body.cantidad_base !== "number" || !Number.isFinite(body.cantidad_base) || body.cantidad_base <= 0) {
     throw new Error("cantidad_base debe ser un número finito mayor a 0");
@@ -421,8 +423,12 @@ export async function obtenerCostosModeloYProcesos(
 
   let totalKits = 0;
   for (const kit of kits || []) {
-    const factor = kit.escala === "por_eje" ? numEjes : kit.escala === "por_largo" ? largoFt / 40 : 1;
-    totalKits += Number(kit.cantidad) * Number(kit.costo_unitario) * factor;
+    const qty = calcularCantidadEscalada(Number(kit.cantidad), kit.escala, {
+      num_ejes: numEjes,
+      largo_ft: largoFt,
+      volumen_m3: VOLUMEN_BASE_GONDOLA_M3
+    });
+    totalKits += qty * Number(kit.costo_unitario);
   }
 
   let totalManoObra = 0;

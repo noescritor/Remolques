@@ -8,15 +8,11 @@ import type {
   PendienteCosteo
 } from "./tipos.ts";
 import { fusionarFilasConfig, normalizarClaveOpcion } from "./reglas_compatibilidad.ts";
-
-function calcularCantidad(cantidadBase: number, escala: string, modelo: Modelo): number {
-  if (escala === "por_eje") {
-    return cantidadBase * modelo.num_ejes;
-  } else if (escala === "por_largo") {
-    return cantidadBase * (modelo.largo_ft / 40.0);
-  }
-  return cantidadBase; // fija
-}
+import {
+  calcularCantidadEscalada,
+  resolverVolumenGondola,
+  VOLUMEN_BASE_GONDOLA_M3
+} from "./escalas.ts";
 
 export function validarAjustes(ajustes: any): { valido: boolean; error?: string } {
   if (ajustes === undefined || ajustes === null) {
@@ -52,6 +48,9 @@ export function costear(
 ): ResultadoCosteo {
   const pendientes: PendienteCosteo[] = [];
   const modelo = datos.modelo;
+  const volumenM3 = modelo.tipo === "gondola"
+    ? resolverVolumenGondola(configuracion)
+    : VOLUMEN_BASE_GONDOLA_M3;
 
   // 1. Validar si el modelo tiene costos cargados
   const tieneAcero = (datos.receta_acero || []).length > 0;
@@ -90,6 +89,13 @@ export function costear(
       tipo: "iva_gondola",
       detalle: "El IVA de la góndola está por confirmar con el dueño: en el Excel es 16% solo sobre chasis + tina; el precio sugerido no lo incluye"
     });
+
+    if (volumenM3 === 30) {
+      pendientes.push({
+        tipo: "variante_supuesta",
+        detalle: "Costo de 30 m³ estimado por proporción sobre 45 m³; pendiente despiece real"
+      });
+    }
   }
 
   // 2. Acero
@@ -97,7 +103,11 @@ export function costear(
   let sumAcero = 0;
 
   for (const item of datos.receta_acero || []) {
-    const qty = calcularCantidad(item.cantidad, item.escala, modelo);
+    const qty = calcularCantidadEscalada(item.cantidad, item.escala, {
+      num_ejes: modelo.num_ejes,
+      largo_ft: modelo.largo_ft,
+      volumen_m3: volumenM3
+    });
     const sinPrecio =
       item.costo === null ||
       item.costo === undefined ||
@@ -132,7 +142,11 @@ export function costear(
   let sumKits = 0;
 
   for (const kit of datos.costos_modelo || []) {
-    const qty = calcularCantidad(kit.cantidad, kit.escala, modelo);
+    const qty = calcularCantidadEscalada(kit.cantidad, kit.escala, {
+      num_ejes: modelo.num_ejes,
+      largo_ft: modelo.largo_ft,
+      volumen_m3: volumenM3
+    });
     const cu = kit.costo_unitario;
     const imp = qty * cu;
     sumKits += imp;
@@ -191,16 +205,14 @@ export function costear(
         if (confCant !== undefined && confCant !== null && !isNaN(confCant)) {
           qty = confCant;
         } else {
-          const factor =
-            optCosto.escala === "por_eje"
-              ? modelo.num_ejes
-              : optCosto.escala === "por_largo"
-              ? modelo.largo_ft / 40.0
-              : 1;
           const cantBase = (optCosto.cantidad_base !== undefined && optCosto.cantidad_base !== null)
             ? optCosto.cantidad_base
             : 1;
-          qty = cantBase * factor;
+          qty = calcularCantidadEscalada(cantBase, optCosto.escala, {
+            num_ejes: modelo.num_ejes,
+            largo_ft: modelo.largo_ft,
+            volumen_m3: volumenM3
+          });
         }
 
         let cu = optCosto.costo_unitario;
