@@ -2,6 +2,7 @@ import { Cotizacion, Cliente, Producto, Ajustes } from '../../types';
 import { formatearMoneda, formatearFecha, calcularTotalesCotizacion } from '../../utils/calculations';
 import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 import { decidirLogoEncabezado } from '../../utils/logo';
+import { nombreItemCotizacion } from '../../utils/nombreItemCotizacion';
 import svgPaths from "../../imports/svg-pqfvhu2ekl";
 
 // ─── Font size tokens (Sub-bloque 2R-12) ───────────────────────────────────────
@@ -192,7 +193,7 @@ function ServicesTable({ cotizacion, productos }: { cotizacion: Cotizacion; prod
                 {/* Description */}
                 <div className="col-span-6">
                   <h4 className="text-2xl font-medium text-gray-900 mb-2">
-                    {producto?.nombre || item.descripcion}
+                    {nombreItemCotizacion(producto, item)}
                   </h4>
                   {item.descripcion && item.descripcion !== producto?.nombre && (
                     <p className="text-lg text-gray-600 mb-4 leading-relaxed">
