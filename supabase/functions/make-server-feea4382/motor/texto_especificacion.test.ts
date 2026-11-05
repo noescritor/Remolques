@@ -89,11 +89,16 @@ Deno.test("Generar texto de encabezado para Dolly y Góndola", () => {
   assertEquals(resDolly.texto.startsWith("SEMIREMOLQUE TIPO: DOLLY 2 EJES"), true);
   assertEquals(resDolly.resumen_lineas[0].valor, "DOLLY 2 EJES");
 
-  // Góndola 3 ejes
+  // Góndola 3 ejes (por defecto 45 M3)
   const modGondola = { id: "mod-gondola", tipo: "gondola", largo_ft: 30, num_ejes: 3, nombre: "GONDOLA 3 EJES" };
   const resGondola = generarEspecificacion(modGondola as any, { grupos: {} }, grupos, opciones);
-  assertEquals(resGondola.texto.startsWith("SEMIREMOLQUE TIPO: GONDOLA 3 EJES"), true);
-  assertEquals(resGondola.resumen_lineas[0].valor, "GONDOLA 3 EJES");
+  assertEquals(resGondola.texto.startsWith("SEMIREMOLQUE TIPO: GONDOLA 3 EJES 45 M3"), true);
+  assertEquals(resGondola.resumen_lineas[0].valor, "GONDOLA 3 EJES 45 M3");
+
+  // Góndola 3 ejes (volumen 30 M3)
+  const resGondola30 = generarEspecificacion(modGondola as any, { grupos: { volumen: "m3_30" } }, grupos, opciones);
+  assertEquals(resGondola30.texto.startsWith("SEMIREMOLQUE TIPO: GONDOLA 3 EJES 30 M3"), true);
+  assertEquals(resGondola30.resumen_lineas[0].valor, "GONDOLA 3 EJES 30 M3");
 
   // Tipo desconocido en mayúsculas
   const modOtro = { id: "mod-otro", tipo: "traila", largo_ft: null, num_ejes: 2, nombre: "TRAILA" };

@@ -141,7 +141,16 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
               sugeridos['patin'] = 'hj';
             }
             initialConfig.grupos = sugeridos;
+          } else if (data.modelo.tipo === 'gondola') {
+            const sugeridos: Record<string, string> = initialConfig.grupos || {};
+            if (!sugeridos['volumen']) {
+              sugeridos['volumen'] = 'm3_45';
+            }
+            initialConfig.grupos = sugeridos;
           }
+        }
+        if (data.modelo.tipo === 'gondola' && !initialConfig.grupos?.volumen) {
+          initialConfig.grupos = { ...initialConfig.grupos, volumen: 'm3_45' };
         }
         
         setConfiguracion(initialConfig);
@@ -510,7 +519,19 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle>Configurar Equipo</DialogTitle>
           <DialogDescription>
-            {producto?.nombre} - {datosModelo?.modelo?.tipo} {datosModelo?.modelo?.largo_ft ? `${datosModelo.modelo.largo_ft}FT ` : ''}{datosModelo?.modelo?.num_ejes} EJES
+            {(() => {
+              const tipo = (datosModelo?.modelo?.tipo || '').toLowerCase();
+              if (tipo === 'gondola') {
+                const v = configuracion.grupos?.volumen;
+                let vol = 45;
+                if (v) {
+                  const s = typeof v === 'object' && v !== null ? (v.opcion || v.clave || v.valor || '') : String(v);
+                  if (s.includes('30')) vol = 30;
+                }
+                return `GONDOLA ${datosModelo?.modelo?.num_ejes || 2} EJES ${vol} M3`;
+              }
+              return `${producto?.nombre} - ${datosModelo?.modelo?.tipo} ${datosModelo?.modelo?.largo_ft ? `${datosModelo.modelo.largo_ft}FT ` : ''}{datosModelo?.modelo?.num_ejes} EJES`;
+            })()}
           </DialogDescription>
         </DialogHeader>
 
