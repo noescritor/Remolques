@@ -27,170 +27,176 @@ ALTER TABLE public.opcion_costos DROP CONSTRAINT IF EXISTS opcion_costos_escala_
 ALTER TABLE public.opcion_costos ADD CONSTRAINT opcion_costos_escala_check
     CHECK (escala IN ('fija', 'por_eje', 'por_largo', 'por_volumen'));
 
--- 2. Actualización de guardar_linea_receta si la función existe
-DO $$
+-- 2. Actualización de guardar_linea_receta (incluye por_volumen, preservando FOR UPDATE OF rb y formato T6)
+CREATE OR REPLACE FUNCTION public.guardar_linea_receta(
+    p_modelo_id UUID,
+    p_material_id TEXT,
+    p_cantidad NUMERIC,
+    p_escala TEXT,
+    p_fase_id UUID,
+    p_organizacion_id UUID,
+    p_paso TEXT DEFAULT NULL,
+    p_uso TEXT DEFAULT NULL,
+    p_seccion TEXT DEFAULT 'ensamble',
+    p_linea_id UUID DEFAULT NULL,
+    p_usuario_id UUID DEFAULT NULL,
+    p_motivo TEXT DEFAULT NULL
+)
+RETURNS UUID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_org_id UUID;
+    v_res_linea_id UUID;
+    v_ant_data JSONB := NULL;
+    v_accion TEXT;
+    v_cant_redondeada NUMERIC;
 BEGIN
-    IF EXISTS (
-        SELECT 1 FROM pg_proc p
-        JOIN pg_namespace n ON p.pronamespace = n.oid
-        WHERE n.nspname = 'public' AND p.proname = 'guardar_linea_receta'
-    ) THEN
-        CREATE OR REPLACE FUNCTION public.guardar_linea_receta(
-            p_modelo_id UUID,
-            p_material_id TEXT,
-            p_cantidad NUMERIC,
-            p_escala TEXT,
-            p_fase_id UUID,
-            p_organizacion_id UUID,
-            p_paso TEXT DEFAULT NULL,
-            p_uso TEXT DEFAULT NULL,
-            p_seccion TEXT DEFAULT 'ensamble',
-            p_linea_id UUID DEFAULT NULL,
-            p_usuario_id UUID DEFAULT NULL,
-            p_motivo TEXT DEFAULT NULL
-        )
-        RETURNS UUID
-        LANGUAGE plpgsql
-        SECURITY DEFINER
-        SET search_path = public
-        AS $func$
-        DECLARE
-            v_org_id UUID;
-            v_res_linea_id UUID;
-            v_ant_data JSONB := NULL;
-            v_accion TEXT;
-            v_cant_redondeada NUMERIC;
-        BEGIN
-            -- Validar modelo y organización
-            SELECT organizacion_id INTO v_org_id 
-            FROM public.modelos 
-            WHERE id = p_modelo_id AND organizacion_id = p_organizacion_id;
+    -- Validar modelo y organización
+    SELECT organizacion_id INTO v_org_id 
+    FROM public.modelos 
+    WHERE id = p_modelo_id AND organizacion_id = p_organizacion_id;
 
-            IF v_org_id IS NULL THEN
-                RAISE EXCEPTION 'modelo_no_encontrado: El modelo especificado no existe o pertenece a otra organización';
-            END IF;
-
-            -- Validar que el material exista en la misma organización y sea de tipo materia_prima
-            IF NOT EXISTS (
-                SELECT 1 FROM public.productos 
-                WHERE id = p_material_id 
-                  AND organizacion_id = p_organizacion_id
-                  AND tipo_item = 'materia_prima'
-            ) THEN
-                RAISE EXCEPTION 'material_no_encontrado: La materia prima % no existe en la organización o no es de tipo materia_prima', p_material_id;
-            END IF;
-
-            -- Validar escala (ahora incluye por_volumen)
-            IF p_escala IS NULL OR p_escala NOT IN ('fija', 'por_eje', 'por_largo', 'por_volumen') THEN
-                RAISE EXCEPTION 'escala_invalida: La escala debe ser fija, por_eje, por_largo o por_volumen';
-            END IF;
-
-            -- Validar cantidad
-            IF p_cantidad IS NULL OR p_cantidad = 'NaN'::numeric THEN
-                RAISE EXCEPTION 'cantidad_invalida: La cantidad no puede ser nula ni NaN';
-            END IF;
-
-            v_cant_redondeada := round(p_cantidad, 4);
-
-            IF v_cant_redondeada <= 0 THEN
-                RAISE EXCEPTION 'cantidad_invalida: La cantidad redondeada debe ser mayor a cero';
-            END IF;
-
-            -- Validar fase si se especifica
-            IF p_fase_id IS NOT NULL AND NOT EXISTS (
-                SELECT 1 FROM public.fases_despiece WHERE id = p_fase_id AND organizacion_id = p_organizacion_id
-            ) THEN
-                RAISE EXCEPTION 'fase_no_encontrada: La fase especificada no existe en la organización';
-            END IF;
-
-            IF p_linea_id IS NULL THEN
-                -- Inserción
-                v_accion := 'crear_linea';
-                INSERT INTO public.receta_base (
-                    modelo_id,
-                    material_id,
-                    cantidad,
-                    escala,
-                    paso,
-                    uso,
-                    seccion,
-                    fase_id
-                ) VALUES (
-                    p_modelo_id,
-                    p_material_id,
-                    v_cant_redondeada,
-                    p_escala,
-                    p_paso,
-                    p_uso,
-                    COALESCE(p_seccion, 'ensamble'),
-                    p_fase_id
-                ) RETURNING id INTO v_res_linea_id;
-            ELSE
-                -- Modificación
-                v_accion := 'modificar_linea';
-
-                SELECT to_jsonb(rb.*) INTO v_ant_data
-                FROM public.receta_base rb
-                JOIN public.modelos m ON rb.modelo_id = m.id
-                WHERE rb.id = p_linea_id 
-                  AND rb.modelo_id = p_modelo_id 
-                  AND m.organizacion_id = p_organizacion_id;
-
-                IF v_ant_data IS NULL THEN
-                    RAISE EXCEPTION 'linea_no_encontrada: La línea especificada no existe en la organización';
-                END IF;
-
-                UPDATE public.receta_base
-                SET material_id = p_material_id,
-                    cantidad = v_cant_redondeada,
-                    escala = p_escala,
-                    paso = p_paso,
-                    uso = p_uso,
-                    seccion = COALESCE(p_seccion, 'ensamble'),
-                    fase_id = p_fase_id,
-                    updated_at = NOW()
-                WHERE id = p_linea_id
-                RETURNING id INTO v_res_linea_id;
-            END IF;
-
-            -- Registrar historial
-            INSERT INTO public.receta_base_historial (
-                modelo_id,
-                organizacion_id,
-                linea_id,
-                accion,
-                material_id,
-                fase_id,
-                datos_anteriores,
-                datos_nuevos,
-                usuario_id,
-                motivo
-            ) VALUES (
-                p_modelo_id,
-                p_organizacion_id,
-                v_res_linea_id,
-                v_accion,
-                p_material_id,
-                p_fase_id,
-                v_ant_data,
-                jsonb_build_object(
-                    'material_id', p_material_id,
-                    'cantidad', v_cant_redondeada,
-                    'escala', p_escala,
-                    'paso', p_paso,
-                    'uso', p_uso,
-                    'seccion', COALESCE(p_seccion, 'ensamble'),
-                    'fase_id', p_fase_id
-                ),
-                p_usuario_id,
-                p_motivo
-            );
-
-            RETURN v_res_linea_id;
-        END;
-        $func$;
+    IF v_org_id IS NULL THEN
+        RAISE EXCEPTION 'modelo_no_encontrado: El modelo especificado no existe o pertenece a otra organización';
     END IF;
-END $$;
+
+    -- Validar que el material exista en la misma organización y sea de tipo materia_prima
+    IF NOT EXISTS (
+        SELECT 1 FROM public.productos 
+        WHERE id = p_material_id 
+          AND organizacion_id = p_organizacion_id
+          AND tipo_item = 'materia_prima'
+    ) THEN
+        RAISE EXCEPTION 'material_no_encontrado: La materia prima % no existe en la organización o no es de tipo materia_prima', p_material_id;
+    END IF;
+
+    -- Validar escala (ahora incluye por_volumen)
+    IF p_escala IS NULL OR p_escala NOT IN ('fija', 'por_eje', 'por_largo', 'por_volumen') THEN
+        RAISE EXCEPTION 'escala_invalida: La escala debe ser fija, por_eje, por_largo o por_volumen';
+    END IF;
+
+    -- Validar cantidad
+    IF p_cantidad IS NULL OR p_cantidad = 'NaN'::numeric THEN
+        RAISE EXCEPTION 'cantidad_invalida: La cantidad no puede ser nula ni NaN';
+    END IF;
+
+    v_cant_redondeada := round(p_cantidad, 4);
+
+    IF v_cant_redondeada <= 0 THEN
+        RAISE EXCEPTION 'cantidad_invalida: La cantidad redondeada debe ser mayor a cero';
+    END IF;
+
+    -- Validar fase si se especifica
+    IF p_fase_id IS NOT NULL AND NOT EXISTS (
+        SELECT 1 FROM public.fases_despiece WHERE id = p_fase_id AND organizacion_id = p_organizacion_id
+    ) THEN
+        RAISE EXCEPTION 'fase_no_encontrada: La fase especificada no existe en la organización';
+    END IF;
+
+    IF p_linea_id IS NULL THEN
+        -- Inserción
+        v_accion := 'crear_linea';
+        INSERT INTO public.receta_base (
+            modelo_id,
+            material_id,
+            cantidad,
+            escala,
+            paso,
+            uso,
+            seccion,
+            fase_id
+        ) VALUES (
+            p_modelo_id,
+            p_material_id,
+            v_cant_redondeada,
+            p_escala,
+            p_paso,
+            p_uso,
+            p_seccion,
+            p_fase_id
+        ) RETURNING id INTO v_res_linea_id;
+    ELSE
+        -- Actualización
+        v_accion := 'modificar_linea';
+        v_res_linea_id := p_linea_id;
+
+        SELECT jsonb_build_object(
+            'material_id', rb.material_id,
+            'cantidad', rb.cantidad,
+            'escala', rb.escala,
+            'paso', rb.paso,
+            'uso', rb.uso,
+            'seccion', rb.seccion,
+            'fase_id', rb.fase_id
+        ) INTO v_ant_data
+        FROM public.receta_base rb
+        JOIN public.modelos m ON m.id = rb.modelo_id
+        WHERE rb.id = p_linea_id AND rb.modelo_id = p_modelo_id AND m.organizacion_id = p_organizacion_id
+        FOR UPDATE OF rb;
+
+        IF v_ant_data IS NULL THEN
+            RAISE EXCEPTION 'linea_no_encontrada: La línea de receta % no existe o no pertenece al modelo', p_linea_id;
+        END IF;
+
+        UPDATE public.receta_base
+        SET
+            material_id = p_material_id,
+            cantidad = v_cant_redondeada,
+            escala = p_escala,
+            paso = p_paso,
+            uso = p_uso,
+            seccion = p_seccion,
+            fase_id = p_fase_id,
+            updated_at = now()
+        WHERE id = p_linea_id;
+
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'linea_no_encontrada: La línea de receta % no fue encontrada para actualizar', p_linea_id;
+        END IF;
+    END IF;
+
+    -- Registrar auditoría
+    INSERT INTO public.receta_base_historial (
+        organizacion_id,
+        modelo_id,
+        linea_id,
+        accion,
+        material_id,
+        fase_id,
+        datos_anteriores,
+        datos_nuevos,
+        usuario_id,
+        motivo
+    ) VALUES (
+        p_organizacion_id,
+        p_modelo_id,
+        v_res_linea_id,
+        v_accion,
+        p_material_id,
+        p_fase_id,
+        v_ant_data,
+        jsonb_build_object(
+            'material_id', p_material_id,
+            'cantidad', v_cant_redondeada,
+            'escala', p_escala,
+            'paso', p_paso,
+            'uso', p_uso,
+            'seccion', p_seccion,
+            'fase_id', p_fase_id
+        ),
+        p_usuario_id,
+        p_motivo
+    );
+
+    RETURN v_res_linea_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.guardar_linea_receta(UUID, TEXT, NUMERIC, TEXT, UUID, UUID, TEXT, TEXT, TEXT, UUID, UUID, TEXT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.guardar_linea_receta(UUID, TEXT, NUMERIC, TEXT, UUID, UUID, TEXT, TEXT, TEXT, UUID, UUID, TEXT) TO service_role;
 
 -- 3. Crear grupo 'volumen' y opciones 'm3_45' y 'm3_30' para cada organización existente
 DO $$
