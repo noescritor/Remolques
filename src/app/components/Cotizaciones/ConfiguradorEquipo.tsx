@@ -29,6 +29,7 @@ import {
   limpiarTextoColorPersonalizado,
   esOpcionVisible
 } from '../../utils/seleccionMixta';
+import { tituloEquipo } from '../../utils/tituloEquipo';
 
 export interface ConfiguracionModelo {
   modelo: any;
@@ -519,19 +520,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle>Configurar Equipo</DialogTitle>
           <DialogDescription>
-            {(() => {
-              const tipo = (datosModelo?.modelo?.tipo || '').toLowerCase();
-              if (tipo === 'gondola') {
-                const v = configuracion.grupos?.volumen;
-                let vol = 45;
-                if (v) {
-                  const s = typeof v === 'object' && v !== null ? (v.opcion || v.clave || v.valor || '') : String(v);
-                  if (s.includes('30')) vol = 30;
-                }
-                return `GONDOLA ${datosModelo?.modelo?.num_ejes || 2} EJES ${vol} M3`;
-              }
-              return `${producto?.nombre} - ${datosModelo?.modelo?.tipo} ${datosModelo?.modelo?.largo_ft ? `${datosModelo.modelo.largo_ft}FT ` : ''}{datosModelo?.modelo?.num_ejes} EJES`;
-            })()}
+            {tituloEquipo(producto, datosModelo?.modelo, configuracion)}
           </DialogDescription>
         </DialogHeader>
 
