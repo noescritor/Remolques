@@ -1,0 +1,25 @@
+-- ============================================================================
+-- Prueba de Concurrencia: guardar_linea_receta con FOR UPDATE OF rb
+-- ============================================================================
+-- Propósito: Demostrar que dos transacciones simultáneas sobre la misma línea
+-- no sufren de lecturas sucias ("lost updates") y que el historial registra
+-- transiciones consecutivas encadenadas (9 -> 5 y 5 -> 7) gracias al bloqueo
+-- FOR UPDATE OF rb restituido de T6.
+--
+-- ARCHIVOS DE LA PRUEBA:
+--   1. docs/gondola/concurrencia_preparar.sql   -> Crea línea inicial con cant=9.0
+--   2. docs/gondola/concurrencia_sesion_a.sql  -> Actualiza a cant=5.0 y duerme 4s
+--   3. docs/gondola/concurrencia_sesion_b.sql  -> Espera bloqueo y actualiza a cant=7.0
+--   4. docs/gondola/concurrencia_verificar.sql -> Verifica historial encadenado (9->5 y 5->7)
+--
+-- EJECUCIÓN:
+-- Terminal A:
+--   psql -h localhost -p 54331 -U tester -d <base> -f docs/gondola/concurrencia_preparar.sql
+--   psql -h localhost -p 54331 -U tester -d <base> -f docs/gondola/concurrencia_sesion_a.sql
+--
+-- Terminal B (al mismo tiempo que corre Sesión A):
+--   psql -h localhost -p 54331 -U tester -d <base> -f docs/gondola/concurrencia_sesion_b.sql
+--
+-- Terminal A (después de terminar ambas):
+--   psql -h localhost -p 54331 -U tester -d <base> -f docs/gondola/concurrencia_verificar.sql
+-- ============================================================================

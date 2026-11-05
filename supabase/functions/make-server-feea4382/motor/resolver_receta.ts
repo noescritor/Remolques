@@ -3,6 +3,7 @@ import { validarCompatibilidad, fusionarFilasConfig, normalizarClaveOpcion } fro
 import {
   calcularCantidadEscalada,
   resolverVolumenGondola,
+  resolverVolumenGondolaDetallado,
   VOLUMEN_BASE_GONDOLA_M3
 } from "./escalas.ts";
 
@@ -16,12 +17,18 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
   let costo_parcial = 0;
   let completo = true;
 
-  const volumenM3 = datos.modelo.tipo === "gondola"
-    ? resolverVolumenGondola(configuracion, datos.opciones)
-    : VOLUMEN_BASE_GONDOLA_M3;
+  const resVol = datos.modelo.tipo === "gondola"
+    ? resolverVolumenGondolaDetallado(configuracion, datos.opciones)
+    : { volumen: VOLUMEN_BASE_GONDOLA_M3, esReconocido: true, advertencia: undefined };
+  const volumenM3 = resVol.volumen;
 
-  if (datos.modelo.tipo === "gondola" && volumenM3 === 30) {
-    advertencias.push("Costo de 30 m³ estimado por proporción sobre 45 m³; pendiente despiece real");
+  if (datos.modelo.tipo === "gondola") {
+    if (!resVol.esReconocido && resVol.advertencia) {
+      advertencias.push(resVol.advertencia);
+    }
+    if (volumenM3 === 30) {
+      advertencias.push("Costo de 30 m³ estimado por proporción sobre 45 m³; pendiente despiece real");
+    }
   }
 
   const tieneAcero = (datos.receta_base || []).some(rb => rb.seccion === 'acero');

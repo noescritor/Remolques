@@ -49,6 +49,51 @@ BEGIN
         RAISE EXCEPTION 'Cantidad fija alterada para puentes de suspensión: %', v_cant_puente_30;
     END IF;
 
+    -- 4. Verificar opcion_costos para tina_material (a36 y hardox_450 con por_volumen)
+    DECLARE
+        v_costo_a36_base numeric;
+        v_costo_a36_30 numeric;
+        v_costo_hardox_base numeric;
+        v_costo_hardox_30 numeric;
+        v_escala_a36 text;
+        v_escala_hardox text;
+    BEGIN
+        SELECT oc.costo_unitario, oc.escala INTO v_costo_a36_base, v_escala_a36
+        FROM opcion_costos oc
+        JOIN opciones_configuracion o ON oc.opcion_id = o.id
+        JOIN grupos_configuracion g ON o.grupo_id = g.id
+        WHERE oc.tipo_modelo = 'gondola' AND g.clave = 'tina_material' AND o.clave = 'a36'
+        LIMIT 1;
+
+        IF v_escala_a36 <> 'por_volumen' THEN
+            RAISE EXCEPTION 'opcion_costos para tina a36 debe ser por_volumen, encontrado: %', v_escala_a36;
+        END IF;
+
+        v_costo_a36_30 := round(v_costo_a36_base * (30.0 / 45.0), 2);
+        IF v_costo_a36_30 <> 111670.51 THEN
+            RAISE EXCEPTION 'Costo escalado de tina A-36 incorrecto: esperado 111670.51, obtenido %', v_costo_a36_30;
+        END IF;
+
+        SELECT oc.costo_unitario, oc.escala INTO v_costo_hardox_base, v_escala_hardox
+        FROM opcion_costos oc
+        JOIN opciones_configuracion o ON oc.opcion_id = o.id
+        JOIN grupos_configuracion g ON o.grupo_id = g.id
+        WHERE oc.tipo_modelo = 'gondola' AND g.clave = 'tina_material' AND o.clave = 'hardox_450'
+        LIMIT 1;
+
+        IF v_escala_hardox <> 'por_volumen' THEN
+            RAISE EXCEPTION 'opcion_costos para tina hardox_450 debe ser por_volumen, encontrado: %', v_escala_hardox;
+        END IF;
+
+        v_costo_hardox_30 := round(v_costo_hardox_base * (30.0 / 45.0), 2);
+        IF v_costo_hardox_30 <> 191165.61 THEN
+            RAISE EXCEPTION 'Costo escalado de tina Hardox incorrecto: esperado 191165.61, obtenido %', v_costo_hardox_30;
+        END IF;
+
+        RAISE NOTICE 'PRUEBA EXITOSA OPCION_COSTOS: Tina A-36 escala a % (de %), Tina Hardox escala a % (de %).',
+            v_costo_a36_30, v_costo_a36_base, v_costo_hardox_30, v_costo_hardox_base;
+    END;
+
     RAISE NOTICE 'PRUEBA EXITOSA: Alma escala a % pz (de % pz base). Puentes suspensión se mantienen en % pz.',
         v_cant_alma_30, v_cant_alma_base, v_cant_puente_30;
 END;

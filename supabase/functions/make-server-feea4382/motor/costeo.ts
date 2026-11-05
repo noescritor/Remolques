@@ -11,6 +11,7 @@ import { fusionarFilasConfig, normalizarClaveOpcion } from "./reglas_compatibili
 import {
   calcularCantidadEscalada,
   resolverVolumenGondola,
+  resolverVolumenGondolaDetallado,
   VOLUMEN_BASE_GONDOLA_M3
 } from "./escalas.ts";
 
@@ -48,9 +49,10 @@ export function costear(
 ): ResultadoCosteo {
   const pendientes: PendienteCosteo[] = [];
   const modelo = datos.modelo;
-  const volumenM3 = modelo.tipo === "gondola"
-    ? resolverVolumenGondola(configuracion)
-    : VOLUMEN_BASE_GONDOLA_M3;
+  const resVol = modelo.tipo === "gondola"
+    ? resolverVolumenGondolaDetallado(configuracion)
+    : { volumen: VOLUMEN_BASE_GONDOLA_M3, esReconocido: true, advertencia: undefined };
+  const volumenM3 = resVol.volumen;
 
   // 1. Validar si el modelo tiene costos cargados
   const tieneAcero = (datos.receta_acero || []).length > 0;
@@ -89,6 +91,13 @@ export function costear(
       tipo: "iva_gondola",
       detalle: "El IVA de la góndola está por confirmar con el dueño: en el Excel es 16% solo sobre chasis + tina; el precio sugerido no lo incluye"
     });
+
+    if (!resVol.esReconocido && resVol.advertencia) {
+      pendientes.push({
+        tipo: "variante_supuesta",
+        detalle: resVol.advertencia
+      });
+    }
 
     if (volumenM3 === 30) {
       pendientes.push({

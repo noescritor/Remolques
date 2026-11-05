@@ -514,14 +514,14 @@
         "grupo_clave": "tina_material",
         "opcion_clave": "a36",
         "cantidad_base": 1,
-        "escala": "fija",
+        "escala": "por_volumen",
         "costo_unitario": 167505.76
       },
       {
         "grupo_clave": "tina_material",
         "opcion_clave": "hardox_450",
         "cantidad_base": 1,
-        "escala": "fija",
+        "escala": "por_volumen",
         "costo_unitario": 286748.42
       },
       {
@@ -1268,14 +1268,14 @@
         "grupo_clave": "tina_material",
         "opcion_clave": "a36",
         "cantidad_base": 1,
-        "escala": "fija",
+        "escala": "por_volumen",
         "costo_unitario": 167505.76
       },
       {
         "grupo_clave": "tina_material",
         "opcion_clave": "hardox_450",
         "cantidad_base": 1,
-        "escala": "fija",
+        "escala": "por_volumen",
         "costo_unitario": 286748.42
       },
       {

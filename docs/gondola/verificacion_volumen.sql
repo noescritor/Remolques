@@ -66,7 +66,28 @@ WITH checks AS (
             WHERE g.clave = 'tina_material'
               AND o.clave IN ('a36', 'hardox_450')
               AND oc.escala = 'por_volumen'
-        ) AS opcion_tina_escala_por_volumen
+        ) AS opcion_tina_escala_por_volumen,
+
+        -- 8. Tina en opcion_costos tiene escala por_volumen para góndola (migración 20261105_03)
+        (
+            SELECT count(*) >= 2
+            FROM opcion_costos oc
+            JOIN opciones_configuracion o ON oc.opcion_id = o.id
+            JOIN grupos_configuracion g ON o.grupo_id = g.id
+            WHERE oc.tipo_modelo = 'gondola'
+              AND g.clave = 'tina_material'
+              AND o.clave IN ('a36', 'hardox_450')
+              AND oc.escala = 'por_volumen'
+        ) AS opcion_costos_tina_por_volumen,
+
+        -- 9. Costos fijos del modelo de góndola (costos_modelo) mantienen escala fija
+        (
+            SELECT count(*) >= 29
+            FROM costos_modelo cm
+            JOIN modelos m ON cm.modelo_id = m.id
+            WHERE m.tipo = 'gondola'
+              AND cm.escala = 'fija'
+        ) AS costos_modelo_escala_fija
 )
 SELECT
     grupo_volumen_existe,
@@ -76,6 +97,8 @@ SELECT
     receta_tina_escala_por_volumen,
     receta_chasis_escala_fija,
     opcion_tina_escala_por_volumen,
+    opcion_costos_tina_por_volumen,
+    costos_modelo_escala_fija,
     (
         grupo_volumen_existe AND
         opciones_volumen_existen AND
@@ -83,6 +106,8 @@ SELECT
         productos_antiguos_eliminados AND
         receta_tina_escala_por_volumen AND
         receta_chasis_escala_fija AND
-        opcion_tina_escala_por_volumen
+        opcion_tina_escala_por_volumen AND
+        opcion_costos_tina_por_volumen AND
+        costos_modelo_escala_fija
     ) AS todo_ok
 FROM checks;
