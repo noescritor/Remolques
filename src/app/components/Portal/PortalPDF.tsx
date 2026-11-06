@@ -4,8 +4,7 @@ import { PDFTemplateMoodboard } from '../Cotizaciones/PDFTemplateMoodboard';
 import { normalizarAjustes } from '../../utils/ajustes';
 import { Button } from '../ui/button';
 import { ArrowLeft, Download, Printer, Loader2, AlertCircle } from 'lucide-react';
-
-const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
+import { BASE_URL } from '../../utils/api';
 
 // CSS inyectado una sola vez para print media
 const PRINT_STYLES = `

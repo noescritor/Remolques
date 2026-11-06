@@ -11,8 +11,7 @@ import { CheckCircle, XCircle, MessageSquare, Loader2, AlertCircle, PenTool, Rot
 import { LogoIdeally } from '../Cotizaciones/LogoIdeally';
 import { formatearMoneda } from '../../utils/calculations';
 import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
-
-const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
+import { BASE_URL } from '../../utils/api';
 
 type Accion = 'idle' | 'aprobar' | 'rechazar' | 'cambios' | 'done';
 
