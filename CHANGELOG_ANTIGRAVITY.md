@@ -3,6 +3,35 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-06 - Góndola/Volumen libre (Ronda 2): corrección de tecleo de decimales, cotizaciones históricas y redondeo único
+**Herramienta:** Antigravity  
+**Tipo:** fix (estado local de texto en configurador, funciones puras textoCampoVolumen/valorDesdeTextoVolumen, redondeo único a 1 decimal en motor, parseo estricto de volumen)  
+**Rama:** `gondola-volumen-libre-2026-11-05`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/GONDOLA_VOLUMEN_LIBRE_REVISION_CLAUDE.md`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/escalas.ts`: 
+  - Redondeo único a 1 decimal (`Math.round(numBruto * 10) / 10`) en `resolverVolumenGondolaDetallado` antes de validar rango [20, 60] y calcular proporciones, asegurando consistencia matemática exacta entre motor, avisos, títulos, ficha y checklist.
+  - Parseo estricto mediante regex `/^\s*([-+]?\d+(?:[.,]\d+)?)\s*(?:m3|m³)?\s*$/i`, eliminando la rama matchSub permisiva y rechazando cadenas inválidas como `"38abc"`, `"abc38"`, `"1e2"`, `"volumen_38"`.
+  - Exportación unificada de la interfaz `CandidatoVolumen` y función `extraerCandidatoVolumen(val)` para uso compartido en frontend y backend.
+- `src/app/utils/volumenGondola.ts`: 
+  - Redondeo a 1 decimal en `evaluarEstadoVolumen` alineado al motor.
+  - Implementación de función pura `textoCampoVolumen(valor)` que formatea de forma limpia tanto objetos `{ m3 }`, `{ raw }` como claves históricas (`"m3_45"` -> `"45"`, `"m3_30"` -> `"30"`, `{ opcion: "m3_30" }` -> `"30"`).
+  - Implementación de función pura `valorDesdeTextoVolumen(texto)` que preserva `raw` y asigna `m3` provisional al teclear punto o coma decimal (ej. `"37."`, `"37,"`).
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`:
+  - Estado local de texto `textoVolumenLocal` que desacopla la entrada del usuario de la conversión numérica, permitiendo teclear decimales (`37.`, `37.5`, `37,5`, `38.0`) fluidamente sin pérdida del punto.
+  - Sincronización de `textoVolumenLocal` al inicializar/abrir el configurador con `textoCampoVolumen(initialConfig.grupos?.volumen)` y al presionar los atajos rápidos 30 y 45 m³.
+- `src/app/utils/volumenGondola.test.ts`: 4 nuevas suites de pruebas Deno verificando `textoCampoVolumen`, `valorDesdeTextoVolumen`, simulación de tecleo carácter por carácter (`"37.5"`, `"37,5"`, `"38.0"`) y reapertura de cotizaciones históricas (`"m3_45"`, `{ opcion: "m3_30" }`).
+- `supabase/functions/make-server-feea4382/motor/gondola_volumen.test.ts`: ampliación de Test 7 con casos estrictos, Test 8 (redondeo único a 1 decimal antes de validar rango) y Test 9 (parseo estricto).
+- `GONDOLA_VOLUMEN_LIBRE_REPORTE_ANTY.md`: adición de sección "Ronda 2" detallando las soluciones a los 4 puntos de la revisión de Claude.
+**Qué cambió y por qué:**  
+- **1. Tecleo fluido de decimales:** Se solucionó el defecto donde al teclear un punto decimal (`37.`) se repintaba desde el número y borraba el punto, impidiendo escribir números no enteros.
+- **2. Reapertura limpia de cotizaciones históricas:** Cotizaciones existentes guardadas con `"m3_45"` o `{ opcion: "m3_30" }` ahora se visualizan en el campo como `"45"` y `"30"`, con estado completo y selección visual en atajos.
+- **3. Cifras idénticas en todo el sistema:** El redondeo a 1 decimal se aplica una sola vez en el motor antes de validar rango, eliminando discrepancias entre validación y cálculo de factor.
+- **4. Parseo estricto unificado:** Tanto backend como frontend comparten la misma extracción estricta, rechazando sufijos o prefijos alfanuméricos arbitrarios.
+**Acciones manuales pendientes:**  
+- Ninguna migración nueva requerida (las migraciones de Ronda 1 quedaron aprobadas).
+
+
 ## 2026-11-06 - Góndola: volumen editable (campo libre en m³, sin valor preestablecido)
 **Herramienta:** Antigravity  
 **Tipo:** feat (volumen libre 20-60 m³, opción personalizado, UI con atajos y punto rojo obligatorio, validaciones)  

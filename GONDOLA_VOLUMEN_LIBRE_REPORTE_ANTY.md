@@ -99,3 +99,112 @@ Los 11 checks resultaron verdaderos (`t`). La base temporal fue eliminada al con
 2. **EasyPanel:**
    - Hacer clic en **Rebuild** en el servicio de backend (`remolques-api`).
    - Hacer clic en **Rebuild** en el servicio de frontend (`remolques-web`).
+
+---
+
+## 6. Ronda 2: Correcciones tras Revisión de Claude
+
+**Referencia:** `COORDINACION/REVISIONES/GONDOLA_VOLUMEN_LIBRE_REVISION_CLAUDE.md` (Veredicto: CORREGIR)  
+**Commits adicionales de la ronda:**
+- `235c587` — `refactor(motor): redondeo unico a 1 decimal, parseo estricto de volumen y extractor compartido`
+- `1204681` — `fix(ui): estado local de texto para tecleo de decimales y formateo de cotizaciones historicas`
+
+### Punto 1. [ALTA] Tecleo de decimales en el campo de volumen
+- **Causa raíz:** En `ConfiguradorEquipo.tsx` el valor del `<input>` se repintaba desde `String(valActual.m3)`. Al escribir `37.`, el número convertido era `37`, provocando la desaparición inmediata del punto decimal e impidiendo ingresar decimales como `37.5`, `37,5` o `38.0`.
+- **Solución implementada:**
+  1. Se introdujo un estado local desacoplado: `const [textoVolumenLocal, setTextoVolumenLocal] = useState<string>('')`.
+  2. El `<input>` lee directamente de `value={textoVolumenLocal}` y su `onChange` actualiza el texto local al tiempo que genera la configuración mediante `valorDesdeTextoVolumen(txt)`.
+  3. Se crearon las funciones puras `textoCampoVolumen(valor)` y `valorDesdeTextoVolumen(texto)` en `src/app/utils/volumenGondola.ts`.
+  4. La sincronización desde configuración externa solo ocurre al inicializar/abrir el modal y al hacer clic en los atajos rápidos (`30 m³` y `45 m³`).
+- **Prueba Deno ejecutada (salida real):**
+```
+running 1 test from ./src/app/utils/volumenGondola.test.ts
+volumenGondola: Simulación de tecleo carácter por carácter (punto, coma, decimales) ... ok (365µs)
+```
+  - Secuencia `"37.5"` (`""` -> `"3"` -> `"37"` -> `"37."` -> `"37.5"`): el punto no se pierde en ningún paso y `m3` final es `37.5`.
+  - Secuencia `"37,5"` (`""` -> `"3"` -> `"37"` -> `"37,"` -> `"37,5"`): la coma no se pierde y `m3` final es `37.5`.
+  - Secuencia `"38.0"` (`""` -> `"3"` -> `"38"` -> `"38."` -> `"38.0"`): `m3` final es `38`.
+
+### Punto 2. [MEDIA] Visualización limpia de cotizaciones históricas
+- **Causa raíz:** Cotizaciones antiguas con clave de opción (`{ volumen: "m3_45" }` o `{ volumen: { opcion: "m3_30" } }`) mostraban el texto crudo `m3_45` o `m3_30` en el campo al reabrirse.
+- **Solución implementada:**
+  - `textoCampoVolumen(valor)` mapea explícitamente `"m3_45"` -> `"45"`, `"m3_30"` -> `"30"`, `opcion: "m3_45"` -> `"45"`, `opcion: "m3_30"` -> `"30"`.
+  - Al abrir una cotización vieja, el campo muestra `"45"` o `"30"`, el estado se evalúa como `completo: true`, y los botones de atajo rápido se iluminan correctamente.
+- **Prueba Deno ejecutada (salida real):**
+```
+running 1 test from ./src/app/utils/volumenGondola.test.ts
+volumenGondola: Reapertura de cotizaciones viejas con clave histórica se visualiza limpia y completa ... ok (225µs)
+```
+
+### Punto 3. [ALTA] Redondeo único en el motor antes de validar rango
+- **Causa raíz:** Múltiples redondeos o formateos tardíos en `formatearVolumenM3` o en el cálculo de escala podían generar discrepancias entre el volumen validado, el factor de costo y los títulos.
+- **Solución implementada:**
+  - En `supabase/functions/make-server-feea4382/motor/escalas.ts` (`resolverVolumenGondolaDetallado`): se aplica un único redondeo canónico `Math.round(numBruto * 10) / 10` sobre `numBruto` **antes** de validar rango `[20, 60]`, registrar advertencias `variante_supuesta` o calcular el factor `volumen / 45`.
+  - En `src/app/utils/volumenGondola.ts` (`evaluarEstadoVolumen`): se aplica el mismo redondeo canónico idéntico.
+- **Prueba Deno ejecutada (salida real):**
+```
+running 1 test from ./supabase/functions/make-server-feea4382/motor/gondola_volumen.test.ts
+8. Redondeo único a 1 decimal en el motor antes de validar rango ... ok (2ms)
+```
+  - Casos verificados:
+    - `37.25` -> `37.3` (dentro de rango, escala `37.3 / 45 = 0.828888...`)
+    - `37.99` -> `38` (dentro de rango, escala `38 / 45 = 0.844444...`)
+    - `19.96` -> `20` (redondea hacia arriba y entra en rango permitido)
+    - `19.94` -> `19.9` (fuera de rango, cae a `volumen = 45` base con aviso `volumen_fuera_rango`)
+    - `45`, `30` y `38`: valores enteros idénticos a hoy byte a byte.
+
+### Punto 4. [MEDIA] Parseo estricto de texto y extractor compartido
+- **Causa raíz:** La búsqueda parcial `matchSub` en `escalas.ts` permitía que cadenas inválidas como `"38abc"`, `"abc38"`, `"1e2"` o `"volumen_38"` fueran interpretadas como `38` o `1`. Además existían parseos paralelos entre backend y frontend.
+- **Solución implementada:**
+  - Se eliminó la rama `matchSub`.
+  - Se implementó la regex estricta: `/^\s*([-+]?\d+(?:[.,]\d+)?)\s*(?:m3|m³)?\s*$/i`.
+  - Se exportó la función unificada `extraerCandidatoVolumen(val): CandidatoVolumen` desde `escalas.ts`.
+  - `volumenGondola.ts` en el frontend re-exporta y reutiliza la misma función compartida de `escalas.ts`.
+- **Prueba Deno ejecutada (salida real):**
+```
+running 1 test from ./supabase/functions/make-server-feea4382/motor/gondola_volumen.test.ts
+9. Parseo estricto de texto en escalas.ts (rechaza coincidencias parciales) ... ok (1ms)
+```
+  - Cadenas rechazadas (`numero = null`, cae a 45 m³ con aviso `volumen_invalido` o marca error en UI):
+    - `"38abc"`, `"abc38"`, `"1e2"`, `"volumen_38"`, `"NaN"`, `"abc"`.
+  - Cadenas aceptadas estrictamente:
+    - `"38 m3"`, `"38 m³"`, `"38m3"`, `" 45 "`, `"37,5 m³"`.
+
+---
+
+### Resumen de Verificación Final (Ronda 2)
+
+```
+== 1. Archivos de parche o temporales nuevos
+  OK     Sin parches ni temporales
+
+== 2. Codificación de los archivos modificados
+  OK     UTF-8 sin BOM ni mojibake — 20 archivos revisados
+
+== 3. Sintaxis de .ts/.tsx modificados
+  OK     Sintaxis válida
+
+== 4. TypeScript (tsc --noEmit)
+  OK     tsc: 0 nombres sin definir/duplicados
+  OK     tsc: el total de errores no sube — 44 (baseline 55)
+
+== 5. Build de Vite
+  OK     npm run build
+
+== 6. Pruebas Deno
+  OK     Pruebas Deno — 289 pasan, 0 fallan
+
+== 7. Arranque real del API
+  OK     El API arranca — Listening on http://localhost:8000/
+
+== 8. Contexto del Dockerfile.backend
+  OK     Contexto del Dockerfile.backend — deno cache index.ts exitoso
+
+== 9. Checkout limpio de HEAD (git archive)
+  OK     Pruebas Deno en HEAD limpio — 289 pasan, 0 fallan
+  OK     El API arranca en HEAD limpio — Listening on http://localhost:8000/
+
+============================================================
+RESULTADO: TODO OK  (11/11 comprobaciones)
+```
+
