@@ -41,98 +41,125 @@ export function formatearVolumenM3(vol: number): string {
   return Number.isInteger(unDecimal) ? String(unDecimal) : unDecimal.toFixed(1);
 }
 
-function extraerNumeroVolumen(val: any): { numero: number | null; representacion: string } {
+export interface CandidatoVolumen {
+  numero: number | null;
+  representacion: string;
+  textoOriginal: string;
+}
+
+/**
+ * Extrae el valor numérico candidato de cualquier representación de volumen
+ * enviada por el configurador o guardada en cotizaciones históricas.
+ * Validación estricta: todo el texto debe ser un número (con punto o coma)
+ * opcionalmente seguido de m3 o m³. Elimina la rama matchSub y rechaza "38abc", "abc38", "1e2".
+ */
+export function extraerCandidatoVolumen(val: any): CandidatoVolumen {
   if (val === undefined || val === null) {
-    return { numero: null, representacion: "" };
+    return { numero: null, representacion: "", textoOriginal: "" };
   }
 
   if (typeof val === "number") {
-    return {
-      numero: Number.isFinite(val) ? val : null,
-      representacion: String(val)
-    };
+    const n = Number.isFinite(val) ? val : null;
+    const str = String(val);
+    return { numero: n, representacion: str, textoOriginal: str };
   }
 
   if (typeof val === "string") {
     const s = val.trim();
-    if (!s) return { numero: null, representacion: "" };
+    if (!s) return { numero: null, representacion: "", textoOriginal: "" };
 
     // Claves específicas históricas
-    if (s === "m3_30" || s === "30m3" || s === "30_m3") return { numero: 30, representacion: s };
-    if (s === "m3_45" || s === "45m3" || s === "45_m3") return { numero: 45, representacion: s };
+    if (s === "m3_30" || s === "30m3" || s === "30_m3") {
+      return { numero: 30, representacion: s, textoOriginal: s };
+    }
+    if (s === "m3_45" || s === "45m3" || s === "45_m3") {
+      return { numero: 45, representacion: s, textoOriginal: s };
+    }
 
-    // Intentar número directo (ej: "38", "37.5", "37,5", "38 m3", "38 m³")
-    const normalizado = s.replace(",", ".");
-    const match = normalizado.match(/^[-+]?\d+(?:\.\d+)?/);
+    // Validación estricta: todo el texto debe ser un número opcionalmente seguido de m3 o m³
+    const match = s.match(/^\s*([-+]?\d+(?:[.,]\d+)?)\s*(?:m3|m³)?\s*$/i);
     if (match) {
-      const num = parseFloat(match[0]);
-      return { numero: Number.isFinite(num) ? num : null, representacion: s };
+      const num = parseFloat(match[1].replace(",", "."));
+      const n = Number.isFinite(num) ? num : null;
+      return { numero: n, representacion: s, textoOriginal: s };
     }
 
-    // Si viene con prefijo como "volumen_38"
-    const matchSub = normalizado.match(/[-+]?\d+(?:\.\d+)?/);
-    if (matchSub) {
-      const num = parseFloat(matchSub[0]);
-      return { numero: Number.isFinite(num) ? num : null, representacion: s };
-    }
-
-    return { numero: null, representacion: s };
+    return { numero: null, representacion: s, textoOriginal: s };
   }
 
   if (typeof val === "object") {
-    const repr = JSON.stringify(val);
+    const rawStr = typeof val.raw === "string" ? val.raw : undefined;
+    const repr = rawStr ?? JSON.stringify(val);
 
-    // Caso { clave: 'm3_30' } o { opcion: 'm3_30' }
+    // Caso clave histórica en objeto: { opcion: 'm3_30' } o { clave: 'm3_45' }
     const clave = val.opcion || val.clave;
-    if (clave === "m3_30" || clave === "30") return { numero: 30, representacion: repr };
-    if (clave === "m3_45" || clave === "45") return { numero: 45, representacion: repr };
+    if (clave === "m3_30" || clave === "30m3" || clave === "30_m3") {
+      return { numero: 30, representacion: rawStr ?? "m3_30", textoOriginal: rawStr ?? "m3_30" };
+    }
+    if (clave === "m3_45" || clave === "45m3" || clave === "45_m3") {
+      return { numero: 45, representacion: rawStr ?? "m3_45", textoOriginal: rawStr ?? "m3_45" };
+    }
 
     // Caso { m3: 38 }
-    if (val.m3 !== undefined && val.m3 !== null) {
-      const sub = extraerNumeroVolumen(val.m3);
-      return { numero: sub.numero, representacion: repr };
+    if (val.m3 !== undefined && val.m3 !== null && val.m3 !== "") {
+      const sub = extraerCandidatoVolumen(val.m3);
+      const str = rawStr ?? sub.representacion;
+      return { numero: sub.numero, representacion: str, textoOriginal: str };
+    }
+
+    // Si viene con raw pero sin m3 (ej: { opcion: 'personalizado', raw: 'abc' })
+    if (rawStr !== undefined) {
+      const sub = extraerCandidatoVolumen(rawStr);
+      return { numero: sub.numero, representacion: rawStr, textoOriginal: rawStr };
     }
 
     // Caso { valor: 38 }
-    if (val.valor !== undefined && val.valor !== null) {
-      const sub = extraerNumeroVolumen(val.valor);
-      return { numero: sub.numero, representacion: repr };
+    if (val.valor !== undefined && val.valor !== null && val.valor !== "") {
+      const sub = extraerCandidatoVolumen(val.valor);
+      const str = rawStr ?? sub.representacion;
+      return { numero: sub.numero, representacion: str, textoOriginal: str };
     }
 
     // Caso { texto: "38" }
-    if (val.texto !== undefined && val.texto !== null) {
-      const sub = extraerNumeroVolumen(val.texto);
-      return { numero: sub.numero, representacion: repr };
+    if (val.texto !== undefined && val.texto !== null && val.texto !== "") {
+      const sub = extraerCandidatoVolumen(val.texto);
+      const str = rawStr ?? sub.representacion;
+      return { numero: sub.numero, representacion: str, textoOriginal: str };
     }
 
     // Caso { cantidad: 38 }
-    if (val.cantidad !== undefined && val.cantidad !== null) {
-      const sub = extraerNumeroVolumen(val.cantidad);
-      return { numero: sub.numero, representacion: repr };
+    if (val.cantidad !== undefined && val.cantidad !== null && val.cantidad !== "") {
+      const sub = extraerCandidatoVolumen(val.cantidad);
+      const str = rawStr ?? sub.representacion;
+      return { numero: sub.numero, representacion: str, textoOriginal: str };
     }
 
     // Caso { datos: { m3: 38 } }
     if (val.datos && typeof val.datos === "object" && val.datos.m3 !== undefined) {
-      const sub = extraerNumeroVolumen(val.datos.m3);
-      return { numero: sub.numero, representacion: repr };
+      const sub = extraerCandidatoVolumen(val.datos.m3);
+      const str = rawStr ?? sub.representacion;
+      return { numero: sub.numero, representacion: str, textoOriginal: str };
     }
 
-    if (typeof clave === "string") {
-      const sub = extraerNumeroVolumen(clave);
-      if (sub.numero !== null) return { numero: sub.numero, representacion: repr };
+    if (typeof clave === "string" && clave !== "personalizado") {
+      const sub = extraerCandidatoVolumen(clave);
+      if (sub.numero !== null) {
+        return { numero: sub.numero, representacion: repr, textoOriginal: repr };
+      }
     }
 
-    return { numero: null, representacion: repr };
+    return { numero: null, representacion: rawStr ?? "", textoOriginal: rawStr ?? "" };
   }
 
-  return { numero: null, representacion: String(val) };
+  const s = String(val);
+  return { numero: null, representacion: s, textoOriginal: s };
 }
 
 /**
  * Resuelve el volumen numérico en m³ a partir de la configuración del equipo de forma detallada.
  * Si no está configurado (cotizaciones antiguas o API sin opción), asume 45 m³ como reconocido sin advertencia.
  * Si se especifica un volumen fuera del rango [20, 60] m³ o no numérico/<=0, reporta advertencia y asume 45 m³.
- * Para cualquier volumen numérico válido dentro de rango, lo retorna como reconocido.
+ * Para cualquier volumen numérico válido dentro de rango, lo redondea una sola vez a 1 decimal y lo retorna.
  */
 export function resolverVolumenGondolaDetallado(
   configuracion?: any,
@@ -146,15 +173,18 @@ export function resolverVolumenGondolaDetallado(
     };
   }
 
-  const { numero, representacion } = extraerNumeroVolumen(val);
+  const { numero: numBruto, representacion } = extraerCandidatoVolumen(val);
 
-  if (numero === null || !Number.isFinite(numero) || numero <= 0) {
+  if (numBruto === null || !Number.isFinite(numBruto) || numBruto <= 0) {
     return {
       volumen: VOLUMEN_BASE_GONDOLA_M3,
       esReconocido: false,
       advertencia: `Volumen '${representacion}' no válido para góndola; se asume ${VOLUMEN_BASE_GONDOLA_M3} m³ (provisional)`
     };
   }
+
+  // Redondeo único a 1 decimal antes de validar el rango y de devolverlo
+  const numero = Math.round(numBruto * 10) / 10;
 
   if (numero < VOLUMEN_MIN_GONDOLA_M3 || numero > VOLUMEN_MAX_GONDOLA_M3) {
     return {

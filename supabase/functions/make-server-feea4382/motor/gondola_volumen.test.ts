@@ -5,6 +5,7 @@ import {
   calcularCantidadEscalada,
   resolverVolumenGondola,
   resolverVolumenGondolaDetallado,
+  formatearVolumenM3,
   VOLUMEN_BASE_GONDOLA_M3
 } from "./escalas.ts";
 import { generarEspecificacion } from "./texto_especificacion.ts";
@@ -577,7 +578,7 @@ Deno.test("Góndola Volumen: Test 6 - Formato exacto de nombres dinámicos con v
 // TEST 7: Valores fuera de rango o inválidos emiten advertencia variante_supuesta y asumen 45 m³
 // --------------------------------------------------------------------------
 Deno.test("Góndola Volumen: Test 7 - Valores fuera de rango o no numéricos emiten advertencia variante_supuesta y asumen 45 m³", () => {
-  const casosInvalidos: any[] = [10, 80, -5, 0, "m3_80", "abc", NaN];
+  const casosInvalidos: any[] = [10, 80, -5, 0, "m3_80", "abc", "38abc", "abc38", "1e2", NaN];
 
   for (const c of casosInvalidos) {
     const config: Configuracion = { grupos: { volumen: c } };
@@ -606,5 +607,83 @@ Deno.test("Góndola Volumen: Test 7 - Valores fuera de rango o no numéricos emi
       resReceta.advertencias.some(a => a.includes("asume 45 m³")),
       `resolverReceta debe incluir advertencia para caso ${c}`
     );
+  }
+});
+
+// --------------------------------------------------------------------------
+// TEST 8: Redondeo único del volumen en el motor
+// --------------------------------------------------------------------------
+Deno.test("Góndola Volumen: Test 8 - Redondeo único a 1 decimal en el motor alinea costo, aviso y nombres", () => {
+  const datos = prepararDatosGondolaConEscalas(datosGondolaBase);
+
+  // 1. 37.25 -> se redondea a 37.3
+  const cfg37_25: Configuracion = { grupos: { volumen: 37.25, tina_material: "a36" } };
+  const res37_25 = costear(datos, cfg37_25);
+  const det37_25 = resolverVolumenGondolaDetallado(cfg37_25);
+  assertEquals(det37_25.volumen, 37.3);
+  assertEquals(formatearVolumenM3(det37_25.volumen), "37.3");
+
+  // El costo usa exactamente 37.3 / 45
+  const tina37_25 = res37_25.secciones.opciones.lineas.find(l => l.concepto.includes("tina_material: a36"));
+  assert(tina37_25);
+  const esperadoTina37_3 = Math.round((167505.76 * 37.3 / 45) * 100) / 100;
+  assertEquals(tina37_25.importe, esperadoTina37_3);
+
+  // El aviso menciona 37.3 m³
+  const adv37_25 = res37_25.pendientes.find(p => p.tipo === "variante_supuesta");
+  assert(adv37_25);
+  assert(adv37_25.detalle.includes("37.3 m³"));
+
+  // 2. 37.99 -> se redondea a 38
+  const cfg37_99: Configuracion = { grupos: { volumen: 37.99, tina_material: "a36" } };
+  const det37_99 = resolverVolumenGondolaDetallado(cfg37_99);
+  assertEquals(det37_99.volumen, 38);
+  assertEquals(formatearVolumenM3(det37_99.volumen), "38");
+
+  // 3. 19.96 -> se redondea a 20 (dentro de rango [20, 60])
+  const cfg19_96: Configuracion = { grupos: { volumen: 19.96 } };
+  const det19_96 = resolverVolumenGondolaDetallado(cfg19_96);
+  assertEquals(det19_96.volumen, 20);
+  assertEquals(det19_96.esReconocido, true);
+
+  // 4. 19.94 -> se redondea a 19.9 (< 20, fuera de rango) -> asume 45
+  const cfg19_94: Configuracion = { grupos: { volumen: 19.94 } };
+  const det19_94 = resolverVolumenGondolaDetallado(cfg19_94);
+  assertEquals(det19_94.volumen, 45);
+  assertEquals(det19_94.esReconocido, false);
+  assert(det19_94.advertencia?.includes("fuera de rango"));
+
+  // 5. 45, 30 y 38 quedan sin cambio
+  assertEquals(resolverVolumenGondolaDetallado({ grupos: { volumen: 45 } }).volumen, 45);
+  assertEquals(resolverVolumenGondolaDetallado({ grupos: { volumen: 30 } }).volumen, 30);
+  assertEquals(resolverVolumenGondolaDetallado({ grupos: { volumen: 38 } }).volumen, 38);
+});
+
+// --------------------------------------------------------------------------
+// TEST 9: Parseo estricto de texto (eliminación de coincidencia parcial permisiva)
+// --------------------------------------------------------------------------
+Deno.test("Góndola Volumen: Test 9 - Parseo estricto rechaza '38abc', 'abc38', '1e2' y acepta '38 m3', '37,5 m³'", () => {
+  // Inválidos: no deben ser aceptados
+  const invalidos = ["38abc", "abc38", "1e2", "volumen_38"];
+  for (const inv of invalidos) {
+    const det = resolverVolumenGondolaDetallado({ grupos: { volumen: inv } });
+    assertEquals(det.esReconocido, false, `${inv} no debe ser reconocido`);
+    assertEquals(det.volumen, 45, `${inv} debe caer a 45 m³`);
+    assert(det.advertencia?.includes("no válido"), `${inv} debe emitir advertencia`);
+  }
+
+  // Válidos con unidad m3 / m³ opcional
+  const validos = [
+    { texto: "38 m3", esperado: 38 },
+    { texto: "38m3", esperado: 38 },
+    { texto: "38 M3", esperado: 38 },
+    { texto: "37,5 m³", esperado: 37.5 },
+    { texto: "37.5 m3", esperado: 37.5 },
+    { texto: "  45  ", esperado: 45 },
+  ];
+  for (const v of validos) {
+    const det = resolverVolumenGondolaDetallado({ grupos: { volumen: v.texto } });
+    assertEquals(det.esReconocido, true, `${v.texto} debe ser reconocido`);
+    assertEquals(det.volumen, v.esperado, `${v.texto} debe resolver a ${v.esperado}`);
   }
 });
