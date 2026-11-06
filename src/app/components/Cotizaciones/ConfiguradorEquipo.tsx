@@ -30,7 +30,14 @@ import {
   esOpcionVisible
 } from '../../utils/seleccionMixta';
 import { tituloEquipo } from '../../utils/tituloEquipo';
-import { esVolumenCompleto, evaluarEstadoVolumen, extraerCandidatoVolumen, esGrupoConductor } from '../../utils/volumenGondola';
+import { 
+  esVolumenCompleto, 
+  evaluarEstadoVolumen, 
+  extraerCandidatoVolumen, 
+  esGrupoConductor,
+  textoCampoVolumen,
+  valorDesdeTextoVolumen
+} from '../../utils/volumenGondola';
 
 export interface ConfiguracionModelo {
   modelo: any;
@@ -76,6 +83,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
   const [seccionesExpandidas, setSeccionesExpandidas] = useState<Record<string, boolean>>({});
   const [mostrarAjustes, setMostrarAjustes] = useState(false);
   const [grupoActivo, setGrupoActivo] = useState<string | null>(null);
+  const [textoVolumenLocal, setTextoVolumenLocal] = useState<string>('');
   
   const debounceRef = useRef<NodeJS.Timeout>();
   const currentReqRef = useRef<number>(0);
@@ -96,6 +104,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
       setMostrarAjustes(false);
       setConfiguracion({ grupos: {} });
       setGrupoActivo(null);
+      setTextoVolumenLocal('');
       setErrorConfig(null);
     }
     return () => {
@@ -147,6 +156,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
         }
         
         setConfiguracion(initialConfig);
+        setTextoVolumenLocal(textoCampoVolumen(initialConfig.grupos?.volumen));
         setAjustesUI(initialAjustesUI);
         
         const primerGrupo = data.grupos?.[0];
@@ -824,27 +834,18 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
 
                       {(() => {
                         const valActual = configuracion.grupos?.['volumen'];
-                        const { textoOriginal } = extraerCandidatoVolumen(valActual);
-                        const valorInput = typeof valActual === 'object' && valActual?.m3 !== undefined
-                          ? String(valActual.m3)
-                          : textoOriginal;
                         const estadoVol = evaluarEstadoVolumen(valActual);
 
                         const handleCambioVol = (raw: string) => {
+                          const valVol = valorDesdeTextoVolumen(raw);
                           const newConfig = {
                             ...configuracion,
                             grupos: { ...configuracion.grupos }
                           };
-                          const limpio = raw.trim();
-                          if (!limpio) {
+                          if (valVol === undefined) {
                             delete newConfig.grupos.volumen;
                           } else {
-                            const parsed = parseFloat(limpio.replace(',', '.'));
-                            if (Number.isFinite(parsed)) {
-                              newConfig.grupos.volumen = { opcion: 'personalizado', m3: parsed };
-                            } else {
-                              newConfig.grupos.volumen = { opcion: 'personalizado', raw: limpio };
-                            }
+                            newConfig.grupos.volumen = valVol;
                           }
                           handleConfigChange(newConfig);
                         };
@@ -862,8 +863,12 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                                   inputMode="decimal"
                                   className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                                   placeholder="Ej. 38"
-                                  value={valorInput}
-                                  onChange={(e) => handleCambioVol(e.target.value)}
+                                  value={textoVolumenLocal}
+                                  onChange={(e) => {
+                                    const txt = e.target.value;
+                                    setTextoVolumenLocal(txt);
+                                    handleCambioVol(txt);
+                                  }}
                                 />
                                 <span className="absolute right-3 top-2 text-xs text-muted-foreground pointer-events-none">
                                   m³
@@ -885,7 +890,11 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                                       variant={isSelected ? "default" : "outline"}
                                       size="sm"
                                       className="h-8 text-xs"
-                                      onClick={() => handleCambioVol(String(m3))}
+                                      onClick={() => {
+                                        const strM3 = String(m3);
+                                        setTextoVolumenLocal(strM3);
+                                        handleCambioVol(strM3);
+                                      }}
                                     >
                                       {m3} m³
                                     </Button>

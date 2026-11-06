@@ -4,9 +4,12 @@ import {
   evaluarEstadoVolumen,
   esVolumenCompleto,
   extraerCandidatoVolumen,
+  textoCampoVolumen,
+  valorDesdeTextoVolumen,
 } from "./volumenGondola.ts";
 
 Deno.test("volumenGondola: Sin valor o valor vacío retorna incompleto sin error de rango", () => {
+
   const casos = [undefined, null, "", "   ", {}, { opcion: "personalizado" }];
   for (const c of casos) {
     const res = evaluarEstadoVolumen(c);
@@ -111,3 +114,80 @@ Deno.test("volumenGondola: extraerCandidatoVolumen maneja diferentes formas de g
   assertEquals(extraerCandidatoVolumen({ opcion: "m3_30" }).numero, 30);
   assertEquals(extraerCandidatoVolumen(null).numero, null);
 });
+
+Deno.test("volumenGondola: textoCampoVolumen formatea correctamente valores y cotizaciones historicas", () => {
+  assertEquals(textoCampoVolumen({ m3: 38 }), "38");
+  assertEquals(textoCampoVolumen({ m3: 37.5 }), "37.5");
+  assertEquals(textoCampoVolumen("m3_45"), "45");
+  assertEquals(textoCampoVolumen("m3_30"), "30");
+  assertEquals(textoCampoVolumen(45), "45");
+  assertEquals(textoCampoVolumen(undefined), "");
+  assertEquals(textoCampoVolumen(null), "");
+  assertEquals(textoCampoVolumen(""), "");
+  assertEquals(textoCampoVolumen({ opcion: "personalizado", raw: "abc" }), "abc");
+  assertEquals(textoCampoVolumen({ opcion: "m3_30" }), "30");
+  assertEquals(textoCampoVolumen({ opcion: "m3_45" }), "45");
+  assertEquals(textoCampoVolumen({ opcion: "personalizado", raw: "37.", m3: 37 }), "37.");
+});
+
+Deno.test("volumenGondola: valorDesdeTextoVolumen convierte texto a objeto preservando raw y valores provisionales", () => {
+  assertEquals(valorDesdeTextoVolumen(""), undefined);
+  assertEquals(valorDesdeTextoVolumen("   "), undefined);
+  assertEquals(valorDesdeTextoVolumen("37."), { opcion: "personalizado", m3: 37, raw: "37." });
+  assertEquals(valorDesdeTextoVolumen("37,"), { opcion: "personalizado", m3: 37, raw: "37," });
+  assertEquals(valorDesdeTextoVolumen("37,5"), { opcion: "personalizado", m3: 37.5, raw: "37,5" });
+  assertEquals(valorDesdeTextoVolumen("37.5"), { opcion: "personalizado", m3: 37.5, raw: "37.5" });
+  assertEquals(valorDesdeTextoVolumen("abc"), { opcion: "personalizado", raw: "abc" });
+  assertEquals(valorDesdeTextoVolumen("38.0"), { opcion: "personalizado", m3: 38, raw: "38.0" });
+});
+
+Deno.test("volumenGondola: Simulación de tecleo carácter por carácter (punto, coma, decimales)", () => {
+  // Teclear "37.5": secuencia "", "3", "37", "37.", "37.5"
+  const secPunto = ["", "3", "37", "37.", "37.5"];
+  let valPunto: any;
+  for (const texto of secPunto) {
+    valPunto = valorDesdeTextoVolumen(texto);
+    const textoReflejado = textoCampoVolumen(valPunto);
+    assertEquals(textoReflejado, texto, `El texto en el campo para '${texto}' debe coincidir exactamente`);
+  }
+  assertEquals(valPunto?.m3, 37.5, "El valor final de m3 para '37.5' debe ser 37.5");
+
+  // Teclear "37,5" con coma: secuencia "", "3", "37", "37,", "37,5"
+  const secComa = ["", "3", "37", "37,", "37,5"];
+  let valComa: any;
+  for (const texto of secComa) {
+    valComa = valorDesdeTextoVolumen(texto);
+    const textoReflejado = textoCampoVolumen(valComa);
+    assertEquals(textoReflejado, texto, `El texto en el campo para '${texto}' debe coincidir exactamente`);
+  }
+  assertEquals(valComa?.m3, 37.5, "El valor final de m3 para '37,5' debe ser 37.5");
+
+  // Teclear "38.0": secuencia "", "3", "38", "38.", "38.0"
+  const secCero = ["", "3", "38", "38.", "38.0"];
+  let valCero: any;
+  for (const texto of secCero) {
+    valCero = valorDesdeTextoVolumen(texto);
+    const textoReflejado = textoCampoVolumen(valCero);
+    assertEquals(textoReflejado, texto, `El texto en el campo para '${texto}' debe coincidir exactamente`);
+  }
+  assertEquals(valCero?.m3, 38, "El valor final de m3 para '38.0' debe ser 38");
+});
+
+Deno.test("volumenGondola: Reapertura de cotizaciones viejas con clave histórica se visualiza limpia y completa", () => {
+  // Cotización guardada con clave string: { grupos: { volumen: "m3_45" } }
+  const configVieja45 = { grupos: { volumen: "m3_45" } };
+  const texto45 = textoCampoVolumen(configVieja45.grupos.volumen);
+  assertEquals(texto45, "45", "El campo debe mostrar '45' en lugar de 'm3_45'");
+  const estado45 = evaluarEstadoVolumen(configVieja45.grupos.volumen);
+  assertEquals(estado45.completo, true);
+  assertEquals(estado45.volumen, 45);
+
+  // Cotización guardada con objeto de opción: { grupos: { volumen: { opcion: "m3_30" } } }
+  const configVieja30 = { grupos: { volumen: { opcion: "m3_30" } } };
+  const texto30 = textoCampoVolumen(configVieja30.grupos.volumen);
+  assertEquals(texto30, "30", "El campo debe mostrar '30' en lugar de 'm3_30'");
+  const estado30 = evaluarEstadoVolumen(configVieja30.grupos.volumen);
+  assertEquals(estado30.completo, true);
+  assertEquals(estado30.volumen, 30);
+});
+
