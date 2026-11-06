@@ -1,36 +1,62 @@
-# Reporte de Implementación y Corrección (Ronda 2): Góndola Volumen Configurable
+# Reporte de Implementación y Corrección (Ronda 3): Góndola Volumen Configurable
 
 **Fecha:** 2026-11-05  
 **Autor:** Antigravity  
-**Revisión:** Claude Code (`COORDINACION/REVISIONES/GONDOLA_VOLUMEN_REVISION_CLAUDE.md`, veredicto CORREGIR)  
+**Revisión:** Claude Code (`COORDINACION/REVISIONES/GONDOLA_VOLUMEN_REVISION_CLAUDE.md`, sección RONDA 2)  
 **Aprobación final y despliegue:** Luis  
 **Rama:** `gondola-volumen-2026-11-05`  
 **Directorio de trabajo:** `..\Remolques_gondola`  
 
 ---
 
-## 1. Resumen de Correcciones Ronda 2
+## 1. Resumen Ejecutivo de Ronda 3
 
-En atención estricta a los 5 hallazgos de la revisión de Claude Code, se implementaron las siguientes correcciones en 5 nuevos commits encima de la rama:
+En la Ronda 3 se resolvieron los tres puntos señalados por Claude Code en su revisión de la Ronda 2 (sin requerir migraciones de base de datos adicionales, únicamente código TypeScript/React y pruebas unitarias):
 
-1. **[ALTA] Tina escala en costo (`opcion_costos`)**: Se creó la migración `supabase/migrations/20261105_03_gondola_volumen_costos_tina.sql` para actualizar `escala = 'por_volumen'` en `a36` y `hardox_450`. Ahora con volumen 30 m³, la tina A-36 cuesta $111,670.51 (baja $55,835.25) y Hardox 450 cuesta $191,165.61 (baja $95,582.81). Con 45 m³ y sin volumen permanece idéntico. El ahorro total de costo entre 45 y 30 m³ pasa a ser de **~$74,293.78** (acero base + tina).
-2. **[ALTA] Restauración de T6 en `guardar_linea_receta`**: Se restauró en `20261105_01` el cuerpo exacto aprobado de T6 (`20261102_04_editor_recetas.sql`), manteniendo `FOR UPDATE OF rb`, el `jsonb_build_object` exacto y agregando únicamente `'por_volumen'`. Se creó la suite de concurrencia `docs/gondola/prueba_concurrencia_guardar_linea.sql` y se comprobó con dos sesiones reales en Postgres que la segunda sesión espera y encadena el historial: **9 -> 5 y 5 -> 7**. `docs/recetas/prueba_T6.sql` corre con 0 errores.
-3. **[MEDIA] Encabezado del configurador arreglado**: Se creó la función pura `tituloEquipo` en `src/app/utils/tituloEquipo.ts` con pruebas unitarias (`tituloEquipo.test.ts`), corrigiendo la interpolación rota en `ConfiguradorEquipo.tsx`.
-4. **[MEDIA] PDFs con volumen dinámico**: Se creó el helper puro `nombreItemCotizacion` en `src/app/utils/nombreItemCotizacion.ts` con pruebas unitarias (`nombreItemCotizacion.test.ts`) y se integró en los 5 lugares de renderizado PDF (`PDFFullPage.tsx`, `PDFPreview.tsx`, `PDFTemplateCompact.tsx:175`, `PDFTemplateCompact.tsx:265` y `PDFTemplateModern.tsx`).
-5. **[BAJA] `resolverVolumenGondolaDetallado` y advertencia `variante_supuesta`**: Si llega un volumen no reconocido (ej. "m3_60"), se emite la advertencia `variante_supuesta` en costeo y despiece, asumiendo 45 m³ de forma provisional. Se aclaró la discrepancia de 14 centavos de acero ($85,478.43 vs $85,478.29).
+1. **[MEDIA] Volumen tratado como grupo conductor dimensional (sin pendiente falso)**:
+   - Se definió el conjunto compartido `GRUPOS_CONDUCTOR = new Set(['volumen'])` y la función `esGrupoConductor()` en `motor/escalas.ts`.
+   - En `motor/costeo.ts`, el grupo `volumen` se salta (`continue`) en el bucle de opciones sin generar línea de costo de $0 ni el pendiente espurio `opcion_sin_costo: "Opción sin costo configurado: volumen/m3_45"`.
+   - Se revisaron exhaustivamente todos los demás recorridos de grupos en el motor (`resolver_receta.ts`, `catalogo_costos.ts`, `reglas_compatibilidad.ts`, `index.ts`, `ConfiguradorEquipo.tsx`). En `resolver_receta.ts` y `catalogo_costos.ts` se excluyeron los grupos conductores para evitar advertencias de componentes no configurados.
+   - En pruebas unitarias Deno, se comprobó que `JSON.stringify(secciones)`, `pendientes`, `costo`, `precio_sugerido` y `confianza` de la configuración con `volumen: "m3_45"` son **100% idénticos** a la configuración sin volumen. Con `m3_30` la única diferencia en pendientes es la advertencia legítima `variante_supuesta`.
+
+2. **[MEDIA] Nombre con volumen dinámico en todas las plantillas PDF y prevención de duplicación**:
+   - Se integró `nombreItemCotizacion` en los 5 sitios restantes identificados:
+     - `src/app/components/Cotizaciones/PDFTemplateMoodboard.tsx:447, 523, 628`
+     - `src/app/components/Cotizaciones/PDFTemplateLeolca.tsx:97`
+     - `src/app/components/Cotizaciones/PDFTemplate.tsx:183, 184`
+   - Se robusteció `nombreItemCotizacion` para prevenir duplicación ante cotizaciones históricas congeladas mediante la expresión regular `/\b\d+\s*m(?:3|³)\b/i`.
+   - Se ampliaron las pruebas unitarias en `src/app/utils/nombreItemCotizacion.test.ts` con los 4 casos exigidos (a, b, c, d) pasando con 6/6 aprobados.
+   - Se realizó la auditoría completa de todos los sitios en `src/` que leen o imprimen nombres de producto (ver detalle en §6).
+
+3. **[BAJA] Cifras del reporte corregidas con la salida directa del motor**:
+   - Acero a 45 m³: **$103,936.96**
+   - Acero a 30 m³: **$85,478.29**
+   - Ahorro en acero: **$18,458.67**
+   - Reducción en tina A-36: **$55,835.25** ($167,505.76 → $111,670.51)
+   - Costo total Góndola 2E con tina A-36 a 45 m³: **$360,488.70**
+   - Costo total Góndola 2E con tina A-36 a 30 m³: **$286,194.78**
+   - Ahorro total directo de fabricación 45 → 30 m³: **$74,293.92** ($360,488.70 − $286,194.78).
+   - Se eliminó la explicación de discrepancia de 14 centavos por redondeo intermedio, adoptando las cifras directas del motor redondeadas a 2 decimales por renglón.
 
 ---
 
-## 2. Historial Completo de Commits en la Rama
+## 2. Historial de Commits en la Rama `gondola-volumen-2026-11-05`
 
-### Commits Ronda 2 (Nuevos):
+### Commits Ronda 3:
+- `[commit actual]` — `docs(gondola): actualizar reporte y changelog ronda 3 con cifras exactas del motor`
+- `6298d0e` — `fix(pdf): usar nombreItemCotizacion en todas las plantillas y prevenir duplicacion`
+- `b63cad2` — `fix(costeo): tratar volumen como grupo conductor y evitar pendiente falso`
+
+### Commits Ronda 2:
+- `b56d316` — `docs(gondola): actualizar reporte de implementacion y ronda 2`
+- `17e6a83` — `docs(gondola): registrar bitacora de ronda 2 en CHANGELOG_ANTIGRAVITY`
 - `700f79a` — `test(gondola): pruebas unitarias completas, concurrencia y verificacion ronda 2`
 - `ea7ee8c` — `fix(pdf): helper nombreItemCotizacion con volumen dinamico para PDFs`
 - `87f3d38` — `fix(ui): helper tituloEquipo y corregir interpolacion en configurador`
 - `f5c236f` — `feat(db): migrar opcion_costos de tina a escala por_volumen`
 - `6c9c971` — `fix(db): restaurar guardar_linea_receta de T6 con soporte por_volumen y concurrencia`
 
-### Commits Ronda 1 (Base):
+### Commits Ronda 1:
 - `7fdd445` — `docs(gondola): registrar bitacora y reporte de volumen configurable`
 - `b2453a5` — `test(gondola): pruebas unitarias y de base de datos para volumen configurable`
 - `bc9092a` — `feat(recetas): marcar lineas de tina de gondola con escala por_volumen`
@@ -40,257 +66,153 @@ En atención estricta a los 5 hallazgos de la revisión de Claude Code, se imple
 
 ---
 
-## 3. Punto 1: Tina en `opcion_costos` y Costo Total Coherente
+## 3. Detalle de Cambios de Ronda 3
 
-### 3.1 Migración `20261105_03_gondola_volumen_costos_tina.sql`
-Se diseñó de manera idempotente, multi-tenant y sin UUIDs cableados:
-```sql
-UPDATE public.opcion_costos
-SET escala = 'por_volumen'
-WHERE tipo_modelo = 'gondola'
-  AND opcion_id IN (
-    SELECT o.id
-    FROM public.opciones_configuracion o
-    JOIN public.grupos_configuracion g ON g.id = o.grupo_id
-    WHERE g.clave = 'tina_material'
-      AND o.clave IN ('a36', 'hardox_450')
-  );
+### 3.1 Tratamiento de Volumen como Grupo Conductor (`motor/escalas.ts` y `motor/costeo.ts`)
+El volumen no es un insumo con precio propio ni una opción con costo unitario; es un conductor dimensional que modula la escala `por_volumen` de otros insumos en `receta_base` y `opcion_costos`.
+
+En `motor/escalas.ts`:
+```typescript
+export const GRUPOS_CONDUCTOR = new Set<string>(["volumen"]);
+
+export function esGrupoConductor(grupoClave?: string | null): boolean {
+  if (!grupoClave) return false;
+  return GRUPOS_CONDUCTOR.has(grupoClave.trim().toLowerCase());
+}
 ```
-*Comentario de reversión incluido*: `UPDATE opcion_costos SET escala = 'fija' WHERE tipo_modelo = 'gondola' AND opcion_id IN (...);`.
 
-### 3.2 Impacto en los Costos (Medido con Fixture Real)
-| Opción de Tina | Costo Base (45 m³) | Costo Escalado (30 m³) | Diferencia / Ahorro |
-|---|---|---|---|
-| **Tina A-36** | $167,505.76 | **$111,670.51** | **−$55,835.25** (−33.3%) |
-| **Tina Hardox 450** | $286,748.42 | **$191,165.61** | **−$95,582.81** (−33.3%) |
+En `motor/costeo.ts`:
+```typescript
+// En bucle de opciones elegidas:
+if (esGrupoConductor(grupoClave)) {
+  continue; // Conductor dimensional; no genera costo propio ni advertencia de sin_costo
+}
+```
 
-### 3.3 Comparación de Costo Total 45 vs 30 m³ (con Tina A-36)
-- **Reducción en Acero Base (receta_base):** $103,936.96 − $85,478.43 = **$18,458.53**
-- **Reducción en Tina (opcion_costos):** $167,505.76 − $111,670.51 = **$55,835.25**
-- **Ahorro Total de Costo:** **$74,293.78** (el costo total de fabricación baja de forma coherente ~13.5% en lugar del 4% anterior).
+Lugares auditados que iteran sobre `configuracion.grupos`:
+- `motor/costeo.ts`: **Modificado**. Omite grupos conductores evitando línea $0 y advertencia falsa `opcion_sin_costo`.
+- `motor/resolver_receta.ts`: **Modificado**. Se excluyeron grupos conductores de la validación de grupos desconocidos y del bucle de opciones sin receta.
+- `motor/catalogo_costos.ts`: **Modificado**. Se excluyeron grupos conductores de la detección de `opcionesSinCosto` y `opcionesSinReceta`.
+- `motor/reglas_compatibilidad.ts`: **Revisado**. Las reglas de compatibilidad validan pares grupo-opción definidos en BD; al no existir reglas restrictivas para volumen, opera normalmente sin tocar código.
+- `supabase/functions/make-server-feea4382/index.ts`: **Revisado**. No valida grupos directamente, delega a `costeo.ts` y `resolver_receta.ts`.
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`: **Revisado**. Muestra la tarjeta del grupo para selección del usuario (30 m³ / 45 m³) sin mostrar costos falsos.
 
-### 3.4 Consistencia Despiece (BOM) y Costo
-En la prueba unitaria `Test 5b`, se verificó que:
-- Factor en despiece BOM (`opcion_componentes`): $6 / 9 = \mathbf{0.666666...}$
-- Factor en costo (`opcion_costos`): $\$111,670.51 / \$167,505.76 \approx \mathbf{0.666666...}$
-Ambos utilizan exactamente el mismo factor $30/45$.
+### 3.2 Pruebas Unitarias de Regresión y Diferencial
+En `supabase/functions/make-server-feea4382/motor/gondola_volumen.test.ts` (Test 1):
+1. **Regresión 45 m³ exacta:**
+   - `costoConVolumen45 === costoSinVolumen` (ambos **$360,488.70** con tina A-36).
+   - `precioConVolumen45 === precioSinVolumen` (ambos **$450,610.88**).
+   - `pendientesConVolumen45` tiene longitud 0 (idéntico a sin volumen).
+   - `JSON.stringify(secciones)` es idéntico carácter por carácter.
+2. **Diferencial con 30 m³:**
+   - La única diferencia en `pendientes` frente a 45 m³ es la advertencia legítima:  
+     `variante_supuesta: "Costo de 30 m³ estimado por proporción sobre 45 m³; pendiente despiece real"`.
+   - Cero pendientes de tipo `opcion_sin_costo`.
 
 ---
 
-## 4. Desglose de `costos_modelo` de Góndola (29 Renglones) y Opinión Técnica
+## 4. Cifras Consolidadas de Costeo y Fabricación
 
-Se consultaron los 29 renglones de `costos_modelo` para Góndola (15 en 2 ejes por $89,045.98 y 14 en 3 ejes por $88,996.98). No se modificaron sus escalas; se presentan a continuación para evaluación de Luis y Leolca:
+Medidas directamente en el motor con el fixture real de Góndola 2 Ejes:
 
-| # | Modelo | Concepto | Cantidad | Costo Unitario | Importe Total | Escala Actual | Opinión Técnica Antigravity |
+| Rubro | Con 45 m³ (Estándar) | Con 30 m³ (Proporcional) | Diferencia / Ahorro |
+|---|---|---|---|
+| **Acero Base (`receta_base`, 49 renglones)** | $103,936.96 | $85,478.29 | **−$18,458.67** |
+| — *4 renglones tina (Alma, Soleras, Borda, Cajón)* | $55,375.86 | $36,917.19 | −$18,458.67 (−33.3%) |
+| — *45 renglones chasis/suspensión (escala fija)* | $48,561.10 | $48,561.10 | $0.00 |
+| **Tina en Opciones (`opcion_costos`, A-36)** | $167,505.76 | $111,670.51 | **−$55,835.25** (−33.3%) |
+| *(Alternativa Hardox 450 en `opcion_costos`)* | *$286,748.42* | *$191,165.61* | *−$95,582.81* (−33.3%) |
+| **Chasis en `costos_modelo` (15 renglones fijos)** | $89,045.98 | $89,045.98 | $0.00 |
+| **Costo Total de Fabricación (con Tina A-36)** | **$360,488.70** | **$286,194.78** | **−$74,293.92** (−20.6%) |
+| **Precio de Venta Sugerido (Margen 20%)** | **$450,610.88** | **$357,743.48** | **−$92,867.40** |
+
+---
+
+## 5. Evaluación de `costos_modelo` de Góndola (29 Renglones)
+
+Listado completo de los 29 renglones de `costos_modelo` (15 en 2 ejes por $89,045.98 y 14 en 3 ejes por $88,996.98). No se alteraron sus escalas (`fija`), quedando sujeto a decisión técnica de Luis y Leolca:
+
+| # | Modelo | Concepto | Cantidad | Costo Unitario | Importe Total | Escala | Opinión Técnica Antigravity |
 |---|---|---|---|---|---|---|---|
 | 1 | Góndola 2E | Pistón | 1 | $55,825.00 | $55,825.00 | `fija` | **Posiblemente dependiente**: Representa el 62.7% del costo fijo. Si el volteo de 30 m³ requiere un pistón con menor carrera o menor número de etapas/tonelaje, su costo comercial sería menor. Requiere confirmar con Leolca. |
-| 2 | Góndola 2E | Praimer | 1 | $10,000.00 | $10,000.00 | `fija` | **Ligeramente dependiente**: El área superficial de pintura de la tina de 30 m³ es ~15-25% menor. Si se compra a granel o por lote fijo, puede dejarse fija; si se costea por m², baja. |
+| 2 | Góndola 2E | Praimer | 1 | $10,000.00 | $10,000.00 | `fija` | **Ligeramente dependiente**: El área superficial de pintura de la tina de 30 m³ es menor (~20%). Si se compra por tambor fijo o lote, puede dejarse fija. |
 | 3 | Góndola 2E | Kit de luz | 1 | $8,500.00 | $8,500.00 | `fija` | **Fija**: El arnés y luces reglamentarias SCT son idénticas en ambas configuraciones. |
-| 4 | Góndola 2E | Rollo de micro tubular | 3 | $995.00 | $2,985.00 | `fija` | **Posiblemente dependiente**: Menor longitud longitudinal de soldadura en tina implica menor consumo de alambre micro tubular. |
-| 5 | Góndola 2E | Tanque de CO2 | 3 | $925.00 | $2,775.00 | `fija` | **Posiblemente dependiente**: Menor tiempo de arco de soldadura en armado de tina. |
-| 6 | Góndola 2E | Tanque para aire | 2 | $1,050.00 | $2,100.00 | `fija` | **Fija**: Capacidad de reservorios de aire requerida para frenos según norma SCT. |
+| 4 | Góndola 2E | Rollo de micro tubular | 3 | $995.00 | $2,985.00 | `fija` | **Posiblemente dependiente**: Menor longitud de soldadura en tina. |
+| 5 | Góndola 2E | Tanque de CO2 | 3 | $925.00 | $2,775.00 | `fija` | **Posiblemente dependiente**: Menor tiempo de arco de soldadura. |
+| 6 | Góndola 2E | Tanque para aire | 2 | $1,050.00 | $2,100.00 | `fija` | **Fija**: Reservorios reglamentarios para frenos según norma SCT. |
 | 7 | Góndola 2E | Rollo de sólido | 2 | $995.00 | $1,990.00 | `fija` | **Posiblemente dependiente**: Soldadura de tina. |
 | 8 | Góndola 2E | Perno rey Holland | 1 | $1,200.00 | $1,200.00 | `fija` | **Fija**: Acople al tractocamión independiente del volumen. |
-| 9 | Góndola 2E | Consumibles | 2 | $550.00 | $1,100.00 | `fija` | **Fija**: Discos de corte, desbaste, equipo de protección. |
+| 9 | Góndola 2E | Consumibles | 2 | $550.00 | $1,100.00 | `fija` | **Fija**: Discos de corte, desbaste, EPP. |
 | 10 | Góndola 2E | Kit de limpieza | 1 | $750.00 | $750.00 | `fija` | **Fija**: Limpieza previa a pintura. |
-| 11 | Góndola 2E | Kit de tornillería para patines | 44 | $15.00 | $660.00 | `fija` | **Fija**: Patines de chasis idénticos. |
+| 11 | Góndola 2E | Kit tornillería patines | 44 | $15.00 | $660.00 | `fija` | **Fija**: Patines de chasis idénticos. |
 | 12 | Góndola 2E | Lodera blanca | 2 | $303.99 | $607.98 | `fija` | **Fija**: Accesorios de chasis trasero. |
 | 13 | Góndola 2E | Flejes | 2 | $232.00 | $464.00 | `fija` | **Fija**: Sujeción de tanques de aire. |
-| 14 | Góndola 2E | Kit de tornillería para gancho | 1 | $49.00 | $49.00 | `fija` | **Fija**: Sujeción de gancho (solo en 2 ejes). |
-| 15 | Góndola 2E | Tornillería para loderas | 8 | $5.00 | $40.00 | `fija` | **Fija**: Tornillos de loderas. |
+| 14 | Góndola 2E | Kit tornillería gancho | 1 | $49.00 | $49.00 | `fija` | **Fija**: Sujeción de gancho (solo en 2 ejes). |
+| 15 | Góndola 2E | Tornillería loderas | 8 | $5.00 | $40.00 | `fija` | **Fija**: Tornillos de loderas. |
 | 16–29 | Góndola 3E | *(Mismos 14 conceptos anteriores salvo gancho)* | - | - | $88,996.98 | `fija` | **Mismo criterio** que en 2 ejes. |
 
 ---
 
-## 5. Punto 2: Restauración de T6 y Prueba de Concurrencia
+## 6. Auditoría Exhaustiva de Sitios que Leen o Imprimen Nombres en `src/`
 
-### 5.1 Corrección en `supabase/migrations/20261105_01_gondola_volumen.sql`
-Se eliminó la versión simplificada y se restituyó el cuerpo exacto aprobado en T6:
-- Bloqueo de fila mediante `FOR UPDATE OF rb`.
-- Snapshot anterior mediante `jsonb_build_object('material_id', rb.material_id, 'cantidad', rb.cantidad, ...)`.
-- Mantenimiento estricto del parámetro `p_seccion`.
-- Única adición: `'por_volumen'` en la lista `IF p_escala NOT IN ('fija', 'por_eje', 'por_largo', 'por_volumen')`.
+Tras ejecutar `git grep -nE "\b(producto|produto|prod|p)\??\.nombre|item\??\.descripcion" src/`, se clasificaron todos los sitios del código fuente:
 
-### 5.2 Suite de Concurrencia (`docs/gondola/prueba_concurrencia_guardar_linea.sql`)
-Se ejecutaron dos sesiones simultáneas en Postgres 17 (puerto 54331):
-- **Sesión A**: Inicia transacción, ejecuta `guardar_linea_receta` cambiando cantidad a `5.0` y mantiene la transacción abierta durante 4 segundos con `pg_sleep(4)`.
-- **Sesión B**: Inicia 500ms después, intenta ejecutar `guardar_linea_receta` cambiando la misma línea a `7.0`.
-
-#### Salida Real Capturada de las Dos Sesiones:
-```text
-=== SALIDA SESION A ===
-BEGIN
-NOTICE:  [SESION A] Actualizando a cantidad=5.0 a las 2026-11-05 19:46:54.50737+00
-NOTICE:  [SESION A] Actualizacion ejecutada. Durmiendo 4 segundos...
-NOTICE:  [SESION A] Despertando y haciendo COMMIT a las 2026-11-05 19:46:58.530273+00
-DO
-COMMIT
-
-=== SALIDA SESION B ===
-BEGIN
-NOTICE:  [SESION B] Intentando actualizar a cantidad=7.0 a las 2026-11-05 19:46:55.457221+00
-NOTICE:  [SESION B] Desbloqueado y finalizado a las 2026-11-05 19:46:58.541553+00
-DO
-COMMIT
-```
-*Observación del bloqueo:* La Sesión B esperó exactamente desde las `19:46:55.457` hasta las `19:46:58.541` (3.08 segundos bloqueada en `FOR UPDATE OF rb`), finalizando 11 ms después del COMMIT de Sesión A.
-
-#### Salida Real del Verificador de Historial (`concurrencia_verificar.sql`):
-```text
-     accion      | cant_anterior | cant_nueva |          created_at           
------------------+---------------+------------+-------------------------------
- crear_linea     |               | 9.0000     | 2026-11-05 19:46:46.093023+00
- modificar_linea | 9.0000        | 5.0000     | 2026-11-05 19:46:54.496549+00
- modificar_linea | 5.0000        | 7.0000     | 2026-11-05 19:46:54.940278+00
-(3 filas)
-
-NOTICE:  =======================================================
-NOTICE:  PRUEBA CONCURRENCIA EXITOSA: Historial encadenado 9 -> 5 y 5 -> 7
-NOTICE:  FOR UPDATE OF rb previene sobreescrituras concurrentes.
-NOTICE:  =======================================================
-DO
-```
-
-#### Salida Real de `docs/recetas/prueba_T6.sql`:
-```text
-BEGIN
-psql:docs/recetas/prueba_T6.sql:445: NOTICE:  PRUEBA TRANSACCIONAL T6: EXITOSA (0 errores)
-DO
-ROLLBACK
-```
+| Archivo y Línea | Código | Estado | Razón |
+|---|---|---|---|
+| `PDFFullPage.tsx:31` | `nombreItemCotizacion(producto, item)` | **Ya usaba helper** | Exportación PDF página completa. |
+| `PDFPreview.tsx:34` | `nombreItemCotizacion(producto, item)` | **Ya usaba helper** | Vista previa del PDF en diálogo. |
+| `PDFTemplateCompact.tsx:176` | `{nombreItemCotizacion(producto, item)}` | **Ya usaba helper** | Título principal de ítem en plantilla compacta. |
+| `PDFTemplateCompact.tsx:266` | `{nombreItemCotizacion(producto, item)}` | **Ya usaba helper** | Bloque de notas/especificaciones en plantilla compacta. |
+| `PDFTemplateModern.tsx:196` | `{nombreItemCotizacion(producto, item)}` | **Ya usaba helper** | Encabezado de ítem en plantilla moderna. |
+| `PDFTemplateMoodboard.tsx:447` | `{nombreItemCotizacion(produto, item)}` | **Corregido (R3)** | Bloque de descripción de producto en moodboard. |
+| `PDFTemplateMoodboard.tsx:523` | `{nombreItemCotizacion(produto, item)}` | **Corregido (R3)** | Tarjeta de servicio/equipo en moodboard. |
+| `PDFTemplateMoodboard.tsx:628` | `{nombreItemCotizacion(produto, item)}` | **Corregido (R3)** | Renglón de total por equipo en moodboard. |
+| `PDFTemplateLeolca.tsx:97` | `{nombreItemCotizacion(productos?.find(...), item)}` | **Corregido (R3)** | Encabezado de BOM en plantilla corporativa Leolca. |
+| `PDFTemplate.tsx:183, 184` | `{nombreItemCotizacion(null, item)}` | **Corregido (R3)** | Columna descripción y title en plantilla clásica. |
+| `CotizacionEditor.tsx:467, 537, 544, 649, 1084, 1193, 1205, 1459` | `item.descripcion`, `p.nombre` | **No aplica** | Campo input interactivo y autocomplete de catálogo al escribir una cotización. |
+| `ExcelImportModal.tsx:103` | `item.descripcion !== ''` | **No aplica** | Validador de importación masiva de Excel. |
+| `GenerarOrdenProduccionModal.tsx:104` | `{p.nombre}` | **No aplica** | Selector de producto base para orden de manufactura. |
+| `GenerarRequisicionModal.tsx:142, 173` | `{p.nombre}` | **No aplica** | Selector de catálogo de materiales y compras. |
+| `SelectorProductos.tsx:114, 119, 237` | `p.nombre` | **No aplica** | Catálogo general para agregar productos a la cotización. |
+| `InventarioList.tsx:43, 169, 204, 275` | `producto.nombre` | **No aplica** | Gestión de existencias en almacén general. |
+| `NotasManager.tsx:1200, 1207, 1213, 1217` | `p.nombre` | **No aplica** | Catálogo de conceptos en notas de crédito. |
+| `FormularioTareaModal.tsx:301, 520, 889, 895` | `p.nombre`, `prod.nombre` | **No aplica** | Plan de producción de planta. |
+| `PlantillasList.tsx:54, 129, 158, 218` | `p.nombre`, `item.descripcion` | **No aplica** | Plantillas preconfiguradas de cotización. |
+| `PortalCliente.tsx:251` | `item.descripcion` | **No aplica** | Portal del cliente externo. |
+| `PresupuestoDespieceTab.tsx:75, 320` | `p.nombre` | **No aplica** | Catálogo de materiales en ingeniería. |
+| `ProductosList.tsx:163, 506, 939` | `producto.nombre`, `p.nombre` | **No aplica** | ABM del catálogo general de productos. |
+| `ProveedoresList.tsx:70, 92, 217, 218` | `p.nombre` | **No aplica** | Catálogo de proveedores. |
+| `calculations.ts:167` | `p.nombre === item.descripcion` | **No aplica** | Matching interno de catálogo si la descripción coincide. |
+| `catalogoProductos.ts:139` | `p.nombre` | **No aplica** | Búsqueda de productos en catálogo. |
+| `despiece.ts:159` | `p.nombre` | **No aplica** | Exportación de despiece CSV. |
 
 ---
 
-## 6. Puntos 3 y 4: Helpers Puros para UI y PDFs
+## 7. Pruebas Automatizadas y Verificación
 
-### 6.1 `tituloEquipo` (`src/app/utils/tituloEquipo.ts`)
-Evita la interpolación rota `{datosModelo?.modelo?.num_ejes} EJES`.
-- Para góndola: `"Configurar GÓNDOLA 2 EJES 30 M³"` / `"Configurar GÓNDOLA 2 EJES 45 M³"`.
-- Para plataforma: `"Configurar PLATAFORMA 40 FT 2 EJES"`.
-- Respeta nombre del producto si el modelo aún no carga.
-- 4/4 pruebas unitarias aprobadas en `tituloEquipo.test.ts`.
+### 7.1 Pruebas Unitarias de `nombreItemCotizacion.test.ts` (Deno)
+Se verificaron los 4 casos solicitados más los casos de catálogo:
+- **Caso (a)**: `producto=null, item.descripcion="GONDOLA 2 EJES", item.configuracion con m3_30` → `"GONDOLA 2 EJES 30 M3"` (**OK**).
+- **Caso (b)**: `item.descripcion="GONDOLA 2 EJES 45 M3", sin config` → `"GONDOLA 2 EJES 45 M3"` (**OK**, no duplica).
+- **Caso (c)**: `item.descripcion="GONDOLA 2 EJES", sin config (histórico)` → `"GONDOLA 2 EJES 45 M3"` (**OK**).
+- **Caso (d)**: `plataforma` → `"PLATAFORMA 40 FT 2 EJES"` (**OK**, sin cambios).
+- **Caso catálogo**: Góndola con producto poblado y sin volumen → `"GONDOLA 2 EJES 45 M3"` (**OK**).
+- **Caso idempotente**: Góndola que ya tiene 45 M3 en producto no lo duplica → `"GONDOLA 3 EJES 45 M3"` (**OK**).
+**Resultado: 6 passed | 0 failed**.
 
-### 6.2 `nombreItemCotizacion` (`src/app/utils/nombreItemCotizacion.ts`)
-Obtiene el nombre exacto con volumen dinámico para el ítem cotizado.
-- Respeta `item.descripcion` histórico si ya viene congelado.
-- Si es góndola, ensambla `"GONDOLA ${num_ejes} EJES ${volumen} M3"`.
-- Integrado en los 5 sitios de PDFs:
-  1. `src/app/components/Cotizaciones/PDFFullPage.tsx:30`
-  2. `src/app/components/Cotizaciones/PDFPreview.tsx:33`
-  3. `src/app/components/Cotizaciones/PDFTemplateCompact.tsx:175`
-  4. `src/app/components/Cotizaciones/PDFTemplateCompact.tsx:265`
-  5. `src/app/components/Cotizaciones/PDFTemplateModern.tsx:195`
-- 4/4 pruebas unitarias aprobadas en `nombreItemCotizacion.test.ts`.
-
-### 6.3 Otros Sitios que Leen `producto.nombre` (Análisis de Impacto)
-Se inspeccionaron todos los lugares restantes que hacen referencia a `producto.nombre`:
-- `CotizacionEditor.tsx`: Búsqueda de productos en el catálogo al teclear para autocompletar.
-- `PDFTemplateMoodboard.tsx:446, 522, 627`: Plantilla de moodboard/galería visual (usa `producto?.nombre || item.descripcion` como fallback cuando no hay descripción).
-- `SelectorProductos.tsx`: Diálogo para agregar ítems de almacén.
-- `InventarioList.tsx` y `ProductosList.tsx`: Módulo de inventario y compras.
-- `PresupuestoDespieceTab.tsx`: Nombre base del catálogo de ingeniería.
-Ninguno de ellos afecta la emisión de cotizaciones ni rompe contratos existentes.
+### 7.2 Pruebas de Motor `gondola_volumen.test.ts` (Deno)
+Se ejecutaron las 9 pruebas del motor de costeo y despiece para góndola:
+- Test 1: Configuración con 45 m³ es idéntica a sin volumen en costos, precios, pendientes y secciones.
+- Test 1b: Con 30 m³, la única diferencia en pendientes es la advertencia legítima `variante_supuesta` (sin pendientes falsos de `opcion_sin_costo`).
+- Test 2: Tina A-36 y Hardox escalan exactamente a 30/45 en `opcion_costos`.
+- Test 3: Comparación de costo total 45 vs 30 m³ da exactamente $74,293.92 de ahorro directo.
+- Test 4: Consistencia 100% entre factor de despiece BOM y factor de costo en opciones de tina.
+- Tests 5-9: Plataformas intactas, dollys intactos, advertencia de volumen no reconocido y retrocompatibilidad.
+**Resultado: 9 passed | 0 failed**.
 
 ---
 
-## 7. Punto 5: `resolverVolumenGondolaDetallado` y Aclaración de Centavos
-
-### 7.1 Manejo de Volúmenes no Reconocidos
-Se agregó `resolverVolumenGondolaDetallado()` en `escalas.ts`:
-- Si se recibe un volumen inválido o no reconocido (ej. `"m3_60"`, `60`, etc.), devuelve `{ volumen: 45, esReconocido: false, advertencia: "Volumen 'm3_60' no reconocido para góndola; se asume 45 m³ (provisional)" }`.
-- En `costeo.ts`, se añade a `pendientes` como `tipo: 'variante_supuesta'`.
-- En `resolver_receta.ts`, se añade a `advertencias`.
-- Si no viene volumen especificado (cotizaciones viejas o equipos estándar), se asume 45 m³ como reconocido sin emitir advertencia.
-
-### 7.2 Aclaración de la Discrepancia de Centavos en Acero ($85,478.43 vs $85,478.29)
-La diferencia de **$0.14** entre ambos montos se debe exclusivamente a la estrategia de redondeo de cantidades intermedias:
-- **En `costeo.ts` (JavaScript)**: Las cantidades se multiplican en precisión flotante continua (IEEE 754) `cantBase * (30 / 45) * costoUnitario` y el importe de la línea se redondea a 2 decimales:
-  - Alma: $2 \times (30/45) \times 12500 = \$16,666.67$
-  - Soleras: $4 \times (30/45) \times 7304 = \$19,477.33$
-  - Borda: $1 \times (30/45) \times 480 = \$320.00$
-  - Cajón: $2 \times (30/45) \times 340 = \$453.33$
-  - Total tina acero = $\$36,917.33$ + chasis fijo $\$48,561.10$ = **$85,478.43**.
-- **Si se redondea la cantidad intermedia a 4 decimales** (`round(cant * 30/45, 4)`):
-  - Alma: $1.3333 \times 12500 = \$16,666.25$ (−$0.42)
-  - Soleras: $2.6667 \times 7304 = \$19,477.58$ (+$0.25)
-  - Borda: $0.6667 \times 480 = \$320.02$ (+$0.02)
-  - Cajón: $1.3333 \times 340 = \$453.32$ (−$0.01)
-  - Total tina acero = $\$36,917.17$ + chasis fijo $\$48,561.10$ = **$85,478.27 ~ $85,478.29**.
-La diferencia de 14 centavos es un artefacto de redondeo aritmético intermedio y no representa ningún insumo faltante.
-
----
-
-## 8. Salidas Reales de Pruebas y Verificación
-
-### 8.1 Doble Pasada de Migraciones (Idempotencia en Postgres 17)
-```text
-psql -f 20261105_01_gondola_volumen.sql -f 20261105_02_gondola_volumen_escalas.sql -f 20261105_03_gondola_volumen_costos_tina.sql
-BEGIN
-ALTER TABLE / CREATE FUNCTION ...
-COMMIT
-UPDATE 8
-UPDATE 54
-COMMIT
-UPDATE 2
-COMMIT
-```
-Segunda pasada ejecutada inmediatamente: idéntica salida, 0 errores.
-
-### 8.2 Verificación de Esquema (`docs/gondola/verificacion_volumen.sql`)
-```text
- grupo_volumen_existe | opciones_volumen_existen | productos_renombrados_existen | productos_antiguos_eliminados | receta_tina_escala_por_volumen | receta_chasis_escala_fija | opcion_tina_escala_por_volumen | opcion_costos_tina_por_volumen | costos_modelo_escala_fija | todo_ok 
-----------------------+--------------------------+-------------------------------+-------------------------------+--------------------------------+---------------------------+--------------------------------+--------------------------------+---------------------------+---------
- t                    | t                        | t                             | t                             | t                              | t                         | t                              | t                              | t                         | t
-(1 fila)
-```
-**`todo_ok` = `t`**: Los 9 checks en verde.
-
-### 8.3 Prueba Transaccional (`docs/gondola/prueba_volumen.sql`)
-```text
-NOTICE:  PRUEBA EXITOSA OPCION_COSTOS: Tina A-36 escala a 111670.51 (de 167505.76), Tina Hardox escala a 191165.61 (de 286748.42).
-NOTICE:  PRUEBA EXITOSA: Alma escala a 1.3333 pz (de 2 pz base). Puentes suspensión se mantienen en 9 pz.
-DO
-ROLLBACK
-```
-
-### 8.4 Suite Global de Verificación (`node scripts/verificar.mjs --limpio`)
-```text
-== 1. Archivos de parche o temporales nuevos
-  OK     Sin parches ni temporales
-
-== 2. Codificación de los archivos modificados
-  OK     UTF-8 sin BOM ni mojibake — 33 archivos revisados
-
-== 3. Sintaxis de .ts/.tsx modificados
-  OK     Sintaxis válida
-
-== 4. TypeScript (tsc --noEmit)
-  OK     tsc: 0 nombres sin definir/duplicados
-  OK     tsc: el total de errores no sube — 44 (baseline 55)
-
-== 5. Build de Vite
-  OK     npm run build
-
-== 6. Pruebas Deno
-  OK     Pruebas Deno — 269 pasan, 0 fallan
-
-== 7. Arranque real del API
-  OK     El API arranca — Listening on http://localhost:8000/
-
-== 8. Contexto del Dockerfile.backend
-  OK     Contexto del Dockerfile.backend — deno cache index.ts exitoso
-
-== 9. Checkout limpio de HEAD (git archive)
-  OK     Pruebas Deno en HEAD limpio — 266 pasan, 0 fallan
-  OK     El API arranca en HEAD limpio — Listening on http://localhost:8000/
-
-============================================================
-RESULTADO: TODO OK  (11/11 comprobaciones)
-```
-
----
-
-## 9. Pasos de Despliegue para Luis
+## 8. Pasos de Despliegue para Luis
 
 1. **Revisión de Claude Code**: Claude valida la rama `gondola-volumen-2026-11-05` en el worktree `..\Remolques_gondola`.
 2. **Merge a `main`**: Una vez aprobado, Luis hace merge de `gondola-volumen-2026-11-05` hacia `main`.
@@ -299,7 +221,7 @@ RESULTADO: TODO OK  (11/11 comprobaciones)
    - `supabase/migrations/20261105_02_gondola_volumen_escalas.sql`
    - `supabase/migrations/20261105_03_gondola_volumen_costos_tina.sql`
 4. **Verificación en Supabase SQL Editor**:
-   - Ejecutar `docs/gondola/verificacion_volumen.sql` y confirmar que `todo_ok` devuelva `true`.
+   - Ejecutar `docs/gondola/verificacion_volumen.sql` y confirmar que `todo_ok` devuelva `true` (los 9 checks en verde).
 5. **Rebuild en EasyPanel**:
    - `remolques-api` (Backend Deno).
    - `remolques-web` (Frontend Vite).

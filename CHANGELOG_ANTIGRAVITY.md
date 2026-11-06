@@ -3,6 +3,31 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-05 - Góndola: Corrección de Volumen (Ronda 3) tras revisión de Claude
+**Herramienta:** Antigravity  
+**Tipo:** fix (grupo conductor dimensional sin pendiente falso, pdfs moodboard/leolca/clasico, cifras exactas motor)  
+**Rama:** `gondola-volumen-2026-11-05`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/GONDOLA_VOLUMEN_REVISION_CLAUDE.md` (sección RONDA 2)  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/escalas.ts`: definición de `GRUPOS_CONDUCTOR = new Set(['volumen'])` y helper `esGrupoConductor(grupoClave)` para tratar volumen como conductor dimensional de escala y no como ítem con costo unitario propio.
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`: exclusión del grupo conductor `volumen` del bucle de opciones elegidas, evitando línea con costo de $0 y eliminando la advertencia falsa `opcion_sin_costo`.
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.ts` y `catalogo_costos.ts`: exclusión de grupos conductores en validación de grupos desconocidos y listas de opciones sin receta / sin costo.
+- `src/app/utils/nombreItemCotizacion.ts` y `src/app/utils/configuracionEquipo.ts`: soporte para superíndice `m³`, prevención de duplicación de sufijo de volumen (`/\b\d+\s*m(?:3|³)\b/i`) en cotizaciones congeladas y tolerancia a configuraciones serializadas en string.
+- `src/app/components/Cotizaciones/PDFTemplateMoodboard.tsx`: integración de `nombreItemCotizacion(produto, item)` en líneas 447, 523 y 628.
+- `src/app/components/Cotizaciones/PDFTemplateLeolca.tsx`: integración de `nombreItemCotizacion(productos?.find(...), item)` en línea 97.
+- `src/app/components/Cotizaciones/PDFTemplate.tsx`: integración de `nombreItemCotizacion(null, item)` en líneas 183 y 184.
+- `src/app/utils/nombreItemCotizacion.test.ts`: 6 pruebas unitarias Deno cubriendo los 4 casos solicitados (a, b, c, d) y retrocompatibilidad.
+- `supabase/functions/make-server-feea4382/motor/gondola_volumen.test.ts`: pruebas de regresión donde la configuración con `volumen: "m3_45"` es 100% idéntica a sin volumen en secciones, pendientes, costo, precio y confianza, y con `m3_30` la única diferencia es `variante_supuesta`.
+- `GONDOLA_VOLUMEN_REPORTE_ANTY.md`: actualización con cifras directas del motor (acero 30 m³: $85,478.29; ahorro total A-36: $74,293.92) y auditoría exhaustiva de referencias a nombres de producto en `src/`.
+**Qué cambió y por qué:**  
+- **1. Grupo conductor sin pendiente falso:** El configurador envía `volumen: "m3_45"` por defecto. Al tratarlo como grupo conductor dimensional, no genera importe de $0 ni advierte `opcion_sin_costo`, asegurando que cotizar 45 m³ sea idéntico a cotizar sin volumen.
+- **2. Volumen en todos los PDFs:** Se completó el uso de `nombreItemCotizacion` en las plantillas Moodboard, Leolca y Clásica, garantizando que el volumen dinámico se imprima en cualquier formato de exportación y previniendo duplicaciones en ítems históricos.
+- **3. Cifras exactas del motor:** Se reflejaron en la documentación los cálculos directos del motor sin redondeos intermedios artificiales (ahorro de $74,293.92 en Góndola A-36 de 30 m³ frente a 45 m³).
+**Acciones manuales pendientes:**  
+- Ninguna migración nueva en esta ronda (se mantienen las 3 migraciones de R1 y R2).
+- Rebuild en EasyPanel tras merge a `main`.
+
+
 ## 2026-11-05 - Góndola: Corrección de Volumen (Ronda 2) tras revisión de Claude
 **Herramienta:** Antigravity  
 **Tipo:** fix / feat (costos tina por_volumen, concurrencia T6, ui interpolacion, pdf dinámico, advertencia variante_supuesta)  
