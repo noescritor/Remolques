@@ -1,4 +1,6 @@
 export const VOLUMEN_BASE_GONDOLA_M3 = 45;
+export const VOLUMEN_MIN_GONDOLA_M3 = 20;
+export const VOLUMEN_MAX_GONDOLA_M3 = 60;
 
 export type EscalaTipo = "fija" | "por_eje" | "por_largo" | "por_volumen";
 
@@ -14,8 +16,9 @@ export interface ContextoEscala {
  */
 export const GRUPOS_CONDUCTOR = new Set<string>(["volumen"]);
 
-export function esGrupoConductor(grupoClave: string): boolean {
-  return GRUPOS_CONDUCTOR.has(grupoClave);
+export function esGrupoConductor(grupoClave?: string | null): boolean {
+  if (!grupoClave) return false;
+  return GRUPOS_CONDUCTOR.has(grupoClave.trim().toLowerCase());
 }
 
 export interface DetalleVolumenGondola {
@@ -25,82 +28,145 @@ export interface DetalleVolumenGondola {
 }
 
 /**
+ * Formatea un volumen numérico en m³ de forma homogénea:
+ * Si es entero se muestra sin decimales (p. ej. 38, 45, 30).
+ * Si tiene decimales, se redondea y muestra con un solo decimal (p. ej. 37.5).
+ */
+export function formatearVolumenM3(vol: number): string {
+  if (!Number.isFinite(vol)) return String(VOLUMEN_BASE_GONDOLA_M3);
+  if (Number.isInteger(vol)) {
+    return String(vol);
+  }
+  const unDecimal = Number(vol.toFixed(1));
+  return Number.isInteger(unDecimal) ? String(unDecimal) : unDecimal.toFixed(1);
+}
+
+function extraerNumeroVolumen(val: any): { numero: number | null; representacion: string } {
+  if (val === undefined || val === null) {
+    return { numero: null, representacion: "" };
+  }
+
+  if (typeof val === "number") {
+    return {
+      numero: Number.isFinite(val) ? val : null,
+      representacion: String(val)
+    };
+  }
+
+  if (typeof val === "string") {
+    const s = val.trim();
+    if (!s) return { numero: null, representacion: "" };
+
+    // Claves específicas históricas
+    if (s === "m3_30" || s === "30m3" || s === "30_m3") return { numero: 30, representacion: s };
+    if (s === "m3_45" || s === "45m3" || s === "45_m3") return { numero: 45, representacion: s };
+
+    // Intentar número directo (ej: "38", "37.5", "37,5", "38 m3", "38 m³")
+    const normalizado = s.replace(",", ".");
+    const match = normalizado.match(/^[-+]?\d+(?:\.\d+)?/);
+    if (match) {
+      const num = parseFloat(match[0]);
+      return { numero: Number.isFinite(num) ? num : null, representacion: s };
+    }
+
+    // Si viene con prefijo como "volumen_38"
+    const matchSub = normalizado.match(/[-+]?\d+(?:\.\d+)?/);
+    if (matchSub) {
+      const num = parseFloat(matchSub[0]);
+      return { numero: Number.isFinite(num) ? num : null, representacion: s };
+    }
+
+    return { numero: null, representacion: s };
+  }
+
+  if (typeof val === "object") {
+    const repr = JSON.stringify(val);
+
+    // Caso { clave: 'm3_30' } o { opcion: 'm3_30' }
+    const clave = val.opcion || val.clave;
+    if (clave === "m3_30" || clave === "30") return { numero: 30, representacion: repr };
+    if (clave === "m3_45" || clave === "45") return { numero: 45, representacion: repr };
+
+    // Caso { m3: 38 }
+    if (val.m3 !== undefined && val.m3 !== null) {
+      const sub = extraerNumeroVolumen(val.m3);
+      return { numero: sub.numero, representacion: repr };
+    }
+
+    // Caso { valor: 38 }
+    if (val.valor !== undefined && val.valor !== null) {
+      const sub = extraerNumeroVolumen(val.valor);
+      return { numero: sub.numero, representacion: repr };
+    }
+
+    // Caso { texto: "38" }
+    if (val.texto !== undefined && val.texto !== null) {
+      const sub = extraerNumeroVolumen(val.texto);
+      return { numero: sub.numero, representacion: repr };
+    }
+
+    // Caso { cantidad: 38 }
+    if (val.cantidad !== undefined && val.cantidad !== null) {
+      const sub = extraerNumeroVolumen(val.cantidad);
+      return { numero: sub.numero, representacion: repr };
+    }
+
+    // Caso { datos: { m3: 38 } }
+    if (val.datos && typeof val.datos === "object" && val.datos.m3 !== undefined) {
+      const sub = extraerNumeroVolumen(val.datos.m3);
+      return { numero: sub.numero, representacion: repr };
+    }
+
+    if (typeof clave === "string") {
+      const sub = extraerNumeroVolumen(clave);
+      if (sub.numero !== null) return { numero: sub.numero, representacion: repr };
+    }
+
+    return { numero: null, representacion: repr };
+  }
+
+  return { numero: null, representacion: String(val) };
+}
+
+/**
  * Resuelve el volumen numérico en m³ a partir de la configuración del equipo de forma detallada.
- * Si no está configurado (cotizaciones antiguas o API sin opción), asume 45 m³ como reconocido.
- * Si se especifica un volumen no reconocido, reporta advertencia y asume 45 m³.
+ * Si no está configurado (cotizaciones antiguas o API sin opción), asume 45 m³ como reconocido sin advertencia.
+ * Si se especifica un volumen fuera del rango [20, 60] m³ o no numérico/<=0, reporta advertencia y asume 45 m³.
+ * Para cualquier volumen numérico válido dentro de rango, lo retorna como reconocido.
  */
 export function resolverVolumenGondolaDetallado(
   configuracion?: any,
   opcionesCat?: { clave: string; datos?: any }[]
 ): DetalleVolumenGondola {
   const val = configuracion?.grupos?.volumen;
-  if (!val) {
+  if (val === undefined || val === null || val === "") {
     return {
       volumen: VOLUMEN_BASE_GONDOLA_M3,
       esReconocido: true
     };
   }
 
-  if (typeof val === "number" && Number.isFinite(val) && val > 0) {
-    if (val === 30 || val === 45) {
-      return { volumen: val, esReconocido: true };
-    }
+  const { numero, representacion } = extraerNumeroVolumen(val);
+
+  if (numero === null || !Number.isFinite(numero) || numero <= 0) {
     return {
       volumen: VOLUMEN_BASE_GONDOLA_M3,
       esReconocido: false,
-      advertencia: `Volumen '${val}' no reconocido para góndola; se asume 45 m³ (provisional)`
+      advertencia: `Volumen '${representacion}' no válido para góndola; se asume ${VOLUMEN_BASE_GONDOLA_M3} m³ (provisional)`
     };
   }
 
-  const clave =
-    typeof val === "object" && val !== null
-      ? val.opcion || val.clave || val.valor
-      : String(val);
-
-  if (typeof clave === "string") {
-    if (clave === "m3_30" || clave === "30" || clave === "30m3" || clave === "30_m3") {
-      return { volumen: 30, esReconocido: true };
-    }
-    if (clave === "m3_45" || clave === "45" || clave === "45m3" || clave === "45_m3") {
-      return { volumen: 45, esReconocido: true };
-    }
-    const match = clave.match(/(\d+)/);
-    if (match) {
-      const num = parseInt(match[1], 10);
-      if (num === 30 || num === 45) return { volumen: num, esReconocido: true };
-    }
+  if (numero < VOLUMEN_MIN_GONDOLA_M3 || numero > VOLUMEN_MAX_GONDOLA_M3) {
+    return {
+      volumen: VOLUMEN_BASE_GONDOLA_M3,
+      esReconocido: false,
+      advertencia: `Volumen '${numero}' fuera de rango (${VOLUMEN_MIN_GONDOLA_M3}-${VOLUMEN_MAX_GONDOLA_M3} m³); se asume ${VOLUMEN_BASE_GONDOLA_M3} m³ (provisional)`
+    };
   }
 
-  if (typeof val === "object" && val !== null) {
-    const m3Val = typeof val.m3 === "number" ? val.m3 : (val.datos && typeof val.datos.m3 === "number" ? val.datos.m3 : null);
-    if (m3Val !== null) {
-      if (m3Val === 30 || m3Val === 45) return { volumen: m3Val, esReconocido: true };
-      return {
-        volumen: VOLUMEN_BASE_GONDOLA_M3,
-        esReconocido: false,
-        advertencia: `Volumen '${m3Val}' no reconocido para góndola; se asume 45 m³ (provisional)`
-      };
-    }
-  }
-
-  if (opcionesCat && Array.isArray(opcionesCat) && typeof clave === "string") {
-    const opt = opcionesCat.find((o) => o.clave === clave);
-    if (opt?.datos && typeof opt.datos.m3 === "number") {
-      const m3Opt = opt.datos.m3;
-      if (m3Opt === 30 || m3Opt === 45) return { volumen: m3Opt, esReconocido: true };
-      return {
-        volumen: VOLUMEN_BASE_GONDOLA_M3,
-        esReconocido: false,
-        advertencia: `Volumen '${m3Opt}' no reconocido para góndola; se asume 45 m³ (provisional)`
-      };
-    }
-  }
-
-  const representacion = typeof val === "object" ? JSON.stringify(val) : String(val);
   return {
-    volumen: VOLUMEN_BASE_GONDOLA_M3,
-    esReconocido: false,
-    advertencia: `Volumen '${representacion}' no reconocido para góndola; se asume 45 m³ (provisional)`
+    volumen: numero,
+    esReconocido: true
   };
 }
 

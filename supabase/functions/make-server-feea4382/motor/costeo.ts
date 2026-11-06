@@ -11,6 +11,7 @@ import { fusionarFilasConfig, normalizarClaveOpcion } from "./reglas_compatibili
 import {
   calcularCantidadEscalada,
   esGrupoConductor,
+  formatearVolumenM3,
   resolverVolumenGondola,
   resolverVolumenGondolaDetallado,
   VOLUMEN_BASE_GONDOLA_M3
@@ -100,10 +101,10 @@ export function costear(
       });
     }
 
-    if (volumenM3 === 30) {
+    if (volumenM3 !== VOLUMEN_BASE_GONDOLA_M3) {
       pendientes.push({
         tipo: "variante_supuesta",
-        detalle: "Costo de 30 m³ estimado por proporción sobre 45 m³; pendiente despiece real"
+        detalle: `Costo de ${formatearVolumenM3(volumenM3)} m³ estimado por proporción sobre 45 m³; pendiente despiece real`
       });
     }
   }
