@@ -4,7 +4,7 @@
  * con trazabilidad en costos_historial y verificación de permisos.
  */
 
-import { calcularCantidadEscalada, VOLUMEN_BASE_GONDOLA_M3 } from "./escalas.ts";
+import { calcularCantidadEscalada, esGrupoConductor, VOLUMEN_BASE_GONDOLA_M3 } from "./escalas.ts";
 
 export interface ResumenOpcionItem {
   opcion_id: string;
@@ -182,7 +182,7 @@ export async function obtenerResumenCatalogo(
 
       opciones.push(item);
 
-      if (!tieneCosto) {
+      if (!tieneCosto && !esGrupoConductor(grupo.clave)) {
         opcionesSinCosto.push({
           opcion_id: opt.id,
           grupo_clave: grupo.clave,
@@ -191,7 +191,7 @@ export async function obtenerResumenCatalogo(
         });
       }
 
-      if (piezas === 0) {
+      if (piezas === 0 && !esGrupoConductor(grupo.clave)) {
         opcionesSinReceta.push({
           opcion_id: opt.id,
           grupo_clave: grupo.clave,

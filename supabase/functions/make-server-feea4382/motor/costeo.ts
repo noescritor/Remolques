@@ -10,6 +10,7 @@ import type {
 import { fusionarFilasConfig, normalizarClaveOpcion } from "./reglas_compatibilidad.ts";
 import {
   calcularCantidadEscalada,
+  esGrupoConductor,
   resolverVolumenGondola,
   resolverVolumenGondolaDetallado,
   VOLUMEN_BASE_GONDOLA_M3
@@ -182,6 +183,7 @@ export function costear(
 
   for (const [grupoClave, valConfigRaw] of gruposEntries) {
     if (!valConfigRaw) continue;
+    if (esGrupoConductor(grupoClave)) continue;
     const rawVals = Array.isArray(valConfigRaw) ? valConfigRaw : [valConfigRaw];
     const configVals = fusionarFilasConfig(rawVals);
 

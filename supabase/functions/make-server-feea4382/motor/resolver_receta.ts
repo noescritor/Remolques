@@ -2,6 +2,7 @@ import type { DatosModelo, Configuracion, Resultado, LineaResultado } from "./ti
 import { validarCompatibilidad, fusionarFilasConfig, normalizarClaveOpcion } from "./reglas_compatibilidad.ts";
 import {
   calcularCantidadEscalada,
+  esGrupoConductor,
   resolverVolumenGondola,
   resolverVolumenGondolaDetallado,
   VOLUMEN_BASE_GONDOLA_M3
@@ -136,6 +137,7 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
 
   // Validate missing mandatory groups and unknown groups
   for (const [key, _] of Object.entries(configuracion.grupos || {})) {
+    if (esGrupoConductor(key)) continue;
     if (!datos.grupos.find(g => g.clave === key)) {
       errores.push(`Grupo desconocido en la configuración: ${key}`);
     }
@@ -143,6 +145,7 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
 
   for (const grupo of datos.grupos) {
     if (grupo.aplica_a && !grupo.aplica_a.includes(modelType)) continue;
+    if (esGrupoConductor(grupo.clave)) continue;
     
     if (grupo.depende_de) {
       const parentValRaw = configuracion.grupos[grupo.depende_de.grupo];

@@ -8,6 +8,16 @@ export interface ContextoEscala {
   volumen_m3?: number | null;
 }
 
+/**
+ * Conjunto de grupos de configuración que actúan como conductores de escala dimensional
+ * y no como opciones con componentes directos o precio de venta unitario propio.
+ */
+export const GRUPOS_CONDUCTOR = new Set<string>(["volumen"]);
+
+export function esGrupoConductor(grupoClave: string): boolean {
+  return GRUPOS_CONDUCTOR.has(grupoClave);
+}
+
 export interface DetalleVolumenGondola {
   volumen: number;
   esReconocido: boolean;

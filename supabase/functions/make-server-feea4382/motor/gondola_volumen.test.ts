@@ -53,59 +53,108 @@ function prepararDatosGondolaConEscalas(datosBase: DatosCosteo = datosGondolaBas
 }
 
 // --------------------------------------------------------------------------
-// TEST 1: Volumen 45 m³ y sin volumen explícito - Costo y despiece idénticos a regresión previa
+// TEST 1: Volumen 45 m³ y sin volumen explícito son idénticos en secciones, pendientes, costo, precio_sugerido y confianza
 // --------------------------------------------------------------------------
-Deno.test("Góndola Volumen: Test 1 - Volumen 45 m³ y sin volumen explícito, valores actuales idénticos", () => {
+Deno.test("Góndola Volumen: Test 1 - Volumen 45 m³ y sin volumen explícito son idénticos en secciones, pendientes, costo, precio_sugerido y confianza", () => {
   const datosA36 = prepararDatosGondolaConEscalas(datosGondolaBase);
   const datosHardox = prepararDatosGondolaConEscalas(datosGondolaHardox);
 
-  // Caso 1a: Con volumen 45 m³ explícito en A-36
-  const config45A36: Configuracion = {
+  // 1. Fixture A-36: comparar secciones, pendientes, costo, precio_sugerido y confianza
+  const configSinVolA36: Configuracion = {
+    grupos: {
+      tina_material: "a36"
+    }
+  };
+  const configConVol45A36: Configuracion = {
     grupos: {
       volumen: "m3_45",
       tina_material: "a36"
     }
   };
-  const res45A36 = costear(datosA36, config45A36);
-  assertEquals(resolverVolumenGondola(config45A36, opcionesMock), 45);
 
-  // Cantidad de Alma (2 pz) y Soleras (4 pz) sin alteración (factor 1)
-  const alma45 = res45A36.secciones.acero.lineas.find((l: LineaCosteo) => l.concepto.includes("ALMA"));
-  assert(alma45, "Línea ALMA debe existir en desglose");
-  assertEquals(alma45.cantidad, 2);
+  const resSinVolA36 = costear(datosA36, configSinVolA36);
+  const resConVol45A36 = costear(datosA36, configConVol45A36);
 
-  const soleras45 = res45A36.secciones.acero.lineas.find((l: LineaCosteo) => l.concepto.includes("SOLERAS"));
-  assert(soleras45, "Línea SOLERAS debe existir en desglose");
-  assertEquals(soleras45.cantidad, 4);
+  assertEquals(JSON.stringify(resConVol45A36.secciones), JSON.stringify(resSinVolA36.secciones));
+  assertEquals(resConVol45A36.pendientes, resSinVolA36.pendientes);
+  assertEquals(resConVol45A36.costo, resSinVolA36.costo);
+  assertEquals(resConVol45A36.precio_sugerido, resSinVolA36.precio_sugerido);
+  assertEquals(resConVol45A36.confianza, resSinVolA36.confianza);
 
-  // Opción de tina A-36 con 45 m³: 167,505.76 idéntico
-  const tinaA36_45 = res45A36.secciones.opciones.lineas.find(l => l.concepto.includes("tina_material: a36"));
-  assert(tinaA36_45, "Línea tina A-36 debe existir en opciones");
-  assertEquals(tinaA36_45.importe, 167505.76);
-
-  // Caso 1b: Con volumen 45 m³ explícito en Hardox 450
-  const config45Hardox: Configuracion = {
+  // 2. Fixture Hardox 450: comparar secciones, pendientes, costo, precio_sugerido y confianza
+  const configSinVolHardox: Configuracion = {
+    grupos: {
+      tina_material: "hardox_450"
+    }
+  };
+  const configConVol45Hardox: Configuracion = {
     grupos: {
       volumen: "m3_45",
       tina_material: "hardox_450"
     }
   };
-  const res45Hardox = costear(datosHardox, config45Hardox);
-  const tinaHardox_45 = res45Hardox.secciones.opciones.lineas.find(l => l.concepto.includes("tina_material: hardox_450"));
-  assert(tinaHardox_45, "Línea tina Hardox debe existir en opciones");
-  assertEquals(tinaHardox_45.importe, 286748.42);
 
-  // Caso 1c: Sin grupo volumen explícito (cotización previa): toma 45 m³ idéntico sin advertencia
-  const configSinVol: Configuracion = {
+  const resSinVolHardox = costear(datosHardox, configSinVolHardox);
+  const resConVol45Hardox = costear(datosHardox, configConVol45Hardox);
+
+  assertEquals(JSON.stringify(resConVol45Hardox.secciones), JSON.stringify(resSinVolHardox.secciones));
+  assertEquals(resConVol45Hardox.pendientes, resSinVolHardox.pendientes);
+  assertEquals(resConVol45Hardox.costo, resSinVolHardox.costo);
+  assertEquals(resConVol45Hardox.precio_sugerido, resSinVolHardox.precio_sugerido);
+  assertEquals(resConVol45Hardox.confianza, resSinVolHardox.confianza);
+
+  // 3. Con m3_30: ningún pendiente opcion_sin_costo menciona volumen y la única diferencia en pendientes es variante_supuesta
+  const config30A36: Configuracion = {
     grupos: {
+      volumen: "m3_30",
       tina_material: "a36"
     }
   };
-  const resSinVol = costear(datosA36, configSinVol);
-  const tinaSinVol = resSinVol.secciones.opciones.lineas.find(l => l.concepto.includes("tina_material: a36"));
-  assert(tinaSinVol);
-  assertEquals(tinaSinVol.importe, 167505.76);
-  assertEquals(resSinVol.pendientes.filter(p => p.tipo === "variante_supuesta").length, 0);
+  const res30A36 = costear(datosA36, config30A36);
+  assert(!res30A36.pendientes.some(p => p.detalle.includes("volumen")), "Ningún pendiente opcion_sin_costo debe mencionar volumen");
+  const diffPendientes = res30A36.pendientes.filter(p => !resConVol45A36.pendientes.some(p45 => p45.detalle === p.detalle));
+  assertEquals(diffPendientes.length, 1);
+  assertEquals(diffPendientes[0].tipo, "variante_supuesta");
+  assert(diffPendientes[0].detalle.includes("Costo de 30 m³ estimado por proporción sobre 45 m³; pendiente despiece real"));
+
+  // 4. resolverReceta con m3_45 es idéntico en advertencias y resultado a sin volumen
+  const datosModeloGondola: DatosModelo = {
+    modelo: { id: "mod-gondola", tipo: "gondola", largo_ft: 0, num_ejes: 2, nombre: "GONDOLA 2 EJES" },
+    receta_base: [],
+    grupos: [
+      { id: "grp-vol", clave: "volumen", nombre: "Volumen", seleccion: "unica", regla: "requerido", aplica_a: ["gondola"] },
+      { id: "grp-tina", clave: "tina_material", nombre: "Material Tina", seleccion: "unica", regla: "requerido", aplica_a: ["gondola"] },
+    ],
+    opciones: [
+      { id: "opt-vol-45", grupo_id: "grp-vol", clave: "m3_45", nombre: "45 M3", activo: true, precio_venta: 0, clase: "estandar" },
+      { id: "opt-vol-30", grupo_id: "grp-vol", clave: "m3_30", nombre: "30 M3", activo: true, precio_venta: 0, clase: "estandar" },
+      { id: "opt-tina-a36", grupo_id: "grp-tina", clave: "a36", nombre: "A-36", activo: true, precio_venta: 0, clase: "estandar" },
+    ],
+    opcion_componentes: [
+      {
+        opcion_id: "opt-tina-a36",
+        grupo_clave: "tina_material",
+        opcion_clave: "a36",
+        material_id: "mat-placa-tina",
+        cantidad: 9,
+        escala: "por_volumen",
+        paso: "armado",
+        uso: "Tina A-36",
+        rol: "principal",
+        nombre: "Placa Tina A36",
+        unidad: "PZA",
+        costo: 1000,
+        descripcion: null
+      }
+    ]
+  };
+
+  const resRecetaSinVol = resolverReceta(datosModeloGondola, { grupos: { tina_material: "a36" } });
+  const resRecetaConVol45 = resolverReceta(datosModeloGondola, { grupos: { tina_material: "a36", volumen: "m3_45" } });
+
+  assertEquals(resRecetaConVol45.advertencias, resRecetaSinVol.advertencias);
+  assertEquals(resRecetaConVol45.lineas, resRecetaSinVol.lineas);
+  assertEquals(resRecetaConVol45.completo, resRecetaSinVol.completo);
 });
 
 // --------------------------------------------------------------------------
