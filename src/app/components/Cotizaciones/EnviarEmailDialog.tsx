@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '../ui/alert';
 import { Mail, Send, Loader2, Info } from 'lucide-react';
 import { toast } from "sonner";
 import { supabase } from '../../utils/supabase/client';
+import { BASE_URL } from '../../utils/api';
 
 interface EnviarEmailDialogProps {
   open: boolean;
@@ -60,7 +61,7 @@ export function EnviarEmailDialog({
       const token = session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY;
 
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382/enviar-email`,
+        `${BASE_URL}/enviar-email`,
         {
           method: 'POST',
           headers: {

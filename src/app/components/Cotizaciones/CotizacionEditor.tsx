@@ -537,7 +537,6 @@ export function CotizacionEditor({
     if (!item?.descripcion.trim()) return;
     setIaLoadingItemId(itemId);
     try {
-      const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
       const response = await fetch(`${BASE_URL}/ia/mejorar-descripcion`, {
         method: 'POST',
         headers: await getIaHeaders(),
@@ -557,7 +556,6 @@ export function CotizacionEditor({
   const generarNotaConIA = async () => {
     setIaLoadingNota(true);
     try {
-      const BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/make-server-feea4382`;
       const cliente = clientes.find(c => c.id === formData.cliente_id);
       const response = await fetch(`${BASE_URL}/ia/generar-nota`, {
         method: 'POST',

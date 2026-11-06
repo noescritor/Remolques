@@ -3,6 +3,24 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-05 - Corrección: Enlaces a la API (Portal, Correo, IA)
+**Herramienta:** Antigravity  
+**Tipo:** fix (sustitución de llamadas a funciones obsoletas de Supabase por BASE_URL de EasyPanel)  
+**Rama:** `urls-api-2026-11-05`  
+**Archivos tocados:**  
+- `src/app/components/Cotizaciones/CotizacionEditor.tsx`: eliminación de constante local obsoleta en funciones de IA (`mejorarDescripcionConIA`, `generarNotaConIA`) para utilizar el `BASE_URL` importado de `utils/api.ts` hacia `/ia/mejorar-descripcion` y `/ia/generar-nota`.
+- `src/app/components/Cotizaciones/EnviarEmailDialog.tsx`: importación y uso de `BASE_URL` en llamada a `/enviar-email`.
+- `src/app/components/Portal/PortalCliente.tsx`: importación y uso de `BASE_URL` en llamadas de consulta (`/portal/:token`), aprobación (`/aprobar`), rechazo (`/rechazar`), solicitud de cambios (`/solicitar-cambios`) y PDF (`/pdf`).
+- `src/app/components/Portal/PortalPDF.tsx`: importación y uso de `BASE_URL` en carga de cotización pública para impresión/descarga.
+- `src/app/utils/urls_api.test.ts`: nueva suite de pruebas unitarias Deno (2 tests) que valida la estructura de `BASE_URL` y previene mediante escaneo recursivo en `src/` la reaparición de cadenas `"functions/v1"`.
+- `URLS_API_REPORTE_ANTY.md`: reporte técnico detallando la corrección, auditoría de `functions/v1` (0 coincidencias) y lista de rutas PostgREST directas preservadas en `useSupabaseData.ts`.
+**Qué cambió y por qué:**  
+- **1. Enlaces funcionales a backend EasyPanel:** Se eliminó la dependencia de la Edge Function vieja de Supabase (`/functions/v1/make-server-feea4382`, que devolvía 404 por no estar desplegada), restaurando la funcionalidad en producción del portal de clientes, el envío de cotizaciones por correo y los botones de asistencia IA.
+- **2. Prevención automatizada de regresión:** Se integró un test Deno que falla de inmediato si se introducen referencias a `functions/v1` en cualquier archivo fuente de `src/`.
+**Acciones manuales pendientes:**  
+- No requiere migraciones SQL ni cambios de base de datos.
+- Rebuild del servicio `remolques-web` en EasyPanel tras el merge a `main`.
+
 ## 2026-11-05 - Góndola: Corrección de Volumen (Ronda 3) tras revisión de Claude
 **Herramienta:** Antigravity  
 **Tipo:** fix (grupo conductor dimensional sin pendiente falso, pdfs moodboard/leolca/clasico, cifras exactas motor)  
