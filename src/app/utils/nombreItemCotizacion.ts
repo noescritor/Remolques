@@ -10,22 +10,36 @@ export function nombreItemCotizacion(
   producto?: { nombre?: string | null; tipo?: string | null } | null,
   item?: any
 ): string {
-  const nombreBase = producto?.nombre || item?.descripcion || "Producto no encontrado";
+  const nombreBase = (producto?.nombre || item?.descripcion || "Producto no encontrado").trim();
 
   const cfg = obtenerConfiguracion(item);
-  const esGondolaPorNombre = /gondola/i.test(nombreBase);
+  const esGondolaPorNombre = /gondola/i.test(nombreBase) || /gondola/i.test(item?.descripcion || "");
   const esGondolaPorTipo = (producto?.tipo || item?.modelo?.tipo || "").toLowerCase() === "gondola";
   const esGondolaPorCfg = Boolean(cfg?.grupos?.volumen || cfg?.grupos?.tina_material);
 
   if (esGondolaPorNombre || esGondolaPorTipo || esGondolaPorCfg) {
-    // Si el nombre ya trae el sufijo de volumen (ej. histórico no renombrado), no duplicar
-    if (/\b\d+\s*m3\b/i.test(nombreBase)) {
+    const tieneVolumenEnTexto = /\b\d+\s*m(?:3|³)\b/i.test(nombreBase);
+    const tieneVolumenEnDescripcion = /\b\d+\s*m(?:3|³)\b/i.test(item?.descripcion || "");
+    const volConfigurado = cfg?.grupos?.volumen;
+
+    // Si ya trae el volumen en el texto y no hay una reconfiguración explícita
+    if (tieneVolumenEnTexto && !volConfigurado) {
       return nombreBase;
+    }
+    if (tieneVolumenEnDescripcion && !volConfigurado && producto?.nombre) {
+      return item.descripcion.trim();
     }
 
     const vol = resolverVolumenGondola(cfg);
+
+    // Si el texto ya tiene un volumen pero la config pide otro (o el mismo)
+    if (tieneVolumenEnTexto) {
+      return nombreBase.replace(/\b\d+\s*m(?:3|³)\b/i, `${vol} M3`);
+    }
+
     return `${nombreBase} ${vol} M3`;
   }
 
   return nombreBase;
 }
+

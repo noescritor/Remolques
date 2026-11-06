@@ -8,6 +8,7 @@ import {
   totalItemServicio,
 } from '../../utils/calculations';
 import { decidirLogoEncabezado } from '../../utils/logo';
+import { nombreItemCotizacion } from '../../utils/nombreItemCotizacion';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const PURPLE = '#6351D3';
@@ -443,7 +444,7 @@ export function PDFTemplateMoodboard({
                     {/* Description block */}
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ ...s(FS_CUERPO_MIN, 700) }}>
-                        {produto?.nombre || item.descripcion}
+                        {nombreItemCotizacion(produto, item)}
                       </span>
                       {produto?.descripcion && (
                         <span style={{ ...s(FS_ESPEC_MIN, 400, 0.65) }}>{produto.descripcion}</span>
@@ -519,7 +520,7 @@ export function PDFTemplateMoodboard({
                       }}
                     >
                       <div style={{ height: 3, background: PURPLE }} />
-                      <span style={{ ...s(10, 700) }}>{produto?.nombre || item.descripcion}</span>
+                      <span style={{ ...s(10, 700) }}>{nombreItemCotizacion(produto, item)}</span>
 
                       {srv.modo === 'unico' && (
                         <>
@@ -624,7 +625,7 @@ export function PDFTemplateMoodboard({
                       padding: '11px 0',
                     }}
                   >
-                    <span style={{ ...s(FS_ESPEC_MIN, 400, 0.8) }}>{produto?.nombre || item.descripcion}</span>
+                    <span style={{ ...s(FS_ESPEC_MIN, 400, 0.8) }}>{nombreItemCotizacion(produto, item)}</span>
                     <span style={{ ...m(13, 1) }}>{formatearMoneda(total)}</span>
                   </div>
                   <Divider opacity={0.06} />

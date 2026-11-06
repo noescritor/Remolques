@@ -1,6 +1,14 @@
 export function obtenerConfiguracion(item: any): any {
     if (!item) return undefined;
-    return item.configuracion ?? item.metadata?.configuracion;
+    const cfg = item.configuracion ?? item.metadata?.configuracion;
+    if (typeof cfg === 'string') {
+        try {
+            return JSON.parse(cfg);
+        } catch {
+            return cfg;
+        }
+    }
+    return cfg;
 }
 
 export function normalizarResumenLineas(lineas: any): Array<{etiqueta: string, valor: string}> {
