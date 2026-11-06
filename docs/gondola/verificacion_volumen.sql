@@ -1,4 +1,4 @@
--- Verificación de Esquema: Volumen Configurable para Góndola (30 m³ y 45 m³)
+-- Verificación de Esquema: Volumen Configurable para Góndola (30 m³, 45 m³ y Volumen Libre)
 -- Ejecutar en el SQL Editor de Supabase. Debe devolver una sola fila con todo_ok = true.
 
 WITH checks AS (
@@ -87,7 +87,29 @@ WITH checks AS (
             JOIN modelos m ON cm.modelo_id = m.id
             WHERE m.tipo = 'gondola'
               AND cm.escala = 'fija'
-        ) AS costos_modelo_escala_fija
+        ) AS costos_modelo_escala_fija,
+
+        -- 10. Opción 'personalizado' existe, está activa y contiene rango min=20 y max=60 (migración 20261106_01)
+        (
+            SELECT count(*) >= 1
+            FROM opciones_configuracion oc
+            JOIN grupos_configuracion gc ON oc.grupo_id = gc.id
+            WHERE gc.clave = 'volumen'
+              AND oc.clave = 'personalizado'
+              AND oc.activo = true
+              AND (oc.datos->>'min')::int = 20
+              AND (oc.datos->>'max')::int = 60
+        ) AS opcion_personalizado_existe,
+
+        -- 11. Opciones fijas m3_45 y m3_30 fueron desactivadas para no ofrecerse como tarjetas fijas
+        (
+            SELECT count(*) >= 2
+            FROM opciones_configuracion oc
+            JOIN grupos_configuracion gc ON oc.grupo_id = gc.id
+            WHERE gc.clave = 'volumen'
+              AND oc.clave IN ('m3_45', 'm3_30')
+              AND oc.activo = false
+        ) AS opciones_fijas_desactivadas
 )
 SELECT
     grupo_volumen_existe,
@@ -99,6 +121,8 @@ SELECT
     opcion_tina_escala_por_volumen,
     opcion_costos_tina_por_volumen,
     costos_modelo_escala_fija,
+    opcion_personalizado_existe,
+    opciones_fijas_desactivadas,
     (
         grupo_volumen_existe AND
         opciones_volumen_existen AND
@@ -108,6 +132,8 @@ SELECT
         receta_chasis_escala_fija AND
         opcion_tina_escala_por_volumen AND
         opcion_costos_tina_por_volumen AND
-        costos_modelo_escala_fija
+        costos_modelo_escala_fija AND
+        opcion_personalizado_existe AND
+        opciones_fijas_desactivadas
     ) AS todo_ok
 FROM checks;
