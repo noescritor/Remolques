@@ -2,6 +2,7 @@ import { Cotizacion, Cliente, Producto, Ajustes } from '../../types';
 import { formatearMoneda, formatearFecha, calcularTotalesCotizacion } from '../../utils/calculations';
 import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 import { decidirLogoEncabezado } from '../../utils/logo';
+import { nombreItemCotizacion } from '../../utils/nombreItemCotizacion';
 
 // ─── Font size tokens (Sub-bloque 2R-12) ───────────────────────────────────────
 const FS_ETIQUETA_MIN = 10;   // Pequeñas/labels: mínimo 10px
@@ -92,7 +93,9 @@ export function PDFTemplateLeolca({ cotizacion, cliente, productos, ajustes }: P
                   {/* Título del equipo y Precio */}
                   <div className="flex justify-between items-start bg-gray-800 text-white p-3 rounded-t-md">
                     <div>
-                      <h4 className="text-lg font-bold">{item.cantidad}x {item.descripcion}</h4>
+                      <h4 className="text-lg font-bold">
+                        {item.cantidad}x {nombreItemCotizacion(productos?.find((p) => p.id === item.producto_id), item)}
+                      </h4>
                       {item.nota && <p className="text-xs text-gray-300 mt-1">{item.nota}</p>}
                     </div>
                     <div className="text-right font-bold text-lg">

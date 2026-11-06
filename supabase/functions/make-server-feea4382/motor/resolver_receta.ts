@@ -1,5 +1,12 @@
 import type { DatosModelo, Configuracion, Resultado, LineaResultado } from "./tipos.ts";
 import { validarCompatibilidad, fusionarFilasConfig, normalizarClaveOpcion } from "./reglas_compatibilidad.ts";
+import {
+  calcularCantidadEscalada,
+  esGrupoConductor,
+  resolverVolumenGondola,
+  resolverVolumenGondolaDetallado,
+  VOLUMEN_BASE_GONDOLA_M3
+} from "./escalas.ts";
 
 export function resolverReceta(datos: DatosModelo, configuracion: Configuracion): Resultado {
   const lineasMap = new Map<string, LineaResultado>();
@@ -10,6 +17,20 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
   const sin_precio: string[] = [];
   let costo_parcial = 0;
   let completo = true;
+
+  const resVol = datos.modelo.tipo === "gondola"
+    ? resolverVolumenGondolaDetallado(configuracion, datos.opciones)
+    : { volumen: VOLUMEN_BASE_GONDOLA_M3, esReconocido: true, advertencia: undefined };
+  const volumenM3 = resVol.volumen;
+
+  if (datos.modelo.tipo === "gondola") {
+    if (!resVol.esReconocido && resVol.advertencia) {
+      advertencias.push(resVol.advertencia);
+    }
+    if (volumenM3 === 30) {
+      advertencias.push("Costo de 30 m³ estimado por proporción sobre 45 m³; pendiente despiece real");
+    }
+  }
 
   const tieneAcero = (datos.receta_base || []).some(rb => rb.seccion === 'acero');
   const secciones_pendientes: string[] = tieneAcero ? [] : ["acero"];
@@ -92,12 +113,11 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
 
   // Resolve scale
   const calcularCantidad = (cantidadBase: number, escala: string): number => {
-    if (escala === 'por_eje') {
-      return cantidadBase * datos.modelo.num_ejes;
-    } else if (escala === 'por_largo') {
-      return cantidadBase * (datos.modelo.largo_ft / 40.0);
-    }
-    return cantidadBase; // fija
+    return calcularCantidadEscalada(cantidadBase, escala, {
+      num_ejes: datos.modelo.num_ejes,
+      largo_ft: datos.modelo.largo_ft,
+      volumen_m3: volumenM3
+    });
   };
 
   // 1. Process base recipe
@@ -117,6 +137,7 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
 
   // Validate missing mandatory groups and unknown groups
   for (const [key, _] of Object.entries(configuracion.grupos || {})) {
+    if (esGrupoConductor(key)) continue;
     if (!datos.grupos.find(g => g.clave === key)) {
       errores.push(`Grupo desconocido en la configuración: ${key}`);
     }
@@ -124,6 +145,7 @@ export function resolverReceta(datos: DatosModelo, configuracion: Configuracion)
 
   for (const grupo of datos.grupos) {
     if (grupo.aplica_a && !grupo.aplica_a.includes(modelType)) continue;
+    if (esGrupoConductor(grupo.clave)) continue;
     
     if (grupo.depende_de) {
       const parentValRaw = configuracion.grupos[grupo.depende_de.grupo];

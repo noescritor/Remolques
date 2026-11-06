@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import { PDFTemplateModern } from './PDFTemplateModern';
 import { ArrowLeft, Download, Printer } from 'lucide-react';
+import { nombreItemCotizacion } from '../../utils/nombreItemCotizacion';
 
 interface PDFFullPageProps {
   cotizacion: any;
@@ -27,7 +28,7 @@ export function PDFFullPage({
     const producto = productos.find(p => p.id === item.numero_proyecto);
     return {
       ...item,
-      descripcion: producto?.nombre || item.descripcion || 'Producto no encontrado',
+      descripcion: nombreItemCotizacion(producto, item),
       unidad: producto?.unidad || item.unidad || 'PZA',
       total: item.cantidad * item.precio_unitario
     };

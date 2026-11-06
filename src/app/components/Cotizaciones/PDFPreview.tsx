@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '../ui/button';
 import { PDFTemplate } from './PDFTemplate';
 import { Download, X, Printer } from 'lucide-react';
+import { nombreItemCotizacion } from '../../utils/nombreItemCotizacion';
 
 interface PDFPreviewProps {
   isOpen: boolean;
@@ -30,7 +31,7 @@ export function PDFPreview({
     const producto = productos.find(p => p.id === item.numero_proyecto);
     return {
       ...item,
-      descripcion: producto?.nombre || item.descripcion || 'Producto no encontrado',
+      descripcion: nombreItemCotizacion(producto, item),
       unidad: producto?.unidad || item.unidad || 'PZA',
       total: item.cantidad * item.precio_unitario
     };

@@ -3,6 +3,7 @@ import { formatearMoneda, formatearFecha, calcularTotalesCotizacion, calcularTot
 import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 import { LogoIdeally } from './LogoIdeally';
 import { decidirLogoEncabezado } from '../../utils/logo';
+import { nombreItemCotizacion } from '../../utils/nombreItemCotizacion';
 
 // ─── Font size tokens (Sub-bloque 2R-12) ───────────────────────────────────────
 const FS_ETIQUETA_MIN = 10;   // Pequeñas/labels: mínimo 10px
@@ -172,7 +173,7 @@ export function PDFTemplateCompact({ cotizacion, cliente, productos, ajustes }: 
                   <td className="border border-gray-300 p-2">
                     <div>
                       <p className="font-medium text-gray-900 text-sm">
-                        {producto?.nombre || item.descripcion}
+                        {nombreItemCotizacion(producto, item)}
                       </p>
                       {producto?.descripcion && (
                         <p className="text-[11px] text-gray-600 mt-1 leading-tight">
@@ -262,7 +263,7 @@ export function PDFTemplateCompact({ cotizacion, cliente, productos, ajustes }: 
                 
                 return (
                   <div key={index} className="border border-blue-200 rounded p-3 bg-white">
-                    <p className="font-semibold text-blue-900 mb-2">{producto?.nombre || item.descripcion}</p>
+                    <p className="font-semibold text-blue-900 mb-2">{nombreItemCotizacion(producto, item)}</p>
                     
                     {servicio.modo === 'unico' && (
                       <div className="space-y-1">

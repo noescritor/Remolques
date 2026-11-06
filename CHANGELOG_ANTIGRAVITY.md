@@ -3,6 +3,90 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-05 - Góndola: Corrección de Volumen (Ronda 3) tras revisión de Claude
+**Herramienta:** Antigravity  
+**Tipo:** fix (grupo conductor dimensional sin pendiente falso, pdfs moodboard/leolca/clasico, cifras exactas motor)  
+**Rama:** `gondola-volumen-2026-11-05`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/GONDOLA_VOLUMEN_REVISION_CLAUDE.md` (sección RONDA 2)  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/escalas.ts`: definición de `GRUPOS_CONDUCTOR = new Set(['volumen'])` y helper `esGrupoConductor(grupoClave)` para tratar volumen como conductor dimensional de escala y no como ítem con costo unitario propio.
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`: exclusión del grupo conductor `volumen` del bucle de opciones elegidas, evitando línea con costo de $0 y eliminando la advertencia falsa `opcion_sin_costo`.
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.ts` y `catalogo_costos.ts`: exclusión de grupos conductores en validación de grupos desconocidos y listas de opciones sin receta / sin costo.
+- `src/app/utils/nombreItemCotizacion.ts` y `src/app/utils/configuracionEquipo.ts`: soporte para superíndice `m³`, prevención de duplicación de sufijo de volumen (`/\b\d+\s*m(?:3|³)\b/i`) en cotizaciones congeladas y tolerancia a configuraciones serializadas en string.
+- `src/app/components/Cotizaciones/PDFTemplateMoodboard.tsx`: integración de `nombreItemCotizacion(produto, item)` en líneas 447, 523 y 628.
+- `src/app/components/Cotizaciones/PDFTemplateLeolca.tsx`: integración de `nombreItemCotizacion(productos?.find(...), item)` en línea 97.
+- `src/app/components/Cotizaciones/PDFTemplate.tsx`: integración de `nombreItemCotizacion(null, item)` en líneas 183 y 184.
+- `src/app/utils/nombreItemCotizacion.test.ts`: 6 pruebas unitarias Deno cubriendo los 4 casos solicitados (a, b, c, d) y retrocompatibilidad.
+- `supabase/functions/make-server-feea4382/motor/gondola_volumen.test.ts`: pruebas de regresión donde la configuración con `volumen: "m3_45"` es 100% idéntica a sin volumen en secciones, pendientes, costo, precio y confianza, y con `m3_30` la única diferencia es `variante_supuesta`.
+- `GONDOLA_VOLUMEN_REPORTE_ANTY.md`: actualización con cifras directas del motor (acero 30 m³: $85,478.29; ahorro total A-36: $74,293.92) y auditoría exhaustiva de referencias a nombres de producto en `src/`.
+**Qué cambió y por qué:**  
+- **1. Grupo conductor sin pendiente falso:** El configurador envía `volumen: "m3_45"` por defecto. Al tratarlo como grupo conductor dimensional, no genera importe de $0 ni advierte `opcion_sin_costo`, asegurando que cotizar 45 m³ sea idéntico a cotizar sin volumen.
+- **2. Volumen en todos los PDFs:** Se completó el uso de `nombreItemCotizacion` en las plantillas Moodboard, Leolca y Clásica, garantizando que el volumen dinámico se imprima en cualquier formato de exportación y previniendo duplicaciones en ítems históricos.
+- **3. Cifras exactas del motor:** Se reflejaron en la documentación los cálculos directos del motor sin redondeos intermedios artificiales (ahorro de $74,293.92 en Góndola A-36 de 30 m³ frente a 45 m³).
+**Acciones manuales pendientes:**  
+- Ninguna migración nueva en esta ronda (se mantienen las 3 migraciones de R1 y R2).
+- Rebuild en EasyPanel tras merge a `main`.
+
+
+## 2026-11-05 - Góndola: Corrección de Volumen (Ronda 2) tras revisión de Claude
+**Herramienta:** Antigravity  
+**Tipo:** fix / feat (costos tina por_volumen, concurrencia T6, ui interpolacion, pdf dinámico, advertencia variante_supuesta)  
+**Rama:** `gondola-volumen-2026-11-05`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/GONDOLA_VOLUMEN_REVISION_CLAUDE.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261105_01_gondola_volumen.sql`: restauración estricta del cuerpo de `guardar_linea_receta` aprobado en T6 (`20261102_04_editor_recetas.sql`), reincorporando `FOR UPDATE OF rb`, el `jsonb_build_object` exacto y `p_seccion`, añadiendo únicamente `'por_volumen'` a la lista de escalas válidas.
+- `supabase/migrations/20261105_03_gondola_volumen_costos_tina.sql`: nueva migración multi-tenant e idempotente que actualiza `opcion_costos` para `tipo_modelo = 'gondola'` y las opciones `a36` y `hardox_450` del grupo `tina_material` a `escala = 'por_volumen'`. Incluye instrucción SQL de reversión en comentario.
+- `src/app/utils/tituloEquipo.ts` y `src/app/utils/tituloEquipo.test.ts`: helper puro y 4 pruebas unitarias para componer el título del modal en el configurador evitando que se imprima la plantilla cruda `{datosModelo?.modelo?.num_ejes} EJES`.
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`: integración de `tituloEquipo` en el título del diálogo.
+- `src/app/utils/nombreItemCotizacion.ts` y `src/app/utils/nombreItemCotizacion.test.ts`: helper puro con 4 pruebas unitarias para derivar el nombre dinámico del ítem con volumen respetando cotizaciones previas.
+- `src/app/components/Cotizaciones/PDFFullPage.tsx`, `PDFPreview.tsx`, `PDFTemplateCompact.tsx`, `PDFTemplateModern.tsx`: integración de `nombreItemCotizacion` en los 5 sitios donde se renderizaba el nombre estático del producto.
+- `supabase/functions/make-server-feea4382/motor/escalas.ts`: adición de `resolverVolumenGondolaDetallado` retornando `{ volumen, esReconocido, advertencia }` para advertir volúmenes no reconocidos y emitir `variante_supuesta`.
+- `supabase/functions/make-server-feea4382/motor/costeo.ts` y `resolver_receta.ts`: detección de volúmenes no reconocidos agregando pendiente y advertencia `variante_supuesta`.
+- `docs/gondola/verificacion_volumen.sql`: adición de checks 8 y 9 verificando que `opcion_costos` para tina sea `por_volumen` y que `costos_modelo` de chasis se mantenga en `fija`.
+- `docs/gondola/prueba_volumen.sql`: ampliación con verificación de cálculo escalado a 30 m³ de las dos opciones de tina (A-36 a 111,670.51 y Hardox a 191,165.61).
+- `docs/gondola/prueba_concurrencia_guardar_linea.sql`, `concurrencia_preparar.sql`, `concurrencia_sesion_a.sql`, `concurrencia_sesion_b.sql`, `concurrencia_verificar.sql`: suite de prueba de concurrencia de dos sesiones simultáneas demostrando bloqueo con `FOR UPDATE OF rb` e historial encadenado (9 -> 5 y 5 -> 7).
+- `supabase/functions/make-server-feea4382/motor/gondola_volumen.test.ts`: 9 pruebas unitarias Deno exhaustivas (tina en opcion_costos A-36 y Hardox escalando por 30/45, comparación de costo total 45 vs 30 con tina A-36, consistencia entre despiece BOM y costo con factor idéntico 30/45, y advertencia de variante_supuesta ante volúmenes no reconocidos).
+**Qué cambió y por qué:**  
+- **1. Tina escala en costo (`opcion_costos`):** Al migrar `a36` y `hardox_450` a `por_volumen`, la tina en 30 m³ pasa de 167,505.76 a 111,670.51 (ahorro de $55,835.25 en A-36) y de 286,748.42 a 191,165.61 en Hardox. Con esto, el costo total de la góndola de 30 m³ refleja tanto la reducción de acero base (~$18,458.53) como la reducción de tina ($55,835.25), sumando un ahorro coherente de ~$74,293.78.
+- **2. Concurrencia T6 en `guardar_linea_receta`:** Se restauró `FOR UPDATE OF rb`. La prueba de dos sesiones simultáneas demostró que la segunda sesión espera a que la primera haga COMMIT y genera el historial encadenado 9 -> 5 y 5 -> 7 sin lecturas sucias. `prueba_T6.sql` pasó con "EXITOSA (0 errores)".
+- **3. Corrección de título en configurador:** Se creó `tituloEquipo` resolviendo el error donde se mostraba literalmente `{datosModelo?.modelo?.num_ejes} EJES`.
+- **4. PDFs con volumen dinámico:** Se creó `nombreItemCotizacion` resolviendo que los PDFs impriman el volumen configurado (ej. "GONDOLA 2 EJES 30 M3") en las 5 plantillas/vistas oficiales.
+- **5. Advertencia para volumen no reconocido:** `resolverVolumenGondolaDetallado` emite pendiente y advertencia `variante_supuesta` cuando llega un valor no reconocido (ej. "m3_60"), asumiendo 45 m³ de forma provisional.
+**Acciones manuales pendientes:**  
+- Aplicar en Supabase SQL Editor de producción en este orden: `20261105_01_gondola_volumen.sql`, `20261105_02_gondola_volumen_escalas.sql` y `20261105_03_gondola_volumen_costos_tina.sql`.
+- Ejecutar `docs/gondola/verificacion_volumen.sql` en Supabase SQL Editor para confirmar `todo_ok = true` (los 9 checks en verde).
+- Hacer clic en "Rebuild" en `remolques-api` y `remolques-web` en EasyPanel.
+
+## 2026-11-05 - Góndola: El volumen (m³) pasa a ser una opción configurable (30 m³ y 45 m³) (Ronda 1)
+**Herramienta:** Antigravity  
+**Tipo:** feat (configurador, escala por_volumen, motor de costeo, despiece, ui, recetas tina)  
+**Rama:** `gondola-volumen-2026-11-05`  
+**Archivos tocados:**  
+- `supabase/migrations/20261105_01_gondola_volumen.sql`: recreación idempotente de CHECK constraints para admitir `'por_volumen'` en `receta_base`, `opcion_componentes`, `costos_modelo` y `opcion_costos`; actualización de RPC `guardar_linea_receta`; inserción multi-tenant del grupo `volumen` (única, aplica_a=['gondola'], orden=165) y opciones `m3_45` (default) y `m3_30`; renombrado seguro de productos terminados `GONDOLA 2 EJES 45 M3` -> `GONDOLA 2 EJES` y `GONDOLA 3 EJES 45 M3` -> `GONDOLA 3 EJES`.
+- `supabase/migrations/20261105_02_gondola_volumen_escalas.sql`: migración independiente y fácilmente reversible que marca con `escala = 'por_volumen'` los renglones de la tina en `receta_base` (Alma, Soleras, Borda delantera, Cajón para casquillo trasero) y en `opcion_componentes` (`tina_material` A-36 y Hardox 450), manteniendo el chasis/suspensión/patines en `fija`.
+- `supabase/functions/make-server-feea4382/motor/escalas.ts`: módulo compartido que centraliza `VOLUMEN_BASE_GONDOLA_M3 = 45`, la función `resolverVolumenGondola(configuracion, opciones)` y la función unificada `calcularCantidadEscalada(cantidadBase, escala, contexto)`.
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`: unificación al helper `calcularCantidadEscalada` e inyección de advertencia provisional tipo `variante_supuesta` cuando se costea a 30 m³.
+- `supabase/functions/make-server-feea4382/motor/resolver_receta.ts`: unificación al helper `calcularCantidadEscalada` y advertencia en despiece BOM al resolver 30 m³.
+- `supabase/functions/make-server-feea4382/motor/catalogo_costos.ts`: unificación de cálculo de kits/escalas y validación de `por_volumen`.
+- `supabase/functions/make-server-feea4382/motor/recetas_editor.ts`: unificación al helper compartido de escalas.
+- `supabase/functions/make-server-feea4382/motor/texto_especificacion.ts`: generación dinámica de encabezado `GONDOLA ${num_ejes} EJES ${volumen} M3` y omisión del grupo `volumen` en líneas desglosadas secundarias para evitar redundancias.
+- `supabase/functions/make-server-feea4382/motor/ficha_orden_trabajo.ts`: soporte para volumen en `formatearCantidadTexto` ("Una Góndola 2 ejes 45 m³" / "Una Góndola 2 ejes 30 m³").
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`: preselección automática de `volumen: 'm3_45'` por defecto al configurar góndolas y encabezado dinámico con volumen.
+- `src/app/components/OrdenesTrabajo/ChecklistDespieceModal.tsx`: resolución dinámica de modelo para incluir volumen en la impresión del vale de entrega y checklist de almacén.
+- `docs/gondola/verificacion_volumen.sql`: script de validación que retorna `todo_ok = true` verificando restricciones, grupo, opciones, renombrado y marcas de escala.
+- `docs/gondola/prueba_volumen.sql`: script transaccional con `ROLLBACK` para probar en Supabase SQL Editor el escalamiento proporcional.
+- `supabase/functions/make-server-feea4382/motor/gondola_volumen.test.ts`: suite de 6 pruebas unitarias Deno (regresión 45 m³ idéntica, escalamiento proporcional 30 m³ con advertencia `variante_supuesta`, valor por defecto sin warnings, plataformas y dollys intactos, consistencia de helper de escalas, y formato de nombres dinámicos).
+**Qué cambió y por qué:**  
+- **1. Volumen configurable:** Se desacopló el volumen de los nombres fijos de producto (`45 M3`), introduciendo el grupo `volumen` con opciones `m3_45` y `m3_30` que aplica exclusivamente a `gondola`.
+- **2. Nueva escala `por_volumen` y unificación:** Se sustituyeron las tres funciones duplicadas de cálculo de cantidad por `calcularCantidadEscalada` en `escalas.ts`. Si se selecciona `m3_30`, los renglones con escala `por_volumen` se multiplican por el factor `30 / 45` (= `2 / 3`).
+- **3. Advertencia de costo provisional:** Al costear o resolver receta con 30 m³, se emite la advertencia: *"Costo de 30 m³ estimado por proporción sobre 45 m³; pendiente despiece real"* tipo `variante_supuesta`, viajando a la cotización y al despiece.
+- **4. Propuesta de renglones de tina vs chasis:** Se analizó la receta de góndola; 4 renglones base (Alma, Soleras, Borda delantera, Cajón casquillo) y las láminas/perfiles de la tina (`tina_material`) se configuraron como `por_volumen`, mientras que los 45 renglones restantes (puentes, patines, jalón, percha, etc.) se preservaron como `fija`.
+- **5. Nombres dinámicos y retrocompatibilidad:** En cotizaciones y órdenes de trabajo, el nombre se ensambla dinámicamente (`GONDOLA 2 EJES 30 M3`), respetando los snapshots congelados de cotizaciones y órdenes ya existentes.
+**Acciones manuales pendientes:**  
+- Correr migraciones en Supabase SQL Editor: primero `20261105_01_gondola_volumen.sql` y luego `20261105_02_gondola_volumen_escalas.sql`.
+- Ejecutar `docs/gondola/verificacion_volumen.sql` en Supabase SQL Editor para confirmar `todo_ok = true`.
+- Hacer clic en "Rebuild" en el servicio `remolques-api` y `remolques-web` en EasyPanel.
+
 ## 2026-11-04 - Integración de tareas aprobadas (T0, T1, T2, T3, T4, T5, T6)
 **Herramienta:** Antigravity  
 **Tipo:** merge / integration (housekeeping, catalogo productos paginado, despiece union, checklist entregas, facturas partidas cfdi, editor recetas, normas propuesta)  

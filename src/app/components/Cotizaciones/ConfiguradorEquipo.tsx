@@ -29,6 +29,7 @@ import {
   limpiarTextoColorPersonalizado,
   esOpcionVisible
 } from '../../utils/seleccionMixta';
+import { tituloEquipo } from '../../utils/tituloEquipo';
 
 export interface ConfiguracionModelo {
   modelo: any;
@@ -141,7 +142,16 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
               sugeridos['patin'] = 'hj';
             }
             initialConfig.grupos = sugeridos;
+          } else if (data.modelo.tipo === 'gondola') {
+            const sugeridos: Record<string, string> = initialConfig.grupos || {};
+            if (!sugeridos['volumen']) {
+              sugeridos['volumen'] = 'm3_45';
+            }
+            initialConfig.grupos = sugeridos;
           }
+        }
+        if (data.modelo.tipo === 'gondola' && !initialConfig.grupos?.volumen) {
+          initialConfig.grupos = { ...initialConfig.grupos, volumen: 'm3_45' };
         }
         
         setConfiguracion(initialConfig);
@@ -510,7 +520,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle>Configurar Equipo</DialogTitle>
           <DialogDescription>
-            {producto?.nombre} - {datosModelo?.modelo?.tipo} {datosModelo?.modelo?.largo_ft ? `${datosModelo.modelo.largo_ft}FT ` : ''}{datosModelo?.modelo?.num_ejes} EJES
+            {tituloEquipo(producto, datosModelo?.modelo, configuracion)}
           </DialogDescription>
         </DialogHeader>
 

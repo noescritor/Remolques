@@ -1,4 +1,5 @@
 import Group5 from '../../imports/Group5';
+import { nombreItemCotizacion } from '../../utils/nombreItemCotizacion';
 
 interface PDFTemplateProps {
   cotizacion: any;
@@ -179,8 +180,8 @@ function TablaConceptos({ items, totales }: { items: any[], totales: any }) {
                 <td className="border border-gray-300 px-3 py-2 text-sm">{item.cantidad}</td>
                 <td className="border border-gray-300 px-3 py-2 text-sm">{item.unidad}</td>
                 <td className="border border-gray-300 px-3 py-2 text-sm">
-                  <div className="max-w-xs truncate" title={item.descripcion}>
-                    {item.descripcion}
+                  <div className="max-w-xs truncate" title={nombreItemCotizacion(null, item)}>
+                    {nombreItemCotizacion(null, item)}
                   </div>
                 </td>
                 <td className="border border-gray-300 px-3 py-2 text-sm">{item.numeroProyecto || '-'}</td>

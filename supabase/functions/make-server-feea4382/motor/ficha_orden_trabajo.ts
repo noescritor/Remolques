@@ -1,5 +1,6 @@
 import type { DatosModelo, GrupoOpcion, Opcion } from "./tipos.ts";
 import { fusionarFilasConfig, normalizarClaveOpcion, limpiarTextoColorPersonalizado } from "./reglas_compatibilidad.ts";
+import { resolverVolumenGondola } from "./escalas.ts";
 
 export interface CabeceraFicha {
   cliente: string;
@@ -42,7 +43,7 @@ function formatearFecha(f: string | null | undefined): string {
   return `${dia}/${mes}/${anio}`;
 }
 
-export function formatearCantidadTexto(modelo: any): string {
+export function formatearCantidadTexto(modelo: any, configuracionOVolumen?: any): string {
   const tipo = (modelo?.tipo || "").toLowerCase();
   const largo = modelo?.largo_ft;
   const ejes = modelo?.num_ejes;
@@ -56,7 +57,7 @@ export function formatearCantidadTexto(modelo: any): string {
   const art = femenino ? "Una" : "Un";
 
   let tipoCap = tipo.charAt(0).toUpperCase() + tipo.slice(1);
-  if (tipo === "gondola") tipoCap = "Góndola";
+  if (tipo === "gondola" || tipo === "góndola") tipoCap = "Góndola";
   else if (tipo === "dolly") tipoCap = "Dolly";
   else if (tipo === "plataforma") tipoCap = "Plataforma";
   else if (!tipoCap) tipoCap = "Remolque";
@@ -67,6 +68,24 @@ export function formatearCantidadTexto(modelo: any): string {
   }
   if (ejes && Number(ejes) > 0) {
     partes.push(`${ejes} ejes`);
+  }
+  if (tipo === "gondola" || tipo === "góndola") {
+    let vol: number | null = null;
+    if (typeof configuracionOVolumen === "number") {
+      vol = configuracionOVolumen;
+    } else if (typeof configuracionOVolumen === "string") {
+      const match = configuracionOVolumen.match(/(\d+)/);
+      if (match) vol = parseInt(match[1], 10);
+    } else if (configuracionOVolumen && typeof configuracionOVolumen === "object") {
+      if (configuracionOVolumen.grupos?.volumen || configuracionOVolumen.volumen) {
+        vol = resolverVolumenGondola(configuracionOVolumen);
+      }
+    } else if (modelo?.volumen) {
+      vol = Number(modelo.volumen);
+    }
+    if (vol) {
+      partes.push(`${vol} m³`);
+    }
   }
   return partes.join(" ");
 }
@@ -257,7 +276,7 @@ export function construirFichaOrdenTrabajo(
   };
 
   // 2. CANTIDAD_TEXTO
-  const cantidadTexto = formatearCantidadTexto(modelo);
+  const cantidadTexto = formatearCantidadTexto(modelo, cfg);
 
   // 3. CARACTERÍSTICAS
   // EJES

@@ -99,9 +99,9 @@ const procesos = [];
 
 // 5. Opciones de costo para Góndola (25 opciones catalogadas)
 const opcion_costos = [
-  // tina_material (2)
-  { grupo_clave: 'tina_material', opcion_clave: 'a36', cantidad_base: 1, escala: 'fija', costo_unitario: 167505.76 },
-  { grupo_clave: 'tina_material', opcion_clave: 'hardox_450', cantidad_base: 1, escala: 'fija', costo_unitario: 286748.42 },
+  // tina_material (2) - escalan con el volumen de la góndola (migración 20261105_03)
+  { grupo_clave: 'tina_material', opcion_clave: 'a36', cantidad_base: 1, escala: 'por_volumen', costo_unitario: 167505.76 },
+  { grupo_clave: 'tina_material', opcion_clave: 'hardox_450', cantidad_base: 1, escala: 'por_volumen', costo_unitario: 286748.42 },
 
   // suspension (5)
   { grupo_clave: 'suspension', opcion_clave: 'fleet_master', cantidad_base: 1, escala: 'por_eje', costo_unitario: 23118 },

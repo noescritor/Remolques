@@ -30,6 +30,26 @@ interface ChecklistDespieceModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+function resolverModeloChecklist(ord: any): string {
+  if (!ord) return 'Modelo';
+  if (ord.caracteristicas?.ficha?.cantidad_texto) {
+    return ord.caracteristicas.ficha.cantidad_texto;
+  }
+  if (ord.caracteristicas?.descripcion_corta && ord.caracteristicas.descripcion_corta.toUpperCase().includes('GONDOLA')) {
+    const match = ord.caracteristicas.descripcion_corta.match(/GONDOLA\s+\d+\s+EJES(?:\s+\d+\s+M3)?/i);
+    if (match) return match[0].toUpperCase();
+  }
+  const tipo = (ord.tipo_equipo || ord.modelo || '').toLowerCase();
+  const esGondola = tipo.includes('gondola') || ord.caracteristicas?.grupos?.volumen !== undefined;
+  if (esGondola) {
+    const vol = ord.caracteristicas?.grupos?.volumen?.includes?.('30') ? '30 M3' : '45 M3';
+    if (ord.modelo && !ord.modelo.includes('M3') && !ord.modelo.includes('m3')) {
+      return `${ord.modelo} ${vol}`;
+    }
+  }
+  return ord.modelo || 'Modelo';
+}
+
 export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistDespieceModalProps) {
   const [loading, setLoading] = useState(false);
   const [generando, setGenerando] = useState(false);
@@ -548,7 +568,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
         <h1>Vale de Entrega de Materiales y Checklist${esc(faseTitulo)}</h1>
         <div class="meta">
           <p><strong>Orden de Trabajo:</strong> ${esc(orden.nomenclatura_id || orden.id)} | <strong>NIV:</strong> ${esc(orden.niv || 'N/A')}</p>
-          <p><strong>Modelo:</strong> ${esc(orden.modelo || 'N/A')} | <strong>Cliente:</strong> ${esc(clienteNombre)}</p>
+          <p><strong>Modelo:</strong> ${esc(resolverModeloChecklist(orden))} | <strong>Cliente:</strong> ${esc(clienteNombre)}</p>
           <p><strong>Fecha Impresión:</strong> ${esc(new Date().toLocaleDateString('es-MX'))} ${esc(new Date().toLocaleTimeString('es-MX'))}</p>
           <p><strong>Partidas:</strong> ${lineasFiltradas.length} | <strong>Avance Global:</strong> ${metricas.porcentaje_avance}% (${metricas.total_piezas_entregadas} de ${metricas.total_piezas_requeridas} pz)</p>
         </div>
@@ -654,7 +674,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
               <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-muted-foreground">
                 <span className="font-mono font-bold text-foreground">{orden?.nomenclatura_id}</span>
                 {orden?.niv && <span>• NIV: {orden.niv}</span>}
-                <span>• {orden?.modelo || 'Modelo'}</span>
+                <span>• {resolverModeloChecklist(orden)}</span>
                 <span>• Cliente: {orden?.cliente?.nombre_razon_social || (orden?.cliente as any)?.nombre || '-'}</span>
               </div>
             </div>

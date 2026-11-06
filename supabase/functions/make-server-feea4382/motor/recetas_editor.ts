@@ -15,7 +15,7 @@ export interface GuardarLineaParams {
   modeloId: string;
   materialId: string;
   cantidad: number;
-  escala: 'fija' | 'por_eje' | 'por_largo';
+  escala: 'fija' | 'por_eje' | 'por_largo' | 'por_volumen';
   faseId: string;
   organizacionId: string;
   paso?: string | null;
@@ -172,8 +172,8 @@ export async function guardarLineaRecetaMotor(serviceClient: any, params: Guarda
   }
   const cant = Math.round(rawCant * 10000) / 10000;
 
-  if (!['fija', 'por_eje', 'por_largo'].includes(params.escala)) {
-    throw new HttpError(400, 'escala inválida: debe ser fija, por_eje o por_largo');
+  if (!['fija', 'por_eje', 'por_largo', 'por_volumen'].includes(params.escala)) {
+    throw new HttpError(400, 'escala inválida: debe ser fija, por_eje, por_largo o por_volumen');
   }
   if (!params.faseId) throw new HttpError(400, 'faseId es requerido');
 
