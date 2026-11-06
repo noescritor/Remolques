@@ -1,4 +1,7 @@
-import { resolverVolumenGondola } from "../../../supabase/functions/make-server-feea4382/motor/escalas.ts";
+import {
+  resolverVolumenGondola,
+  formatearVolumenM3
+} from "../../../supabase/functions/make-server-feea4382/motor/escalas.ts";
 
 export interface InfoProductoTitulo {
   nombre?: string | null;
@@ -25,7 +28,8 @@ export function tituloEquipo(
   if (tipo === "gondola") {
     const numEjes = modelo?.num_ejes ? Number(modelo.num_ejes) : 2;
     const vol = resolverVolumenGondola(configuracion);
-    return `GONDOLA ${numEjes} EJES ${vol} M3`;
+    const volStr = formatearVolumenM3(vol);
+    return `GONDOLA ${numEjes} EJES ${volStr} M3`;
   }
 
   const nombreProd = producto?.nombre || "";

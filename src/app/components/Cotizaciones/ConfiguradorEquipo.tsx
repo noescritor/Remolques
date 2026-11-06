@@ -30,6 +30,7 @@ import {
   esOpcionVisible
 } from '../../utils/seleccionMixta';
 import { tituloEquipo } from '../../utils/tituloEquipo';
+import { esVolumenCompleto, evaluarEstadoVolumen, extraerCandidatoVolumen, esGrupoConductor } from '../../utils/volumenGondola';
 
 export interface ConfiguracionModelo {
   modelo: any;
@@ -142,16 +143,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
               sugeridos['patin'] = 'hj';
             }
             initialConfig.grupos = sugeridos;
-          } else if (data.modelo.tipo === 'gondola') {
-            const sugeridos: Record<string, string> = initialConfig.grupos || {};
-            if (!sugeridos['volumen']) {
-              sugeridos['volumen'] = 'm3_45';
-            }
-            initialConfig.grupos = sugeridos;
           }
-        }
-        if (data.modelo.tipo === 'gondola' && !initialConfig.grupos?.volumen) {
-          initialConfig.grupos = { ...initialConfig.grupos, volumen: 'm3_45' };
         }
         
         setConfiguracion(initialConfig);
@@ -384,6 +376,9 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
     const esObligatorio = g.seleccion?.startsWith('unica') || ['suspension', 'eje', 'patin', 'rines', 'llantas'].includes(g.clave);
     if (!esObligatorio) return false;
     const val = configuracion.grupos[g.clave];
+    if (g.clave === 'volumen') {
+      return !esVolumenCompleto(val);
+    }
     if (val === undefined || val === null) return true;
     if (Array.isArray(val)) return val.length === 0;
     if (typeof val === 'string') return val.trim() === '';
@@ -543,6 +538,9 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                     const value = configuracion.grupos[g.clave];
                     const isMandatory = g.seleccion?.startsWith('unica') || ['suspension', 'eje', 'patin', 'rines', 'llantas'].includes(g.clave);
                     const hasValue = (() => {
+                      if (g.clave === 'volumen') {
+                        return esVolumenCompleto(value);
+                      }
                       if (value === undefined || value === null) return false;
                       if (Array.isArray(value)) {
                         return value.length > 0 && value.some((x: any) => x && (typeof x === 'string' ? x.trim() : x.opcion));
@@ -815,6 +813,110 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                         </div>
                       )}
                     </div>
+                  ) : grupoActual?.clave === 'volumen' ? (
+                    <div className="max-w-md space-y-4">
+                      <div>
+                        <h3 className="text-lg font-medium text-foreground">{grupoActual?.nombre}</h3>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Capacidad en metros cúbicos (m³). Rango permitido: 20 a 60 m³.
+                        </p>
+                      </div>
+
+                      {(() => {
+                        const valActual = configuracion.grupos?.['volumen'];
+                        const { textoOriginal } = extraerCandidatoVolumen(valActual);
+                        const valorInput = typeof valActual === 'object' && valActual?.m3 !== undefined
+                          ? String(valActual.m3)
+                          : textoOriginal;
+                        const estadoVol = evaluarEstadoVolumen(valActual);
+
+                        const handleCambioVol = (raw: string) => {
+                          const newConfig = {
+                            ...configuracion,
+                            grupos: { ...configuracion.grupos }
+                          };
+                          const limpio = raw.trim();
+                          if (!limpio) {
+                            delete newConfig.grupos.volumen;
+                          } else {
+                            const parsed = parseFloat(limpio.replace(',', '.'));
+                            if (Number.isFinite(parsed)) {
+                              newConfig.grupos.volumen = { opcion: 'personalizado', m3: parsed };
+                            } else {
+                              newConfig.grupos.volumen = { opcion: 'personalizado', raw: limpio };
+                            }
+                          }
+                          handleConfigChange(newConfig);
+                        };
+
+                        return (
+                          <div className="p-4 border border-border rounded-lg bg-card space-y-4">
+                            <div>
+                              <label htmlFor="input-volumen-gondola" className="block text-xs font-medium text-foreground mb-1.5">
+                                Volumen (m³) <span className="text-destructive">*</span>
+                              </label>
+                              <div className="relative">
+                                <input
+                                  id="input-volumen-gondola"
+                                  type="text"
+                                  inputMode="decimal"
+                                  className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                                  placeholder="Ej. 38"
+                                  value={valorInput}
+                                  onChange={(e) => handleCambioVol(e.target.value)}
+                                />
+                                <span className="absolute right-3 top-2 text-xs text-muted-foreground pointer-events-none">
+                                  m³
+                                </span>
+                              </div>
+                            </div>
+
+                            <div>
+                              <span className="block text-[11px] font-medium text-muted-foreground mb-1.5">
+                                Atajos rápidos:
+                              </span>
+                              <div className="flex gap-2">
+                                {[30, 45].map((m3) => {
+                                  const isSelected = estadoVol.completo && estadoVol.volumen === m3;
+                                  return (
+                                    <Button
+                                      key={m3}
+                                      type="button"
+                                      variant={isSelected ? "default" : "outline"}
+                                      size="sm"
+                                      className="h-8 text-xs"
+                                      onClick={() => handleCambioVol(String(m3))}
+                                    >
+                                      {m3} m³
+                                    </Button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            {estadoVol.error ? (
+                              <div className="p-2.5 rounded-md bg-destructive/10 border border-destructive/20 text-xs text-destructive flex items-center gap-2">
+                                <AlertCircle className="w-4 h-4 shrink-0" />
+                                <span>{estadoVol.error}</span>
+                              </div>
+                            ) : estadoVol.completo ? (
+                              <div className="p-2.5 rounded-md bg-primary/10 border border-primary/20 text-xs text-foreground flex items-center gap-2">
+                                <Check className="w-4 h-4 text-green-500 shrink-0" />
+                                <span>
+                                  {estadoVol.volumen === 45
+                                    ? "45 m³ (volumen base estándar de la receta)."
+                                    : `${estadoVol.texto} m³ (costo aproximado proporcional sobre 45 m³; provisional).`}
+                                </span>
+                              </div>
+                            ) : (
+                              <p className="text-[11px] text-muted-foreground">
+                                Escribe cualquier valor entre 20 y 60 m³ para completar este grupo obligatorio.
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </div>
                   ) : (
                     <div>
                       <h3 className="text-lg font-medium mb-4 text-foreground">{grupoActual?.nombre}</h3>
@@ -862,7 +964,7 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                               
                               <div className="flex gap-2 flex-wrap mb-2">
                                 {isSugerida && <Badge variant="secondary" className="text-[10px]">Sugerida</Badge>}
-                                {!o.tiene_receta && <Badge variant="outline" className="text-[10px] text-muted-foreground">Sin receta</Badge>}
+                                {!o.tiene_receta && !esGrupoConductor(grupoActual?.clave) && <Badge variant="outline" className="text-[10px] text-muted-foreground">Sin receta</Badge>}
                               </div>
                               
                               {isSelected && (grupoActual?.seleccion.includes('con_cantidad') || grupoActual?.seleccion === 'cantidad') && (
@@ -952,12 +1054,29 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                         const faltantesRegex = /^Falta elegir una opci[oó]n para el grupo obligatorio:\s*(.+)$/i;
                         const errFaltantes = (resultado?.errores || []).map((e: string) => e.match(faltantesRegex)?.[1]).filter(Boolean);
                         const otrosErrores = (resultado?.errores || []).filter((e: string) => !faltantesRegex.test(e));
+
+                        const esGondola = datosModelo?.modelo?.tipo === 'gondola';
+                        const volVal = configuracion.grupos?.['volumen'];
+                        const faltaVol = esGondola && !esVolumenCompleto(volVal);
+                        const estadoVol = esGondola ? evaluarEstadoVolumen(volVal) : null;
+
+                        const todosFaltantes = [...errFaltantes];
+                        if (faltaVol && !todosFaltantes.some((f: string) => f.toLowerCase() === 'volumen')) {
+                          todosFaltantes.push('Volumen');
+                        }
+
                         return (
                           <>
-                            {errFaltantes.length > 0 && (
+                            {todosFaltantes.length > 0 && (
                               <div className="text-xs text-muted-foreground flex items-center gap-1.5">
                                 <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                                <span>Faltan {errFaltantes.length} grupos por elegir: {errFaltantes.join(', ')}</span>
+                                <span>Faltan {todosFaltantes.length} grupos por elegir: {todosFaltantes.join(', ')}</span>
+                              </div>
+                            )}
+                            {estadoVol?.error && (
+                              <div className="text-xs text-destructive flex items-center gap-1.5">
+                                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                                <span>{estadoVol.error}</span>
                               </div>
                             )}
                             {otrosErrores.map((err: string, i: number) => (

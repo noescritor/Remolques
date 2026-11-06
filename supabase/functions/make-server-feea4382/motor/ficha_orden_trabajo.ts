@@ -1,6 +1,6 @@
 import type { DatosModelo, GrupoOpcion, Opcion } from "./tipos.ts";
 import { fusionarFilasConfig, normalizarClaveOpcion, limpiarTextoColorPersonalizado } from "./reglas_compatibilidad.ts";
-import { resolverVolumenGondola } from "./escalas.ts";
+import { resolverVolumenGondola, formatearVolumenM3 } from "./escalas.ts";
 
 export interface CabeceraFicha {
   cliente: string;
@@ -74,8 +74,8 @@ export function formatearCantidadTexto(modelo: any, configuracionOVolumen?: any)
     if (typeof configuracionOVolumen === "number") {
       vol = configuracionOVolumen;
     } else if (typeof configuracionOVolumen === "string") {
-      const match = configuracionOVolumen.match(/(\d+)/);
-      if (match) vol = parseInt(match[1], 10);
+      const match = configuracionOVolumen.match(/(\d+(?:[.,]\d+)?)/);
+      if (match) vol = parseFloat(match[1].replace(",", "."));
     } else if (configuracionOVolumen && typeof configuracionOVolumen === "object") {
       if (configuracionOVolumen.grupos?.volumen || configuracionOVolumen.volumen) {
         vol = resolverVolumenGondola(configuracionOVolumen);
@@ -84,7 +84,7 @@ export function formatearCantidadTexto(modelo: any, configuracionOVolumen?: any)
       vol = Number(modelo.volumen);
     }
     if (vol) {
-      partes.push(`${vol} m³`);
+      partes.push(`${formatearVolumenM3(vol)} m³`);
     }
   }
   return partes.join(" ");

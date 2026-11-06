@@ -1,6 +1,6 @@
 import { Modelo, Configuracion, GrupoOpcion, Opcion } from './tipos.ts';
 import { fusionarFilasConfig, normalizarClaveOpcion, limpiarTextoColorPersonalizado } from './reglas_compatibilidad.ts';
-import { resolverVolumenGondola } from './escalas.ts';
+import { resolverVolumenGondola, formatearVolumenM3 } from './escalas.ts';
 
 const ORDEN_TEXTO = [
   'suspension',
@@ -155,7 +155,7 @@ export function generarEspecificacion(
     modeloTexto = `DOLLY ${modelo.num_ejes} EJES`;
   } else if (modelo.tipo === 'gondola') {
     const vol = resolverVolumenGondola(configuracion, opciones);
-    modeloTexto = `GONDOLA ${modelo.num_ejes} EJES ${vol} M3`;
+    modeloTexto = `GONDOLA ${modelo.num_ejes} EJES ${formatearVolumenM3(vol)} M3`;
   } else {
     modeloTexto = (modelo.tipo || '').toUpperCase();
   }

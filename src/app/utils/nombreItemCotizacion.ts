@@ -1,9 +1,12 @@
 import { obtenerConfiguracion } from "./configuracionEquipo.ts";
-import { resolverVolumenGondola } from "../../../supabase/functions/make-server-feea4382/motor/escalas.ts";
+import {
+  resolverVolumenGondola,
+  formatearVolumenM3
+} from "../../../supabase/functions/make-server-feea4382/motor/escalas.ts";
 
 /**
  * Resuelve el nombre a mostrar para un ítem de cotización en PDFs y vistas previas.
- * Si el producto es góndola, asegura que el volumen (30 M3 o 45 M3) aparezca en el título,
+ * Si el producto es góndola, asegura que el volumen aparezca en el título,
  * leyendo la configuración guardada o asumiendo 45 M3 por defecto para cotizaciones históricas.
  */
 export function nombreItemCotizacion(
@@ -18,8 +21,8 @@ export function nombreItemCotizacion(
   const esGondolaPorCfg = Boolean(cfg?.grupos?.volumen || cfg?.grupos?.tina_material);
 
   if (esGondolaPorNombre || esGondolaPorTipo || esGondolaPorCfg) {
-    const tieneVolumenEnTexto = /\b\d+\s*m(?:3|³)\b/i.test(nombreBase);
-    const tieneVolumenEnDescripcion = /\b\d+\s*m(?:3|³)\b/i.test(item?.descripcion || "");
+    const tieneVolumenEnTexto = /\b\d+(?:[.,]\d+)?\s*m(?:3|³)\b/i.test(nombreBase);
+    const tieneVolumenEnDescripcion = /\b\d+(?:[.,]\d+)?\s*m(?:3|³)\b/i.test(item?.descripcion || "");
     const volConfigurado = cfg?.grupos?.volumen;
 
     // Si ya trae el volumen en el texto y no hay una reconfiguración explícita
@@ -31,13 +34,14 @@ export function nombreItemCotizacion(
     }
 
     const vol = resolverVolumenGondola(cfg);
+    const volStr = formatearVolumenM3(vol);
 
     // Si el texto ya tiene un volumen pero la config pide otro (o el mismo)
     if (tieneVolumenEnTexto) {
-      return nombreBase.replace(/\b\d+\s*m(?:3|³)\b/i, `${vol} M3`);
+      return nombreBase.replace(/\b\d+(?:[.,]\d+)?\s*m(?:3|³)\b/i, `${volStr} M3`);
     }
 
-    return `${nombreBase} ${vol} M3`;
+    return `${nombreBase} ${volStr} M3`;
   }
 
   return nombreBase;

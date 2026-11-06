@@ -23,6 +23,7 @@ import {
   FileSpreadsheet,
 } from 'lucide-react';
 import { BASE_URL } from '../../utils/api';
+import { resolverVolumenGondola, formatearVolumenM3 } from '../../utils/volumenGondola';
 
 interface ChecklistDespieceModalProps {
   orden: OrdenTrabajo | null;
@@ -36,14 +37,15 @@ function resolverModeloChecklist(ord: any): string {
     return ord.caracteristicas.ficha.cantidad_texto;
   }
   if (ord.caracteristicas?.descripcion_corta && ord.caracteristicas.descripcion_corta.toUpperCase().includes('GONDOLA')) {
-    const match = ord.caracteristicas.descripcion_corta.match(/GONDOLA\s+\d+\s+EJES(?:\s+\d+\s+M3)?/i);
+    const match = ord.caracteristicas.descripcion_corta.match(/GONDOLA\s+\d+\s+EJES(?:\s+\d+(?:[.,]\d+)?\s*M3)?/i);
     if (match) return match[0].toUpperCase();
   }
   const tipo = (ord.tipo_equipo || ord.modelo || '').toLowerCase();
   const esGondola = tipo.includes('gondola') || ord.caracteristicas?.grupos?.volumen !== undefined;
   if (esGondola) {
-    const vol = ord.caracteristicas?.grupos?.volumen?.includes?.('30') ? '30 M3' : '45 M3';
-    if (ord.modelo && !ord.modelo.includes('M3') && !ord.modelo.includes('m3')) {
+    const volNum = resolverVolumenGondola(ord.caracteristicas);
+    const vol = `${formatearVolumenM3(volNum)} M3`;
+    if (ord.modelo && !/\b\d+(?:[.,]\d+)?\s*m(?:3|³)\b/i.test(ord.modelo)) {
       return `${ord.modelo} ${vol}`;
     }
   }
