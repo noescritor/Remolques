@@ -81,6 +81,17 @@ Deno.test("Góndola Volumen: Test 1 - Volumen 45 m³ y sin volumen explícito so
   assertEquals(resConVol45A36.precio_sugerido, resSinVolA36.precio_sugerido);
   assertEquals(resConVol45A36.confianza, resSinVolA36.confianza);
 
+  // Probar todas las formas de expresar 45 m³ (m3_45, 45, "45", {m3: 45}, {opcion: "personalizado", m3: 45})
+  const formas45: any[] = ["m3_45", 45, "45", { m3: 45 }, { opcion: "personalizado", m3: 45 }];
+  for (const forma of formas45) {
+    const resForma = costear(datosA36, { grupos: { volumen: forma, tina_material: "a36" } });
+    assertEquals(JSON.stringify(resForma.secciones), JSON.stringify(resSinVolA36.secciones));
+    assertEquals(resForma.pendientes, resSinVolA36.pendientes);
+    assertEquals(resForma.costo, resSinVolA36.costo);
+    assertEquals(resForma.precio_sugerido, resSinVolA36.precio_sugerido);
+    assertEquals(resForma.confianza, resSinVolA36.confianza);
+  }
+
   // 2. Fixture Hardox 450: comparar secciones, pendientes, costo, precio_sugerido y confianza
   const configSinVolHardox: Configuracion = {
     grupos: {
@@ -213,6 +224,13 @@ Deno.test("Góndola Volumen: Test 2 - Volumen 30 m³ escala tina opcion_costos (
   const advertencia = res30A36.pendientes.find(p => p.tipo === "variante_supuesta");
   assert(advertencia, "Debe incluir advertencia tipo variante_supuesta");
   assert(advertencia.detalle.includes("Costo de 30 m³ estimado por proporción sobre 45 m³; pendiente despiece real"));
+
+  // 6. Probar todas las formas de expresar 30 m³ (m3_30, 30, "30", {m3: 30}, {opcion: "personalizado", m3: 30})
+  const formas30: any[] = ["m3_30", 30, "30", { m3: 30 }, { opcion: "personalizado", m3: 30 }];
+  for (const forma of formas30) {
+    const resForma = costear(datosA36, { grupos: { volumen: forma, tina_material: "a36" } });
+    assertEquals(resForma.costo, res30A36.costo);
+  }
 });
 
 // --------------------------------------------------------------------------
@@ -255,6 +273,74 @@ Deno.test("Góndola Volumen: Test 2b - Comparación de costo total 45 vs 30 con 
   const ahorroEsperado = Math.round((ahorroAcero + ahorroTina) * 100) / 100;
   assertEquals(ahorroTotal, ahorroEsperado);
   assert(ahorroTotal >= 74293.70 && ahorroTotal <= 74294.00, `Ahorro total esperado ~74,293.78, obtenido ${ahorroTotal}`);
+});
+
+// --------------------------------------------------------------------------
+// TEST 2c: Volumen 38 m³ libre - Renglones por_volumen escalan con factor 38/45
+// --------------------------------------------------------------------------
+Deno.test("Góndola Volumen: Test 2c - Volumen 38 m³ escala renglones por_volumen con factor 38/45 y resto sin cambio", () => {
+  const datos = prepararDatosGondolaConEscalas(datosGondolaBase);
+  const config38: Configuracion = {
+    grupos: {
+      volumen: 38,
+      tina_material: "a36"
+    }
+  };
+  const res38 = costear(datos, config38);
+
+  // 1. Tina A-36: 167505.76 * 38 / 45 = 141449.31
+  const tina = res38.secciones.opciones.lineas.find(l => l.concepto.includes("tina_material: a36"));
+  assert(tina, "Debe existir línea de tina A-36");
+  const esperadoTina = Math.round((167505.76 * 38 / 45) * 100) / 100;
+  assertEquals(tina.importe, esperadoTina);
+
+  // 2. Acero de tina: ALMA 2 * 38 / 45, SOLERAS 4 * 38 / 45
+  const alma = res38.secciones.acero.lineas.find(l => l.concepto.includes("ALMA"));
+  assert(alma);
+  assert(Math.abs(alma.cantidad - (2 * 38 / 45)) < 0.0001);
+
+  // 3. Chasis fijo: PUENTES intacto en 9 pz
+  const puentes = res38.secciones.acero.lineas.find(l => l.concepto.includes("PUENTES DE SUSPENSIÓN"));
+  assert(puentes);
+  assertEquals(puentes.cantidad, 9);
+
+  // 4. Advertencia variante_supuesta menciona 38 m³
+  const adv = res38.pendientes.find(p => p.tipo === "variante_supuesta");
+  assert(adv, "Debe registrar advertencia variante_supuesta");
+  assert(adv.detalle.includes("38 m³"));
+});
+
+// --------------------------------------------------------------------------
+// TEST 2d: Volumen con decimales (37.5 y '37,5')
+// --------------------------------------------------------------------------
+Deno.test("Góndola Volumen: Test 2d - Volumen con decimales (37.5 y '37,5') escala correctamente y formatea sin redondeo espurio", () => {
+  const datos = prepararDatosGondolaConEscalas(datosGondolaBase);
+  const configPunto: Configuracion = {
+    grupos: {
+      volumen: 37.5,
+      tina_material: "a36"
+    }
+  };
+  const configComa: Configuracion = {
+    grupos: {
+      volumen: "37,5",
+      tina_material: "a36"
+    }
+  };
+
+  const resPunto = costear(datos, configPunto);
+  const resComa = costear(datos, configComa);
+
+  assertEquals(resPunto.costo, resComa.costo);
+
+  const tina = resPunto.secciones.opciones.lineas.find(l => l.concepto.includes("tina_material: a36"));
+  assert(tina);
+  const esperadoTina = Math.round((167505.76 * 37.5 / 45) * 100) / 100;
+  assertEquals(tina.importe, esperadoTina);
+
+  const adv = resPunto.pendientes.find(p => p.tipo === "variante_supuesta");
+  assert(adv);
+  assert(adv.detalle.includes("37.5 m³"));
 });
 
 // --------------------------------------------------------------------------
@@ -488,42 +574,37 @@ Deno.test("Góndola Volumen: Test 6 - Formato exacto de nombres dinámicos con v
 });
 
 // --------------------------------------------------------------------------
-// TEST 7: Volumen no reconocido emite advertencia variante_supuesta y asume 45 m³
+// TEST 7: Valores fuera de rango o inválidos emiten advertencia variante_supuesta y asumen 45 m³
 // --------------------------------------------------------------------------
-Deno.test("Góndola Volumen: Test 7 - Volumen no reconocido emite advertencia variante_supuesta y asume 45 m³", () => {
-  // 1. Helper directo resolverVolumenGondolaDetallado
-  const configRaraString: Configuracion = { grupos: { volumen: "m3_60" } };
-  const detString = resolverVolumenGondolaDetallado(configRaraString, opcionesMock);
-  assertEquals(detString.volumen, 45);
-  assertEquals(detString.esReconocido, false);
-  assert(detString.advertencia?.includes("Volumen 'm3_60' no reconocido para góndola; se asume 45 m³ (provisional)"));
+Deno.test("Góndola Volumen: Test 7 - Valores fuera de rango o no numéricos emiten advertencia variante_supuesta y asumen 45 m³", () => {
+  const casosInvalidos: any[] = [10, 80, -5, 0, "m3_80", "abc", NaN];
 
-  const configRaraNumero: Configuracion = { grupos: { volumen: 60 as any } };
-  const detNumero = resolverVolumenGondolaDetallado(configRaraNumero, opcionesMock);
-  assertEquals(detNumero.volumen, 45);
-  assertEquals(detNumero.esReconocido, false);
-  assert(detNumero.advertencia?.includes("Volumen '60' no reconocido para góndola; se asume 45 m³ (provisional)"));
+  for (const c of casosInvalidos) {
+    const config: Configuracion = { grupos: { volumen: c } };
+    const det = resolverVolumenGondolaDetallado(config, opcionesMock);
+    assertEquals(det.volumen, 45, `Caso ${c} debe asumir 45 m³`);
+    assertEquals(det.esReconocido, false);
+    assert(det.advertencia?.includes("asume 45 m³"), `Caso ${c} debe emitir advertencia`);
 
-  // 2. Costeo: registra pendiente variante_supuesta
-  const datos = prepararDatosGondolaConEscalas();
-  const resCosteo = costear(datos, configRaraString);
-  assertEquals(resCosteo.costo > 0, true);
-  const pendienteRaro = resCosteo.pendientes.find(
-    p => p.tipo === "variante_supuesta" && p.detalle.includes("Volumen 'm3_60' no reconocido")
-  );
-  assert(pendienteRaro, "Debe registrar pendiente tipo variante_supuesta con la advertencia de volumen no reconocido");
+    const datos = prepararDatosGondolaConEscalas();
+    const resCosteo = costear(datos, config);
+    assertEquals(resCosteo.costo > 0, true);
+    assert(
+      resCosteo.pendientes.some(p => p.tipo === "variante_supuesta" && p.detalle.includes("asume 45 m³")),
+      `Caso ${c} debe registrar pendiente variante_supuesta en costeo`
+    );
 
-  // 3. Despiece (resolverReceta): registra advertencia
-  const datosModelo: DatosModelo = {
-    modelo: { id: "mod-gondola", tipo: "gondola", largo_ft: 0, num_ejes: 2, nombre: "GONDOLA 2 EJES" },
-    receta_base: [],
-    grupos: gruposMock,
-    opciones: opcionesMock,
-    opcion_componentes: []
-  };
-  const resReceta = resolverReceta(datosModelo, configRaraString);
-  assert(
-    resReceta.advertencias.some(a => a.includes("Volumen 'm3_60' no reconocido para góndola; se asume 45 m³ (provisional)")),
-    "resolverReceta debe incluir advertencia cuando el volumen no es reconocido"
-  );
+    const datosModelo: DatosModelo = {
+      modelo: { id: "mod-gondola", tipo: "gondola", largo_ft: 0, num_ejes: 2, nombre: "GONDOLA 2 EJES" },
+      receta_base: [],
+      grupos: gruposMock,
+      opciones: opcionesMock,
+      opcion_componentes: []
+    };
+    const resReceta = resolverReceta(datosModelo, config);
+    assert(
+      resReceta.advertencias.some(a => a.includes("asume 45 m³")),
+      `resolverReceta debe incluir advertencia para caso ${c}`
+    );
+  }
 });

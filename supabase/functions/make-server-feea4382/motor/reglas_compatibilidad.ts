@@ -138,7 +138,7 @@ export function validarCompatibilidad(
   const retrList = retrRaw ? (Array.isArray(retrRaw) ? retrRaw : [retrRaw]) : [];
 
   for (const r of retrList) {
-    const oClaveRaw = typeof r === "string" ? r : r?.opcion;
+    const oClaveRaw = typeof r === "string" ? r : (typeof r === "object" && r ? (r as any).opcion : undefined);
     if (!oClaveRaw) continue;
     const oClave = normalizarClaveOpcion("retractil", oClaveRaw);
     const opcion = datos.opciones.find((o) => o.grupo_id === grpRetractil?.id && (o.clave === oClave || o.clave === oClaveRaw));
@@ -156,7 +156,7 @@ export function validarCompatibilidad(
   if (colorRaw) {
     const colorList = Array.isArray(colorRaw) ? colorRaw : [colorRaw];
     for (const c of colorList) {
-      const op = typeof c === "string" ? c : c?.opcion;
+      const op = typeof c === "string" ? c : (typeof c === "object" && c ? (c as any).opcion : undefined);
       if (op === "personalizado") {
         const texto = typeof c === "object" && c ? (c as any).texto : "";
         const textoLimpio = limpiarTextoColorPersonalizado(texto || "");
@@ -271,9 +271,9 @@ export function validarCompatibilidad(
     if (esperado !== null && advertencias) {
       let totalRetractiles = 0;
       for (const r of retrList) {
-        const op = typeof r === "string" ? r : r?.opcion;
+        const op = typeof r === "string" ? r : (typeof r === "object" && r ? (r as any).opcion : undefined);
         if (!op || op.startsWith("sin_")) continue;
-        const cant = typeof r === "object" && typeof r.cantidad === "number" && !isNaN(r.cantidad) ? r.cantidad : 1;
+        const cant = typeof r === "object" && r && typeof (r as any).cantidad === "number" && !isNaN((r as any).cantidad) ? (r as any).cantidad : 1;
         totalRetractiles += cant;
       }
 

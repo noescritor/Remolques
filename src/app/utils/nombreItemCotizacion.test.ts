@@ -54,3 +54,29 @@ Deno.test("nombreItemCotizacion: Góndola que ya tiene 45 M3 en producto no lo d
   const res = nombreItemCotizacion(prod, item);
   assertEquals(res, "GONDOLA 3 EJES 45 M3");
 });
+
+Deno.test("nombreItemCotizacion: Góndola con volumen 38 m3 libre genera 'GONDOLA 2 EJES 38 M3'", () => {
+  const item = {
+    descripcion: "GONDOLA 2 EJES",
+    configuracion: {
+      grupos: {
+        volumen: 38,
+      },
+    },
+  };
+  const res = nombreItemCotizacion(null, item);
+  assertEquals(res, "GONDOLA 2 EJES 38 M3");
+});
+
+Deno.test("nombreItemCotizacion: Góndola con volumen 37.5 m3 genera 'GONDOLA 2 EJES 37.5 M3'", () => {
+  const item = {
+    descripcion: "GONDOLA 2 EJES",
+    configuracion: {
+      grupos: {
+        volumen: { opcion: "personalizado", m3: 37.5 },
+      },
+    },
+  };
+  const res = nombreItemCotizacion(null, item);
+  assertEquals(res, "GONDOLA 2 EJES 37.5 M3");
+});

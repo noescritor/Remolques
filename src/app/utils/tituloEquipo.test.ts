@@ -41,3 +41,23 @@ Deno.test("tituloEquipo: Góndola 3 ejes con m3_30 genera 30 M3", () => {
   assert(!res.includes("{"));
   assert(!res.includes("$"));
 });
+
+Deno.test("tituloEquipo: Góndola 2 ejes con volumen numérico 38 genera 'GONDOLA 2 EJES 38 M3'", () => {
+  const prod = { nombre: "GONDOLA 2 EJES" };
+  const mod = { tipo: "gondola", largo_ft: null, num_ejes: 2 };
+  const res = tituloEquipo(prod, mod, { grupos: { volumen: 38 } });
+
+  assertEquals(res, "GONDOLA 2 EJES 38 M3");
+  assert(!res.includes("{"));
+  assert(!res.includes("$"));
+});
+
+Deno.test("tituloEquipo: Góndola 2 ejes con objeto personalizado 37.5 genera 'GONDOLA 2 EJES 37.5 M3'", () => {
+  const prod = { nombre: "GONDOLA 2 EJES" };
+  const mod = { tipo: "gondola", largo_ft: null, num_ejes: 2 };
+  const res = tituloEquipo(prod, mod, { grupos: { volumen: { opcion: "personalizado", m3: 37.5 } } });
+
+  assertEquals(res, "GONDOLA 2 EJES 37.5 M3");
+  assert(!res.includes("{"));
+  assert(!res.includes("$"));
+});

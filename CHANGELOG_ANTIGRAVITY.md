@@ -3,6 +3,32 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-06 - Góndola: volumen editable (campo libre en m³, sin valor preestablecido)
+**Herramienta:** Antigravity  
+**Tipo:** feat (volumen libre 20-60 m³, opción personalizado, UI con atajos y punto rojo obligatorio, validaciones)  
+**Rama:** `gondola-volumen-libre-2026-11-05`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/escalas.ts`: constantes `VOLUMEN_MIN_GONDOLA_M3 = 20`, `VOLUMEN_MAX_GONDOLA_M3 = 60`, `formatearVolumenM3` para omitir decimales innecesarios, y ampliación de `resolverVolumenGondolaDetallado` para procesar números, strings con coma/punto, objetos `{ m3 }` y `{ opcion: 'personalizado', m3 }`.
+- `supabase/functions/make-server-feea4382/motor/costeo.ts` y `resolver_receta.ts`: emisión de advertencia `variante_supuesta` para cualquier volumen $\neq 45$ m³.
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`: ampliación de `Configuracion.grupos` para admitir tipos numéricos y objetos de volumen.
+- `supabase/functions/make-server-feea4382/motor/reglas_compatibilidad.ts`: salvaguarda en acceso a `.opcion` cuando la opción en grupos es numérica.
+- `supabase/migrations/20261106_01_gondola_volumen_libre.sql`: migración idempotente multi-tenant que inserta la opción `personalizado` con `datos = '{"min":20,"max":60}'::jsonb` y desactiva las opciones fijas `m3_45` y `m3_30` (`activo = false`).
+- `docs/gondola/verificacion_volumen.sql`: ampliación con checks 10 (`opcion_personalizado_existe`) y 11 (`opciones_fijas_desactivadas`).
+- `src/app/utils/volumenGondola.ts`: utilidades puras `evaluarEstadoVolumen`, `esVolumenCompleto`, `extraerCandidatoVolumen` y re-exportación de helpers de escalas para el frontend.
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`: eliminación de valor predeterminado `m3_45`, visualización de input numérico con límites [20, 60] m³ y sufijo `m³`, atajos rápidos 30 y 45 m³, punto rojo en menú lateral mientras esté incompleto, y ocultamiento de etiqueta "Sin receta" en grupos conductores.
+- `src/app/utils/tituloEquipo.ts`, `nombreItemCotizacion.ts`, `texto_especificacion.ts`, `ficha_orden_trabajo.ts` y `ChecklistDespieceModal.tsx`: formato uniforme de volumen dinámico (soporte para enteros y decimales).
+- `src/app/utils/volumenGondola.test.ts`: 4 pruebas unitarias Deno para funciones de evaluación y candidatos de volumen.
+- `src/app/utils/nombreItemCotizacion.test.ts` y `tituloEquipo.test.ts`: pruebas de volumen libre (38 m³ y 37.5 m³).
+- `supabase/functions/make-server-feea4382/motor/gondola_volumen.test.ts`: actualización de Test 1 (multi-representación 45), Test 2 (multi-representación 30), incorporación de Test 2c (38 m³) y Test 2d (37.5 m³), y actualización de Test 7 (casos fuera de rango y no numéricos).
+- `GONDOLA_VOLUMEN_LIBRE_REPORTE_ANTY.md`: reporte técnico completo con resultados de verificación local en Postgres 17 y pruebas Deno.
+**Qué cambió y por qué:**  
+- **1. Campo libre sin valor predeterminado:** A solicitud de Luis, el volumen de la góndola ya no viene preseleccionado en 45 m³ ni se limita a tarjetas fijas; ahora es un campo libre donde se puede teclear cualquier cantidad de 20 a 60 m³ con atajos rápidos opcionales (30 y 45 m³).
+- **2. Obligatoriedad visual y bloqueo de confirmación:** El grupo Volumen muestra un punto rojo hasta que el usuario teclee una capacidad válida, y el botón "Agregar a la cotización" permanece deshabilitado mientras falte el dato o esté fuera de rango.
+- **3. Proporcionalidad intacta:** Todo volumen distinto de 45 m³ calcula costos y despiece escalando proporcionalmente sobre la base de 45 m³ con aviso `variante_supuesta`.
+**Acciones manuales pendientes:**  
+- Ejecutar en Supabase Cloud la migración `supabase/migrations/20261106_01_gondola_volumen_libre.sql`.
+- Rebuild en EasyPanel para `remolques-api` y `remolques-web` tras merge a `main`.
+
 ## 2026-11-05 - Corrección: Enlaces a la API (Portal, Correo, IA)
 **Herramienta:** Antigravity  
 **Tipo:** fix (sustitución de llamadas a funciones obsoletas de Supabase por BASE_URL de EasyPanel)  

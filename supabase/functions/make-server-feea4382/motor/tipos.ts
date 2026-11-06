@@ -71,8 +71,9 @@ export interface DatosModelo {
 }
 
 export interface Configuracion {
-  grupos: Record<string, string | { opcion: string; marca?: string; cantidad?: number; texto?: string; medida?: string } | (string | { opcion: string; marca?: string; cantidad?: number; texto?: string; medida?: string })[]>;
+  grupos: Record<string, string | number | { opcion?: string; m3?: number; raw?: string; marca?: string; cantidad?: number; texto?: string; medida?: string } | (string | number | { opcion?: string; m3?: number; raw?: string; marca?: string; cantidad?: number; texto?: string; medida?: string })[]>;
   adicionales?: string[];
+  volumen?: number | string | { opcion?: string; m3?: number };
 }
 
 export interface LineaResultado {
