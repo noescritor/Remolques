@@ -15,7 +15,8 @@ import {
   AjusteManual, 
   validarAjusteIndividual, 
   textoConfianza, 
-  traducirTipoPendiente 
+  traducirTipoPendiente,
+  mensajeCosteoIncompleto 
 } from '../../utils/costeo';
 import {
   FilaSeleccionMixta,
@@ -1143,9 +1144,11 @@ export function ConfiguradorEquipo({ open, onOpenChange, producto, modeloId, ite
                           </span>
                         ) : (
                           <span className="text-sm font-medium text-muted-foreground italic">
-                            {costeo?.costo === null || costeo?.costo === undefined
-                              ? (errorCosteo || 'Este modelo todavía no tiene costos cargados')
-                              : (costeo?.ganancia === null ? 'Falta definir la ganancia' : 'Sin costeo para este modelo')}
+                            {costeo?.confianza === 'incompleta'
+                              ? (mensajeCosteoIncompleto(costeo) || 'Sin costeo para este modelo')
+                              : (costeo?.costo === null || costeo?.costo === undefined
+                                ? (errorCosteo || 'Este modelo todavía no tiene costos cargados')
+                                : (costeo?.ganancia === null ? 'Falta definir la ganancia' : 'Sin costeo para este modelo'))}
                           </span>
                         )}
                       </div>

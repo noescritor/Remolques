@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Alert, AlertDescription } from '../ui/alert';
-import { ArrowLeft, Plus, Trash2, FileDown, Copy, Save, UserPlus, Eye, BookTemplate, FileSpreadsheet, Sparkles, Loader2, AlertTriangle, Settings, X, Search } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, FileDown, Copy, Save, UserPlus, Eye, BookTemplate, FileSpreadsheet, Sparkles, Loader2, AlertTriangle, AlertCircle, Settings, X, Search } from 'lucide-react';
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, TRANSICIONES_ESTADO, CostosIndirectos, ComisionesPago, Plantilla } from '../../types';
 import { ExcelImportModal } from './ExcelImportModal';
 import { supabase } from '../../utils/supabase/client';
@@ -329,6 +329,7 @@ export function CotizacionEditor({
         precio_sugerido: costeo.precio_sugerido,
         confianza: costeo.confianza,
         pendientes: (costeo.pendientes || []).map((p: any) => p.detalle),
+        secciones_faltantes: costeo.secciones_faltantes,
         calculado_en: new Date().toISOString()
       };
     }
@@ -630,6 +631,8 @@ export function CotizacionEditor({
     const isErr = !cfg.resuelta;
     const isIncomplete = !cfg.completo;
     const isExpanded = expandedItems[item.id] || false;
+    const esCosteoIncompleto = cfg.costeo?.confianza === 'incompleta' || (cfg.costeo && (cfg.costeo.precio_sugerido === null || cfg.costeo.precio_sugerido === undefined));
+    const avisoPrecioIncompleto = isPending && Boolean(esCosteoIncompleto);
     
     const cardContent = (
       <div className="m-0 sm:m-3 border rounded-lg bg-card text-card-foreground shadow-sm overflow-hidden flex flex-col">
@@ -656,7 +659,18 @@ export function CotizacionEditor({
             </div>
             <div className="flex flex-col items-start md:items-end w-28">
               <Label className="text-[10px] text-muted-foreground uppercase mb-1">Precio Unit.</Label>
-              <Input type="number" className="h-8 text-right" value={item.precio_unitario || ''} placeholder="0.00" onChange={(e) => actualizarItem(item.id, { precio_unitario: parseFloat(e.target.value) || 0 })} />
+              <Input 
+                type="number" 
+                className={`h-8 text-right ${avisoPrecioIncompleto ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-950/20' : ''}`} 
+                value={item.precio_unitario || ''} 
+                placeholder="0.00" 
+                onChange={(e) => actualizarItem(item.id, { precio_unitario: parseFloat(e.target.value) || 0 })} 
+              />
+              {avisoPrecioIncompleto && (
+                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium leading-tight mt-0.5 text-right">
+                  Captura a mano
+                </span>
+              )}
             </div>
             <div className="flex flex-col items-start md:items-end min-w-20">
               <Label className="text-[10px] text-muted-foreground uppercase mb-1">Total</Label>
@@ -670,6 +684,14 @@ export function CotizacionEditor({
             </div>
           </div>
         </div>
+
+        {/* Aviso visible cuando falta precio por costeo incompleto */}
+        {avisoPrecioIncompleto && (
+          <div className="px-4 py-2 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs flex items-center gap-1.5 font-medium">
+            <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
+            <span>Sin precio: costeo incompleto. Captura el precio a mano.</span>
+          </div>
+        )}
         {/* Body (Desglose) */}
         <div className="p-4 bg-background text-sm">
            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3">
@@ -1066,7 +1088,7 @@ export function CotizacionEditor({
                     totalCalculado = { subtotal: base, iva, total: base + iva, costoTotal: (item.cantidad || 0) * (item.costo_unitario || 0) };
                   }
                   
-                  if (item.metadata?.configuracion) {
+                  if (obtenerConfiguracion(item)) {
                     return renderConfiguredItemCard(item, true, totalCalculado);
                   }
 
@@ -1096,7 +1118,21 @@ export function CotizacionEditor({
                           {esServicio ? (
                             <div className="text-sm text-gray-500 py-1.5">{formatearMoneda(totalCalculado.subtotal)}</div>
                           ) : (
-                            <Input type="number" value={item.precio_unitario || 0} onChange={(e) => actualizarItem(item.id, { precio_unitario: parseFloat(e.target.value) || 0 })} className="text-sm" min="0" step="0.01" />
+                            <div className="space-y-1">
+                              <Input type="number" value={item.precio_unitario || 0} onChange={(e) => actualizarItem(item.id, { precio_unitario: parseFloat(e.target.value) || 0 })} className="text-sm" min="0" step="0.01" />
+                              {(() => {
+                                const cfg = obtenerConfiguracion(item);
+                                const esCosteoIncompleto = cfg?.costeo?.confianza === 'incompleta' || (cfg?.costeo && (cfg.costeo.precio_sugerido === null || cfg.costeo.precio_sugerido === undefined));
+                                if ((item.precio_unitario || 0) === 0 && Boolean(esCosteoIncompleto)) {
+                                  return (
+                                    <span className="block text-[10px] text-amber-600 dark:text-amber-400 font-medium leading-tight">
+                                      Sin precio: costeo incompleto. Captura el precio a mano.
+                                    </span>
+                                  );
+                                }
+                                return null;
+                              })()}
+                            </div>
                           )}
                         </div>
                         <div>
@@ -1151,7 +1187,7 @@ export function CotizacionEditor({
                     };
                   }
                   
-                  if (item.metadata?.configuracion) {
+                  if (obtenerConfiguracion(item)) {
                     return renderConfiguredItemCard(item, false, totalCalculado);
                   }
 
@@ -1273,14 +1309,28 @@ export function CotizacionEditor({
                           </div>
                         </div>
                       ) : (
-                        <Input
-                          type="number"
-                          value={item.precio_unitario || 0}
-                          onChange={(e) => actualizarItem(item.id, { precio_unitario: parseFloat(e.target.value) || 0 })}
-                          className={`w-full ${item.configuracion && (item.precio_unitario || 0) === 0 ? 'border-yellow-500 bg-yellow-50' : ''}`}
-                          min="0"
-                          step="0.01"
-                        />
+                        <div className="space-y-1">
+                          <Input
+                            type="number"
+                            value={item.precio_unitario || 0}
+                            onChange={(e) => actualizarItem(item.id, { precio_unitario: parseFloat(e.target.value) || 0 })}
+                            className={`w-full ${item.configuracion && (item.precio_unitario || 0) === 0 ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-950/20' : ''}`}
+                            min="0"
+                            step="0.01"
+                          />
+                          {(() => {
+                            const cfg = obtenerConfiguracion(item);
+                            const esCosteoIncompleto = cfg?.costeo?.confianza === 'incompleta' || (cfg?.costeo && (cfg.costeo.precio_sugerido === null || cfg.costeo.precio_sugerido === undefined));
+                            if ((item.precio_unitario || 0) === 0 && Boolean(esCosteoIncompleto)) {
+                              return (
+                                <span className="block text-[10px] text-amber-600 dark:text-amber-400 font-medium leading-tight">
+                                  Sin precio: costeo incompleto. Captura el precio a mano.
+                                </span>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
                       )}
                     </TableCell>
                     <TableCell>

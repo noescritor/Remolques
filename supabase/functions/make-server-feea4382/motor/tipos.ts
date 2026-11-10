@@ -140,6 +140,7 @@ export interface ResultadoCosteo {
   margen_sobre_costo: number | null;
   confianza: 'completa' | 'estimada' | 'incompleta';
   pendientes: PendienteCosteo[];
+  secciones_faltantes?: ('acero' | 'kits' | 'mano_obra')[];
 }
 
 export interface DatosCosteo {

@@ -61,19 +61,24 @@ export function costear(
   const tieneKits = (datos.costos_modelo || []).length > 0;
   const tieneProcesos = modelo.tipo === "gondola" ? true : (datos.procesos || []).length > 0;
 
+  const secciones_faltantes: ('acero' | 'kits' | 'mano_obra')[] = [];
+
   if (!tieneAcero) {
+    secciones_faltantes.push('acero');
     pendientes.push({
       tipo: "modelo_sin_costos",
       detalle: "Falta despiece de acero para este modelo"
     });
   }
   if (!tieneKits) {
+    secciones_faltantes.push('kits');
     pendientes.push({
       tipo: "modelo_sin_costos",
       detalle: "Faltan costos fijos de modelo para este modelo"
     });
   }
   if (!tieneProcesos) {
+    secciones_faltantes.push('mano_obra');
     pendientes.push({
       tipo: "modelo_sin_costos",
       detalle: "Faltan procesos de manufactura para este modelo"
@@ -387,6 +392,7 @@ export function costear(
     margen_sobre_precio,
     margen_sobre_costo,
     confianza,
-    pendientes
+    pendientes,
+    ...(secciones_faltantes.length > 0 ? { secciones_faltantes } : {})
   };
 }

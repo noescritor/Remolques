@@ -17,6 +17,8 @@ export interface PendienteCosteo {
   detalle: string;
 }
 
+export type SeccionFaltante = 'acero' | 'kits' | 'mano_obra';
+
 export interface ResultadoCosteo {
   moneda: 'MXN';
   secciones: {
@@ -33,6 +35,7 @@ export interface ResultadoCosteo {
   margen_sobre_costo: number | null;
   confianza: 'completa' | 'estimada' | 'incompleta';
   pendientes: PendienteCosteo[];
+  secciones_faltantes?: SeccionFaltante[];
 }
 
 export interface AjusteManual {
@@ -175,3 +178,121 @@ export function traducirTipoPendiente(tipo: string): string {
       return tipo;
   }
 }
+
+/**
+ * Obtiene la lista de secciones faltantes ('acero', 'kits', 'mano_obra')
+ * a partir del costeo, ya sea de `secciones_faltantes`, de `pendientes` o de `secciones`.
+ */
+export function obtenerSeccionesFaltantes(
+  costeo: {
+    confianza?: string;
+    secciones_faltantes?: (SeccionFaltante | string)[];
+    pendientes?: { tipo?: string; detalle?: string }[];
+    secciones?: {
+      acero?: { lineas?: any[] };
+      kits_fijos?: { lineas?: any[] };
+      mano_obra?: { lineas?: any[] };
+    };
+  } | null | undefined
+): SeccionFaltante[] {
+  if (!costeo) return [];
+
+  if (Array.isArray(costeo.secciones_faltantes) && costeo.secciones_faltantes.length > 0) {
+    const ordenValido: SeccionFaltante[] = ['acero', 'kits', 'mano_obra'];
+    return ordenValido.filter(s => costeo.secciones_faltantes!.includes(s));
+  }
+
+  const faltantes: SeccionFaltante[] = [];
+  const pendientes = costeo.pendientes || [];
+
+  const tienePendienteAcero = pendientes.some(
+    p => p.tipo === 'modelo_sin_costos' && (p.detalle || '').toLowerCase().includes('acero')
+  );
+  const tienePendienteKits = pendientes.some(
+    p => p.tipo === 'modelo_sin_costos' && ((p.detalle || '').toLowerCase().includes('fijos') || (p.detalle || '').toLowerCase().includes('kits'))
+  );
+  const tienePendienteProcesos = pendientes.some(
+    p => p.tipo === 'modelo_sin_costos' && ((p.detalle || '').toLowerCase().includes('procesos') || (p.detalle || '').toLowerCase().includes('mano de obra'))
+  );
+
+  const sinAcero = tienePendienteAcero || (costeo.secciones?.acero && (!costeo.secciones.acero.lineas || costeo.secciones.acero.lineas.length === 0));
+  const sinKits = tienePendienteKits || (costeo.secciones?.kits_fijos && (!costeo.secciones.kits_fijos.lineas || costeo.secciones.kits_fijos.lineas.length === 0));
+  const sinManoObra = tienePendienteProcesos || (costeo.secciones?.mano_obra && (!costeo.secciones.mano_obra.lineas || costeo.secciones.mano_obra.lineas.length === 0));
+
+  if (sinAcero) faltantes.push('acero');
+  if (sinKits) faltantes.push('kits');
+  if (sinManoObra) faltantes.push('mano_obra');
+
+  return faltantes;
+}
+
+/**
+ * Arma un mensaje explicativo cuando un modelo no tiene precio sugerido por costeo incompleto.
+ * Devuelve null si el costeo tiene precio_sugerido o su confianza no es 'incompleta'.
+ *
+ * Casos:
+ * - 1 faltante:
+ *   - 'acero'     -> "Sin precio sugerido: falta acero de este modelo"
+ *   - 'kits'      -> "Sin precio sugerido: faltan kits de este modelo"
+ *   - 'mano_obra' -> "Sin precio sugerido: falta mano de obra de este modelo"
+ * - 2 faltantes:
+ *   - 'acero' y 'kits'      -> "Sin precio sugerido: faltan acero y kits de este modelo"
+ *   - 'acero' y 'mano_obra' -> "Sin precio sugerido: faltan acero y mano de obra de este modelo"
+ *   - 'kits' y 'mano_obra'  -> "Sin precio sugerido: faltan kits y mano de obra de este modelo"
+ * - 3 faltantes:
+ *   - 'acero', 'kits', 'mano_obra' -> "Sin precio sugerido: faltan acero, kits y mano de obra de este modelo"
+ * - Incompleto sin secciones identificadas:
+ *   - -> "Sin precio sugerido: costeo incompleto para este modelo"
+ * - Costeo normal / completo / estimado con precio -> null
+ */
+export function mensajeCosteoIncompleto(
+  costeo: {
+    confianza?: string;
+    precio_sugerido?: number | null;
+    secciones_faltantes?: (SeccionFaltante | string)[];
+    pendientes?: { tipo?: string; detalle?: string }[];
+    secciones?: {
+      acero?: { lineas?: any[] };
+      kits_fijos?: { lineas?: any[] };
+      mano_obra?: { lineas?: any[] };
+    };
+  } | null | undefined
+): string | null {
+  if (!costeo) return null;
+
+  // Si tiene precio sugerido, no es un costeo que falte precio
+  if (costeo.precio_sugerido !== null && costeo.precio_sugerido !== undefined) {
+    return null;
+  }
+
+  // Solo aplica si la confianza es incompleta (o si precio_sugerido es null y confianza no es completa/estimada)
+  const esIncompleto = costeo.confianza === 'incompleta' || (!costeo.confianza && costeo.precio_sugerido === null);
+  if (!esIncompleto) {
+    return null;
+  }
+
+  const faltantes = obtenerSeccionesFaltantes(costeo);
+
+  if (faltantes.length === 0) {
+    return 'Sin precio sugerido: costeo incompleto para este modelo';
+  }
+
+  const nombres: Record<SeccionFaltante, string> = {
+    acero: 'acero',
+    kits: 'kits',
+    mano_obra: 'mano de obra'
+  };
+
+  if (faltantes.length === 1) {
+    const s = faltantes[0];
+    const verbo = s === 'kits' ? 'faltan' : 'falta';
+    return `Sin precio sugerido: ${verbo} ${nombres[s]} de este modelo`;
+  }
+
+  if (faltantes.length === 2) {
+    return `Sin precio sugerido: faltan ${nombres[faltantes[0]]} y ${nombres[faltantes[1]]} de este modelo`;
+  }
+
+  return 'Sin precio sugerido: faltan acero, kits y mano de obra de este modelo';
+}
+
