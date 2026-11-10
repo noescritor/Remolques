@@ -3,6 +3,31 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-10 - Cuentas por pagar: pagar por partida (concepto por concepto) o la factura completa
+**Herramienta:** Antigravity  
+**Tipo:** feat (migración SQL pagos_factura_partidas, vista v_factura_partidas_saldo, prorrateo exacto, RPC registrar_pago_factura con asignaciones, candado de edición con pagos activos, UI modal con doble modo y desglose en fila expandida)  
+**Rama:** `cxp-partidas-pagos-2026-11-10`  
+**Referencia auditoría:** `CXP_PARTIDAS_PAGOS_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261110_01_cxp_pagos_por_partida.sql` (y copias en `COORDINACION/SQL_PARA_LUIS/`): creación de tabla `pagos_factura_partidas` con índices y RLS; creación de vista `v_factura_partidas_saldo` con prorrateo exacto de impuestos, retenciones y descuentos al centavo; ampliación de RPC `registrar_pago_factura` con parámetro `p_asignaciones JSONB DEFAULT NULL` y eliminación de sobrecarga ambigua previa; candado en `guardar_factura_con_partidas` que impide alterar partidas con pagos activos (`pagos_asignados_activos`); bloque `DO` de migración idempotente de pagos históricos.
+- `docs/cxp/verificacion_pagos_partidas.sql` (y copia en `COORDINACION/SQL_PARA_LUIS/`): consulta de verificación SQL que certifica con `todo_ok = true` tablas, vistas, RPC, candados y sumas cuadradas.
+- `src/app/utils/cuentasPorPagar.ts`: función pura `calcularImportesAPagar(partidas)` y tipos `PartidaCxpRef`, `PartidaConImporteAPagar`.
+- `src/app/utils/cuentasPorPagar.test.ts`: 6 pruebas unitarias Deno validando prorrateo de conceptos, impuestos trasladados, retenciones, descuentos, residuos de centavos y listas vacías.
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.ts`: ampliación de `registrarPago` con validación y pasaje de asignaciones a la RPC; captura de errores 409 (`excede_saldo_partida`) y 404 (`partida_no_encontrada`); `obtenerPartidasFactura` enriquecido con `v_factura_partidas_saldo`; `guardarFacturaConPartidasMotor` capturando HTTP 409 `pagos_asignados_activos`; `listarFacturas` incluyendo asignaciones por pago.
+- `supabase/functions/make-server-feea4382/motor/cuentas_por_pagar.test.ts`: 4 nuevas pruebas de motor (pruebas 12 a 15) cubriendo validaciones de asignaciones, mapeo de errores RPC, bloqueo de edición y consulta de vista.
+- `supabase/functions/make-server-feea4382/index.ts`: paso de `asignaciones` en `POST /cxp/facturas/:id/pagos` y verificación de pagos activos en `PUT /cxp/facturas/:id/partidas` permitiendo actualización de descripciones y bloqueando cantidades/importes con HTTP 409.
+- `src/app/components/Finanzas/CxpFacturasTab.tsx`: botón chevron siempre accesible para expandir cualquier factura; tabla de partidas con 9 columnas (`Tipo`, `Descripción`, `Cant.`, `P. Unitario`, `Importe`, `A Pagar`, `Pagado`, `Saldo`, `Estado`); chips de conceptos en pagos; modal de pago con selector de modo "Toda la factura / Abono libre" vs "Pagar por partida", casillas interactivas, edición de montos y total sincronizado; aviso de descuadre de partidas e importes en captura de factura.
+- `CXP_PARTIDAS_PAGOS_REPORTE_ANTY.md` (y copias en `COORDINACION/REPORTES/`): reporte técnico exhaustivo.
+**Qué cambió y por qué:**  
+- **1. Pago por partida o factura completa:** Los proveedores entregan facturas o notas de venta con múltiples renglones (ej. Nota 403 Ferretería Pirámide con 6 conceptos). Ahora el usuario puede liquidar renglón por renglón seleccionándolos con checkbox y tecleando el abono deseado, o abonar libremente a toda la factura para que el sistema distribuya el pago automáticamente en orden secuencial.
+- **2. Transparencia y saldos individuales:** En la fila expandida de la factura, cada renglón refleja claramente cuánto se pagó, cuánto resta por pagar y su estado (`Pendiente`, `Parcial`, `Liquidada`), y el historial de pagos muestra exactamente qué partidas amortizó cada abono.
+- **3. Integridad y prevención de descuadres:** Se impiden modificaciones accidentales a partidas que ya tienen pagos asignados y se valida tanto en cliente como en base de datos que ninguna asignación supere el saldo de la partida.
+**Acciones manuales pendientes:**  
+- 1. Ejecutar migración `COORDINACION/SQL_PARA_LUIS/20261110_01_cxp_pagos_por_partida.sql` en SQL Editor de Supabase.
+- 2. Ejecutar verificación `COORDINACION/SQL_PARA_LUIS/verificacion_pagos_partidas.sql` y confirmar `todo_ok = true`.
+- 3. Rebuild de `remolques-api` en EasyPanel.
+- 4. Rebuild de `remolques-web` en EasyPanel tras merge a `main`.
+
 ## 2026-11-10 - Presupuestos/cliente (Ronda 2): folio completo en listado y reactividad del título al elegir "ninguno"
 **Herramienta:** Antigravity  
 **Tipo:** fix (quitar truncate de folio en listado, corrección de reactividad del título al elegir "ninguno" en editor, función pura tituloEditorPresupuesto y prueba unitaria)  
