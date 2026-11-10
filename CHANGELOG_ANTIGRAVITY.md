@@ -3,6 +3,25 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-10 - Presupuestos: mostrar y buscar por nombre del cliente
+**Herramienta:** Antigravity  
+**Tipo:** feat (funciones puras nombreClientePresupuesto/coincideBusquedaPresupuesto, columna cliente en listado, búsqueda por cliente/folio/concepto, título dinámico en editor)  
+**Rama:** `presupuestos-cliente-2026-11-10`  
+**Referencia auditoría:** `PRESUPUESTOS_CLIENTE_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `src/app/utils/presupuestoCliente.ts`: funciones puras `nombreClientePresupuesto` (prioriza `presupuesto.cliente` devuelto por el API o busca en catálogo `clientes` por `cliente_id`, retornando `nombre_comercial || razon_social` o `"Sin cliente"`), `coincideBusquedaPresupuesto` (evalúa `folio`, `concepto`, `nomenclatura_id` y cliente de forma insensible a mayúsculas y acentos) y `normalizarTexto`.
+- `src/app/utils/presupuestoCliente.test.ts`: 9 pruebas unitarias Deno cubriendo resolución de clientes embebidos, por id, sin cliente, búsqueda insensible a mayúsculas y acentos, compatibilidad con folios/conceptos y casos de texto vacío.
+- `src/app/components/Presupuestos/PresupuestosList.tsx`: adición de columna Cliente en grid de 7 columnas entre Fecha y Concepto, formateo con `truncate` y tooltip `title`, estilización de `"Sin cliente"` con `text-muted-foreground`, y ampliación del input de búsqueda (`w-64 sm:w-80`) con placeholder `"Buscar por folio, cliente o concepto..."`.
+- `src/app/components/Presupuestos/PresupuestoEditor.tsx`: inclusión del nombre del cliente en el título del encabezado (`Editar Presupuesto {folio} · {nombreCliente}` cuando existe cliente; mantiene `Editar Presupuesto {folio}` si no tiene y `Nuevo Presupuesto` si es nuevo).
+- `PRESUPUESTOS_CLIENTE_REPORTE_ANTY.md` (y copia en `COORDINACION/REPORTES/`): reporte técnico completo con mockups en ASCII, casos de prueba y comandos ejecutados.
+**Qué cambió y por qué:**  
+- **1. Facilidad de identificación de presupuestos:** Antes el listado solo mostraba folio, fecha y concepto sin indicar a qué cliente pertenecía cada presupuesto. Ahora la columna Cliente y el título del editor permiten reconocer al cliente inmediatamente sin tener que abrir el selector interno o el PDF.
+- **2. Búsqueda rápida multi-criterio:** El filtro ahora permite buscar por nombre del cliente (comercial o razón social), además de folio y concepto, con soporte para mayúsculas, minúsculas y acentos (ej. "ferretera" encuentra "FERRETERA DEL CENTRO", "logistica" encuentra "LOGÍSTICA").
+- **3. Cero impacto en BD y Backend:** La base de datos ya tenía `cliente_id`, el API ya incluía `cliente:clientes(*)`, y el PDF ya lo imprimía; la mejora fue 100% de interfaz y utilidades puras.
+**Acciones manuales pendientes:**  
+- Ninguna en base de datos ni backend.
+- Rebuild de `remolques-web` en EasyPanel tras merge a `main`.
+
 ## 2026-11-09 - Plataforma 43 ft (Ronda 2): corrección de tabla de sanidad y reversión de branching en CotizacionEditor
 **Herramienta:** Antigravity  
 **Tipo:** fix (reversión de branching de tarjeta en cotizador, corrección de tabla de opciones en reporte técnico)  
