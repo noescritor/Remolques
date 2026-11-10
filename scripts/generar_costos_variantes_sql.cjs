@@ -14,16 +14,18 @@ const outSqlPath = path.resolve(__dirname, '../supabase/migrations/20261013_02_c
  * - 35 ft -> 34 cargadores
  * - 40 ft -> 38 cargadores (origen 40/2)
  * - 42 ft -> 40 cargadores
+ * - 43 ft -> 41 cargadores (interpolación de la serie: largo - 2; migrado en 20261109_01_costos_plataforma_43ft.sql)
  * - 45 ft -> 43 cargadores
  * - 48 ft -> 46 cargadores
  *
- * El modelo 43 ft / 3 ejes se omite intencionalmente porque no existe en BASE DAT PLANAS
- * (solo hay datos para 35, 40, 42, 45 y 48 ft).
+ * El modelo 43 ft / 3 ejes se omite de esta migración inicial histórica (2R-1d) y cuenta
+ * con su generador hermano scripts/generar_costos_43ft_sql.cjs (migración 20261109_01).
  */
 const CARGADORES_POR_LARGO = {
   35: 34,
   40: 38,
   42: 40,
+  43: 41,
   45: 43,
   48: 46
 };

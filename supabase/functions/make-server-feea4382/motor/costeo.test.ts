@@ -874,5 +874,101 @@ Deno.test("Sub-bloque 2R-12: Costeo - normalización de paleta a grande, color p
   assertEquals(resConPintura.costo, resSinPintura.costo);
 });
 
+Deno.test("Plataforma 3 ejes 43 ft: costos derivados con 41 cargadores, escala por_largo y comparación de sanidad", () => {
+  const config3Ejes: Configuracion = {
+    grupos: {
+      suspension: "fleet_master",
+      eje: "fleet_master",
+      patin: "hj",
+      piso: "laminado_plastico",
+      abs: "3e_2_retractil"
+    }
+  };
+
+  const ajustesDorados: AjusteManual[] = [
+    {
+      concepto: "Líneas sin concepto en el Excel (pendiente de aclarar con el dueño)",
+      cantidad: 2,
+      costo_unitario: 15000
+    },
+    {
+      concepto: "Líneas sin concepto en el Excel (pendiente de aclarar con el dueño)",
+      cantidad: 1,
+      costo_unitario: 1485
+    }
+  ];
+
+  // Helper para construir datos derivados para un largo dado con sus cargadores
+  function prepararDatosPlataforma(largoFt: number, numEjes: number, cargadores: number): DatosCosteo {
+    const d: DatosCosteo = JSON.parse(JSON.stringify(datosBase));
+    d.modelo.largo_ft = largoFt;
+    d.modelo.num_ejes = numEjes;
+    d.costos_derivados_de = {
+      id: "99c1b5a1-0161-43e1-8329-5e94e35a0012",
+      nombre: "PLATAFORMA 2 40 FT"
+    };
+
+    // Ajustar cargadores en receta_acero
+    const renglonCargador = d.receta_acero.find(r => (r.nombre || "").includes("CARGADOR (IPR DE 4"));
+    if (renglonCargador) {
+      renglonCargador.cantidad = cargadores;
+    }
+
+    // Configurar piso plástico con escala por_largo (como está en BD desde 2R-1d)
+    const optPiso = d.opcion_costos.find(oc => oc.grupo_clave === "piso" && oc.opcion_clave === "laminado_plastico");
+    if (optPiso) {
+      optPiso.escala = "por_largo";
+    }
+
+    return d;
+  }
+
+  const datos42x3 = prepararDatosPlataforma(42, 3, 40);
+  const datos43x3 = prepararDatosPlataforma(43, 3, 41);
+  const datos45x3 = prepararDatosPlataforma(45, 3, 43);
+
+  const res42 = costear(datos42x3, config3Ejes, ajustesDorados);
+  const res43 = costear(datos43x3, config3Ejes, ajustesDorados);
+  const res45 = costear(datos45x3, config3Ejes, ajustesDorados);
+
+  // 1. Acero esperado de la 43 ft con 41 cargadores:
+  // Base 40 ft (38 cargadores): 128,211.69. Delta = 3 cargadores x $576.82 = 1,730.46
+  // O bien: Acero 42 ft (40 cargadores) $129,365.33 + 1 cargador $576.82 = $129,942.15
+  assertEquals(res42.secciones.acero.total, 129365.33);
+  assertEquals(res43.secciones.acero.total, 129942.15);
+  assertEquals(res45.secciones.acero.total, 131095.79);
+
+  // 2. Piso laminado plástico escala por largo (43/40 de $52,060 = $55,964.50)
+  const lineaPiso42 = res42.secciones.opciones.lineas.find(l => l.concepto.includes("piso: laminado_plastico"));
+  const lineaPiso43 = res43.secciones.opciones.lineas.find(l => l.concepto.includes("piso: laminado_plastico"));
+  const lineaPiso45 = res45.secciones.opciones.lineas.find(l => l.concepto.includes("piso: laminado_plastico"));
+  assert(lineaPiso42 && lineaPiso43 && lineaPiso45);
+  assertEquals(lineaPiso42.importe, 54663.00); // 42/40 * 52060
+  assertEquals(lineaPiso43.importe, 55964.50); // 43/40 * 52060
+  assertEquals(lineaPiso45.importe, 58567.50); // 45/40 * 52060
+
+  // 3. Totales de costos y precios sugeridos monotónicamente crecientes entre 42/3 y 45/3
+  assertEquals(res42.precio_sugerido, 562993.87);
+  assertEquals(res43.costo, 454872.19);
+  assertEquals(res43.precio_sugerido, 564872.19);
+  assertEquals(res45.precio_sugerido, 568628.83);
+
+  assert(res43.precio_sugerido !== null);
+  assert(res43.precio_sugerido > res42.precio_sugerido!, "Precio de 43/3 debe ser mayor que el de 42/3");
+  assert(res43.precio_sugerido < res45.precio_sugerido!, "Precio de 43/3 debe ser menor que el de 45/3");
+
+  // 4. Nivel de confianza 'estimada' y pendientes requeridos
+  assertEquals(res43.confianza, "estimada");
+  const pendVariante = res43.pendientes.find(p => p.tipo === "variante_supuesta");
+  assert(pendVariante !== undefined, "Debe incluir pendiente variante_supuesta");
+  assert(pendVariante.detalle.includes("PLATAFORMA 2 40 FT"));
+  assert(pendVariante.detalle.includes("no hay desglose propio de esta variante"));
+
+  // Pendiente sin_precio presente (puentes de suspensión) como en las otras variantes
+  const pendSinPrecio = res43.pendientes.find(p => p.tipo === "sin_precio");
+  assert(pendSinPrecio !== undefined, "Debe mantener sin_precio para materiales sin costo como en otras variantes");
+});
+
+
 
 
