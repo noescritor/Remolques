@@ -7,6 +7,7 @@ import { Presupuesto, Cliente } from '../../types';
 import { PresupuestoEditor } from './PresupuestoEditor';
 import { PresupuestoPDF } from './PresupuestoPDF';
 import { pdf } from '@react-pdf/renderer';
+import { nombreClientePresupuesto, coincideBusquedaPresupuesto } from '../../utils/presupuestoCliente';
 
 interface Props {
   presupuestos: Presupuesto[];
@@ -39,10 +40,7 @@ export function PresupuestosList({ presupuestos, clientes, loading, onSave, onUp
     window.open(url, '_blank');
   };
 
-  const filtered = presupuestos.filter(p => 
-    p.folio.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (p.concepto && p.concepto.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filtered = presupuestos.filter(p => coincideBusquedaPresupuesto(p, clientes, searchTerm));
 
   if (isEditorOpen) {
     return (
@@ -72,10 +70,10 @@ export function PresupuestosList({ presupuestos, clientes, loading, onSave, onUp
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>Listado de Presupuestos</CardTitle>
-            <div className="relative w-64">
+            <div className="relative w-64 sm:w-80">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por folio o concepto..."
+                placeholder="Buscar por folio, cliente o concepto..."
                 className="pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -85,9 +83,10 @@ export function PresupuestosList({ presupuestos, clientes, loading, onSave, onUp
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
-            <div className="grid grid-cols-6 p-4 text-sm font-medium border-b bg-muted/50">
+            <div className="grid grid-cols-7 p-4 text-sm font-medium border-b bg-muted/50 gap-2">
               <div className="col-span-1">Folio</div>
               <div className="col-span-1">Fecha</div>
+              <div className="col-span-1">Cliente</div>
               <div className="col-span-2">Concepto / Nomenclatura</div>
               <div className="col-span-1 text-right">Precio Venta</div>
               <div className="col-span-1 text-center">Acciones</div>
@@ -99,32 +98,42 @@ export function PresupuestosList({ presupuestos, clientes, loading, onSave, onUp
               <div className="p-8 text-center text-muted-foreground">No se encontraron presupuestos.</div>
             ) : (
               <div className="divide-y">
-                {filtered.map(p => (
-                  <div key={p.id} className="grid grid-cols-6 p-4 text-sm items-center hover:bg-muted/50">
-                    <div className="col-span-1 font-medium text-blue-600">{p.folio}</div>
-                    <div className="col-span-1">{new Date(p.fecha).toLocaleDateString()}</div>
-                    <div className="col-span-2">
-                      <div className="font-semibold">{p.nomenclatura_id || 'Sin Nomenclatura'}</div>
-                      <div className="text-xs text-muted-foreground line-clamp-1">{p.concepto}</div>
+                {filtered.map(p => {
+                  const nombreCli = nombreClientePresupuesto(p, clientes);
+                  const esSinCliente = nombreCli === 'Sin cliente';
+                  return (
+                    <div key={p.id} className="grid grid-cols-7 p-4 text-sm items-center hover:bg-muted/50 gap-2">
+                      <div className="col-span-1 font-medium text-blue-600 truncate">{p.folio}</div>
+                      <div className="col-span-1">{new Date(p.fecha).toLocaleDateString()}</div>
+                      <div 
+                        className={`col-span-1 truncate ${esSinCliente ? 'text-muted-foreground' : 'font-medium'}`}
+                        title={nombreCli}
+                      >
+                        {nombreCli}
+                      </div>
+                      <div className="col-span-2">
+                        <div className="font-semibold">{p.nomenclatura_id || 'Sin Nomenclatura'}</div>
+                        <div className="text-xs text-muted-foreground line-clamp-1">{p.concepto}</div>
+                      </div>
+                      <div className="col-span-1 text-right font-bold">
+                        ${(p.precio_venta || 0).toLocaleString()}
+                      </div>
+                      <div className="col-span-1 flex justify-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => handleEdit(p)}>
+                          <FileText className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handlePrint(p)}>
+                          <Printer className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600" onClick={() => {
+                          if(confirm('¿Eliminar presupuesto?')) onDelete(p.id);
+                        }}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="col-span-1 text-right font-bold">
-                      ${(p.precio_venta || 0).toLocaleString()}
-                    </div>
-                    <div className="col-span-1 flex justify-center gap-2">
-                      <Button variant="outline" size="sm" onClick={() => handleEdit(p)}>
-                        <FileText className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => handlePrint(p)}>
-                        <Printer className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600" onClick={() => {
-                        if(confirm('¿Eliminar presupuesto?')) onDelete(p.id);
-                      }}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

@@ -9,6 +9,7 @@ import { Presupuesto, Cliente, PresupuestoDatos, PresupuestoSeccion } from '../.
 import { defaultPresupuestoDatos } from './presupuestoTemplate';
 import { ArrowLeft, Save, Plus, Trash2, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { PresupuestoDespieceTab } from './PresupuestoDespieceTab';
+import { nombreClientePresupuesto } from '../../utils/presupuestoCliente';
 
 interface Props {
   presupuesto: Presupuesto | null;
@@ -233,13 +234,24 @@ export function PresupuestoEditor({ presupuesto, clientes, onSave, onUpdate, onC
     );
   };
 
+  const idCli = clienteId !== 'ninguno' ? clienteId : presupuesto?.cliente_id;
+  const clientePresupuesto = presupuesto?.cliente?.id === idCli ? presupuesto.cliente : undefined;
+  const nombreCli = presupuesto
+    ? nombreClientePresupuesto({ cliente: clientePresupuesto, cliente_id: idCli }, clientes)
+    : 'Sin cliente';
+  const tieneCliente = nombreCli !== 'Sin cliente';
+
   return (
     <div className="space-y-4 max-w-7xl mx-auto pb-20">
       <div className="flex justify-between items-center bg-card p-4 rounded-lg border border-border shadow-sm sticky top-0 z-10">
         <div className="flex items-center gap-4">
           <Button variant="ghost" onClick={onClose}><ArrowLeft className="mr-2 h-4 w-4" /> Volver</Button>
           <h2 className="text-xl font-bold">
-            {presupuesto ? `Editar Presupuesto ${presupuesto.folio}` : 'Nuevo Presupuesto'}
+            {presupuesto
+              ? (tieneCliente
+                  ? `Editar Presupuesto ${presupuesto.folio} · ${nombreCli}`
+                  : `Editar Presupuesto ${presupuesto.folio}`)
+              : 'Nuevo Presupuesto'}
           </h2>
         </div>
         <Button onClick={handleSave} disabled={saving}>
