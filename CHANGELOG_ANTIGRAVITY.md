@@ -3,6 +3,33 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-09 - Plataforma 3 ejes 43 ft: costos derivados de 40/2 y avisos explicativos de costeo incompleto
+**Herramienta:** Antigravity  
+**Tipo:** feat (migración SQL de costos derivados, generador de variantes, funciones puras mensajeCosteoIncompleto/obtenerSeccionesFaltantes, avisos en configurador y cotizador, pruebas unitarias)  
+**Rama:** `plataforma-43ft-2026-11-09`  
+**Referencia auditoría:** `PLATAFORMA_43FT_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `scripts/generar_costos_43ft_sql.cjs`: script generador que clona la receta base de acero (61 renglones con 41 cargadores IPR 4"), costos fijos (12 renglones, $45,685.98) y mano de obra (80 renglones, $22,930.00) desde `PLATAFORMA 2 40 FT` hacia `PLATAFORMA 3 43 FT`, registrando `costos_derivados_de`.
+- `scripts/generar_costos_variantes_sql.cjs`: incorporación documentada de `43: 41` en `CARGADORES_POR_LARGO`.
+- `supabase/migrations/20261109_01_costos_plataforma_43ft.sql`: migración SQL idempotente y multi-tenant que carga los costos de `PLATAFORMA 3 43 FT` y registra el origen en `modelos.costos_derivados_de`.
+- `docs/importacion/verificacion_43ft.sql`: script de verificación automatizada con 8 checks en `SELECT ... todo_ok`.
+- `COORDINACION/SQL_PARA_LUIS/20261109_01_costos_plataforma_43ft.sql` y `COORDINACION/SQL_PARA_LUIS/verificacion_43ft.sql`: copias listas para ejecución en Supabase Cloud.
+- `supabase/functions/make-server-feea4382/motor/tipos.ts`: ampliación de `ResultadoCosteo` con `secciones_faltantes?: ('acero' | 'kits' | 'mano_obra')[]`.
+- `supabase/functions/make-server-feea4382/motor/costeo.ts`: detección y retorno de `secciones_faltantes` cuando no hay acero, kits o procesos.
+- `supabase/functions/make-server-feea4382/motor/costeo.test.ts`: prueba de integración y sanidad matemática comprobando acero exacto ($129,942.15), escala de piso plástico ($55,964.50), costo ($454,872.19), precio sugerido ($564,872.19) y monotonía entre 42/3 ($562,993.87) y 45/3 ($568,628.83).
+- `src/app/utils/costeo.ts`: funciones puras `obtenerSeccionesFaltantes` y `mensajeCosteoIncompleto` para formatear explicaciones de qué secciones faltan (1, 2 o 3 faltantes, o `null` si hay precio).
+- `src/app/utils/costeo.test.ts`: 5 pruebas unitarias Deno validando los mensajes explicativos y deducción automática desde pendientes.
+- `src/app/components/Cotizaciones/ConfiguradorEquipo.tsx`: despliegue del mensaje detallado de secciones faltantes en vez de `"Sin costeo para este modelo"` cuando la confianza sea `incompleta`.
+- `src/app/components/Cotizaciones/CotizacionEditor.tsx`: preservación de `secciones_faltantes` en `configuracion.costeo`, reconocimiento de items configurados con `obtenerConfiguracion(item)`, y aviso visible en banner y junto al input de precio (`"Sin precio: costeo incompleto. Captura el precio a mano."`) cuando el precio unitario sea $0.00 debido a costeo incompleto, sin bloquear el guardado.
+- `PLATAFORMA_43FT_REPORTE_ANTY.md` (y en `COORDINACION/REPORTES/`): reporte técnico detallado con tablas comparativas, salidas reales de SQL y pruebas Deno.
+**Qué cambió y por qué:**  
+- **1. Cotizaciones de 43 ft con precio real:** Se resolvió el problema donde `PLATAFORMA 3 43 FT` salía en $0.00 al ser la única plataforma sin costos en BD. Ahora tiene despiece interpolado exacto (41 cargadores) y precio sugerido calibrado de $564,872.19.
+- **2. Transparencia cuando faltan datos:** En lugar de mostrar un $0.00 mudo o un texto genérico, el configurador y el editor explican con precisión al vendedor qué datos faltan (acero, kits, mano de obra) y le indican que capture el precio a mano mientras se cargan los despieces en catálogo.
+- **3. Catálogo auditado:** Se confirmó mediante SQL que ninguna otra variante del catálogo quedó en blanco.
+**Acciones manuales pendientes:**  
+- Correr en Supabase producción `COORDINACION/SQL_PARA_LUIS/20261109_01_costos_plataforma_43ft.sql` y verificar con `verificacion_43ft.sql`.
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel tras merge a `main`.
+
 ## 2026-11-06 - Góndola/Volumen libre (Ronda 2): corrección de tecleo de decimales, cotizaciones históricas y redondeo único
 **Herramienta:** Antigravity  
 **Tipo:** fix (estado local de texto en configurador, funciones puras textoCampoVolumen/valorDesdeTextoVolumen, redondeo único a 1 decimal en motor, parseo estricto de volumen)  
