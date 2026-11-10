@@ -3,6 +3,29 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-10 - Cuentas por pagar / pagos por partida (Ronda 2): seguridad RPC exclusiva service_role, edición de encabezado con pagos activos y limpieza de anulados
+**Herramienta:** Antigravity  
+**Tipo:** fix (corrección de seguridad en permisos RPC, soporte en guardar_factura_con_partidas para editar encabezado sin romper partidas idénticas, limpieza de pagos_factura_partidas de pagos anulados antes de reemplazar y preservación de borrado con partidas: [])  
+**Rama:** `cxp-partidas-pagos-2026-11-10`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/CXP_PARTIDAS_PAGOS_REVISION_CLAUDE.md`, `CXP_PARTIDAS_PAGOS_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261110_01_cxp_pagos_por_partida.sql` (y copias en `COORDINACION/SQL_PARA_LUIS/`):
+  1. Seguridad RPC: Removido `GRANT EXECUTE ... TO authenticated;` en `registrar_pago_factura`, dejando ejecución exclusivamente a `service_role`.
+  2. Limpieza de pagos anulados: `guardar_factura_con_partidas` purga las asignaciones de pagos anulados antes de borrar partidas, evitando error 500 por restricción `ON DELETE RESTRICT` en `pagos_factura_partidas.partida_id`.
+  3. Edición de encabezado: Si existen pagos activos y se envían partidas, la función compara por posición (`ROW_NUMBER()`) tipo, cantidad, precio e importe. Si son idénticas financieramente, actualiza únicamente descripciones y claves SAT en sitio (`UPDATE`) sin alterar IDs ni violar FKs, permitiendo actualizar folio, sucursal, fechas y notas. Si difieren, lanza `pagos_asignados_activos` (409).
+  4. Borrado con arreglo vacío: Si no hay pagos activos y se envía `partidas: []`, borra las partidas existentes restaurando la semántica de `main`.
+- `docs/cxp/verificacion_pagos_partidas.sql` (y copia en `COORDINACION/SQL_PARA_LUIS/`): agregado check 8 (`rpc_registrar_pago_solo_service_role`) evaluando con `has_function_privilege` permisos de `authenticated` (f), `anon` (f) y `service_role` (t), integrado en `todo_ok` (8/8 checks).
+- `CXP_PARTIDAS_PAGOS_REPORTE_ANTY.md` (y copias en `COORDINACION/REPORTES/`): documentación técnica de Ronda 2 con resultados de verificación.
+**Qué cambió y por qué:**  
+- **1. Seguridad reforzada:** La función `registrar_pago_factura` es `SECURITY DEFINER` y recibe `p_org`; restringir su ejecución a `service_role` previene llamadas directas de usuarios autenticados saltándose la lógica del API.
+- **2. Continuidad operativa en anulación:** Tras anular abonos de una factura, el usuario puede ahora re-editar o sustituir sus partidas sin encontrar errores 500 por restricciones referenciales.
+- **3. Edición de facturas abonadas:** El frontend reenvía las partidas al guardar la factura; la comparación posicional permite corregir datos de cabecera (folios, vencimientos, notas) o textos de partidas sin obligar a cancelar los abonos vigentes.
+**Acciones manuales pendientes:**  
+- 1. Ejecutar migración `COORDINACION/SQL_PARA_LUIS/20261110_01_cxp_pagos_por_partida.sql` en SQL Editor de Supabase (una vez aprobada la rama).
+- 2. Ejecutar verificación `COORDINACION/SQL_PARA_LUIS/verificacion_pagos_partidas.sql` y confirmar `todo_ok = true` (8/8 checks).
+- 3. Rebuild de `remolques-api` en EasyPanel.
+- 4. Rebuild de `remolques-web` en EasyPanel tras merge a `main`.
+
 ## 2026-11-10 - Cuentas por pagar: pagar por partida (concepto por concepto) o la factura completa
 **Herramienta:** Antigravity  
 **Tipo:** feat (migración SQL pagos_factura_partidas, vista v_factura_partidas_saldo, prorrateo exacto, RPC registrar_pago_factura con asignaciones, candado de edición con pagos activos, UI modal con doble modo y desglose en fila expandida)  

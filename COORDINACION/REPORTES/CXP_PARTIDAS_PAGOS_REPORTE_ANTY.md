@@ -144,14 +144,73 @@ Ejecución de `vite build`:
 
 ---
 
-## 5. Acciones Manuales Pendientes para Luis
+---
 
-Para habilitar este módulo en producción:
+## 6. Ronda 2 — Corrección de Permisos RPC y Gestión de Partidas en Edición / Anulación
+
+**Fecha:** 2026-11-10  
+**Referencia de revisión:** `COORDINACION/REVISIONES/CXP_PARTIDAS_PAGOS_REVISION_CLAUDE.md`  
+**Resultado:** Corregido y verificado al 100% con suite limpia (11/11 OK, 315 pruebas Deno).
+
+### 6.1 Defectos Corregidos
+
+1. **[ALTA — Seguridad] Permisos exclusivos `service_role` en `registrar_pago_factura`:**
+   - Se removió la directiva `GRANT EXECUTE ... TO authenticated;` de la migración `20261110_01_cxp_pagos_por_partida.sql`.
+   - La función `registrar_pago_factura` es `SECURITY DEFINER` y recibe `p_org` por parámetro; ahora queda blindada exclusivamente para `service_role` (con `REVOKE ALL ... FROM PUBLIC, anon, authenticated`), igual que `anular_pago_factura` y `guardar_factura_con_partidas`.
+   - Se agregó en `docs/cxp/verificacion_pagos_partidas.sql` el check #8 `rpc_registrar_pago_solo_service_role` que evalúa mediante `has_function_privilege` que ni `authenticated` ni `anon` posean permiso de ejecución y que `service_role` sí lo tenga, incorporándolo a la columna `todo_ok`.
+
+2. **[ALTA] Limpieza de asignaciones de pagos anulados antes de reemplazar partidas:**
+   - La llave foránea `pagos_factura_partidas.partida_id` cuenta con restricción `ON DELETE RESTRICT`. Al anular todos los pagos de una factura, las filas en `pagos_factura_partidas` asociadas a esos pagos anulados impedían ejecutar `DELETE FROM factura_proveedor_partidas`.
+   - Se incorporó en `guardar_factura_con_partidas` una purga previa de las asignaciones de pagos anulados de la factura:
+     ```sql
+     DELETE FROM pagos_factura_partidas 
+     WHERE organizacion_id = p_organizacion_id 
+       AND pago_id IN (
+           SELECT id FROM pagos_factura 
+           WHERE factura_id = v_factura_id 
+             AND organizacion_id = p_organizacion_id 
+             AND anulado = true
+       );
+     ```
+   - Esto permite reemplazar las partidas de la factura sin error 500 por violación de llave foránea, preservando intacto el registro histórico del pago en `pagos_factura` (`anulado = true`).
+
+3. **[ALTA] Edición de encabezado de factura con pagos activos y partidas idénticas:**
+   - El formulario de edición en frontend (`PUT /cxp/facturas/:id`) carga y reenvía las partidas existentes de la factura.
+   - Anteriormente, el candado `v_pagos_asignados_activos > 0 AND p_partidas IS NOT NULL` bloqueaba cualquier `PUT`, impidiendo modificar campos de cabecera (vencimiento, folio, días de crédito, notas) cuando existían pagos activos.
+   - Se implementó en la RPC una comparación posicional detallada (`ROW_NUMBER()`):
+     - Si el conteo de partidas coincide y cada partida mantiene idénticos `tipo`, `cantidad`, `precio_unitario` y `importe` redondeado a 2 decimales:
+       - La función activa la bandera `v_partidas_identicas := true`.
+       - En lugar de borrar y reinsertar partidas (lo que rompería las llaves foráneas de los pagos activos), ejecuta un `UPDATE` en sitio actualizando únicamente descripciones y claves SAT.
+       - Permite que la cabecera de la factura se actualice con normalidad.
+     - Si alguna partida difiere en sus importes o cantidades financieras, o si el conteo difiere, arroja la excepción `pagos_asignados_activos` (código HTTP 409).
+
+4. **[BAJA] Preservación de semántica de `main` al enviar `partidas: []`:**
+   - En el bloque de actualización, si `p_partidas IS NOT NULL` y no existen pagos activos, se eliminan las partidas existentes aunque `p_partidas` sea un arreglo vacío `[]`, respetando fielmente el comportamiento de `main`.
+
+### 6.2 Resultados de Verificación Ronda 2
+
+- **PostgreSQL 17 Local (`anty_test_cxp_partidas`):**
+  - Dos pasadas consecutivas de `supabase/migrations/20261110_01_cxp_pagos_por_partida.sql` con `ON_ERROR_STOP=1`: **OK (Idempotente)**.
+  - Verificación `verificacion_pagos_partidas.sql`: **8/8 checks en `true`** y `todo_ok = true`.
+  - Escenarios probados en script transaccional:
+    - *Caso A (Permisos):* `authenticated` = f, `anon` = f, `service_role` = t $\rightarrow$ **APROBADO**.
+    - *Caso B (Reemplazo tras anulación):* 2 pagos asignados y anulados; nuevo `guardar_factura_con_partidas` con partidas diferentes ejecuta sin error de FK $\rightarrow$ **APROBADO**.
+    - *Caso C (Edición de cabecera):* Pago activo asignado; reenvío de mismas partidas con diferente folio, vencimiento y descripciones actualiza con éxito preservando IDs $\rightarrow$ **APROBADO**.
+    - *Caso D (Rechazo de cambio de montos con pago activo):* Intento de cambiar montos arroja excepción `pagos_asignados_activos` $\rightarrow$ **APROBADO**.
+    - *Caso E (Borrado con `[]`):* Sin pagos activos, enviar `[]` borra partidas existentes $\rightarrow$ **APROBADO**.
+- **Pruebas Deno:** `315 passed | 0 failed`.
+- **Verificación completa (`node scripts/verificar.mjs --limpio`):** **TODO OK (11/11 comprobaciones)**.
+
+---
+
+## 7. Acciones Manuales Pendientes para Luis
+
+Para habilitar este módulo en producción una vez que la rama sea APROBADA:
 
 1. **Base de Datos (Supabase):**
    - Ir al **SQL Editor** de Supabase en producción.
    - Copiar y ejecutar el archivo [`COORDINACION/SQL_PARA_LUIS/20261110_01_cxp_pagos_por_partida.sql`](file:///c:/Users/luisa/Downloads/proyectos_antygravity/Remolques_cxp_partidas/COORDINACION/SQL_PARA_LUIS/20261110_01_cxp_pagos_por_partida.sql).
-   - Copiar y ejecutar la verificación [`COORDINACION/SQL_PARA_LUIS/verificacion_pagos_partidas.sql`](file:///c:/Users/luisa/Downloads/proyectos_antygravity/Remolques_cxp_partidas/COORDINACION/SQL_PARA_LUIS/verificacion_pagos_partidas.sql) y confirmar que la columna `todo_ok` devuelva `true`.
+   - Copiar y ejecutar la verificación [`COORDINACION/SQL_PARA_LUIS/verificacion_pagos_partidas.sql`](file:///c:/Users/luisa/Downloads/proyectos_antygravity/Remolques_cxp_partidas/COORDINACION/SQL_PARA_LUIS/verificacion_pagos_partidas.sql) y confirmar que la columna `todo_ok` devuelva `true` (8/8 checks).
 
 2. **EasyPanel Backend (`remolques-api`):**
    - Ir al servicio `remolques-api` en EasyPanel.
