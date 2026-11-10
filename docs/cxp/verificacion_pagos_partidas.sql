@@ -65,7 +65,14 @@ WITH checks AS (
             LEFT JOIN pagos_factura pf ON pf.id = pfp.pago_id
             LEFT JOIN factura_proveedor_partidas fpp ON fpp.id = pfp.partida_id
             WHERE pf.id IS NULL OR fpp.id IS NULL
-        ) AS sin_asignaciones_huerfanas
+        ) AS sin_asignaciones_huerfanas,
+
+        -- 8. Seguridad RPC: registrar_pago_factura solo ejecutable por service_role (no authenticated ni anon)
+        (
+            NOT has_function_privilege('authenticated', 'public.registrar_pago_factura(UUID, UUID, DATE, NUMERIC, NUMERIC, TEXT, TEXT, TEXT, TEXT, JSONB)', 'EXECUTE')
+            AND NOT has_function_privilege('anon', 'public.registrar_pago_factura(UUID, UUID, DATE, NUMERIC, NUMERIC, TEXT, TEXT, TEXT, TEXT, JSONB)', 'EXECUTE')
+            AND has_function_privilege('service_role', 'public.registrar_pago_factura(UUID, UUID, DATE, NUMERIC, NUMERIC, TEXT, TEXT, TEXT, TEXT, JSONB)', 'EXECUTE')
+        ) AS rpc_registrar_pago_solo_service_role
 )
 SELECT 
     tabla_pagos_partidas_existe,
@@ -75,6 +82,7 @@ SELECT
     asignaciones_no_exceden_importe,
     suma_asignaciones_igual_pagos_activos,
     sin_asignaciones_huerfanas,
+    rpc_registrar_pago_solo_service_role,
     (
         tabla_pagos_partidas_existe AND
         vista_partidas_saldo_existe AND
@@ -82,6 +90,7 @@ SELECT
         asignaciones_monto_valido AND
         asignaciones_no_exceden_importe AND
         suma_asignaciones_igual_pagos_activos AND
-        sin_asignaciones_huerfanas
+        sin_asignaciones_huerfanas AND
+        rpc_registrar_pago_solo_service_role
     ) AS todo_ok
 FROM checks;

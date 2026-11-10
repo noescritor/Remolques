@@ -367,8 +367,6 @@ END;
 $$;
 
 REVOKE ALL ON FUNCTION registrar_pago_factura(UUID, UUID, DATE, NUMERIC, NUMERIC, TEXT, TEXT, TEXT, TEXT, JSONB) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION registrar_pago_factura(UUID, UUID, DATE, NUMERIC, NUMERIC, TEXT, TEXT, TEXT, TEXT, JSONB) TO authenticated;
-
 GRANT EXECUTE ON FUNCTION registrar_pago_factura(UUID, UUID, DATE, NUMERIC, NUMERIC, TEXT, TEXT, TEXT, TEXT, JSONB) TO service_role;
 
 ALTER FUNCTION registrar_pago_factura(UUID, UUID, DATE, NUMERIC, NUMERIC, TEXT, TEXT, TEXT, TEXT, JSONB) SET search_path = public;
@@ -411,6 +409,7 @@ DECLARE
     v_partida RECORD;
     v_orden INTEGER := 0;
     v_hay_partidas BOOLEAN := false;
+    v_partidas_identicas BOOLEAN := false;
 BEGIN
     v_importe_redondeado := round(p_importe, 2);
 
@@ -493,8 +492,55 @@ BEGIN
               AND pf.anulado = false;
 
             IF v_pagos_asignados_activos > 0 AND p_partidas IS NOT NULL THEN
-                RAISE EXCEPTION 'pagos_asignados_activos: Anula los pagos asignados antes de modificar las partidas'
-                    USING ERRCODE = '23514';
+                -- Si se envían partidas pero ya hay pagos activos asignados, validar si son idénticas en tipo, cantidad, precio e importe
+                IF jsonb_typeof(p_partidas) <> 'array' THEN
+                    RAISE EXCEPTION 'pagos_asignados_activos: Anula los pagos asignados antes de modificar las partidas'
+                        USING ERRCODE = '23514';
+                END IF;
+
+                WITH entrantes AS (
+                    SELECT 
+                        row_number() OVER () AS pos,
+                        COALESCE(x.tipo, 'concepto') AS tipo,
+                        COALESCE(x.cantidad, 1)::NUMERIC AS cantidad,
+                        COALESCE(x.precio_unitario, 0)::NUMERIC AS precio_unitario,
+                        round(COALESCE(x.importe, 0), 2) AS importe
+                    FROM jsonb_to_recordset(p_partidas) AS x(
+                        tipo TEXT,
+                        cantidad NUMERIC,
+                        precio_unitario NUMERIC,
+                        importe NUMERIC
+                    )
+                ),
+                existentes AS (
+                    SELECT 
+                        row_number() OVER (ORDER BY orden ASC, id ASC) AS pos,
+                        tipo,
+                        cantidad,
+                        precio_unitario,
+                        round(importe, 2) AS importe
+                    FROM factura_proveedor_partidas
+                    WHERE factura_id = v_factura_id AND organizacion_id = p_organizacion_id
+                )
+                SELECT 
+                    ((SELECT COUNT(*) FROM entrantes) = (SELECT COUNT(*) FROM existentes))
+                    AND NOT EXISTS (
+                        SELECT 1 
+                        FROM entrantes en
+                        FULL OUTER JOIN existentes ex ON ex.pos = en.pos
+                        WHERE en.pos IS NULL 
+                           OR ex.pos IS NULL
+                           OR en.tipo IS DISTINCT FROM ex.tipo
+                           OR en.cantidad IS DISTINCT FROM ex.cantidad
+                           OR en.precio_unitario IS DISTINCT FROM ex.precio_unitario
+                           OR en.importe IS DISTINCT FROM ex.importe
+                    )
+                INTO v_partidas_identicas;
+
+                IF NOT v_partidas_identicas THEN
+                    RAISE EXCEPTION 'pagos_asignados_activos: Anula los pagos asignados antes de modificar las partidas'
+                        USING ERRCODE = '23514';
+                END IF;
             END IF;
         END IF;
     END IF;
@@ -551,8 +597,53 @@ BEGIN
         WHERE id = v_factura_id
           AND organizacion_id = p_organizacion_id;
 
-        -- Reemplazar partidas de esta factura y organizacion (permitido solo si no hay pagos asignados activos)
-        IF v_hay_partidas THEN
+        -- Gestión de partidas en actualización
+        IF v_partidas_identicas THEN
+            -- Actualizar únicamente campos descriptivos y claves SAT de las partidas en sitio por posición
+            UPDATE factura_proveedor_partidas fpp
+            SET descripcion = COALESCE(en.descripcion, fpp.descripcion),
+                tasa_o_cuota = en.tasa_o_cuota,
+                clave_sat = en.clave_sat,
+                clave_unidad = en.clave_unidad
+            FROM (
+                SELECT 
+                    row_number() OVER () AS pos,
+                    descripcion,
+                    tasa_o_cuota,
+                    clave_sat,
+                    clave_unidad
+                FROM jsonb_to_recordset(p_partidas) AS x(
+                    descripcion TEXT,
+                    tasa_o_cuota NUMERIC,
+                    clave_sat TEXT,
+                    clave_unidad TEXT
+                )
+            ) en
+            JOIN (
+                SELECT 
+                    id,
+                    row_number() OVER (ORDER BY orden ASC, id ASC) AS pos
+                FROM factura_proveedor_partidas
+                WHERE factura_id = v_factura_id AND organizacion_id = p_organizacion_id
+            ) ex ON ex.pos = en.pos
+            WHERE fpp.id = ex.id;
+
+            SELECT COUNT(*) INTO v_orden
+            FROM factura_proveedor_partidas
+            WHERE factura_id = v_factura_id AND organizacion_id = p_organizacion_id;
+        ELSIF p_partidas IS NOT NULL THEN
+            -- Si no hay pagos asignados activos, se permite reemplazo o borrado (incluso con partidas: [])
+            -- 1. Limpiar asignaciones de pagos anulados para no violar la FK ON DELETE RESTRICT
+            DELETE FROM pagos_factura_partidas 
+            WHERE organizacion_id = p_organizacion_id 
+              AND pago_id IN (
+                  SELECT id FROM pagos_factura 
+                  WHERE factura_id = v_factura_id 
+                    AND organizacion_id = p_organizacion_id 
+                    AND anulado = true
+              );
+
+            -- 2. Borrar partidas existentes
             DELETE FROM factura_proveedor_partidas 
             WHERE factura_id = v_factura_id AND organizacion_id = p_organizacion_id;
         END IF;
@@ -595,8 +686,8 @@ BEGIN
         RETURNING id INTO v_factura_id;
     END IF;
 
-    -- Insertar partidas si vienen en el payload JSONB
-    IF v_hay_partidas THEN
+    -- Insertar partidas si vienen en el payload JSONB y NO fueron actualizadas en sitio
+    IF v_hay_partidas AND NOT v_partidas_identicas THEN
         FOR v_partida IN 
             SELECT * FROM jsonb_to_recordset(p_partidas) AS x(
                 tipo TEXT,
