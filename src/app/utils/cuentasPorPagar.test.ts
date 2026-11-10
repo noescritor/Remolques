@@ -11,6 +11,7 @@ import {
   usoDeCredito,
   formatearMonedaDe,
   fechaLocalISO,
+  calcularImportesAPagar,
   FacturaRef,
   PagoRef,
 } from "./cuentasPorPagar.ts";
@@ -359,5 +360,114 @@ Deno.test("cuentasPorPagar - 10. fechaLocalISO preserva fecha local a altas hora
   // Cruce de año a las 23:59
   const finAno = new Date(2026, 11, 31, 23, 59, 59);
   assertEquals(fechaLocalISO(finAno), "2026-12-31");
+});
+
+Deno.test("cuentasPorPagar - 11. calcularImportesAPagar: Caso 1 Nota 403 Ferretería Pirámide (6 conceptos sin IVA)", () => {
+  const partidas = [
+    { tipo: "concepto", descripcion: "3 CANAL U DE 5 99.7 XM", cantidad: 182.46, precio_unitario: 34.50, importe: 6294.87 },
+    { tipo: "concepto", descripcion: "3 CANAL U DE 6 12.20KM6MT5", cantidad: 150.00, precio_unitario: 34.50, importe: 5175.00 },
+    { tipo: "concepto", descripcion: "2 PLACA 4X10 (1,22X3,05) EN 3/16", cantidad: 276.00, precio_unitario: 33.00, importe: 9108.00 },
+    { tipo: "concepto", descripcion: "1 PTR DE 4 CALIBRE 11 BLANCO", cantidad: 57.60, precio_unitario: 34.00, importe: 1958.40 },
+    { tipo: "concepto", descripcion: "2 LNL 1,22X3,05 CAL 12 4X10", cantidad: 158.74, precio_unitario: 33.00, importe: 5238.42 },
+    { tipo: "concepto", descripcion: "1 LNL 1,22X3,05 CAL 10 4X10", cantidad: 102.06, precio_unitario: 33.00, importe: 3367.98 },
+  ];
+
+  const resultado = calcularImportesAPagar(partidas);
+  assertEquals(resultado.length, 6);
+  assertEquals(resultado[0].importe_a_pagar, 6294.87);
+  assertEquals(resultado[1].importe_a_pagar, 5175.00);
+  assertEquals(resultado[2].importe_a_pagar, 9108.00);
+  assertEquals(resultado[3].importe_a_pagar, 1958.40);
+  assertEquals(resultado[4].importe_a_pagar, 5238.42);
+  assertEquals(resultado[5].importe_a_pagar, 3367.98);
+
+  const suma = resultado.reduce((acc, p) => acc + p.importe_a_pagar, 0);
+  assertEquals(Math.round(suma * 100) / 100, 31142.67);
+});
+
+Deno.test("cuentasPorPagar - 12. calcularImportesAPagar: Caso 2 Nota 403 con ajuste otro_cargo de $0.52 (total 31,143.19)", () => {
+  const partidas = [
+    { tipo: "concepto", descripcion: "3 CANAL U DE 5 99.7 XM", cantidad: 182.46, precio_unitario: 34.50, importe: 6294.87 },
+    { tipo: "concepto", descripcion: "3 CANAL U DE 6 12.20KM6MT5", cantidad: 150.00, precio_unitario: 34.50, importe: 5175.00 },
+    { tipo: "concepto", descripcion: "2 PLACA 4X10 (1,22X3,05) EN 3/16", cantidad: 276.00, precio_unitario: 33.00, importe: 9108.00 },
+    { tipo: "concepto", descripcion: "1 PTR DE 4 CALIBRE 11 BLANCO", cantidad: 57.60, precio_unitario: 34.00, importe: 1958.40 },
+    { tipo: "concepto", descripcion: "2 LNL 1,22X3,05 CAL 12 4X10", cantidad: 158.74, precio_unitario: 33.00, importe: 5238.42 },
+    { tipo: "concepto", descripcion: "1 LNL 1,22X3,05 CAL 10 4X10", cantidad: 102.06, precio_unitario: 33.00, importe: 3367.98 },
+    { tipo: "otro_cargo", descripcion: "Ajuste de redondeo nota impresa", cantidad: 1, precio_unitario: 0.52, importe: 0.52 },
+  ];
+
+  const resultado = calcularImportesAPagar(partidas);
+  assertEquals(resultado.length, 7);
+  assertEquals(resultado[6].tipo, "otro_cargo");
+  assertEquals(resultado[6].importe_a_pagar, 0.52);
+
+  const suma = resultado.reduce((acc, p) => acc + p.importe_a_pagar, 0);
+  assertEquals(Math.round(suma * 100) / 100, 31143.19);
+});
+
+Deno.test("cuentasPorPagar - 13. calcularImportesAPagar: Factura con IVA 16% prorrateado", () => {
+  // Conceptos: 10,000 (1/3) y 20,000 (2/3) + IVA 4,800 = 34,800
+  const partidas = [
+    { tipo: "concepto", descripcion: "Partida A", importe: 10000.00 },
+    { tipo: "concepto", descripcion: "Partida B", importe: 20000.00 },
+    { tipo: "impuesto_trasladado", descripcion: "IVA 16%", importe: 4800.00 },
+  ];
+
+  const resultado = calcularImportesAPagar(partidas);
+  assertEquals(resultado[0].importe_a_pagar, 11600.00);
+  assertEquals(resultado[1].importe_a_pagar, 23200.00);
+  assertEquals(resultado[2].importe_a_pagar, 0.00);
+
+  const suma = resultado.reduce((acc, p) => acc + p.importe_a_pagar, 0);
+  assertEquals(Math.round(suma * 100) / 100, 34800.00);
+});
+
+Deno.test("cuentasPorPagar - 14. calcularImportesAPagar: Factura con IVA, retención y descuento prorrateados con cuadratura de centavos", () => {
+  // Conceptos: 10,000 y 20,000; IVA: 4,800; Retención: 1,000; Descuento: 500
+  // Neto adicionales: +4,800 - 1,000 - 500 = +3,300
+  // Importe factura: 30,000 + 3,300 = 33,300
+  const partidas = [
+    { tipo: "concepto", descripcion: "Partida 1", importe: 10000.00 },
+    { tipo: "concepto", descripcion: "Partida 2", importe: 20000.00 },
+    { tipo: "impuesto_trasladado", descripcion: "IVA 16%", importe: 4800.00 },
+    { tipo: "retencion", descripcion: "Retención ISR", importe: 1000.00 },
+    { tipo: "descuento", descripcion: "Descuento pronto pago", importe: 500.00 },
+  ];
+
+  const resultado = calcularImportesAPagar(partidas);
+  assertEquals(resultado[0].importe_a_pagar, 11100.00);
+  assertEquals(resultado[1].importe_a_pagar, 22200.00);
+  assertEquals(resultado[2].importe_a_pagar, 0.00);
+  assertEquals(resultado[3].importe_a_pagar, 0.00);
+  assertEquals(resultado[4].importe_a_pagar, 0.00);
+
+  const suma = resultado.reduce((acc, p) => acc + p.importe_a_pagar, 0);
+  assertEquals(Math.round(suma * 100) / 100, 33300.00);
+});
+
+Deno.test("cuentasPorPagar - 15. calcularImportesAPagar: Residuo de centavos por división inexacta va a la última partida", () => {
+  // Tres conceptos idénticos de 10.00 c/u = 30.00. IVA 16% = 4.81 (deja 1 centavo de residuo)
+  const partidas = [
+    { tipo: "concepto", descripcion: "C1", importe: 10.00 },
+    { tipo: "concepto", descripcion: "C2", importe: 10.00 },
+    { tipo: "concepto", descripcion: "C3", importe: 10.00 },
+    { tipo: "impuesto_trasladado", descripcion: "IVA", importe: 4.81 },
+  ];
+
+  const resultado = calcularImportesAPagar(partidas);
+  assertEquals(resultado[0].importe_a_pagar, 11.60);
+  assertEquals(resultado[1].importe_a_pagar, 11.60);
+  // El centavo impar va a la última partida
+  assertEquals(resultado[2].importe_a_pagar, 11.61);
+  assertEquals(resultado[3].importe_a_pagar, 0.00);
+
+  const suma = resultado.reduce((acc, p) => acc + p.importe_a_pagar, 0);
+  assertEquals(Math.round(suma * 100) / 100, 34.81);
+});
+
+Deno.test("cuentasPorPagar - 16. calcularImportesAPagar: Manejo de nulos y arreglo vacío", () => {
+  assertEquals(calcularImportesAPagar(null), []);
+  assertEquals(calcularImportesAPagar(undefined), []);
+  assertEquals(calcularImportesAPagar([]), []);
 });
 

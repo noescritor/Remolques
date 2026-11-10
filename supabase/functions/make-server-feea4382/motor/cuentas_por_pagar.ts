@@ -11,6 +11,9 @@ import {
   conciliar,
   usoDeCredito,
   redondearCentavos,
+  calcularImportesAPagar,
+  PartidaCxpRef,
+  PartidaConImporteAPagar,
   Moneda,
   FacturaRef,
   PagoRef,
@@ -77,6 +80,11 @@ export interface EditarFacturaPayload {
   cfdi?: any;
 }
 
+export interface AsignacionPartidaPayload {
+  partida_id: string;
+  monto: number;
+}
+
 export interface RegistrarPagoPayload {
   fecha_pago: string;
   monto: number;
@@ -85,6 +93,7 @@ export interface RegistrarPagoPayload {
   referencia?: string | null;
   complemento_pago?: string | null;
   notas?: string | null;
+  asignaciones?: AsignacionPartidaPayload[];
 }
 
 export interface GuardarTipoCambioPayload {
@@ -343,7 +352,10 @@ export async function listarFacturas(
       fecha_emision, dias_credito, fecha_vencimiento, moneda, importe,
       tipo_cambio_emision, concepto, estado, created_at, updated_at,
       proveedor:proveedores(id, nombre, razon_social, rfc),
-      pagos:pagos_factura(id, fecha_pago, monto, tipo_cambio, metodo_pago, referencia, complemento_pago, notas, anulado, anulado_motivo, anulado_at)
+      pagos:pagos_factura(
+        id, fecha_pago, monto, tipo_cambio, metodo_pago, referencia, complemento_pago, notas, anulado, anulado_motivo, anulado_at,
+        asignaciones:pagos_factura_partidas(id, partida_id, monto, partida:factura_proveedor_partidas(id, descripcion, tipo, orden))
+      )
     `)
     .eq("organizacion_id", orgId)
     .order("fecha_vencimiento", { ascending: true })
@@ -402,7 +414,19 @@ export async function listarFacturas(
       saldo,
       dias_atraso: dias,
       estado_calculado: estadoCalculado,
-      pagos: (f.pagos || []).sort((a: any, b: any) => (b.fecha_pago || "").localeCompare(a.fecha_pago || "")),
+      pagos: (f.pagos || [])
+        .map((p: any) => ({
+          ...p,
+          asignaciones: (p.asignaciones || []).map((asig: any) => ({
+            id: asig.id,
+            partida_id: asig.partida_id,
+            monto: Number(asig.monto) || 0,
+            descripcion: asig.partida?.descripcion || "",
+            tipo: asig.partida?.tipo || "",
+            orden: asig.partida?.orden || 0,
+          })),
+        }))
+        .sort((a: any, b: any) => (b.fecha_pago || "").localeCompare(a.fecha_pago || "")),
     };
   });
 
@@ -829,6 +853,44 @@ export async function registrarPago(
     tcPago = Math.round(tcNum * 10000) / 10000;
   }
 
+  let asignacionesRpc: any = null;
+  if (payload.asignaciones !== undefined && payload.asignaciones !== null) {
+    if (!Array.isArray(payload.asignaciones)) {
+      const err: any = new Error("El campo 'asignaciones' debe ser un arreglo de objetos { partida_id, monto }");
+      err.status = 400;
+      throw err;
+    }
+    if (payload.asignaciones.length > 0) {
+      let sumaAsig = 0;
+      const limpias: Array<{ partida_id: string; monto: number }> = [];
+      for (const a of payload.asignaciones) {
+        if (!a || !a.partida_id || typeof a.partida_id !== "string") {
+          const err: any = new Error("Cada asignación debe especificar un 'partida_id' válido");
+          err.status = 400;
+          throw err;
+        }
+        const m = Number(a.monto);
+        if (!Number.isFinite(m) || isNaN(m) || m <= 0) {
+          const err: any = new Error("El monto de cada asignación debe ser un número positivo mayor a 0");
+          err.status = 400;
+          throw err;
+        }
+        const mRed = redondearCentavos(m);
+        sumaAsig = redondearCentavos(sumaAsig + mRed);
+        limpias.push({ partida_id: a.partida_id.trim(), monto: mRed });
+      }
+
+      if (Math.abs(sumaAsig - montoRedondeado) > 0.01) {
+        const err: any = new Error(
+          `La suma de las asignaciones (${sumaAsig}) no coincide con el monto total del pago (${montoRedondeado})`
+        );
+        err.status = 400;
+        throw err;
+      }
+      asignacionesRpc = limpias;
+    }
+  }
+
   // Llamada a la función PostgreSQL registrar_pago_factura USANDO serviceClient
   const { data: res, error: errRpc } = await serviceClient.rpc("registrar_pago_factura", {
     p_org: orgId,
@@ -840,6 +902,7 @@ export async function registrarPago(
     p_referencia: payload.referencia ? payload.referencia.trim() : null,
     p_complemento: payload.complemento_pago ? payload.complemento_pago.trim() : null,
     p_notas: payload.notas ? payload.notas.trim() : null,
+    p_asignaciones: asignacionesRpc,
   });
 
   if (errRpc) {
@@ -851,9 +914,13 @@ export async function registrarPago(
     const mensaje = res?.mensaje || "Error al registrar pago";
     const err: any = new Error(mensaje);
 
-    if (errCodigo === "no_encontrada") {
+    if (errCodigo === "no_encontrada" || errCodigo === "partida_no_encontrada") {
       err.status = 404;
-    } else if (errCodigo === "excede_saldo" || errCodigo === "cancelada") {
+    } else if (
+      errCodigo === "excede_saldo" ||
+      errCodigo === "excede_saldo_partida" ||
+      errCodigo === "cancelada"
+    ) {
       err.status = 409;
     } else {
       err.status = 400;
@@ -1551,6 +1618,11 @@ export async function guardarFacturaConPartidasMotor(
       err.status = 409;
       throw err;
     }
+    if (msg.includes("pagos_asignados_activos")) {
+      const err: any = new Error("Anula los pagos asignados antes de modificar las partidas");
+      err.status = 409;
+      throw err;
+    }
     if (msg.includes("uuid_fiscal_duplicado") || msg.includes("uq_facturas_proveedor_org_uuid")) {
       const err: any = new Error("Ya existe una factura registrada con este UUID fiscal en la organización");
       err.status = 409;
@@ -1576,17 +1648,28 @@ export async function obtenerPartidasFactura(
   facturaId: string
 ) {
   const { data, error } = await supabase
-    .from("factura_proveedor_partidas")
+    .from("v_factura_partidas_saldo")
     .select("*")
     .eq("factura_id", facturaId)
     .eq("organizacion_id", orgId)
     .order("orden", { ascending: true });
 
   if (error) {
-    console.error("Error al obtener partidas de factura:", error);
-    const err: any = new Error("Error interno al obtener las partidas de la factura");
-    err.status = 500;
-    throw err;
+    console.error("Aviso al consultar v_factura_partidas_saldo, usando fallback:", error.message);
+    const { data: rawData, error: errRaw } = await supabase
+      .from("factura_proveedor_partidas")
+      .select("*")
+      .eq("factura_id", facturaId)
+      .eq("organizacion_id", orgId)
+      .order("orden", { ascending: true });
+
+    if (errRaw) {
+      console.error("Error al obtener partidas de factura:", errRaw);
+      const err: any = new Error("Error interno al obtener las partidas de la factura");
+      err.status = 500;
+      throw err;
+    }
+    return rawData || [];
   }
   return data || [];
 }

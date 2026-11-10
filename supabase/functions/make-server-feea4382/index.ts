@@ -3766,6 +3766,7 @@ app.post("/cxp/facturas/:id/pagos", async (c) => {
       referencia: body.referencia || null,
       complemento_pago: body.complemento_pago || null,
       notas: body.notas || null,
+      asignaciones: body.asignaciones || null,
     };
 
     const resultado = await registrarPago(serviceClient, orgId, id, payload);
@@ -3974,7 +3975,80 @@ app.put("/cxp/facturas/:id/partidas", async (c) => {
       return c.json({ error: "El campo 'partidas' es requerido y debe ser un arreglo" }, 400);
     }
 
-    const resultado = await guardarFacturaConPartidasMotor(serviceClient, orgId, id, body);
+    // Obtener factura existente
+    const { data: facturaExistente, error: errFactura } = await serviceClient
+      .from("facturas_proveedor")
+      .select("*")
+      .eq("id", id)
+      .eq("organizacion_id", orgId)
+      .single();
+
+    if (errFactura || !facturaExistente) {
+      return c.json({ error: "La factura no existe o pertenece a otra organización" }, 404);
+    }
+
+    // Verificar si la factura ya tiene pagos activos asignados a partidas
+    const { count: pagosAsignadosActivos } = await serviceClient
+      .from("pagos_factura_partidas")
+      .select("id, pago:pagos_factura!inner(id, factura_id, anulado)", { count: "exact", head: true })
+      .eq("organizacion_id", orgId)
+      .eq("pago.factura_id", id)
+      .eq("pago.anulado", false);
+
+    if (pagosAsignadosActivos && pagosAsignadosActivos > 0) {
+      // Consultar partidas actuales
+      const { data: partidasActuales } = await serviceClient
+        .from("factura_proveedor_partidas")
+        .select("*")
+        .eq("factura_id", id)
+        .eq("organizacion_id", orgId)
+        .order("orden", { ascending: true });
+
+      let soloCambiaDescripcion = false;
+      if (partidasActuales && partidasActuales.length === body.partidas.length) {
+        const coinciden = body.partidas.every((nuevaPartida: any, idx: number) => {
+          const act = partidasActuales[idx];
+          return (
+            act &&
+            act.tipo === nuevaPartida.tipo &&
+            Number(act.cantidad) === Number(nuevaPartida.cantidad) &&
+            Number(act.precio_unitario) === Number(nuevaPartida.precio_unitario) &&
+            Number(act.importe) === Number(nuevaPartida.importe)
+          );
+        });
+        if (coinciden) {
+          soloCambiaDescripcion = true;
+        }
+      }
+
+      if (!soloCambiaDescripcion) {
+        return c.json({ error: "Anula los pagos asignados antes de modificar las partidas" }, 409);
+      }
+
+      // Si solo cambia la descripción, actualizar descripciones sin alterar montos
+      for (let i = 0; i < body.partidas.length; i++) {
+        const act = partidasActuales![i];
+        const nueva = body.partidas[i];
+        await serviceClient
+          .from("factura_proveedor_partidas")
+          .update({
+            descripcion: nueva.descripcion,
+            clave_sat: nueva.clave_sat,
+            clave_unidad: nueva.clave_unidad,
+          })
+          .eq("id", act.id)
+          .eq("organizacion_id", orgId);
+      }
+      return c.json({ ok: true, mensaje: "Descripciones de partidas actualizadas" });
+    }
+
+    const payloadCompleto = {
+      ...facturaExistente,
+      ...body,
+      partidas: body.partidas,
+    };
+
+    const resultado = await guardarFacturaConPartidasMotor(serviceClient, orgId, id, payloadCompleto);
     return c.json(resultado);
   } catch (err: any) {
     const { status, body } = formatearErrorRespuesta(err);

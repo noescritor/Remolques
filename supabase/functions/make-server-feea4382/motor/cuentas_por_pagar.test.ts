@@ -15,6 +15,8 @@ import {
   guardarEstadoCuentaProveedor,
   obtenerConciliacionProveedor,
   formatearErrorRespuesta,
+  guardarFacturaConPartidasMotor,
+  obtenerPartidasFactura,
 } from "./cuentas_por_pagar.ts";
 
 function createFakeClient(opts: {
@@ -801,3 +803,216 @@ Deno.test("motor/cuentas_por_pagar - 11. Paginación y truncado: listarFacturas 
   assertEquals(resPagos.truncado, true);
   assertEquals(resPagos.pagos.length, 200);
 });
+
+Deno.test("motor/cuentas_por_pagar - 12. Pagos por partida: validaciones de asignaciones (suma descuadrada, monto inválido) y pasaje de p_asignaciones", async () => {
+  let capturedArgs: any = null;
+  const fake = createFakeClient({
+    rpcHandlers: {
+      registrar_pago_factura(args: any) {
+        capturedArgs = args;
+        return { data: { exito: true, pago_id: "pago-asig-1", saldo_restante: 500 } };
+      },
+    },
+  });
+
+  const p1 = "11111111-2222-3333-4444-555555555551";
+  const p2 = "11111111-2222-3333-4444-555555555552";
+
+  // 1. Error: asignaciones no es array
+  await assertRejects(
+    async () => {
+      await registrarPago(fake, ORG_A, "fact-1", {
+        fecha_pago: "2026-11-10",
+        monto: 1000,
+        asignaciones: "invalido" as any,
+      });
+    },
+    Error,
+    "El campo 'asignaciones' debe ser un arreglo"
+  );
+
+  // 2. Error: monto de partida <= 0
+  await assertRejects(
+    async () => {
+      await registrarPago(fake, ORG_A, "fact-1", {
+        fecha_pago: "2026-11-10",
+        monto: 1000,
+        asignaciones: [
+          { partida_id: p1, monto: 1000 },
+          { partida_id: p2, monto: 0 },
+        ],
+      });
+    },
+    Error,
+    "El monto de cada asignación debe ser un número positivo mayor a 0"
+  );
+
+  // 3. Error: suma de asignaciones no coincide con monto
+  await assertRejects(
+    async () => {
+      await registrarPago(fake, ORG_A, "fact-1", {
+        fecha_pago: "2026-11-10",
+        monto: 1000,
+        asignaciones: [
+          { partida_id: p1, monto: 600 },
+          { partida_id: p2, monto: 350 }, // suma = 950 != 1000
+        ],
+      });
+    },
+    Error,
+    "La suma de las asignaciones (950) no coincide con el monto total del pago (1000)"
+  );
+
+  // 4. Éxito: asignaciones cuadradas pasan p_asignaciones a la RPC
+  const res = await registrarPago(fake, ORG_A, "fact-1", {
+    fecha_pago: "2026-11-10",
+    monto: 1000,
+    asignaciones: [
+      { partida_id: p1, monto: 600 },
+      { partida_id: p2, monto: 400 },
+    ],
+  });
+
+  assertEquals(res.exito, true);
+  assertEquals(capturedArgs.p_monto, 1000);
+  assertEquals(capturedArgs.p_asignaciones.length, 2);
+  assertEquals(capturedArgs.p_asignaciones[0], { partida_id: p1, monto: 600 });
+  assertEquals(capturedArgs.p_asignaciones[1], { partida_id: p2, monto: 400 });
+
+  // 5. Abono libre sin asignaciones: pasa p_asignaciones null
+  await registrarPago(fake, ORG_A, "fact-1", {
+    fecha_pago: "2026-11-10",
+    monto: 500,
+  });
+  assertEquals(capturedArgs.p_asignaciones, null);
+});
+
+Deno.test("motor/cuentas_por_pagar - 13. Pagos por partida: traduce errores específicos de partidas (excede_saldo_partida -> 409, partida_no_encontrada -> 404)", async () => {
+  const fake = createFakeClient({
+    rpcHandlers: {
+      registrar_pago_factura(args: any) {
+        if (args.p_monto === 999) {
+          return { data: { exito: false, error: "excede_saldo_partida", mensaje: "El monto asignado a la partida excede su saldo pendiente" } };
+        }
+        if (args.p_monto === 888) {
+          return { data: { exito: false, error: "partida_no_encontrada", mensaje: "Una o más partidas no pertenecen a esta factura" } };
+        }
+        return { data: { exito: true } };
+      },
+    },
+  });
+
+  const p1 = "11111111-2222-3333-4444-555555555551";
+
+  // Error excede_saldo_partida -> 409
+  const errSaldoPartida = await assertRejects(
+    async () => {
+      await registrarPago(fake, ORG_A, "fact-1", {
+        fecha_pago: "2026-11-10",
+        monto: 999,
+        asignaciones: [{ partida_id: p1, monto: 999 }],
+      });
+    },
+    Error,
+    "El monto asignado a la partida excede su saldo pendiente"
+  );
+  assertEquals(errSaldoPartida.status, 409);
+
+  // Error partida_no_encontrada -> 404
+  const errNoPartida = await assertRejects(
+    async () => {
+      await registrarPago(fake, ORG_A, "fact-1", {
+        fecha_pago: "2026-11-10",
+        monto: 888,
+        asignaciones: [{ partida_id: p1, monto: 888 }],
+      });
+    },
+    Error,
+    "Una o más partidas no pertenecen a esta factura"
+  );
+  assertEquals(errNoPartida.status, 404);
+});
+
+Deno.test("motor/cuentas_por_pagar - 14. Modificación de factura: captura pagos_asignados_activos -> 409", async () => {
+  const fake = {
+    rpc(fnName: string, _args: any) {
+      if (fnName === "guardar_factura_con_partidas") {
+        return Promise.resolve({
+          data: null,
+          error: { message: "pagos_asignados_activos: Anula los pagos asignados antes de modificar las partidas" },
+        });
+      }
+      return Promise.resolve({ data: {}, error: null });
+    },
+  };
+
+  const errBloqueo = await assertRejects(
+    async () => {
+      await guardarFacturaConPartidasMotor(fake, ORG_A, "fact-con-pagos", {
+        proveedor_id: PROV_A,
+        folio: "F-100",
+        fecha_emision: "2026-11-10",
+        moneda: "MXN",
+        importe: 5000,
+        partidas: [
+          { tipo: "concepto", descripcion: "Modificado", cantidad: 1, precio_unitario: 5000, importe: 5000 },
+        ],
+      });
+    },
+    Error,
+    "Anula los pagos asignados antes de modificar las partidas"
+  );
+  assertEquals(errBloqueo.status, 409);
+});
+
+Deno.test("motor/cuentas_por_pagar - 15. obtenerPartidasFactura consulta vista con saldo, pagado y estado", async () => {
+  const mockPartidas = [
+    {
+      id: "part-1",
+      partida_id: "part-1",
+      factura_id: "fact-1",
+      organizacion_id: ORG_A,
+      tipo: "concepto",
+      descripcion: "Item 1",
+      cantidad: 2,
+      precio_unitario: 100,
+      importe: 200,
+      importe_a_pagar: 200,
+      pagado: 100,
+      saldo: 100,
+      estado: "Parcial",
+      orden: 1,
+    },
+    {
+      id: "part-2",
+      partida_id: "part-2",
+      factura_id: "fact-1",
+      organizacion_id: ORG_A,
+      tipo: "concepto",
+      descripcion: "Item 2",
+      cantidad: 1,
+      precio_unitario: 300,
+      importe: 300,
+      importe_a_pagar: 300,
+      pagado: 0,
+      saldo: 300,
+      estado: "Pendiente",
+      orden: 2,
+    },
+  ];
+
+  const fake = createFakeClient({
+    tables: {
+      v_factura_partidas_saldo: mockPartidas,
+    },
+  });
+
+  const res = await obtenerPartidasFactura(fake, ORG_A, "fact-1");
+  assertEquals(res.length, 2);
+  assertEquals(res[0].estado, "Parcial");
+  assertEquals(res[0].pagado, 100);
+  assertEquals(res[0].saldo, 100);
+  assertEquals(res[1].estado, "Pendiente");
+  assertEquals(res[1].saldo, 300);
+});
+

@@ -348,3 +348,113 @@ export function fechaLocalISO(d: Date = new Date()): string {
   return `${y}-${m}-${dia}`;
 }
 
+// ── CÁLCULO DE IMPORTES A PAGAR POR PARTIDA (Prorrateo de Impuestos, Retenciones y Descuentos) ──
+
+export interface PartidaCxpRef {
+  id?: string;
+  tipo: 'concepto' | 'impuesto_trasladado' | 'retencion' | 'descuento' | 'otro_cargo' | string;
+  descripcion?: string;
+  cantidad?: number;
+  precio_unitario?: number;
+  importe: number;
+  orden?: number;
+  [key: string]: any;
+}
+
+export interface PartidaConImporteAPagar extends PartidaCxpRef {
+  importe_a_pagar: number;
+}
+
+/**
+ * Calcula el importe a pagar por partida distribuyendo proporcionalmente los impuestos trasladados,
+ * retenciones y descuentos entre las partidas de tipo 'concepto'.
+ * - Las partidas de tipo 'concepto' y 'otro_cargo' son las que se pueden pagar.
+ * - Los impuestos, retenciones y descuentos se prorratean entre los conceptos según su proporción del subtotal.
+ * - El residuo de centavos va a la última partida pagable para que la suma total sea exacta.
+ */
+export function calcularImportesAPagar<T extends PartidaCxpRef>(
+  partidas?: T[] | null
+): Array<T & { importe_a_pagar: number }> {
+  if (!Array.isArray(partidas) || partidas.length === 0) {
+    return [];
+  }
+
+  let subtotalConceptosCentavos = 0;
+  let subtotalOtrosCargosCentavos = 0;
+  let netoAjustesCentavos = 0;
+
+  for (const p of partidas) {
+    const impCentavos = aCentavos(Number(p.importe) || 0);
+    if (p.tipo === 'concepto') {
+      subtotalConceptosCentavos += impCentavos;
+    } else if (p.tipo === 'otro_cargo') {
+      subtotalOtrosCargosCentavos += impCentavos;
+    } else if (p.tipo === 'impuesto_trasladado') {
+      netoAjustesCentavos += impCentavos;
+    } else if (p.tipo === 'retencion' || p.tipo === 'descuento') {
+      netoAjustesCentavos -= impCentavos;
+    }
+  }
+
+  const usaConceptos = subtotalConceptosCentavos > 0;
+  const usaOtrosCargos = !usaConceptos && subtotalOtrosCargosCentavos > 0;
+  const baseProrrateoCentavos = usaConceptos 
+    ? subtotalConceptosCentavos 
+    : (usaOtrosCargos ? subtotalOtrosCargosCentavos : 0);
+
+  let ultimoIndiceProrrateo = -1;
+  if (baseProrrateoCentavos > 0) {
+    for (let i = partidas.length - 1; i >= 0; i--) {
+      const tipo = partidas[i].tipo;
+      if ((usaConceptos && tipo === 'concepto') || (usaOtrosCargos && tipo === 'otro_cargo')) {
+        ultimoIndiceProrrateo = i;
+        break;
+      }
+    }
+  }
+
+  let sumaAjustesAsignados = 0;
+
+  return partidas.map((p, idx) => {
+    const impCentavos = aCentavos(Number(p.importe) || 0);
+    let importeAPagarCentavos = 0;
+
+    if (p.tipo === 'concepto') {
+      if (usaConceptos) {
+        if (idx === ultimoIndiceProrrateo) {
+          const ajusteUltimo = netoAjustesCentavos - sumaAjustesAsignados;
+          importeAPagarCentavos = impCentavos + ajusteUltimo;
+        } else {
+          const proporcion = impCentavos / baseProrrateoCentavos;
+          const ajuste = Math.round(netoAjustesCentavos * proporcion);
+          sumaAjustesAsignados += ajuste;
+          importeAPagarCentavos = impCentavos + ajuste;
+        }
+      } else {
+        importeAPagarCentavos = impCentavos;
+      }
+    } else if (p.tipo === 'otro_cargo') {
+      if (usaOtrosCargos) {
+        if (idx === ultimoIndiceProrrateo) {
+          const ajusteUltimo = netoAjustesCentavos - sumaAjustesAsignados;
+          importeAPagarCentavos = impCentavos + ajusteUltimo;
+        } else {
+          const proporcion = impCentavos / baseProrrateoCentavos;
+          const ajuste = Math.round(netoAjustesCentavos * proporcion);
+          sumaAjustesAsignados += ajuste;
+          importeAPagarCentavos = impCentavos + ajuste;
+        }
+      } else {
+        importeAPagarCentavos = impCentavos;
+      }
+    } else {
+      importeAPagarCentavos = 0;
+    }
+
+    return {
+      ...p,
+      importe_a_pagar: deCentavos(importeAPagarCentavos),
+    };
+  });
+}
+
