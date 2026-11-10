@@ -3,6 +3,24 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-10 - Presupuestos/cliente (Ronda 2): folio completo en listado y reactividad del título al elegir "ninguno"
+**Herramienta:** Antigravity  
+**Tipo:** fix (quitar truncate de folio en listado, corrección de reactividad del título al elegir "ninguno" en editor, función pura tituloEditorPresupuesto y prueba unitaria)  
+**Rama:** `presupuestos-cliente-2026-11-10`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/PRESUPUESTOS_CLIENTE_REVISION_CLAUDE.md`  
+**Archivos tocados:**  
+- `src/app/components/Presupuestos/PresupuestosList.tsx`: remoción de la clase `truncate` en la celda del folio (`col-span-1 font-medium text-blue-600`), permitiendo que folios largos generados de cotizaciones (ej. `PRE-2026-20260917195482`) se partan de forma natural en el guion sin mostrar puntos suspensivos ("…").
+- `src/app/components/Presupuestos/PresupuestoEditor.tsx`: ajuste en `idCli = clienteId !== 'ninguno' ? clienteId : null`, asegurando que al seleccionar "ninguno" (A QUIEN CORRESPONDA) el título retire el cliente y vuelva a `Editar Presupuesto {folio}`.
+- `src/app/utils/presupuestoCliente.ts`: exportación de la función pura `tituloEditorPresupuesto(presupuesto, clienteId, clientes)`.
+- `src/app/utils/presupuestoCliente.test.ts`: adición de prueba unitaria validando que cambiar de cliente en el selector actualiza el título dinámicamente y seleccionar "ninguno" retira el nombre del cliente.
+- `PRESUPUESTOS_CLIENTE_REPORTE_ANTY.md` (y copia en `COORDINACION/REPORTES/`): actualización con sección de Ronda 2 y verificación de 305 pruebas.
+**Qué cambió y por qué:**  
+- **1. Folios legibles sin corte:** El folio identifica de forma unívoca al presupuesto. Al quitar `truncate`, el número se muestra completo en dos líneas en pantallas de cualquier tamaño.
+- **2. Título reactivo y consistente:** Si el usuario decide quitar el cliente de un presupuesto existente para dejarlo "A QUIEN CORRESPONDA", el título del editor refleja el cambio de inmediato en la cabecera sin requerir recargar la página.
+**Acciones manuales pendientes:**  
+- Ninguna en base de datos ni backend.
+- Rebuild de `remolques-web` en EasyPanel tras merge a `main`.
+
 ## 2026-11-10 - Presupuestos: mostrar y buscar por nombre del cliente
 **Herramienta:** Antigravity  
 **Tipo:** feat (funciones puras nombreClientePresupuesto/coincideBusquedaPresupuesto, columna cliente en listado, búsqueda por cliente/folio/concepto, título dinámico en editor)  
