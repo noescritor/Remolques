@@ -33,14 +33,15 @@ Configuración estándar de prueba (3 ejes, suspensión y ejes Fleet Master, pat
 | **Kits Fijos (`costos_modelo`)** | $45,685.98 | **$45,685.98** | $45,685.98 | Idénticos (fijos por modelo) |
 | **Mano de Obra (`procesos`)** | $22,930.00 | **$22,930.00** | $22,930.00 | Idénticos (80 procesos estándar) |
 | **Piso Plástico (`por_largo`)** | $54,663.00 (42/40) | **$55,964.50** (43/40) | $58,567.50 (45/40) | Lineal exacto sobre $52,060.00 |
-| **Opciones Totales** | $199,444.56 | **$200,746.06** | $203,349.06 | Monótonamente creciente |
+| **Opciones Totales** | $223,527.56 | **$224,829.06** | $227,432.06 | Monótonamente creciente (43/3 = 42/3 + $1,301.50 piso por largo) |
 | **Ajustes Manuales** | $31,485.00 | **$31,485.00** | $31,485.00 | Constante de calibración Excel |
 | **Costo Total** | $452,993.87 | **$454,872.19** | $458,628.83 | $452.9k < **$454.8k** < $458.6k |
 | **Ganancia** | $110,000.00 | **$110,000.00** | $110,000.00 | Ganancia estándar de plataforma |
 | **Precio Sugerido** | **$562,993.87** | **$564,872.19** | **$568,628.83** | **$562,993.87 < $564,872.19 < $568,628.83** (OK) |
 | **Nivel de Confianza** | `estimada` | `estimada` | `estimada` | Incluye pendiente `variante_supuesta` |
 
-> **Conclusión Matemática:** El precio sugerido de la 43 ft ($564,872.19) se sitúa con precisión monotónica entre la 42 ft ($562,993.87) y la 45 ft ($568,628.83). La diferencia contra la 42 ft es de exactamente +$1,878.32 (+$576.82 por 1 cargador + $1,301.50 por escala de piso).
+> **Conclusión Matemática:** El precio sugerido de la 43 ft ($564,872.19) se sitúa con precisión monotónica entre la 42 ft ($562,993.87) y la 45 ft ($568,628.83). La diferencia contra la 42 ft es de exactamente +$1,878.32 (+$576.82 por 1 cargador + $1,301.50 por escala de piso). Cada columna suma exactamente el Costo Total al centavo ($129,942.15 + $45,685.98 + $224,829.06 + $22,930.00 + $31,485.00 = $454,872.19).  
+> *Nota Ronda 2:* Esta ronda corrigió las cifras de la fila "Opciones Totales" ($223,527.56 para 42/3, $224,829.06 para 43/3 y $227,432.06 para 45/3), las cuales ahora cuadran la suma de las secciones contra el costo total.
 
 ---
 

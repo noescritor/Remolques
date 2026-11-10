@@ -3,6 +3,20 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-09 - Plataforma 43 ft (Ronda 2): corrección de tabla de sanidad y reversión de branching en CotizacionEditor
+**Herramienta:** Antigravity  
+**Tipo:** fix (reversión de branching de tarjeta en cotizador, corrección de tabla de opciones en reporte técnico)  
+**Rama:** `plataforma-43ft-2026-11-09`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/PLATAFORMA_43FT_REVISION_CLAUDE.md`  
+**Archivos tocados:**  
+- `src/app/components/Cotizaciones/CotizacionEditor.tsx`: reversión estricta de las dos condiciones de renderizado (`if (item.metadata?.configuracion)`) exactamente como estaban en `main`, conservando intactos los avisos visibles de precio ("Sin precio: costeo incompleto. Captura el precio a mano.") en el renglón simple y en la tarjeta, así como `secciones_faltantes` en `configuracion.costeo`.
+- `PLATAFORMA_43FT_REPORTE_ANTY.md` (y copia en `COORDINACION/REPORTES/`): corrección de las cifras de la fila "Opciones Totales" ($223,527.56 para 42/3, $224,829.06 para 43/3 y $227,432.06 para 45/3), certificando que cada columna suma exactamente el Costo Total al centavo.
+**Qué cambió y por qué:**  
+- **1. Reversión de branching:** Se restableció la condición original para que los items recién configurados no fuercen la vista de tarjeta completa, manteniendo la estructura visual previa de `main`.
+- **2. Cuadre exacto de la tabla:** Se recalcularon las opciones totales con el motor para reflejar la totalidad de opciones de 3 ejes y retráctiles, cuadrando la suma de secciones contra el costo total.
+**Acciones manuales pendientes:**  
+- Ninguna adicional (la migración SQL `20261109_01_costos_plataforma_43ft.sql` fue validada por Claude sin cambios).
+
 ## 2026-11-09 - Plataforma 3 ejes 43 ft: costos derivados de 40/2 y avisos explicativos de costeo incompleto
 **Herramienta:** Antigravity  
 **Tipo:** feat (migración SQL de costos derivados, generador de variantes, funciones puras mensajeCosteoIncompleto/obtenerSeccionesFaltantes, avisos en configurador y cotizador, pruebas unitarias)  
