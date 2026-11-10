@@ -23,7 +23,9 @@ import {
   PlusCircle,
   Layers,
   FileCode,
+  AlertTriangle,
 } from 'lucide-react';
+import { Checkbox } from '../ui/checkbox';
 import { formatearMonedaDe, Moneda, fechaLocalISO } from '../../utils/cuentasPorPagar';
 import { BASE_URL } from '../../utils/api';
 import { CxpCfdiModal } from './CxpCfdiModal';
@@ -148,6 +150,41 @@ export function CxpFacturasTab({
     notas: '',
   });
   const [guardandoPago, setGuardandoPago] = useState(false);
+
+  // Modo de pago: completo (toda la factura / abono libre) o por partida
+  const [modoPago, setModoPago] = useState<'completo' | 'partidas'>('completo');
+  const [partidasParaPago, setPartidasParaPago] = useState<Array<{
+    partida_id: string;
+    descripcion: string;
+    cantidad: number;
+    precio_unitario: number;
+    importe_a_pagar: number;
+    saldo: number;
+    seleccionada: boolean;
+    montoAbono: string;
+  }>>([]);
+  const [cargandoPartidasModal, setCargandoPartidasModal] = useState(false);
+
+  // Suma de partidas para aviso de descuadre en formulario de factura
+  const sumaPartidas = useMemo(() => {
+    if (partidas.length === 0) return null;
+    let net = 0;
+    for (const p of partidas) {
+      const imp = parseFloat(String(p.importe)) || 0;
+      if (p.tipo === 'concepto' || p.tipo === 'impuesto_trasladado' || p.tipo === 'otro_cargo') {
+        net += imp;
+      } else if (p.tipo === 'retencion' || p.tipo === 'descuento') {
+        net -= imp;
+      }
+    }
+    return Math.round(net * 100) / 100;
+  }, [partidas]);
+
+  const diferenciaPartidasImporte = useMemo(() => {
+    if (sumaPartidas === null) return 0;
+    const impFactura = parseFloat(formFactura.importe) || 0;
+    return Math.round(Math.abs(impFactura - sumaPartidas) * 100) / 100;
+  }, [sumaPartidas, formFactura.importe]);
 
   // Diálogo Anular Pago
   const [modalAnularOpen, setModalAnularOpen] = useState(false);
@@ -381,8 +418,10 @@ export function CxpFacturasTab({
     }
   };
 
-  const abrirRegistrarPago = (f: any) => {
+  const abrirRegistrarPago = async (f: any) => {
     setFacturaPago(f);
+    setModoPago('completo');
+    setPartidasParaPago([]);
     setFormPago({
       fecha_pago: fechaLocalISO(),
       monto: String(f.saldo || ''),
@@ -393,45 +432,206 @@ export function CxpFacturasTab({
       notas: '',
     });
     setModalPagoOpen(true);
+
+    // Cargar partidas de la factura para ofrecer pago por partida si existen
+    setCargandoPartidasModal(true);
+    try {
+      let parts = partidasCargadas[f.id];
+      if (!parts && getAuthToken) {
+        const token = await getAuthToken();
+        const res = await fetch(`${BASE_URL}/cxp/facturas/${f.id}/partidas`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          parts = data.partidas || [];
+          setPartidasCargadas((prev) => ({ ...prev, [f.id]: parts }));
+        }
+      }
+
+      if (parts && parts.length > 0) {
+        // Filtrar conceptos y otros cargos con saldo > 0
+        const pagables = parts
+          .filter((p: any) => p.tipo === 'concepto' || p.tipo === 'otro_cargo')
+          .map((p: any) => {
+            const aPagar = typeof p.importe_a_pagar === 'number' ? p.importe_a_pagar : (Number(p.importe) || 0);
+            const saldoItem = typeof p.saldo === 'number' ? p.saldo : aPagar;
+            return {
+              partida_id: p.partida_id || p.id,
+              descripcion: p.descripcion,
+              cantidad: p.cantidad,
+              precio_unitario: p.precio_unitario,
+              importe_a_pagar: aPagar,
+              saldo: Math.round(saldoItem * 100) / 100,
+              seleccionada: false,
+              montoAbono: '',
+            };
+          })
+          .filter((p: any) => p.saldo > 0);
+        setPartidasParaPago(pagables);
+      }
+    } catch (err) {
+      console.error('Error cargando partidas para pago:', err);
+    } finally {
+      setCargandoPartidasModal(false);
+    }
+  };
+
+  const toggleSeleccionPartidaPago = (partidaId: string) => {
+    setPartidasParaPago((prev) => {
+      const next = prev.map((item) => {
+        if (item.partida_id === partidaId) {
+          const nuevaSel = !item.seleccionada;
+          return {
+            ...item,
+            seleccionada: nuevaSel,
+            montoAbono: nuevaSel ? item.saldo.toFixed(2) : '',
+          };
+        }
+        return item;
+      });
+      const total = next
+        .filter((p) => p.seleccionada)
+        .reduce((sum, p) => sum + (parseFloat(p.montoAbono) || 0), 0);
+      setFormPago((fp) => ({ ...fp, monto: total > 0 ? total.toFixed(2) : '' }));
+      return next;
+    });
+  };
+
+  const cambiarMontoPartidaPago = (partidaId: string, valorStr: string) => {
+    setPartidasParaPago((prev) => {
+      const next = prev.map((item) => {
+        if (item.partida_id === partidaId) {
+          return {
+            ...item,
+            montoAbono: valorStr,
+          };
+        }
+        return item;
+      });
+      const total = next
+        .filter((p) => p.seleccionada)
+        .reduce((sum, p) => sum + (parseFloat(p.montoAbono) || 0), 0);
+      setFormPago((fp) => ({ ...fp, monto: total > 0 ? total.toFixed(2) : '' }));
+      return next;
+    });
   };
 
   const handleSubmitPago = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!facturaPago) return;
-    const montoNum = parseFloat(formPago.monto);
-    if (isNaN(montoNum) || montoNum <= 0) {
-      toast.error('El monto a pagar debe ser mayor a 0');
-      return;
-    }
-    if (montoNum > facturaPago.saldo) {
-      toast.error(`El monto ($${montoNum}) excede el saldo restante ($${facturaPago.saldo})`);
-      return;
-    }
-    if (facturaPago.moneda === 'USD') {
-      const tcNum = parseFloat(formPago.tipo_cambio);
-      if (isNaN(tcNum) || tcNum <= 0) {
-        toast.error('El tipo de cambio del pago en USD es obligatorio y debe ser mayor a 0');
+
+    if (modoPago === 'partidas') {
+      const seleccionadas = partidasParaPago.filter((p) => p.seleccionada);
+      if (seleccionadas.length === 0) {
+        toast.error('Selecciona al menos una partida para abonar');
         return;
       }
-    }
 
-    try {
-      setGuardandoPago(true);
-      await onRegistrarPago(facturaPago.id, {
-        fecha_pago: formPago.fecha_pago,
-        monto: montoNum,
-        tipo_cambio: facturaPago.moneda === 'USD' ? parseFloat(formPago.tipo_cambio) : null,
-        metodo_pago: formPago.metodo_pago,
-        referencia: formPago.referencia,
-        complemento_pago: formPago.complemento_pago,
-        notas: formPago.notas,
-      });
-      toast.success('Pago registrado con éxito');
-      setModalPagoOpen(false);
-    } catch (err: any) {
-      toast.error('Error al registrar pago', { description: err.message });
-    } finally {
-      setGuardandoPago(false);
+      for (const p of seleccionadas) {
+        const mAbono = parseFloat(p.montoAbono);
+        if (isNaN(mAbono) || mAbono <= 0) {
+          toast.error(`El monto para "${p.descripcion}" debe ser mayor a 0`);
+          return;
+        }
+        if (mAbono > p.saldo + 0.001) {
+          toast.error(`El abono para "${p.descripcion}" ($${mAbono.toFixed(2)}) excede su saldo pendiente ($${p.saldo.toFixed(2)})`);
+          return;
+        }
+      }
+
+      const totalCalculado = Math.round(
+        seleccionadas.reduce((sum, p) => sum + (parseFloat(p.montoAbono) || 0), 0) * 100
+      ) / 100;
+
+      if (totalCalculado <= 0) {
+        toast.error('El monto total a pagar debe ser mayor a 0');
+        return;
+      }
+      if (totalCalculado > facturaPago.saldo + 0.001) {
+        toast.error(`La suma asignada ($${totalCalculado.toFixed(2)}) excede el saldo restante de la factura ($${facturaPago.saldo.toFixed(2)})`);
+        return;
+      }
+
+      if (facturaPago.moneda === 'USD') {
+        const tcNum = parseFloat(formPago.tipo_cambio);
+        if (isNaN(tcNum) || tcNum <= 0) {
+          toast.error('El tipo de cambio del pago en USD es obligatorio y debe ser mayor a 0');
+          return;
+        }
+      }
+
+      try {
+        setGuardandoPago(true);
+        await onRegistrarPago(facturaPago.id, {
+          fecha_pago: formPago.fecha_pago,
+          monto: totalCalculado,
+          tipo_cambio: facturaPago.moneda === 'USD' ? parseFloat(formPago.tipo_cambio) : null,
+          metodo_pago: formPago.metodo_pago,
+          referencia: formPago.referencia,
+          complemento_pago: formPago.complemento_pago,
+          notas: formPago.notas,
+          asignaciones: seleccionadas.map((p) => ({
+            partida_id: p.partida_id,
+            monto: Math.round((parseFloat(p.montoAbono) || 0) * 100) / 100,
+          })),
+        });
+        toast.success('Pago registrado con éxito');
+        setPartidasCargadas((prev) => {
+          const c = { ...prev };
+          delete c[facturaPago.id];
+          return c;
+        });
+        setModalPagoOpen(false);
+        if (onRecargarFacturas) onRecargarFacturas();
+      } catch (err: any) {
+        toast.error('Error al registrar pago', { description: err.message });
+      } finally {
+        setGuardandoPago(false);
+      }
+    } else {
+      // Modo factura completa / abono libre
+      const montoNum = parseFloat(formPago.monto);
+      if (isNaN(montoNum) || montoNum <= 0) {
+        toast.error('El monto a pagar debe ser mayor a 0');
+        return;
+      }
+      if (montoNum > facturaPago.saldo) {
+        toast.error(`El monto ($${montoNum}) excede el saldo restante ($${facturaPago.saldo})`);
+        return;
+      }
+      if (facturaPago.moneda === 'USD') {
+        const tcNum = parseFloat(formPago.tipo_cambio);
+        if (isNaN(tcNum) || tcNum <= 0) {
+          toast.error('El tipo de cambio del pago en USD es obligatorio y debe ser mayor a 0');
+          return;
+        }
+      }
+
+      try {
+        setGuardandoPago(true);
+        await onRegistrarPago(facturaPago.id, {
+          fecha_pago: formPago.fecha_pago,
+          monto: montoNum,
+          tipo_cambio: facturaPago.moneda === 'USD' ? parseFloat(formPago.tipo_cambio) : null,
+          metodo_pago: formPago.metodo_pago,
+          referencia: formPago.referencia,
+          complemento_pago: formPago.complemento_pago,
+          notas: formPago.notas,
+        });
+        toast.success('Pago registrado con éxito');
+        setPartidasCargadas((prev) => {
+          const c = { ...prev };
+          delete c[facturaPago.id];
+          return c;
+        });
+        setModalPagoOpen(false);
+        if (onRecargarFacturas) onRecargarFacturas();
+      } catch (err: any) {
+        toast.error('Error al registrar pago', { description: err.message });
+      } finally {
+        setGuardandoPago(false);
+      }
     }
   };
 
@@ -642,20 +842,18 @@ export function CxpFacturasTab({
                       <React.Fragment key={f.id}>
                         <tr className={`hover:bg-muted/20 transition-colors ${esExpandida ? 'bg-muted/10' : ''}`}>
                           <td className="py-3 px-2 text-center">
-                            {pagos.length > 0 && (
-                              <button
-                                type="button"
-                                onClick={() => toggleExpand(f.id)}
-                                className="p-1 text-muted-foreground hover:text-foreground rounded"
-                                title="Ver pagos"
-                              >
-                                {esExpandida ? (
-                                  <ChevronDown className="w-3.5 h-3.5" />
-                                ) : (
-                                  <ChevronRight className="w-3.5 h-3.5" />
-                                )}
-                              </button>
-                            )}
+                            <button
+                              type="button"
+                              onClick={() => toggleExpand(f.id)}
+                              className="p-1 text-muted-foreground hover:text-foreground rounded"
+                              title="Ver partidas y pagos"
+                            >
+                              {esExpandida ? (
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              ) : (
+                                <ChevronRight className="w-3.5 h-3.5" />
+                              )}
+                            </button>
                           </td>
                           <td className="py-3 px-3">
                             <div className="font-semibold text-foreground flex items-center gap-1.5 font-mono">
@@ -784,31 +982,66 @@ export function CxpFacturasTab({
                                     <table className="w-full text-left text-[11px]">
                                       <thead>
                                         <tr className="bg-muted/30 border-b border-border/50 text-muted-foreground">
-                                          <th className="py-1.5 px-3">Tipo</th>
-                                          <th className="py-1.5 px-3">Descripción</th>
-                                          <th className="py-1.5 px-3 text-center">Cant.</th>
-                                          <th className="py-1.5 px-3 text-right">P. Unitario</th>
-                                          <th className="py-1.5 px-3 text-right">Importe</th>
+                                          <th className="py-1.5 px-2.5">Tipo</th>
+                                          <th className="py-1.5 px-2.5">Descripción</th>
+                                          <th className="py-1.5 px-2 text-center">Cant.</th>
+                                          <th className="py-1.5 px-2.5 text-right">P. Unitario</th>
+                                          <th className="py-1.5 px-2.5 text-right">Importe</th>
+                                          <th className="py-1.5 px-2.5 text-right font-semibold text-foreground">A Pagar</th>
+                                          <th className="py-1.5 px-2.5 text-right">Pagado</th>
+                                          <th className="py-1.5 px-2.5 text-right font-bold text-foreground">Saldo</th>
+                                          <th className="py-1.5 px-2 text-center">Estado</th>
                                         </tr>
                                       </thead>
                                       <tbody className="divide-y divide-border/40 font-mono">
-                                        {partidasCargadas[f.id].map((part: any, pIdx: number) => (
-                                          <tr key={pIdx}>
-                                            <td className="py-1.5 px-3 font-sans">
-                                              <span className="capitalize px-1.5 py-0.5 rounded text-[10px] bg-muted font-medium">
-                                                {part.tipo.replace('_', ' ')}
-                                              </span>
-                                            </td>
-                                            <td className="py-1.5 px-3 font-sans text-foreground">
-                                              {part.descripcion}
-                                            </td>
-                                            <td className="py-1.5 px-3 text-center">{part.cantidad}</td>
-                                            <td className="py-1.5 px-3 text-right">{formatearMonedaDe(part.precio_unitario, f.moneda)}</td>
-                                            <td className="py-1.5 px-3 text-right font-bold text-foreground">
-                                              {formatearMonedaDe(part.importe, f.moneda)}
-                                            </td>
-                                          </tr>
-                                        ))}
+                                        {partidasCargadas[f.id].map((part: any, pIdx: number) => {
+                                          const esConcepto = part.tipo === 'concepto' || part.tipo === 'otro_cargo';
+                                          const aPagar = esConcepto ? (typeof part.importe_a_pagar === 'number' ? part.importe_a_pagar : Number(part.importe)) : 0;
+                                          const pagado = typeof part.pagado === 'number' ? part.pagado : 0;
+                                          const saldo = esConcepto ? (typeof part.saldo === 'number' ? part.saldo : aPagar) : 0;
+                                          const estado = part.estado || (esConcepto ? (saldo <= 0 ? 'Liquidada' : pagado > 0 ? 'Parcial' : 'Pendiente') : 'Prorrateado');
+
+                                          let badgePartida = 'bg-muted text-muted-foreground border-border/40';
+                                          if (estado === 'Liquidada') {
+                                            badgePartida = 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30';
+                                          } else if (estado === 'Parcial') {
+                                            badgePartida = 'bg-amber-500/10 text-amber-600 border-amber-500/30';
+                                          } else if (estado === 'Pendiente') {
+                                            badgePartida = 'bg-primary/10 text-primary border-primary/30';
+                                          }
+
+                                          return (
+                                            <tr key={pIdx}>
+                                              <td className="py-1.5 px-2.5 font-sans">
+                                                <span className="capitalize px-1.5 py-0.5 rounded text-[10px] bg-muted font-medium">
+                                                  {part.tipo.replace('_', ' ')}
+                                                </span>
+                                              </td>
+                                              <td className="py-1.5 px-2.5 font-sans text-foreground">
+                                                {part.descripcion}
+                                              </td>
+                                              <td className="py-1.5 px-2 text-center">{part.cantidad}</td>
+                                              <td className="py-1.5 px-2.5 text-right">{formatearMonedaDe(part.precio_unitario, f.moneda)}</td>
+                                              <td className="py-1.5 px-2.5 text-right text-muted-foreground">
+                                                {formatearMonedaDe(part.importe, f.moneda)}
+                                              </td>
+                                              <td className="py-1.5 px-2.5 text-right font-semibold text-foreground">
+                                                {esConcepto ? formatearMonedaDe(aPagar, f.moneda) : '--'}
+                                              </td>
+                                              <td className="py-1.5 px-2.5 text-right text-muted-foreground">
+                                                {esConcepto && pagado > 0 ? formatearMonedaDe(pagado, f.moneda) : '--'}
+                                              </td>
+                                              <td className="py-1.5 px-2.5 text-right font-bold text-foreground">
+                                                {esConcepto ? formatearMonedaDe(saldo, f.moneda) : '--'}
+                                              </td>
+                                              <td className="py-1.5 px-2 text-center">
+                                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-sans font-medium border ${badgePartida}`}>
+                                                  {estado}
+                                                </span>
+                                              </td>
+                                            </tr>
+                                          );
+                                        })}
                                       </tbody>
                                     </table>
                                   </div>
@@ -862,7 +1095,26 @@ export function CxpFacturasTab({
                                             </td>
                                           )}
                                           <td className="py-1.5 px-3 font-sans">{p.metodo_pago}</td>
-                                          <td className="py-1.5 px-3">{p.referencia || '--'}</td>
+                                          <td className="py-1.5 px-3">
+                                            <div>{p.referencia || '--'}</div>
+                                            {p.asignaciones && p.asignaciones.length > 0 && (
+                                              <div className="mt-1 flex flex-wrap gap-1">
+                                                {p.asignaciones.map((asig: any, aIdx: number) => (
+                                                  <span
+                                                    key={aIdx}
+                                                    className="inline-flex items-center gap-1 text-[10px] bg-muted/70 border border-border/60 px-1.5 py-0.5 rounded font-mono"
+                                                  >
+                                                    <span className="font-sans font-medium text-foreground truncate max-w-[150px]">
+                                                      {asig.descripcion || 'Partida'}:
+                                                    </span>
+                                                    <span className="text-primary font-bold">
+                                                      {formatearMonedaDe(asig.monto, f.moneda)}
+                                                    </span>
+                                                  </span>
+                                                ))}
+                                              </div>
+                                            )}
+                                          </td>
                                           <td className="py-1.5 px-3">{p.complemento_pago || '--'}</td>
                                           <td className="py-1.5 px-3 text-center font-sans">
                                             {p.anulado ? (
@@ -1216,6 +1468,29 @@ export function CxpFacturasTab({
                   Sin partidas desglosadas. Puede capturar el importe total directamente arriba o agregar partidas individuales con los botones.
                 </div>
               )}
+
+              {partidas.length > 0 && diferenciaPartidasImporte > 0.01 && (
+                <div className="flex items-start gap-2.5 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-700 dark:text-amber-400">
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+                  <div className="space-y-1">
+                    <div>
+                      La suma neta de las partidas (<strong>${sumaPartidas?.toFixed(2)}</strong>) difiere del importe capturado de la factura (<strong>${formFactura.importe}</strong>) por <strong>${diferenciaPartidasImporte.toFixed(2)}</strong>.
+                    </div>
+                    <div className="text-[11px] opacity-90">
+                      Ajusta los importes de las partidas o agrega un renglón de &quot;Flete / Otro&quot; para cuadrar con exactitud.
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setFormFactura((prev) => ({ ...prev, importe: (sumaPartidas || 0).toFixed(2) }))}
+                      className="h-6 px-2 text-[11px] text-amber-800 dark:text-amber-300 hover:bg-amber-500/20 underline font-medium"
+                    >
+                      Ajustar importe de la factura a ${sumaPartidas?.toFixed(2)}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <DialogFooter className="pt-2">
@@ -1243,7 +1518,7 @@ export function CxpFacturasTab({
 
       {/* DIÁLOGO: REGISTRAR PAGO */}
       <Dialog open={modalPagoOpen} onOpenChange={setModalPagoOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className={modoPago === 'partidas' && partidasParaPago.length > 0 ? "sm:max-w-xl max-h-[90vh] overflow-y-auto" : "sm:max-w-md"}>
           <DialogHeader>
             <DialogTitle className="text-base font-semibold">
               Registrar Abono / Pago a Factura
@@ -1260,6 +1535,42 @@ export function CxpFacturasTab({
             </DialogDescription>
           </DialogHeader>
 
+          {partidasParaPago.length > 0 && (
+            <div className="flex rounded-md border border-border p-1 bg-muted/40 gap-1 text-xs">
+              <button
+                type="button"
+                onClick={() => {
+                  setModoPago('completo');
+                  setFormPago((fp) => ({ ...fp, monto: String(facturaPago?.saldo || '') }));
+                }}
+                className={`flex-1 py-1.5 px-2.5 rounded font-medium transition-colors ${
+                  modoPago === 'completo'
+                    ? 'bg-background text-foreground shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Toda la factura / Abono libre
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setModoPago('partidas');
+                  const total = partidasParaPago
+                    .filter((p) => p.seleccionada)
+                    .reduce((sum, p) => sum + (parseFloat(p.montoAbono) || 0), 0);
+                  setFormPago((fp) => ({ ...fp, monto: total > 0 ? total.toFixed(2) : '' }));
+                }}
+                className={`flex-1 py-1.5 px-2.5 rounded font-medium transition-colors ${
+                  modoPago === 'partidas'
+                    ? 'bg-background text-foreground shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Pagar por partida ({partidasParaPago.length})
+              </button>
+            </div>
+          )}
+
           <form onSubmit={handleSubmitPago} className="space-y-3.5 py-2">
             <div className="space-y-1">
               <Label className="text-xs">Fecha del Pago *</Label>
@@ -1272,19 +1583,79 @@ export function CxpFacturasTab({
               />
             </div>
 
-            <div className="space-y-1">
-              <Label className="text-xs">Monto a Pagar ({facturaPago?.moneda}) *</Label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0.01"
-                max={facturaPago?.saldo}
-                required
-                value={formPago.monto}
-                onChange={(e) => setFormPago({ ...formPago, monto: e.target.value })}
-                className="text-sm h-9 font-mono font-bold"
-              />
-            </div>
+            {modoPago === 'partidas' && partidasParaPago.length > 0 ? (
+              <div className="space-y-2 border border-border rounded-lg p-2.5 bg-muted/15">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="font-semibold text-foreground">Seleccionar partidas a abonar:</span>
+                  <span className="text-[11px]">Marca casillas y ajusta el monto</span>
+                </div>
+                <div className="max-h-56 overflow-y-auto space-y-1.5 pr-1">
+                  {partidasParaPago.map((part) => (
+                    <div
+                      key={part.partida_id}
+                      className={`flex items-start gap-2.5 p-2 rounded border transition-colors ${
+                        part.seleccionada
+                          ? 'border-primary/50 bg-primary/5'
+                          : 'border-border/60 bg-card hover:bg-muted/30'
+                      }`}
+                    >
+                      <div className="pt-1">
+                        <Checkbox
+                          checked={part.seleccionada}
+                          onCheckedChange={() => toggleSeleccionPartidaPago(part.partida_id)}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-medium text-foreground truncate" title={part.descripcion}>
+                          {part.descripcion}
+                        </div>
+                        <div className="text-[11px] text-muted-foreground flex items-center gap-2 font-mono">
+                          <span>A pagar: {formatearMonedaDe(part.importe_a_pagar, facturaPago?.moneda)}</span>
+                          <span>•</span>
+                          <span className="text-amber-600 dark:text-amber-400 font-bold">
+                            Saldo: {formatearMonedaDe(part.saldo, facturaPago?.moneda)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-28 text-right">
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0.01"
+                          max={part.saldo}
+                          placeholder="$0.00"
+                          disabled={!part.seleccionada}
+                          value={part.montoAbono}
+                          onChange={(e) => cambiarMontoPartidaPago(part.partida_id, e.target.value)}
+                          className="text-xs h-7 text-right font-mono font-bold"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/* Resumen del total por partidas */}
+                <div className="flex items-center justify-between pt-2 border-t border-border/60 text-xs">
+                  <span className="text-muted-foreground">Total a abonar en partidas:</span>
+                  <span className="font-mono font-bold text-sm text-foreground">
+                    {formatearMonedaDe(parseFloat(formPago.monto) || 0, facturaPago?.moneda)}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-1">
+                <Label className="text-xs">Monto a Pagar ({facturaPago?.moneda}) *</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  max={facturaPago?.saldo}
+                  required
+                  value={formPago.monto}
+                  onChange={(e) => setFormPago({ ...formPago, monto: e.target.value })}
+                  className="text-sm h-9 font-mono font-bold"
+                />
+              </div>
+            )}
 
             {facturaPago?.moneda === 'USD' && (
               <div className="space-y-1">
