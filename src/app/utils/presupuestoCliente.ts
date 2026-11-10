@@ -92,3 +92,26 @@ export function coincideBusquedaPresupuesto(
 
   return false;
 }
+
+/**
+ * Genera el título para PresupuestoEditor:
+ * - Nuevo presupuesto (sin presupuesto): "Nuevo Presupuesto"
+ * - Presupuesto con cliente (inicial o seleccionado): "Editar Presupuesto {folio} · {nombreCliente}"
+ * - Presupuesto sin cliente (o si el usuario selecciona "ninguno"): "Editar Presupuesto {folio}"
+ */
+export function tituloEditorPresupuesto(
+  presupuesto: PresupuestoLike | null | undefined,
+  clienteId: string | null | undefined,
+  clientes?: ClienteLike[] | null
+): string {
+  if (!presupuesto) return 'Nuevo Presupuesto';
+  const folio = presupuesto.folio || '';
+  const idCli = (clienteId && clienteId !== 'ninguno') ? clienteId : null;
+  const clientePresupuesto = (idCli && presupuesto.cliente?.id === idCli) ? presupuesto.cliente : undefined;
+  const nombreCli = nombreClientePresupuesto({ cliente: clientePresupuesto, cliente_id: idCli }, clientes);
+  const tieneCliente = nombreCli !== 'Sin cliente';
+
+  return tieneCliente
+    ? `Editar Presupuesto ${folio} · ${nombreCli}`
+    : `Editar Presupuesto ${folio}`;
+}

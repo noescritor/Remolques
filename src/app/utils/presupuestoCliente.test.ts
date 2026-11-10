@@ -3,7 +3,8 @@ import { assertEquals } from "https://deno.land/std@0.192.0/testing/asserts.ts";
 import {
   nombreClientePresupuesto,
   coincideBusquedaPresupuesto,
-  normalizarTexto
+  normalizarTexto,
+  tituloEditorPresupuesto
 } from "./presupuestoCliente.ts";
 
 Deno.test("presupuestoCliente: normalizarTexto elimina acentos y pasa a minúsculas", () => {
@@ -111,4 +112,51 @@ Deno.test("presupuestoCliente: búsqueda por folio y por concepto sigue funciona
   // No coincide
   assertEquals(coincideBusquedaPresupuesto(p, [], "dolly"), false);
   assertEquals(coincideBusquedaPresupuesto(p, [], "gondola"), false);
+});
+
+Deno.test("presupuestoCliente: tituloEditorPresupuesto cambia con selección y se quita con 'ninguno'", () => {
+  const clientes = [
+    { id: "cli-1", nombre_comercial: "Ferretera del Centro" },
+    { id: "cli-2", razon_social: "Transportes del Norte S.A." }
+  ];
+  const p = {
+    folio: "PRE-001",
+    cliente_id: "cli-1",
+    cliente: { id: "cli-1", nombre_comercial: "Ferretera del Centro" }
+  };
+
+  // 1. Título inicial con el cliente del presupuesto
+  assertEquals(
+    tituloEditorPresupuesto(p, "cli-1", clientes),
+    "Editar Presupuesto PRE-001 · Ferretera del Centro"
+  );
+
+  // 2. Elegir otro cliente cambia el nombre del título
+  assertEquals(
+    tituloEditorPresupuesto(p, "cli-2", clientes),
+    "Editar Presupuesto PRE-001 · Transportes del Norte S.A."
+  );
+
+  // 3. Elegir "ninguno" quita el cliente del título
+  assertEquals(
+    tituloEditorPresupuesto(p, "ninguno", clientes),
+    "Editar Presupuesto PRE-001"
+  );
+
+  // 4. Presupuesto sin cliente inicialmente
+  const pSinCli = { folio: "PRE-002", cliente_id: null, cliente: null };
+  assertEquals(
+    tituloEditorPresupuesto(pSinCli, "ninguno", clientes),
+    "Editar Presupuesto PRE-002"
+  );
+  assertEquals(
+    tituloEditorPresupuesto(pSinCli, "cli-1", clientes),
+    "Editar Presupuesto PRE-002 · Ferretera del Centro"
+  );
+
+  // 5. Nuevo presupuesto
+  assertEquals(
+    tituloEditorPresupuesto(null, "ninguno", clientes),
+    "Nuevo Presupuesto"
+  );
 });

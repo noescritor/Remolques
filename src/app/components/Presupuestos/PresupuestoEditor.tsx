@@ -234,8 +234,8 @@ export function PresupuestoEditor({ presupuesto, clientes, onSave, onUpdate, onC
     );
   };
 
-  const idCli = clienteId !== 'ninguno' ? clienteId : presupuesto?.cliente_id;
-  const clientePresupuesto = presupuesto?.cliente?.id === idCli ? presupuesto.cliente : undefined;
+  const idCli = clienteId !== 'ninguno' ? clienteId : null;
+  const clientePresupuesto = (idCli && presupuesto?.cliente?.id === idCli) ? presupuesto.cliente : undefined;
   const nombreCli = presupuesto
     ? nombreClientePresupuesto({ cliente: clientePresupuesto, cliente_id: idCli }, clientes)
     : 'Sin cliente';
