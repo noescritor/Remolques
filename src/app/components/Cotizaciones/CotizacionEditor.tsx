@@ -1088,7 +1088,7 @@ export function CotizacionEditor({
                     totalCalculado = { subtotal: base, iva, total: base + iva, costoTotal: (item.cantidad || 0) * (item.costo_unitario || 0) };
                   }
                   
-                  if (obtenerConfiguracion(item)) {
+                  if (item.metadata?.configuracion) {
                     return renderConfiguredItemCard(item, true, totalCalculado);
                   }
 
@@ -1187,7 +1187,7 @@ export function CotizacionEditor({
                     };
                   }
                   
-                  if (obtenerConfiguracion(item)) {
+                  if (item.metadata?.configuracion) {
                     return renderConfiguredItemCard(item, false, totalCalculado);
                   }
 
