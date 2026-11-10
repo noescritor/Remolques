@@ -103,7 +103,7 @@ export function PresupuestosList({ presupuestos, clientes, loading, onSave, onUp
                   const esSinCliente = nombreCli === 'Sin cliente';
                   return (
                     <div key={p.id} className="grid grid-cols-7 p-4 text-sm items-center hover:bg-muted/50 gap-2">
-                      <div className="col-span-1 font-medium text-blue-600 truncate">{p.folio}</div>
+                      <div className="col-span-1 font-medium text-blue-600">{p.folio}</div>
                       <div className="col-span-1">{new Date(p.fecha).toLocaleDateString()}</div>
                       <div 
                         className={`col-span-1 truncate ${esSinCliente ? 'text-muted-foreground' : 'font-medium'}`}
