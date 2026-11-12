@@ -1,6 +1,7 @@
 import { cargarDatosModelo } from "./cargar_datos.ts";
 import { construirFichaOrdenTrabajo } from "./ficha_orden_trabajo.ts";
 import { desenvolverMetadata } from "./item_metadata.ts";
+import { obtenerLineaPorTipoEquipo } from "./tablero_produccion.ts";
 
 export interface ParametrosGenerarOrdenes {
   cotizacionId: string;
@@ -14,6 +15,7 @@ export interface ResultadoGenerarOrdenes {
   creadas: number;
   ya_existian: boolean;
   advertenciaKeywords?: boolean;
+  advertenciaSinLinea?: boolean;
 }
 
 async function registrarEventoHelper(
@@ -119,21 +121,24 @@ export async function generarOrdenesDeCotizacion(
     }
   }
 
-  // 5. Configurar línea y fase inicial de kanban
-  const { data: lineas } = await supabase
+  // 5. Cargar líneas de producto para la organización (o sembrar si no existen)
+  let { data: lineasOrg } = await supabase
     .from("lineas_producto")
-    .select("id, nombre, prefijo")
+    .select("id, clave, nombre")
     .eq("organizacion_id", orgId);
-  const defaultLinea = lineas && lineas.length > 0 ? lineas[0] : null;
-  let defaultFaseId = null;
-  if (defaultLinea) {
-    const { data: fases } = await supabase
-      .from("fases_produccion")
-      .select("id")
-      .eq("linea_id", defaultLinea.id)
-      .order("orden")
-      .limit(1);
-    if (fases && fases.length > 0) defaultFaseId = fases[0].id;
+
+  if (!lineasOrg || lineasOrg.length === 0) {
+    await supabase.rpc("sembrar_tablero_produccion", { p_org: orgId });
+    const { data: lineasReintento } = await supabase
+      .from("lineas_producto")
+      .select("id, clave, nombre")
+      .eq("organizacion_id", orgId);
+    lineasOrg = lineasReintento || [];
+  }
+
+  const mapaLineasPorClave = new Map<string, any>();
+  for (const lin of (lineasOrg || [])) {
+    mapaLineasPorClave.set(lin.clave, lin);
   }
 
   // 6. Iniciales del cliente para nomenclatura
@@ -160,6 +165,7 @@ export async function generarOrdenesDeCotizacion(
   const anio = new Date().getFullYear().toString().slice(-2);
 
   let advertenciaKeywords = false;
+  let advertenciaSinLinea = false;
   const ordenesToInsert: any[] = [];
   let trailerCounter = 1;
 
@@ -167,8 +173,6 @@ export async function generarOrdenesDeCotizacion(
     const item = rawItem.configuracion ? rawItem : desenvolverMetadata(rawItem);
     let isEquipo = false;
     let tipoEquipo = "01";
-    const lineaId = defaultLinea?.id || null;
-    const faseId = defaultFaseId;
 
     if (item.producto_id && productosTerminados.has(item.producto_id)) {
       isEquipo = true;
@@ -214,6 +218,13 @@ export async function generarOrdenesDeCotizacion(
       else if (t === "caja_seca" || t === "seca") tipoEquipo = "08";
     }
 
+    const lineaClave = obtenerLineaPorTipoEquipo(tipoEquipo);
+    const lineaObj = mapaLineasPorClave.get(lineaClave) || null;
+    const lineaId = lineaObj ? lineaObj.id : null;
+    if (!lineaId) {
+      advertenciaSinLinea = true;
+    }
+
     const ficha = construirFichaOrdenTrabajo({
       item,
       cotizacion,
@@ -250,7 +261,7 @@ export async function generarOrdenesDeCotizacion(
         },
         estado: "Pendiente",
         linea_producto_id: lineaId,
-        fase_actual_id: faseId,
+        fase_actual_id: null,
         estado_kanban: "pendiente",
       });
 
@@ -271,6 +282,16 @@ export async function generarOrdenesDeCotizacion(
 
   if (insError) throw insError;
 
+  // Invocar crear_fases_orden por cada orden creada
+  for (const ord of (ordenes || [])) {
+    if (ord.linea_producto_id) {
+      await supabase.rpc("crear_fases_orden", {
+        p_org: orgId,
+        p_orden: ord.id,
+      });
+    }
+  }
+
   await supabase
     .from("cotizaciones")
     .update({ estado_produccion: "En producción" })
@@ -288,6 +309,7 @@ export async function generarOrdenesDeCotizacion(
     creadas: (ordenes || []).length,
     ya_existian: false,
     advertenciaKeywords,
+    advertenciaSinLinea,
   };
 }
 
