@@ -3,6 +3,35 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-12 - Tablero de producción (Bloque 1 de 2: datos y backend, estado por fase)
+**Herramienta:** Antigravity  
+**Tipo:** feat (migración tablero_orden_fases con 4 líneas y 55 fases, tabla orden_fases, trigger reactivo, RPC actualizar_fase_orden FOR UPDATE, semáforo, motor tablero_produccion, generación de órdenes por línea, endpoints de matriz y planeación, contrato API y null-safety de órdenes manuales)  
+**Rama:** `tablero-produccion-b1-2026-11-12`  
+**Referencia auditoría:** `COORDINACION/REPORTES/TABLERO_B1_REPORTE_ANTY.md`, `TABLERO_B1_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261112_01_tablero_orden_fases.sql` (y copia en `COORDINACION/SQL_PARA_LUIS/`): creación de tabla `orden_fases` con RLS, ampliación de `fases_produccion` (grupo, duracion_dias, requiere_grupo), ajuste de unicidad por organización en `lineas_producto`, soporte de órdenes manuales en `ordenes_trabajo` (cotizacion_id y cliente_id anulables), semilla `sembrar_tablero_produccion`, trigger `trg_recalcular_orden_fases` y RPC `actualizar_fase_orden` con bloqueo `FOR UPDATE`.
+- `docs/tablero/verificacion_tablero.sql` (y copia en `COORDINACION/SQL_PARA_LUIS/`): consulta de verificación SQL con 10/10 checks booleanos (`todo_ok = true`).
+- `src/app/utils/tableroProduccion.ts`: constantes `MAPA_TIPO_EQUIPO_LINEA`, funciones puras `obtenerLineaPorTipoEquipo`, `calcularSemaforo` (precedencias terminadas > por_iniciar > atrasado > detenido > en_tiempo) y `calcularEtiquetaVisible` (numeración correlativa por cliente y línea).
+- `src/app/utils/tableroProduccion.test.ts`: pruebas unitarias Deno de mapeo, semáforo y etiquetas.
+- `supabase/functions/make-server-feea4382/motor/tablero_produccion.ts`: funciones de motor `obtenerMatrizProduccion`, `crearOrdenManualMotor`, `actualizarFaseMotor`, `actualizarPlaneacionMotor` (lista blanca estricta), `obtenerHistorialOrdenMotor`, `moverOrdenMotor` y `sembrarTableroMotor`.
+- `supabase/functions/make-server-feea4382/motor/tablero_produccion.test.ts`: 8 pruebas unitarias de motor Deno.
+- `supabase/functions/make-server-feea4382/motor/generar_ordenes_cotizacion.ts`: asignación de línea según tipo de equipo, nacimiento de órdenes con `fase_actual_id = null` y llamado a `crear_fases_orden`.
+- `supabase/functions/make-server-feea4382/index.ts`: rutas `/produccion/matriz`, `/produccion/ordenes`, `/produccion/ordenes/:id/fases/:faseId`, `/produccion/ordenes/:id/planeacion`, `/produccion/ordenes/:id/material` (alias), `/produccion/ordenes/:id/historial`, `/produccion/ordenes/:id/mover`, `/produccion/sembrar`; eliminación de código muerto `/produccion/import`.
+- `Dockerfile.backend`: inclusión de `COPY src/app/utils/tableroProduccion.ts`.
+- `src/app/types/index.ts`: tipos `OrdenFase`, `MatrizProduccion`, `FilaMatriz`, `CeldaFase`, `ResumenMatriz`, `SemaforoProduccion` y null-safety en `OrdenTrabajo`.
+- `docs/tablero/CONTRATO_API_MATRIZ.md`: especificación técnica y ejemplos JSON para el Bloque 2.
+- Null-safety en frontend: `OrdenesTrabajoList.tsx`, `OrdenTrabajoPDF.tsx`, `LiberacionPDF.tsx`, `ChecklistDespieceModal.tsx`, `OrderCard.tsx`, `TableroProduccionPage.tsx`.
+**Qué cambió y por qué:**  
+- **1. Matriz de fases y estado reactivo:** Permite el seguimiento de producción en 4 líneas canónicas y 55 fases sin obligar a secuencias rígidas (las fases pueden cerrarse en cualquier orden). El trigger recalcula automáticamente el avance de la orden y su fase actual.
+- **2. Subprocesos independientes (Tina de góndola):** Modela las 10 fases de tina integradas al equipo; Montado de tina emite avisos no bloqueantes si la tina está incompleta.
+- **3. Órdenes manuales:** Habilita el registro directo de equipos en planta para stock o inventario sin cotización ni cliente obligado, asignando nomenclatura INV y fases iniciales.
+- **4. Semáforo y planeación:** Prioriza visualmente el estado del equipo (`atrasado`, `detenido`, `en_tiempo`) y permite capturar fechas de compromiso, etiquetas y faltantes sin corromper el kanban.
+**Acciones manuales pendientes:**  
+- 1. Ejecutar migración `COORDINACION/SQL_PARA_LUIS/20261112_01_tablero_orden_fases.sql` en SQL Editor de Supabase.
+- 2. Ejecutar verificación `COORDINACION/SQL_PARA_LUIS/verificacion_tablero.sql` y confirmar `todo_ok = true`.
+- 3. Rebuild de `remolques-api` en EasyPanel.
+- 4. Rebuild de `remolques-web` en EasyPanel tras merge a `main`.
+
 ## 2026-11-10 - Cuentas por pagar / pagos por partida (Ronda 2): seguridad RPC exclusiva service_role, edición de encabezado con pagos activos y limpieza de anulados
 **Herramienta:** Antigravity  
 **Tipo:** fix (corrección de seguridad en permisos RPC, soporte en guardar_factura_con_partidas para editar encabezado sin romper partidas idénticas, limpieza de pagos_factura_partidas de pagos anulados antes de reemplazar y preservación de borrado con partidas: [])  
