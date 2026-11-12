@@ -38,6 +38,15 @@ import {
   obtenerHistorialAcero
 } from "./motor/acero.ts";
 import {
+  obtenerMatrizProduccion,
+  actualizarFaseMotor,
+  actualizarPlaneacionMotor,
+  obtenerHistorialOrdenMotor,
+  moverOrdenMotor,
+  crearOrdenManualMotor,
+  sembrarTableroMotor,
+} from "./motor/tablero_produccion.ts";
+import {
   exportarPrecios,
   previsualizarCambios,
   aplicarLote,
@@ -3528,74 +3537,166 @@ app.post("/cotizaciones/:id/generar-ordenes", async (c) => {
     return c.json({ error: msg }, esValidacion ? 400 : 500);
   }
 });
-app.put("/produccion/ordenes/:id/mover", async (c) => {
-  try {
-    const orgId = c.get("organizacionId");
-    const supabase = c.get("supabase") as any;
-    const id = c.req.param("id");
-    const body = await c.req.json();
-    
-    // Iniciar transacción manual
-    const { error: errorUpdate } = await supabase
-      .from("ordenes_trabajo")
-      .update({
-        fase_actual_id: body.fase_actual_id,
-        estado_kanban: body.estado_kanban,
-        updated_at: new Date().toISOString()
-      })
-      .eq("id", id)
-      .eq("organizacion_id", orgId);
-      
-    if (errorUpdate) throw errorUpdate;
-    
-    if (body.fase_actual_id) {
-      await supabase
-        .from("historial_fases")
-        .insert({
-          orden_trabajo_id: id,
-          fase_id: body.fase_actual_id,
-          estado: 'en_proceso',
-          organizacion_id: orgId
-        });
-    }
+// ══════════════════════════════════════════════════════════
+// RUTAS DEL TABLERO DE PRODUCCIÓN (Bloque 1 de 2: Matriz, Fases y Órdenes Manuales)
+// ══════════════════════════════════════════════════════════
 
-    return c.json({ success: true });
+// 1. Matriz completa de producción por línea
+app.get("/produccion/matriz", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId") as string;
+    const linea = c.req.query("linea") || "plataforma";
+
+    const data = await obtenerMatrizProduccion(supabase, orgId, linea);
+    return c.json(data);
   } catch (err: any) {
-    return c.json({ error: err.message }, 400);
+    const status = err.status || 400;
+    return c.json({ error: err.message }, status);
   }
 });
 
+// 2. Crear orden de trabajo manual ("Nuevo equipo en planta")
+app.post("/produccion/ordenes", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId") as string;
+    const body = await c.req.json();
+
+    const resultado = await crearOrdenManualMotor(supabase, orgId, body);
+    return c.json(resultado, 201);
+  } catch (err: any) {
+    const status = err.status || 400;
+    return c.json({ error: err.message }, status);
+  }
+});
+
+// 3. Actualizar estado de una fase de una orden (RPC actualizar_fase_orden)
+app.put("/produccion/ordenes/:id/fases/:faseId", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId") as string;
+    const user = c.get("user") as any;
+    const id = c.req.param("id");
+    const faseId = c.req.param("faseId");
+    const body = await c.req.json();
+
+    const resultado = await actualizarFaseMotor(
+      supabase,
+      orgId,
+      id,
+      faseId,
+      body,
+      user?.id || null
+    );
+    return c.json(resultado);
+  } catch (err: any) {
+    const status = err.status || 400;
+    return c.json({ error: err.message }, status);
+  }
+});
+
+// 4. Actualizar planeación de una orden (lista blanca: fecha_compromiso, etiqueta, material_faltante)
+app.put("/produccion/ordenes/:id/planeacion", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId") as string;
+    const id = c.req.param("id");
+    const body = await c.req.json();
+
+    const resultado = await actualizarPlaneacionMotor(supabase, orgId, id, body);
+    return c.json(resultado);
+  } catch (err: any) {
+    const status = err.status || 400;
+    return c.json({ error: err.message }, status);
+  }
+});
+
+// 5. Alias retrocompatible: PUT /produccion/ordenes/:id/material
 app.put("/produccion/ordenes/:id/material", async (c) => {
   try {
-    const orgId = c.get("organizacionId");
     const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId") as string;
     const id = c.req.param("id");
     const body = await c.req.json();
-    
-    const { error } = await supabase
-      .from("ordenes_trabajo")
-      .update({
-        material_faltante: body.material_faltante,
-        estado_kanban: body.material_faltante ? 'incompleta' : 'en_proceso',
-        updated_at: new Date().toISOString()
-      })
-      .eq("id", id)
-      .eq("organizacion_id", orgId);
-      
-    if (error) throw error;
-    return c.json({ success: true });
+
+    const resultado = await actualizarPlaneacionMotor(supabase, orgId, id, {
+      material_faltante: body.material_faltante,
+    });
+    return c.json({ success: true, orden: resultado.orden });
   } catch (err: any) {
-    return c.json({ error: err.message }, 400);
+    const status = err.status || 400;
+    return c.json({ error: err.message }, status);
   }
 });
 
-app.post("/produccion/import", async (c) => {
+// 6. Historial de cambios de fase de una orden
+app.get("/produccion/ordenes/:id/historial", async (c) => {
   try {
-    const orgId = c.get("organizacionId");
-    const body = await c.req.json();
-    return c.json({ success: true, message: "Import completed" });
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId") as string;
+    const id = c.req.param("id");
+
+    const resultado = await obtenerHistorialOrdenMotor(supabase, orgId, id);
+    return c.json(resultado);
   } catch (err: any) {
-    return c.json({ error: err.message }, 400);
+    const status = err.status || 400;
+    return c.json({ error: err.message }, status);
+  }
+});
+
+// 7. Mover orden a una fase (compatibilidad con Kanban actual)
+app.put("/produccion/ordenes/:id/mover", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId") as string;
+    const user = c.get("user") as any;
+    const id = c.req.param("id");
+    const body = await c.req.json();
+
+    const faseId = body.fase_actual_id || body.faseId || body.fase_id;
+    const resultado = await moverOrdenMotor(
+      supabase,
+      orgId,
+      id,
+      faseId,
+      user?.id || null
+    );
+    return c.json({ success: true, ...resultado });
+  } catch (err: any) {
+    const status = err.status || 400;
+    return c.json({ error: err.message }, status);
+  }
+});
+
+// 8. Sembrar líneas y fases canónicas para la organización (admin / propietario)
+app.post("/produccion/sembrar", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId") as string;
+    const user = c.get("user") as any;
+
+    if (user?.id) {
+      const { data: perfil } = await supabase
+        .from("perfiles_organizacion")
+        .select("rol")
+        .eq("organizacion_id", orgId)
+        .eq("usuario_id", user.id)
+        .maybeSingle();
+
+      if (perfil && perfil.rol !== "admin" && perfil.rol !== "propietario") {
+        return c.json(
+          { error: "Solo administradores o propietarios pueden sembrar el tablero" },
+          403
+        );
+      }
+    }
+
+    const resultado = await sembrarTableroMotor(supabase, orgId);
+    return c.json(resultado);
+  } catch (err: any) {
+    const status = err.status || 400;
+    return c.json({ error: err.message }, status);
   }
 });
 
