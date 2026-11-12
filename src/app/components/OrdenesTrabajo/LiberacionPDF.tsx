@@ -8,6 +8,7 @@ interface LiberacionPDFProps {
 export function LiberacionPDF({ ordenes }: LiberacionPDFProps) {
   if (ordenes.length === 0) return null;
   const cliente = ordenes[0].cliente;
+  const clienteNombre = cliente?.nombre_comercial || cliente?.nombre_razon_social || cliente?.nombre || ordenes[0].etiqueta || 'CLIENTE';
   const today = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
@@ -30,7 +31,7 @@ export function LiberacionPDF({ ordenes }: LiberacionPDFProps) {
       </div>
 
       <div className="mb-8 text-justify leading-relaxed">
-        El C. <strong>{cliente?.nombre}</strong> recibe de <strong>ARMADORA LEOLCA S.A. DE C.V.</strong> las siguientes unidades:
+        El C. <strong>{clienteNombre}</strong> recibe de <strong>ARMADORA LEOLCA S.A. DE C.V.</strong> las siguientes unidades:
       </div>
 
       <div className="space-y-8">

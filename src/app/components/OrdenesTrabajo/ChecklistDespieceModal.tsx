@@ -539,7 +539,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
       window.print();
       return;
     }
-    const clienteNombre = orden?.cliente?.nombre_razon_social || (orden?.cliente as any)?.nombre || '-';
+    const clienteNombre = orden?.cliente?.nombre_razon_social || (orden?.cliente as any)?.nombre || orden?.etiqueta || (orden?.origen === 'manual' ? 'Inventario' : '-');
     const lineasFiltradas = (datos.lineas || []).filter(
       (l: any) => !faseClaveFiltro || l.fase_clave === faseClaveFiltro
     );
@@ -677,7 +677,7 @@ export function ChecklistDespieceModal({ orden, open, onOpenChange }: ChecklistD
                 <span className="font-mono font-bold text-foreground">{orden?.nomenclatura_id}</span>
                 {orden?.niv && <span>• NIV: {orden.niv}</span>}
                 <span>• {resolverModeloChecklist(orden)}</span>
-                <span>• Cliente: {orden?.cliente?.nombre_razon_social || (orden?.cliente as any)?.nombre || '-'}</span>
+                <span>• Cliente: {orden?.cliente?.nombre_razon_social || (orden?.cliente as any)?.nombre || orden?.etiqueta || (orden?.origen === 'manual' ? 'Inventario' : '-')}</span>
               </div>
             </div>
 

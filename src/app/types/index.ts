@@ -383,14 +383,20 @@ export interface FaseProduccion {
   linea_producto_id: string;
   orden: number;
   nombre: string;
+  grupo?: 'principal' | 'tina';
+  requiere_grupo?: string | null;
+  duracion_dias?: number;
+  activo?: boolean;
   organizacion_id?: string;
 }
 
 export interface OrdenTrabajo {
   id: string;
   organizacion_id: string;
-  cotizacion_id: string;
-  cliente_id: string;
+  cotizacion_id?: string | null;
+  cliente_id?: string | null;
+  etiqueta?: string | null;
+  origen?: 'cotizacion' | 'manual';
   nomenclatura_id: string;
   niv: string | null;
   modelo: string | null;
@@ -399,18 +405,92 @@ export interface OrdenTrabajo {
   estado: string;
   fecha_inicio: string | null;
   fecha_fin: string | null;
+  fecha_compromiso?: string | null;
   created_at: string;
   
   // Kanban extra fields
   linea_producto_id?: string;
   orden_relacionada_id?: string;
-  fase_actual_id?: string;
+  fase_actual_id?: string | null;
   estado_kanban?: 'pendiente' | 'en_proceso' | 'pausada' | 'incompleta' | 'en_espera' | 'completada';
   material_faltante?: string;
 
   cliente?: Cliente;
   cotizacion?: Cotizacion;
+  cotizaciones?: Cotizacion;
   linea?: LineaProducto;
+  fase?: FaseProduccion;
+}
+
+export type SemaforoProduccion = 'terminado' | 'por_iniciar' | 'atrasado' | 'detenido' | 'en_tiempo';
+export type EstadoFaseProduccion = 'pendiente' | 'en_proceso' | 'incompleta' | 'pausada' | 'terminada';
+
+export interface CeldaFase {
+  estado: EstadoFaseProduccion | string;
+  fecha_propuesta: string | null;
+  fecha_fin: string | null;
+  nota: string | null;
+}
+
+export interface AvanceFases {
+  terminadas: number;
+  total: number;
+}
+
+export interface FilaMatriz {
+  orden_id: string;
+  etiqueta: string;
+  cliente_nombre: string;
+  cotizacion_folio: string;
+  modelo: string | null;
+  tipo_equipo: string;
+  origen: 'cotizacion' | 'manual';
+  fecha_compromiso: string | null;
+  fecha_inicio: string | null;
+  material_faltante: string | null;
+  estado: string;
+  estado_kanban: string;
+  semaforo: SemaforoProduccion;
+  avance: AvanceFases;
+  tina: AvanceFases | null;
+  celdas: Record<string, CeldaFase>;
+}
+
+export interface ResumenMatriz {
+  en_planta: number;
+  atrasados: number;
+  con_material: number;
+  con_pausa: number;
+  wip_por_fase: Record<string, number>;
+}
+
+export interface FaseProduccionMatriz {
+  id: string;
+  orden: number;
+  nombre: string;
+  grupo: 'principal' | 'tina';
+  requiere_grupo: string | null;
+  duracion_dias: number;
+}
+
+export interface MatrizProduccion {
+  linea: LineaProducto;
+  fases: FaseProduccionMatriz[];
+  filas: FilaMatriz[];
+  resumen: ResumenMatriz;
+}
+
+export interface OrdenFase {
+  id?: string;
+  orden_trabajo_id: string;
+  fase_id: string;
+  estado: EstadoFaseProduccion | string;
+  fecha_inicio?: string | null;
+  fecha_fin?: string | null;
+  fecha_propuesta?: string | null;
+  nota?: string | null;
+  created_at?: string;
+  updated_at?: string;
   fase?: FaseProduccion;
 }
 

@@ -47,9 +47,10 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
     const query = searchTerm.toLowerCase();
     const nom = (o.nomenclatura_id || '').toLowerCase();
     const niv = (o.niv || '').toLowerCase();
-    const cli = (o.cliente?.nombre_razon_social || o.cliente?.nombre || '').toLowerCase();
-    const proy = (o.cotizacion?.descripcion || o.caracteristicas?.ficha?.cabecera?.nombre_proyecto || '').toLowerCase();
-    return nom.includes(query) || niv.includes(query) || cli.includes(query) || proy.includes(query);
+    const cli = (o.cliente?.nombre_razon_social || o.cliente?.nombre || o.etiqueta || '').toLowerCase();
+    const proy = (o.cotizacion?.descripcion || o.caracteristicas?.ficha?.cabecera?.nombre_proyecto || (o.origen === 'manual' ? 'manual' : '')).toLowerCase();
+    const etiq = (o.etiqueta || '').toLowerCase();
+    return nom.includes(query) || niv.includes(query) || cli.includes(query) || proy.includes(query) || etiq.includes(query);
   });
 
   const handleEdit = (orden: OrdenTrabajo) => {
@@ -200,8 +201,8 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
             <tbody>
               {ordenesFiltradas.map(orden => {
                 const ficha = orden.caracteristicas?.ficha;
-                const clienteNombre = orden.cliente?.nombre_razon_social || (orden.cliente as any)?.nombre || '-';
-                const proyecto = orden.cotizacion?.descripcion || ficha?.cabecera?.nombre_proyecto || '-';
+                const clienteNombre = orden.cliente?.nombre_razon_social || (orden.cliente as any)?.nombre || orden.etiqueta || (orden.origen === 'manual' ? 'Inventario' : '-');
+                const proyecto = orden.cotizacion?.descripcion || ficha?.cabecera?.nombre_proyecto || (orden.origen === 'manual' ? 'Manual' : '-');
                 const equipo = ficha?.cantidad_texto || orden.caracteristicas?.descripcion_corta || 'Remolque';
                 const fechaPedido = ficha?.cabecera?.fecha_pedido || (orden.cotizacion?.fecha ? new Date(orden.cotizacion.fecha).toLocaleDateString() : new Date(orden.created_at).toLocaleDateString());
 

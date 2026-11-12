@@ -34,11 +34,17 @@ export function OrdenTrabajoPDF({ orden, ajustes, onRegenerarFicha }: OrdenTraba
         <div className="flex items-start gap-4 p-4 bg-amber-50 border border-amber-200 rounded-lg mb-6">
           <AlertCircle className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h3 className="font-bold text-amber-900 text-sm">Esta orden se generó antes del formato nuevo</h3>
+            <h3 className="font-bold text-amber-900 text-sm">
+              {orden.origen === 'manual'
+                ? 'Orden de trabajo manual sin ficha técnica'
+                : 'Esta orden se generó antes del formato nuevo'}
+            </h3>
             <p className="text-xs text-amber-700 mt-1">
-              Para visualizar la Orden de Trabajo en el formato oficial de una página, es necesario reconstruir la ficha técnica a partir de los datos actuales de la cotización.
+              {orden.origen === 'manual'
+                ? 'Esta unidad fue registrada directamente en planta sin cotización asociada.'
+                : 'Para visualizar la Orden de Trabajo en el formato oficial de una página, es necesario reconstruir la ficha técnica a partir de los datos actuales de la cotización.'}
             </p>
-            {onRegenerarFicha && (
+            {onRegenerarFicha && orden.origen !== 'manual' && orden.cotizacion_id && (
               <Button
                 onClick={handleRegenerar}
                 disabled={regenerando}

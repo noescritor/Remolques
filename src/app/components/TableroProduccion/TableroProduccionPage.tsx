@@ -29,8 +29,9 @@ export function TableroProduccionPage({
   }
 
   const handleOrderClick = (orden: OrdenTrabajo) => {
-    // In a future update, we can open a modal to change its 'estado_kanban' (pausado, incompleto, material faltante)
-    alert(`Orden: ${orden.cotizacion?.folio || 'Sin folio'} - ${orden.cliente?.nombre}`);
+    const folio = orden.nomenclatura_id || orden.cotizacion?.folio || 'Sin folio';
+    const cli = orden.cliente?.nombre || (orden.cliente as any)?.nombre_comercial || orden.etiqueta || 'Inventario';
+    alert(`Orden: ${folio} - ${cli}`);
   };
 
   const filteredOrdenes = useMemo(() => {
@@ -46,10 +47,11 @@ export function TableroProduccionPage({
     // Búsqueda
     if (searchTerm) {
       const s = searchTerm.toLowerCase();
-      filtered = filtered.filter(o => 
-        o.cliente?.nombre?.toLowerCase().includes(s) ||
-        o.cotizacion?.folio?.toLowerCase().includes(s)
-      );
+      filtered = filtered.filter(o => {
+        const cli = (o.cliente?.nombre || (o.cliente as any)?.nombre_comercial || o.etiqueta || '').toLowerCase();
+        const fol = (o.cotizacion?.folio || o.nomenclatura_id || '').toLowerCase();
+        return cli.includes(s) || fol.includes(s);
+      });
     }
 
     return filtered;
