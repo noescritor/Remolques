@@ -18,6 +18,8 @@ import {
 } from '../../utils/tableroProduccion';
 import { MatrizProduccionView } from './MatrizProduccionView';
 import { OrdenTrabajoDetalleSheet } from './OrdenTrabajoDetalleSheet';
+import { VistaPorFase } from './VistaPorFase';
+import { NuevoEquipoModal } from './NuevoEquipoModal';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
@@ -274,22 +276,30 @@ export function TableroProduccionPage({ session }: TableroProduccionPageProps) {
     wip_por_fase: {},
   };
 
-  // Vista alternativa "Por fase" (placeholder funcional para paso 4)
-  const renderVistaPorFase = () => {
-    return (
-      <div className="border border-border/70 rounded-xl p-8 bg-card text-center text-muted-foreground">
-        <Kanban className="w-12 h-12 mx-auto mb-3 text-primary/60" />
-        <h3 className="text-base font-semibold text-foreground mb-1">
-          Vista por fase
-        </h3>
-        <p className="text-sm max-w-md mx-auto mb-4">
-          Visualización de tarjetas agrupadas por fases activas. Cambia a vista Matriz para ver la tabla completa.
-        </p>
-        <Button variant="outline" size="sm" onClick={() => cambiarVista('matriz')}>
-          Ver en Matriz
-        </Button>
-      </div>
-    );
+  // Callback al crear nuevo equipo en planta
+  const handleEquipoCreado = async (orden: any) => {
+    // Recargar datos actualizados
+    await cargarMatriz(false);
+
+    // Abrir de inmediato su panel de detalle para capturar notas o fechas
+    setOrdenSeleccionada({
+      orden_id: orden.id,
+      etiqueta: orden.etiqueta || 'Nuevo equipo',
+      cliente_nombre: orden.cliente?.nombre || orden.etiqueta || 'Inventario',
+      cotizacion_folio: orden.cotizacion?.folio || null,
+      modelo: orden.modelo,
+      tipo_equipo: orden.tipo_equipo,
+      origen: 'manual',
+      fecha_compromiso: orden.fecha_compromiso,
+      fecha_inicio: orden.fecha_inicio,
+      material_faltante: orden.material_faltante,
+      estado: orden.estado || 'Pendiente',
+      estado_kanban: 'pendiente',
+      semaforo: 'en_tiempo',
+      avance: { terminadas: 0, total: 12 },
+      tina: orden.tipo_equipo === '03' ? { terminadas: 0, total: 10 } : null,
+      celdas: {},
+    });
   };
 
   return (
@@ -533,7 +543,13 @@ export function TableroProduccionPage({ session }: TableroProduccionPageProps) {
           </Button>
         </div>
       ) : vistaActiva === 'fase' ? (
-        renderVistaPorFase()
+        <VistaPorFase
+          filas={filasFiltradas}
+          fases={datosMatriz.fases}
+          hoy={hoy}
+          onCambiarFase={handleCambiarFase}
+          onSeleccionarOrden={(fila) => setOrdenSeleccionada(fila)}
+        />
       ) : (
         <MatrizProduccionView
           lineaClave={lineaActiva}
@@ -556,6 +572,15 @@ export function TableroProduccionPage({ session }: TableroProduccionPageProps) {
         }}
         token={session?.access_token}
         onGuardarPlaneacion={handleGuardarPlaneacion}
+      />
+
+      {/* Modal para registrar nuevo equipo en planta */}
+      <NuevoEquipoModal
+        open={modalNuevoEquipoAbierto}
+        onOpenChange={setModalNuevoEquipoAbierto}
+        lineaDefecto={lineaActiva}
+        token={session?.access_token}
+        onEquipoCreado={handleEquipoCreado}
       />
     </div>
   );
