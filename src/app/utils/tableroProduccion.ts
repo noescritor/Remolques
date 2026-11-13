@@ -241,6 +241,28 @@ export function formatearFechaLarga(fechaStr?: string | null): string {
 const DIAS_SEMANA_ES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 
 /**
+ * Formatea una fecha ISO a tiempo relativo amigable, e.g. "hace 2 horas", "hace 3 días".
+ */
+export function formatearTiempoRelativo(isoStr?: string | null): string {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return '';
+
+  const ahora = new Date();
+  const diffSegundos = Math.floor((ahora.getTime() - d.getTime()) / 1000);
+
+  if (diffSegundos < 60) return 'hace unos segundos';
+  const diffMinutos = Math.floor(diffSegundos / 60);
+  if (diffMinutos < 60) return `hace ${diffMinutos} min`;
+  const diffHoras = Math.floor(diffMinutos / 60);
+  if (diffHoras < 24) return `hace ${diffHoras} ${diffHoras === 1 ? 'hora' : 'horas'}`;
+  const diffDias = Math.floor(diffHoras / 24);
+  if (diffDias < 7) return `hace ${diffDias} ${diffDias === 1 ? 'día' : 'días'}`;
+
+  return formatearFechaCorta(isoStr.slice(0, 10));
+}
+
+/**
  * Formatea la fecha de hoy para la cabecera superior, e.g. "jueves, 12 de noviembre de 2026".
  */
 export function formatearFechaHoyCompleta(fechaStr?: string | null): string {

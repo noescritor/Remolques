@@ -275,28 +275,35 @@ export function MatrizProduccionView({
                             </div>
 
                             {/* Badge Tina si aplica (Góndola) */}
-                            {fila.tina && (
-                              <button
-                                type="button"
-                                onClick={(e) => toggleTina(fila.orden_id, e)}
-                                className={cn(
-                                  'mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border transition-colors cursor-pointer',
-                                  tinaAbierta
-                                    ? 'bg-primary/15 text-primary border-primary/30'
-                                    : 'bg-muted/70 text-muted-foreground hover:bg-muted border-border/60'
-                                )}
-                                title="Expandir/cerrar franja de subproceso Tina"
-                              >
-                                {tinaAbierta ? (
-                                  <ChevronDown className="w-3 h-3" />
-                                ) : (
-                                  <ChevronRight className="w-3 h-3" />
-                                )}
-                                <span>
-                                  Tina {fila.tina.terminadas}/{fila.tina.total}
-                                </span>
-                              </button>
-                            )}
+                            {fila.tina && (() => {
+                              const tinaLista = fila.tina.terminadas >= fila.tina.total && fila.tina.total > 0;
+                              return (
+                                <button
+                                  type="button"
+                                  onClick={(e) => toggleTina(fila.orden_id, e)}
+                                  className={cn(
+                                    'mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border transition-colors cursor-pointer',
+                                    tinaLista
+                                      ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                                      : tinaAbierta
+                                      ? 'bg-primary/15 text-primary border-primary/30'
+                                      : 'bg-muted/70 text-muted-foreground hover:bg-muted border-border/60'
+                                  )}
+                                  title="Expandir/cerrar franja de subproceso Tina"
+                                >
+                                  {tinaLista ? (
+                                    <span className="font-bold text-emerald-600 dark:text-emerald-400">✓</span>
+                                  ) : tinaAbierta ? (
+                                    <ChevronDown className="w-3 h-3" />
+                                  ) : (
+                                    <ChevronRight className="w-3 h-3" />
+                                  )}
+                                  <span>
+                                    {tinaLista ? 'Tina lista' : `Tina ${fila.tina.terminadas}/${fila.tina.total}`}
+                                  </span>
+                                </button>
+                              );
+                            })()}
                           </div>
                         </div>
                       </td>

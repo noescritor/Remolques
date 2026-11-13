@@ -9,6 +9,7 @@ import {
   formatearFechaCorta,
   formatearFechaLarga,
   formatearFechaHoyCompleta,
+  formatearTiempoRelativo,
   sumarDiasAFecha,
   calcularEstadoVisualCelda,
   filtrarFilasMatriz,
@@ -168,6 +169,12 @@ Deno.test("tableroProduccion: formateo de fechas y prevención de trampa UTC", (
   // Formato completo para cabecera superior
   assertEquals(formatearFechaHoyCompleta("2026-11-12"), "jueves, 12 de noviembre de 2026");
   assertEquals(formatearFechaHoyCompleta("2026-11-13"), "viernes, 13 de noviembre de 2026");
+
+  // Formato relativo
+  const ahora = new Date();
+  assertEquals(formatearTiempoRelativo(ahora.toISOString()), "hace unos segundos");
+  const haceDosHoras = new Date(ahora.getTime() - 2 * 3600 * 1000);
+  assertEquals(formatearTiempoRelativo(haceDosHoras.toISOString()), "hace 2 horas");
 
   // Manejo de valores nulos o vacíos
   assertEquals(formatearFechaCorta(null), "");

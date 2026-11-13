@@ -17,6 +17,7 @@ import {
   EstadoFase,
 } from '../../utils/tableroProduccion';
 import { MatrizProduccionView } from './MatrizProduccionView';
+import { OrdenTrabajoDetalleSheet } from './OrdenTrabajoDetalleSheet';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
@@ -545,6 +546,17 @@ export function TableroProduccionPage({ session }: TableroProduccionPageProps) {
           onSeleccionarOrden={(fila) => setOrdenSeleccionada(fila)}
         />
       )}
+
+      {/* Panel lateral de detalle del equipo e historial */}
+      <OrdenTrabajoDetalleSheet
+        fila={ordenSeleccionada}
+        open={!!ordenSeleccionada}
+        onOpenChange={(abierto) => {
+          if (!abierto) setOrdenSeleccionada(null);
+        }}
+        token={session?.access_token}
+        onGuardarPlaneacion={handleGuardarPlaneacion}
+      />
     </div>
   );
 }
