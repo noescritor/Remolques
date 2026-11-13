@@ -128,7 +128,8 @@ export async function generarOrdenesDeCotizacion(
     .eq("organizacion_id", orgId);
 
   if (!lineasOrg || lineasOrg.length === 0) {
-    await supabase.rpc("sembrar_tablero_produccion", { p_org: orgId });
+    const { error: errSembrar } = await supabase.rpc("sembrar_tablero_produccion", { p_org: orgId });
+    if (errSembrar) throw errSembrar;
     const { data: lineasReintento } = await supabase
       .from("lineas_producto")
       .select("id, clave, nombre")
@@ -285,10 +286,11 @@ export async function generarOrdenesDeCotizacion(
   // Invocar crear_fases_orden por cada orden creada
   for (const ord of (ordenes || [])) {
     if (ord.linea_producto_id) {
-      await supabase.rpc("crear_fases_orden", {
+      const { error: cfError } = await supabase.rpc("crear_fases_orden", {
         p_org: orgId,
         p_orden: ord.id,
       });
+      if (cfError) throw cfError;
     }
   }
 
@@ -320,8 +322,6 @@ export const CAMPOS_PERMITIDOS_ORDEN_TRABAJO = [
   "fecha_inicio",
   "fecha_fin",
   "caracteristicas",
-  "estado_kanban",
-  "fase_actual_id",
   "material_faltante",
 ] as const;
 

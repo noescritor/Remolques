@@ -185,6 +185,20 @@ Se documentaron todos los endpoints con ejemplos reales de JSON para request y r
 RESULTADO: TODO OK  (11/11 comprobaciones)
 ```
 
+---
+
+## 13. Acciones Manuales para Luis (Producción)
+
+Cuando esta rama sea revisada y aprobada por Claude:
+1. **Ejecutar la migración SQL**:
+   Copiar y pegar el contenido de `COORDINACION/SQL_PARA_LUIS/20261112_01_tablero_orden_fases.sql` en el SQL Editor de Supabase (producción).
+2. **Ejecutar la verificación SQL**:
+   Copiar y pegar el contenido de `COORDINACION/SQL_PARA_LUIS/verificacion_tablero.sql` y `COORDINACION/SQL_PARA_LUIS/prueba_roles.sql` en el SQL Editor de Supabase y verificar que retornen `todo_ok = true`.
+3. **Rebuild del Backend**:
+   En EasyPanel, entrar al servicio `remolques-api` y presionar **"Rebuild"**.
+4. **Rebuild del Frontend**:
+   En EasyPanel, entrar al servicio `remolques-web` y presionar **"Rebuild"**.
+
 ### Verificación SQL en Postgres 17 (`docs/tablero/verificacion_tablero.sql`)
 Todos los 10 checks booleanos arrojaron `t` y `todo_ok = true`:
 ```text
@@ -230,14 +244,106 @@ Todos los 10 checks booleanos arrojaron `t` y `todo_ok = true`:
 
 ---
 
-## 10. Acciones Manuales para Luis (Producción)
+## 11. Ronda 2: Correcciones y Pruebas Reales contra la Base de Datos
+
+En respuesta a la revisión técnica de Claude (`COORDINACION/REVISIONES/TABLERO_B1_REVISION_CLAUDE.md`), se aplicaron y validaron las siguientes correcciones en la base real Postgres 17 (puerto 54331):
+
+### 1. Cliente `service_role` para RPCs (Hallazgo 1 [ALTA])
+- En `index.ts`, las rutas `/produccion/matriz`, `/produccion/ordenes`, `/produccion/ordenes/:id/fases/:faseId`, `/produccion/ordenes/:id/mover` y `/produccion/sembrar` ahora obtienen e inyectan `serviceClient = getServiceClient()`.
+- En `motor/tablero_produccion.ts`, las funciones `actualizarFaseMotor`, `crearOrdenManualMotor`, `moverOrdenMotor`, `sembrarTableroMotor` y la siembra perezosa de `obtenerMatrizProduccion` ejecutan sus llamadas `.rpc()` exclusivamente a través de `serviceClient || supabase`, verificando el error de retorno y arrojando una excepción clara si falla.
+
+### 2. Columnas Existentes en `clientes` (Hallazgo 2 [ALTA])
+- `obtenerMatrizProduccion` selecciona `cliente:clientes(id, nombre_razon_social, nombre_contacto)`.
+- `crearOrdenManualMotor` consulta `nombre_razon_social` y `nombre_contacto` para derivar las iniciales de la nomenclatura cuando la orden manual tiene un cliente asignado.
+
+### 3. Historial de Fases por `fecha_cambio` (Hallazgo 3 [ALTA])
+- `obtenerHistorialOrdenMotor` consulta y ordena por `fecha_cambio DESC` en `historial_fases`.
+- Devuelve en el contrato JSON `fecha_cambio` y su alias retrocompatible `created_at`.
+- El campo `usuario` devuelve el `usuario_id` (o `'Sistema'` si es nulo), con la aclaración respectiva en el contrato de API.
+
+### 4. Respaldo de Migración y Conservación de Órdenes Existentes (Hallazgo 4 [ALTA])
+- **Bypass de Trigger**: En `fn_recalcular_orden_trabajo()`, se añadió salida inmediata `IF current_setting('app.tablero_respaldo', true) = 'on' THEN RETURN NULL; END IF;`.
+- **Mapeo Previo a la Eliminación**: En la sección 10 de la migración, se leen `fase_actual_id` y su `orden` previo a modificar líneas; se crea `crear_fases_orden` y se mapea la fase a la nueva línea canónica en `en_proceso` con propuesta `hoy + duracion`.
+- **Preservación Estricta**: Las órdenes en `En Producción`, `Terminado` y `Liberado` conservan sus estados, fechas (`fecha_inicio`, `fecha_fin`) y fases activas sin ser degradadas a `Pendiente`.
+- **Limpieza Segura**: El `DELETE FROM lineas_producto` se acotó únicamente a líneas sin órdenes asociadas (`AND id NOT IN (SELECT DISTINCT linea_producto_id FROM ordenes_trabajo WHERE linea_producto_id IS NOT NULL)`), emitiendo `RAISE NOTICE 'Líneas antiguas sin órdenes eliminadas: %'`.
+
+### 5. Numeración de Cliente Estable `#n` (Hallazgo 5 [MEDIA])
+- `obtenerMatrizProduccion` consulta todas las órdenes de la línea (incluidas las que ya están en estado `Liberado`) para calcular la posición ordinal del cliente `#n`. Liberar la unidad #1 ya no renumera la unidad #2.
+
+### 6. Recálculo al Reabrir Fase Terminada (Hallazgo 6 [MEDIA])
+- En `actualizar_fase_orden()`, si una fase estaba en estado `terminada` y se pasa a `en_proceso` sin enviar una nueva fecha propuesta explícita (`p_fecha_propuesta IS NULL`), se recalcula automáticamente como `(timezone('America/Mexico_City', now())::date + duracion_dias)`.
+
+### 7. No reactivación de fases en DO UPDATE (Hallazgo 7 [BAJA])
+- Se removió `activo = EXCLUDED.activo` en los 5 bloques `ON CONFLICT` de `sembrar_tablero_produccion`.
+
+### 8. Sanitización de PUT en Órdenes de Trabajo (Hallazgo 8 [BAJA])
+- Se removieron `estado_kanban` y `fase_actual_id` de `CAMPOS_PERMITIDOS_ORDEN_TRABAJO` en `generar_ordenes_cotizacion.ts`. Se aseguraron verificaciones de error en llamadas RPC.
+
+---
+
+## 12. Resultados de Pruebas de la Ronda 2
+
+### Prueba de Roles y Contratos en Postgres 17 (`docs/tablero/prueba_roles.sql`)
+Ejecutada contra la base local desechable (`anty_test_tablero_b1`, puerto 54331):
+```text
+          check_name           | resultado |                                                detalle                                                 
+-------------------------------+-----------+--------------------------------------------------------------------------------------------------------
+ lecturas_authenticated        | t         | Todas las consultas de la matriz e historial ejecutaron correctamente como authenticated
+ rpcs_bloqueadas_authenticated | t         | Las 3 RPCs (sembrar, crear_fases, actualizar_fase) arrojaron insufficient_privilege como authenticated
+ respaldo_preserva_estados     | t         | El respaldo preserva estado, fecha_inicio, fecha_fin y fase_actual_id
+ reapertura_recalcula_fecha    | t         | Reapertura calculó fecha propuesta: 2026-11-14 (esperada hoy+2 días = 2026-11-14)
+
+ lecturas_authenticated_ok | rpcs_service_role_only_ok | respaldo_preserva_estados_ok | reapertura_recalcula_fecha_ok | todo_ok 
+---------------------------+---------------------------+------------------------------+-------------------------------+---------
+ t                         | t                         | t                            | t                             | t
+```
+
+### Verificación Integral `node scripts/verificar.mjs --limpio`
+```text
+== 1. Archivos de parche o temporales nuevos
+  OK     Sin parches ni temporales
+
+== 2. Codificación de los archivos modificados
+  OK     UTF-8 sin BOM ni mojibake — 22 archivos revisados
+
+== 3. Sintaxis de .ts/.tsx modificados
+  OK     Sintaxis válida
+
+== 4. TypeScript (tsc --noEmit)
+  OK     tsc: 0 nombres sin definir/duplicados
+  OK     tsc: el total de errores no sube — 45 (baseline 55)
+
+== 5. Build de Vite
+  OK     npm run build
+
+== 6. Pruebas Deno
+  OK     Pruebas Deno — 328 pasan, 0 fallan
+
+== 7. Arranque real del API
+  OK     El API arranca — Listening on http://localhost:8000/
+
+== 8. Contexto del Dockerfile.backend
+  OK     Contexto del Dockerfile.backend — deno cache index.ts exitoso
+
+== 9. Checkout limpio de HEAD (git archive)
+  OK     Pruebas Deno en HEAD limpio — 326 pasan, 0 fallan
+  OK     El API arranca en HEAD limpio — Listening on http://localhost:8000/
+
+============================================================
+RESULTADO: TODO OK  (11/11 comprobaciones)
+```
+
+---
+
+## 13. Acciones Manuales para Luis (Producción)
 
 Cuando esta rama sea revisada y aprobada por Claude:
 1. **Ejecutar la migración SQL**:
    Copiar y pegar el contenido de `COORDINACION/SQL_PARA_LUIS/20261112_01_tablero_orden_fases.sql` en el SQL Editor de Supabase (producción).
 2. **Ejecutar la verificación SQL**:
-   Copiar y pegar el contenido de `COORDINACION/SQL_PARA_LUIS/verificacion_tablero.sql` en el SQL Editor de Supabase y verificar que retorne `todo_ok = true` (10/10 checks).
+   Copiar y pegar el contenido de `COORDINACION/SQL_PARA_LUIS/verificacion_tablero.sql` y `COORDINACION/SQL_PARA_LUIS/prueba_roles.sql` en el SQL Editor de Supabase y verificar que retornen `todo_ok = true`.
 3. **Rebuild del Backend**:
    En EasyPanel, entrar al servicio `remolques-api` y presionar **"Rebuild"**.
 4. **Rebuild del Frontend**:
    En EasyPanel, entrar al servicio `remolques-web` y presionar **"Rebuild"**.
+

@@ -30,7 +30,8 @@ const CAMPOS_PLANEACION_PERMITIDOS = new Set([
 export async function obtenerMatrizProduccion(
   supabase: any,
   orgId: string,
-  lineaClaveParam?: string
+  lineaClaveParam?: string,
+  serviceClient?: any
 ) {
   const lineaClave = (lineaClaveParam || "plataforma").trim().toLowerCase();
 
@@ -50,7 +51,9 @@ export async function obtenerMatrizProduccion(
       .eq("organizacion_id", orgId);
 
     if (!count || count === 0) {
-      await supabase.rpc("sembrar_tablero_produccion", { p_org: orgId });
+      const clientForRpc = serviceClient || supabase;
+      const { error: errSembrar } = await clientForRpc.rpc("sembrar_tablero_produccion", { p_org: orgId });
+      if (errSembrar) throw errSembrar;
       const { data: lineaReintento } = await supabase
         .from("lineas_producto")
         .select("id, clave, nombre")
@@ -99,7 +102,7 @@ export async function obtenerMatrizProduccion(
       id, nomenclatura_id, etiqueta, cliente_id, cotizacion_id, modelo, tipo_equipo,
       origen, fecha_compromiso, fecha_inicio, material_faltante, estado, estado_kanban,
       created_at,
-      cliente:clientes(id, nombre, nombre_comercial, razon_social, empresa),
+      cliente:clientes(id, nombre_razon_social, nombre_contacto),
       cotizacion:cotizaciones(id, folio)
     `)
     .eq("organizacion_id", orgId)
@@ -108,6 +111,16 @@ export async function obtenerMatrizProduccion(
     .order("created_at", { ascending: true });
 
   if (errOrd) throw errOrd;
+
+  // 3b. Obtener todas las órdenes de la línea (incluidas 'Liberado') para la numeración consecutiva por cliente (#1, #2, ...)
+  const { data: todasOrdenesLinea, error: errTodas } = await supabase
+    .from("ordenes_trabajo")
+    .select("id, cliente_id, created_at")
+    .eq("organizacion_id", orgId)
+    .eq("linea_producto_id", linea.id)
+    .order("created_at", { ascending: true });
+
+  if (errTodas) throw errTodas;
 
   const ordenList = ordenes || [];
   const ordenIds = ordenList.map((o: any) => o.id);
@@ -166,15 +179,17 @@ export async function obtenerMatrizProduccion(
     // Nombre del cliente para visualización
     const cli = ord.cliente;
     const clienteNombre = cli
-      ? cli.nombre_comercial || cli.nombre || cli.razon_social || cli.empresa || "Cliente"
+      ? cli.nombre_razon_social || cli.nombre_contacto || "Cliente"
       : ord.etiqueta
       ? ord.etiqueta
       : "Inventario";
 
-    // Órdenes del mismo cliente y línea para desempate / numeración "#1, #2"
+    // Órdenes del mismo cliente y línea (incluidas las liberadas) para numeración estable "#1, #2..."
     let ordenesMismoCliente: any[] = [];
     if (ord.cliente_id) {
-      ordenesMismoCliente = ordenList.filter((o: any) => o.cliente_id === ord.cliente_id);
+      ordenesMismoCliente = (todasOrdenesLinea || []).filter(
+        (o: any) => o.cliente_id === ord.cliente_id
+      );
     }
 
     const etiquetaVisible = calcularEtiquetaVisible(
@@ -299,7 +314,8 @@ export async function actualizarFaseMotor(
     fecha_propuesta?: string | null;
     nota?: string | null;
   },
-  usuarioId?: string | null
+  usuarioId?: string | null,
+  serviceClient?: any
 ) {
   if (!payload || !payload.estado) {
     const err = new Error("El estado de la fase es requerido");
@@ -307,7 +323,8 @@ export async function actualizarFaseMotor(
     throw err;
   }
 
-  const { data, error } = await supabase.rpc("actualizar_fase_orden", {
+  const clientForRpc = serviceClient || supabase;
+  const { data, error } = await clientForRpc.rpc("actualizar_fase_orden", {
     p_org: orgId,
     p_orden: ordenId,
     p_fase: faseId,
@@ -428,11 +445,11 @@ export async function obtenerHistorialOrdenMotor(
       fecha_propuesta,
       nota,
       usuario_id,
-      created_at,
+      fecha_cambio,
       fase:fases_produccion(nombre, grupo, orden)
     `)
     .eq("orden_trabajo_id", ordenId)
-    .order("created_at", { ascending: false });
+    .order("fecha_cambio", { ascending: false });
 
   if (errHist) throw errHist;
 
@@ -450,7 +467,8 @@ export async function obtenerHistorialOrdenMotor(
     nota: h.nota || null,
     usuario: h.usuario_id || "Sistema",
     usuario_id: h.usuario_id || null,
-    created_at: h.created_at,
+    fecha_cambio: h.fecha_cambio,
+    created_at: h.fecha_cambio,
   }));
 
   return { ok: true, historial: items };
@@ -464,7 +482,8 @@ export async function moverOrdenMotor(
   orgId: string,
   ordenId: string,
   faseActualId: string,
-  usuarioId?: string | null
+  usuarioId?: string | null,
+  serviceClient?: any
 ) {
   if (
     !faseActualId ||
@@ -485,7 +504,8 @@ export async function moverOrdenMotor(
     ordenId,
     faseActualId,
     { estado: "en_proceso" },
-    usuarioId
+    usuarioId,
+    serviceClient
   );
 
   return res;
@@ -505,7 +525,8 @@ export async function crearOrdenManualMotor(
     etiqueta?: string | null;
     fecha_compromiso?: string | null;
     caracteristicas?: Record<string, any>;
-  }
+  },
+  serviceClient?: any
 ) {
   if (!payload || typeof payload !== "object") {
     const err = new Error("Payload inválido");
@@ -513,6 +534,7 @@ export async function crearOrdenManualMotor(
     throw err;
   }
 
+  const clientForRpc = serviceClient || supabase;
   const etiquetaTrimmed = payload.etiqueta
     ? String(payload.etiqueta).trim()
     : null;
@@ -552,8 +574,10 @@ export async function crearOrdenManualMotor(
     .maybeSingle();
 
   if (!linea) {
-    // Si no existe, sembramos y reintentamos
-    await supabase.rpc("sembrar_tablero_produccion", { p_org: orgId });
+    // Si no existe, sembramos con serviceClient y reintentamos
+    const { error: errSembrar } = await clientForRpc.rpc("sembrar_tablero_produccion", { p_org: orgId });
+    if (errSembrar) throw errSembrar;
+
     const { data: lineaReintento } = await supabase
       .from("lineas_producto")
       .select("id, clave, nombre")
@@ -574,40 +598,28 @@ export async function crearOrdenManualMotor(
   if (clienteId) {
     const { data: cli } = await supabase
       .from("clientes")
-      .select("id, nombre, nombre_comercial, razon_social, empresa, tipo")
+      .select("id, nombre_razon_social, nombre_contacto")
       .eq("id", clienteId)
       .eq("organizacion_id", orgId)
       .maybeSingle();
 
     if (cli) {
-      if (cli.tipo === "Empresa" || cli.empresa) {
-        const nomEmp =
-          cli.empresa ||
-          cli.nombre_comercial ||
-          cli.razon_social ||
-          cli.nombre ||
-          "";
-        iniciales = nomEmp.substring(0, 3).toUpperCase() || "CLI";
+      const nom = cli.nombre_razon_social || cli.nombre_contacto || "";
+      const palabras = nom.split(" ").filter(Boolean);
+      if (palabras.length >= 2) {
+        iniciales = palabras
+          .slice(0, 3)
+          .map((p: string) => p[0])
+          .join("")
+          .toUpperCase() || "CLI";
       } else {
-        const nom =
-          cli.nombre_comercial ||
-          cli.nombre_razon_social ||
-          cli.nombre ||
-          "";
-        iniciales =
-          nom
-            .split(" ")
-            .filter(Boolean)
-            .slice(0, 3)
-            .map((p: string) => p[0])
-            .join("")
-            .toUpperCase() || "CLI";
+        iniciales = nom.substring(0, 3).toUpperCase() || "CLI";
       }
     }
   }
 
   // Obtener número consecutivo
-  const { data: seqNum, error: seqErr } = await supabase.rpc(
+  const { data: seqNum, error: seqErr } = await clientForRpc.rpc(
     "obtener_siguiente_produccion"
   );
   if (seqErr) {
@@ -621,7 +633,8 @@ export async function crearOrdenManualMotor(
   const nomenclatura = `${seqNum}-${iniciales}${tipoEquipo}${mesStr}${anio}-1`;
 
   // Insertar orden de trabajo
-  const { data: orden, error: insErr } = await supabase
+  const clientForInsert = (serviceClient && typeof serviceClient.from === "function") ? serviceClient : supabase;
+  const { data: orden, error: insErr } = await clientForInsert
     .from("ordenes_trabajo")
     .insert([
       {
@@ -646,11 +659,12 @@ export async function crearOrdenManualMotor(
 
   if (insErr) throw insErr;
 
-  // Crear sus fases vinculadas
-  await supabase.rpc("crear_fases_orden", {
+  // Crear sus fases vinculadas con serviceClient
+  const { error: errFases } = await clientForRpc.rpc("crear_fases_orden", {
     p_org: orgId,
     p_orden: orden.id,
   });
+  if (errFases) throw errFases;
 
   return { ok: true, orden };
 }
@@ -658,8 +672,13 @@ export async function crearOrdenManualMotor(
 /**
  * Siembra las 4 líneas y 55 fases de producción para una organización.
  */
-export async function sembrarTableroMotor(supabase: any, orgId: string) {
-  const { data, error } = await supabase.rpc("sembrar_tablero_produccion", {
+export async function sembrarTableroMotor(
+  supabase: any,
+  orgId: string,
+  serviceClient?: any
+) {
+  const clientForRpc = serviceClient || supabase;
+  const { data, error } = await clientForRpc.rpc("sembrar_tablero_produccion", {
     p_org: orgId,
   });
   if (error) throw error;

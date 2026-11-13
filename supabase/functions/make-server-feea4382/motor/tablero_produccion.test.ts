@@ -9,6 +9,7 @@ import {
   obtenerMatrizProduccion,
   actualizarFaseMotor,
   obtenerHistorialOrdenMotor,
+  sembrarTableroMotor,
 } from "./tablero_produccion.ts";
 
 Deno.test("tablero_produccion: mapeo de tipo_equipo a clave de línea canónica", () => {
@@ -354,7 +355,7 @@ Deno.test("tablero_produccion: obtenerMatrizProduccion estructura, resumen y exc
       estado: "En Producción",
       estado_kanban: "en_proceso",
       created_at: "2026-11-10T10:00:00Z",
-      cliente: { id: "cli-1", nombre_comercial: "Transportes Azteca" },
+      cliente: { id: "cli-1", nombre_razon_social: "Transportes Azteca" },
       cotizacion: { id: "cot-1", folio: "COT-101" },
     },
     {
@@ -372,7 +373,7 @@ Deno.test("tablero_produccion: obtenerMatrizProduccion estructura, resumen y exc
       estado: "Pendiente",
       estado_kanban: "pendiente",
       created_at: "2026-11-11T10:00:00Z",
-      cliente: { id: "cli-1", nombre_comercial: "Transportes Azteca" },
+      cliente: { id: "cli-1", nombre_razon_social: "Transportes Azteca" },
       cotizacion: { id: "cot-2", folio: "COT-102" },
     },
   ];
@@ -424,6 +425,7 @@ Deno.test("tablero_produccion: obtenerMatrizProduccion estructura, resumen y exc
                     order: () => Promise.resolve({ data: ordenesMock, error: null }),
                   };
                 },
+                order: () => Promise.resolve({ data: ordenesMock, error: null }),
               }),
             }),
           }),
@@ -490,5 +492,181 @@ Deno.test("tablero_produccion: actualizarFaseMotor propaga 404 y 409 según mens
     },
     Error,
     "La fase no pertenece a la línea de esta orden"
+  );
+});
+
+Deno.test("tablero_produccion: obtenerHistorialOrdenMotor consulta fecha_cambio y mapea usuario_id / created_at", async () => {
+  let selectColumns = "";
+  let orderColumn = "";
+
+  const dbMock = {
+    from: (table: string) => {
+      if (table === "ordenes_trabajo") {
+        return {
+          select: () => ({
+            eq: () => ({
+              eq: () => ({
+                maybeSingle: () => Promise.resolve({ data: { id: "ord-1" }, error: null }),
+              }),
+            }),
+          }),
+        };
+      }
+      if (table === "historial_fases") {
+        return {
+          select: (cols: string) => {
+            selectColumns = cols;
+            return {
+              eq: () => ({
+                order: (col: string, opts: any) => {
+                  orderColumn = col;
+                  return Promise.resolve({
+                    data: [
+                      {
+                        id: "h-1",
+                        fase_id: "f1",
+                        estado: "en_proceso",
+                        estado_anterior: "pendiente",
+                        fecha_propuesta: "2026-11-20",
+                        nota: "Iniciando corte",
+                        usuario_id: "user-123",
+                        fecha_cambio: "2026-11-12T14:30:00Z",
+                        fase: { nombre: "Corte", grupo: "principal", orden: 1 },
+                      },
+                      {
+                        id: "h-2",
+                        fase_id: "f2",
+                        estado: "pausada",
+                        estado_anterior: "en_proceso",
+                        fecha_propuesta: null,
+                        nota: "Falta material",
+                        usuario_id: null,
+                        fecha_cambio: "2026-11-12T12:00:00Z",
+                        fase: { nombre: "Dispositivo", grupo: "principal", orden: 2 },
+                      },
+                    ],
+                    error: null,
+                  });
+                },
+              }),
+            };
+          },
+        };
+      }
+      return {};
+    },
+  };
+
+  const res = await obtenerHistorialOrdenMotor(dbMock, "org-1", "ord-1");
+  assertEquals(res.ok, true);
+  assertEquals(res.historial.length, 2);
+
+  // Verifica que seleccionó y ordenó por fecha_cambio (no por created_at)
+  assertEquals(selectColumns.includes("fecha_cambio"), true);
+  assertEquals(orderColumn, "fecha_cambio");
+
+  // Primer registro: usuario_id explícito
+  const h1 = res.historial[0];
+  assertEquals(h1.usuario_id, "user-123");
+  assertEquals(h1.usuario, "user-123");
+  assertEquals(h1.fecha_cambio, "2026-11-12T14:30:00Z");
+  assertEquals(h1.created_at, "2026-11-12T14:30:00Z");
+
+  // Segundo registro: usuario nulo -> 'Sistema'
+  const h2 = res.historial[1];
+  assertEquals(h2.usuario_id, null);
+  assertEquals(h2.usuario, "Sistema");
+});
+
+Deno.test("tablero_produccion: motor functions priorizan serviceClient para RPCs y arrojan error si falla", async () => {
+  let userRpcCalled = false;
+  let serviceRpcCalled = false;
+
+  const userClientMock = {
+    rpc: (_name: string) => {
+      userRpcCalled = true;
+      return Promise.resolve({ data: null, error: new Error("permission denied") });
+    },
+  };
+
+  const serviceClientMock = {
+    rpc: (name: string, params: any) => {
+      serviceRpcCalled = true;
+      if (name === "actualizar_fase_orden") {
+        return Promise.resolve({ data: { ok: true }, error: null });
+      }
+      if (name === "sembrar_tablero_produccion") {
+        return Promise.resolve({ data: { sembrado: true }, error: null });
+      }
+      return Promise.resolve({ data: null, error: null });
+    },
+  };
+
+  // 1. actualizarFaseMotor usa serviceClient
+  await actualizarFaseMotor(
+    userClientMock,
+    "org-1",
+    "ord-1",
+    "f1",
+    { estado: "en_proceso" },
+    "user-1",
+    serviceClientMock
+  );
+  assertEquals(userRpcCalled, false, "El cliente de usuario no debió llamar al RPC");
+  assertEquals(serviceRpcCalled, true, "El serviceClient debió llamar al RPC");
+
+  // 2. sembrarTableroMotor usa serviceClient
+  userRpcCalled = false;
+  serviceRpcCalled = false;
+  await sembrarTableroMotor(userClientMock, "org-1", serviceClientMock);
+  assertEquals(userRpcCalled, false);
+  assertEquals(serviceRpcCalled, true);
+
+  // 3. Fallo de RPC en crear_fases_orden durante crearOrdenManualMotor arroja excepción
+  const failingServiceClient = {
+    rpc: (name: string) => {
+      if (name === "obtener_siguiente_produccion") return Promise.resolve({ data: 99, error: null });
+      if (name === "crear_fases_orden") return Promise.resolve({ data: null, error: new Error("RPC crear_fases_orden falló") });
+      return Promise.resolve({ data: null, error: null });
+    },
+  };
+
+  const dbMockParaOrden = {
+    from: (table: string) => {
+      if (table === "lineas_producto") {
+        return {
+          select: () => ({
+            eq: () => ({
+              eq: () => ({
+                maybeSingle: () => Promise.resolve({ data: { id: "lin-1", clave: "plataforma" }, error: null }),
+              }),
+            }),
+          }),
+        };
+      }
+      if (table === "ordenes_trabajo") {
+        return {
+          insert: () => ({
+            select: () => ({
+              single: () => Promise.resolve({ data: { id: "ord-test" }, error: null }),
+            }),
+          }),
+        };
+      }
+      return {};
+    },
+  };
+
+  await assertRejects(
+    async () => {
+      await crearOrdenManualMotor(
+        dbMockParaOrden,
+        "org-1",
+        { linea: "plataforma", etiqueta: "Equipo Manual" },
+        failingServiceClient
+      );
+    },
+    Error,
+    "RPC crear_fases_orden falló"
   );
 });

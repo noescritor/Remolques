@@ -3,6 +3,38 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-12 - Tablero de producción (Bloque 1 de 2, Ronda 2: cliente service_role para RPCs, esquema real de clientes/historial, respaldo con bypass de trigger y pruebas reales de roles)
+**Herramienta:** Antigravity  
+**Tipo:** fix (inyección de serviceClient en rutas y motor de producción, resolución de columnas reales nombre_razon_social/nombre_contacto en clientes y fecha_cambio en historial_fases, bypass de trigger app.tablero_respaldo durante migración para preservar órdenes En Producción/Terminado/Liberado, numeración estable #n con órdenes liberadas, recálculo de fecha al reabrir fase terminada a hoy+duración, retiro de activo en DO UPDATE de semilla, sanitización de lista blanca en PUT de ordenes_trabajo y suite docs/tablero/prueba_roles.sql)  
+**Rama:** `tablero-produccion-b1-2026-11-12`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/TABLERO_B1_REVISION_CLAUDE.md`, `TABLERO_B1_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/index.ts`: inyección de `serviceClient = getServiceClient()` en endpoints `/produccion/matriz`, `/produccion/ordenes`, `/produccion/ordenes/:id/fases/:faseId`, `/produccion/ordenes/:id/mover` y `/produccion/sembrar`.
+- `supabase/functions/make-server-feea4382/motor/tablero_produccion.ts`: soporte para `serviceClient` en todas las operaciones RPC con verificación y captura de errores; selección de `nombre_razon_social` y `nombre_contacto` en `clientes`; consulta y ordenamiento de `historial_fases` por `fecha_cambio DESC` devolviendo `created_at`, `fecha_cambio`, `usuario_id` y `usuario`; consulta de todas las órdenes de la línea (incluidas las liberadas) para numeración estable `#n`.
+- `supabase/functions/make-server-feea4382/motor/tablero_produccion.test.ts`: actualización de mocks y 2 nuevas pruebas unitarias para `obtenerHistorialOrdenMotor` y verificación de prioridad de `serviceClient` y captura de excepciones en fallas de RPC (10/10 pasando).
+- `supabase/functions/make-server-feea4382/motor/generar_ordenes_cotizacion.ts`: retiro de `estado_kanban` y `fase_actual_id` de `CAMPOS_PERMITIDOS_ORDEN_TRABAJO` para proteger la reactividad del trigger; validación de errores en `crear_fases_orden` y `sembrar_tablero_produccion`.
+- `supabase/migrations/20261112_01_tablero_orden_fases.sql` (y copias en `COORDINACION/SQL_PARA_LUIS/`):
+  1. Bypass de trigger durante respaldo mediante `app.tablero_respaldo = 'on'`.
+  2. Mapeo previo de `fase_actual_id` por orden numérico hacia la línea canónica con fecha propuesta `hoy + duracion`.
+  3. Preservación estricta de estados (`En Producción`, `Terminado`, `Liberado`) y fechas (`fecha_inicio`, `fecha_fin`) en órdenes existentes.
+  4. Borrado de líneas antiguas restringido a líneas sin órdenes asociadas (`RAISE NOTICE`).
+  5. `actualizar_fase_orden`: recálculo automático de fecha propuesta a `hoy + duracion_dias` al reabrir una fase `terminada` a `en_proceso` sin fecha.
+  6. Retiro de `activo = EXCLUDED.activo` en los 5 bloques `ON CONFLICT` de `sembrar_tablero_produccion`.
+  7. `GRANT SELECT ON orden_fases TO authenticated;`.
+- `docs/tablero/prueba_roles.sql` (y copia en `COORDINACION/SQL_PARA_LUIS/`): script de validación contra base de datos real en Postgres 17 (puerto 54331) que ejecuta lecturas con rol `authenticated`, confirma bloqueo de las 3 RPCs a `authenticated` (solo `service_role`), verifica preservación de órdenes en respaldo y recálculo de propuesta en reapertura (`todo_ok = true`).
+- `docs/tablero/CONTRATO_API_MATRIZ.md`: contrato actualizado con respuestas JSON reales extraídas de la base de datos de pruebas.
+- `TABLERO_B1_REPORTE_ANTY.md` (y copia en `COORDINACION/REPORTES/`): sección "Ronda 2" documentando hallazgos corregidos y salidas de pruebas.
+**Qué cambió y por qué:**  
+- **1. Privilegios de RPC en producción:** Las RPCs `actualizar_fase_orden`, `crear_fases_orden` y `sembrar_tablero_produccion` están revocadas de `authenticated` por diseño de seguridad; usar `serviceClient` evita errores de `permission denied` en runtime.
+- **2. Contrato de lectura fiel al esquema:** Se eliminaron referencias a columnas inexistentes (`nombre`, `empresa`, etc. en clientes; `created_at` en historial), evitando que PostgREST arroje HTTP 400.
+- **3. Integridad en migración de órdenes existentes:** Las órdenes en producción y terminadas conservan su estado operativo y avance sin ser degradadas a `Pendiente`.
+- **4. Precisión en semáforos y numeración:** Las fases reabiertas se proyectan con fecha de entrega a partir de hoy en vez de heredar fechas pasadas, y los correlativos de cliente no se desfasan al liberar unidades.
+**Acciones manuales pendientes:**  
+- 1. Ejecutar migración `COORDINACION/SQL_PARA_LUIS/20261112_01_tablero_orden_fases.sql` en SQL Editor de Supabase (una vez aprobada la rama).
+- 2. Ejecutar verificaciones `COORDINACION/SQL_PARA_LUIS/verificacion_tablero.sql` y `COORDINACION/SQL_PARA_LUIS/prueba_roles.sql` confirmando `todo_ok = true`.
+- 3. Rebuild de `remolques-api` en EasyPanel.
+- 4. Rebuild de `remolques-web` en EasyPanel tras merge a `main`.
+
 ## 2026-11-12 - Tablero de producción (Bloque 1 de 2: datos y backend, estado por fase)
 **Herramienta:** Antigravity  
 **Tipo:** feat (migración tablero_orden_fases con 4 líneas y 55 fases, tabla orden_fases, trigger reactivo, RPC actualizar_fase_orden FOR UPDATE, semáforo, motor tablero_produccion, generación de órdenes por línea, endpoints de matriz y planeación, contrato API y null-safety de órdenes manuales)  

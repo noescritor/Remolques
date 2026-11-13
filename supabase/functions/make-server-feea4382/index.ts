@@ -3547,8 +3547,9 @@ app.get("/produccion/matriz", async (c) => {
     const supabase = c.get("supabase") as any;
     const orgId = c.get("organizacionId") as string;
     const linea = c.req.query("linea") || "plataforma";
+    const serviceClient = getServiceClient();
 
-    const data = await obtenerMatrizProduccion(supabase, orgId, linea);
+    const data = await obtenerMatrizProduccion(supabase, orgId, linea, serviceClient);
     return c.json(data);
   } catch (err: any) {
     const status = err.status || 400;
@@ -3562,8 +3563,9 @@ app.post("/produccion/ordenes", async (c) => {
     const supabase = c.get("supabase") as any;
     const orgId = c.get("organizacionId") as string;
     const body = await c.req.json();
+    const serviceClient = getServiceClient();
 
-    const resultado = await crearOrdenManualMotor(supabase, orgId, body);
+    const resultado = await crearOrdenManualMotor(supabase, orgId, body, serviceClient);
     return c.json(resultado, 201);
   } catch (err: any) {
     const status = err.status || 400;
@@ -3580,6 +3582,7 @@ app.put("/produccion/ordenes/:id/fases/:faseId", async (c) => {
     const id = c.req.param("id");
     const faseId = c.req.param("faseId");
     const body = await c.req.json();
+    const serviceClient = getServiceClient();
 
     const resultado = await actualizarFaseMotor(
       supabase,
@@ -3587,7 +3590,8 @@ app.put("/produccion/ordenes/:id/fases/:faseId", async (c) => {
       id,
       faseId,
       body,
-      user?.id || null
+      user?.id || null,
+      serviceClient
     );
     return c.json(resultado);
   } catch (err: any) {
@@ -3653,6 +3657,7 @@ app.put("/produccion/ordenes/:id/mover", async (c) => {
     const user = c.get("user") as any;
     const id = c.req.param("id");
     const body = await c.req.json();
+    const serviceClient = getServiceClient();
 
     const faseId = body.fase_actual_id || body.faseId || body.fase_id;
     const resultado = await moverOrdenMotor(
@@ -3660,7 +3665,8 @@ app.put("/produccion/ordenes/:id/mover", async (c) => {
       orgId,
       id,
       faseId,
-      user?.id || null
+      user?.id || null,
+      serviceClient
     );
     return c.json({ success: true, ...resultado });
   } catch (err: any) {
@@ -3675,6 +3681,7 @@ app.post("/produccion/sembrar", async (c) => {
     const supabase = c.get("supabase") as any;
     const orgId = c.get("organizacionId") as string;
     const user = c.get("user") as any;
+    const serviceClient = getServiceClient();
 
     if (user?.id) {
       const { data: perfil } = await supabase
@@ -3692,7 +3699,7 @@ app.post("/produccion/sembrar", async (c) => {
       }
     }
 
-    const resultado = await sembrarTableroMotor(supabase, orgId);
+    const resultado = await sembrarTableroMotor(supabase, orgId, serviceClient);
     return c.json(resultado);
   } catch (err: any) {
     const status = err.status || 400;

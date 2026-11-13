@@ -111,6 +111,8 @@ CREATE POLICY "orden_fases_org_select" ON orden_fases
     FOR SELECT TO authenticated
     USING (organizacion_id = get_current_org_id());
 
+GRANT SELECT ON orden_fases TO authenticated;
+
 -- 6. Función sembrar_tablero_produccion(p_org UUID)
 CREATE OR REPLACE FUNCTION sembrar_tablero_produccion(p_org UUID)
 RETURNS VOID
@@ -168,7 +170,6 @@ BEGIN
     ON CONFLICT (linea_producto_id, grupo, orden) 
     DO UPDATE SET 
         nombre = EXCLUDED.nombre,
-        activo = EXCLUDED.activo,
         requiere_grupo = EXCLUDED.requiere_grupo;
 
     -- 3. Fases de Góndola - principal (12 fases)
@@ -189,7 +190,6 @@ BEGIN
     ON CONFLICT (linea_producto_id, grupo, orden) 
     DO UPDATE SET 
         nombre = EXCLUDED.nombre,
-        activo = EXCLUDED.activo,
         requiere_grupo = EXCLUDED.requiere_grupo;
 
     -- 4. Fases de Góndola - tina (10 fases)
@@ -208,7 +208,6 @@ BEGIN
     ON CONFLICT (linea_producto_id, grupo, orden) 
     DO UPDATE SET 
         nombre = EXCLUDED.nombre,
-        activo = EXCLUDED.activo,
         requiere_grupo = EXCLUDED.requiere_grupo;
 
     -- 5. Fases de Dolly (grupo principal, 10 fases)
@@ -227,7 +226,6 @@ BEGIN
     ON CONFLICT (linea_producto_id, grupo, orden) 
     DO UPDATE SET 
         nombre = EXCLUDED.nombre,
-        activo = EXCLUDED.activo,
         requiere_grupo = EXCLUDED.requiere_grupo;
 
     -- 6. Fases de Traila (grupo principal, 11 fases)
@@ -247,7 +245,6 @@ BEGIN
     ON CONFLICT (linea_producto_id, grupo, orden) 
     DO UPDATE SET 
         nombre = EXCLUDED.nombre,
-        activo = EXCLUDED.activo,
         requiere_grupo = EXCLUDED.requiere_grupo;
 END;
 $$;
@@ -331,6 +328,10 @@ DECLARE
     v_min_fecha_inicio TIMESTAMPTZ := NULL;
     v_max_fecha_fin TIMESTAMPTZ := NULL;
 BEGIN
+    IF current_setting('app.tablero_respaldo', true) = 'on' THEN
+        RETURN NULL;
+    END IF;
+
     IF TG_OP = 'DELETE' THEN
         v_orden_id := OLD.orden_trabajo_id;
         v_org_id := OLD.organizacion_id;
@@ -515,7 +516,8 @@ BEGIN
     IF p_estado = 'en_proceso' THEN
         v_fecha_inicio := COALESCE(r_ord_fase.fecha_inicio, timezone('utc', now()));
         v_fecha_fin := NULL;
-        IF v_calc_fecha_propuesta IS NULL THEN
+        -- Si la fase estaba terminada y pasa a en_proceso sin fecha nueva, o si no tenía propuesta, recalcular hoy + duración
+        IF p_fecha_propuesta IS NULL AND (r_ord_fase.estado = 'terminada' OR v_calc_fecha_propuesta IS NULL) THEN
             -- current_date en America/Mexico_City + duracion_dias
             v_calc_fecha_propuesta := (timezone('America/Mexico_City', now())::date + r_fase.duracion_dias);
         END IF;
@@ -652,20 +654,35 @@ DECLARE
     v_tipo TEXT;
     v_fase_propuesta DATE;
     v_duracion INT;
+    v_new_fase_id UUID;
+    v_borradas INT := 0;
+    v_tiene_iniciadas BOOLEAN;
 BEGIN
+    -- 0. Activar bypass en el trigger durante el respaldo
+    PERFORM set_config('app.tablero_respaldo', 'on', true);
+
     -- 1. Sembrar líneas y fases en todas las organizaciones existentes
     FOR r_org IN SELECT id FROM organizaciones LOOP
         PERFORM sembrar_tablero_produccion(r_org.id);
     END LOOP;
 
-    -- 2. Limpiar líneas legacy que no sean ('plataforma', 'gondola', 'dolly', 'traila')
-    -- Reasignar órdenes que apunten a líneas legacy o que tengan linea_producto_id nulo
+    -- 2. Procesar órdenes existentes ANTES de borrar ninguna línea antigua
     FOR r_ord IN 
-        SELECT ot.id, ot.organizacion_id, ot.tipo_equipo, ot.linea_producto_id
+        SELECT 
+            ot.id, 
+            ot.organizacion_id, 
+            ot.tipo_equipo, 
+            ot.linea_producto_id,
+            ot.fase_actual_id,
+            ot.estado,
+            ot.estado_kanban,
+            ot.fecha_inicio,
+            ot.fecha_fin,
+            fp_old.orden AS old_fase_orden
         FROM ordenes_trabajo ot
-        LEFT JOIN lineas_producto lp ON lp.id = ot.linea_producto_id
-        WHERE ot.linea_producto_id IS NULL OR lp.clave NOT IN ('plataforma', 'gondola', 'dolly', 'traila')
+        LEFT JOIN fases_produccion fp_old ON fp_old.id = ot.fase_actual_id
     LOOP
+        -- Mapear a línea canónica según tipo_equipo
         v_tipo := LOWER(COALESCE(r_ord.tipo_equipo, ''));
         IF v_tipo LIKE '%dolly%' OR v_tipo = '02' THEN
             v_linea_clave := 'dolly';
@@ -681,40 +698,125 @@ BEGIN
         FROM lineas_producto
         WHERE organizacion_id = r_ord.organizacion_id AND clave = v_linea_clave;
 
+        -- Actualizar linea_producto_id en la orden
         UPDATE ordenes_trabajo
         SET linea_producto_id = v_linea_id
         WHERE id = r_ord.id;
-    END LOOP;
 
-    -- Eliminar líneas legacy que no tengan órdenes asociadas
-    DELETE FROM lineas_producto
-    WHERE clave NOT IN ('plataforma', 'gondola', 'dolly', 'traila');
-
-    -- 3. Crear orden_fases para todas las órdenes de trabajo existentes
-    FOR r_ord IN 
-        SELECT id, organizacion_id, fase_actual_id 
-        FROM ordenes_trabajo 
-        WHERE linea_producto_id IS NOT NULL 
-    LOOP
+        -- Crear fases para la orden con la nueva línea
         PERFORM crear_fases_orden(r_ord.organizacion_id, r_ord.id);
 
-        -- Si la orden tenía fase_actual_id y la fase está en pendiente, ponerla en proceso
-        IF r_ord.fase_actual_id IS NOT NULL THEN
-            SELECT duracion_dias INTO v_duracion 
-            FROM fases_produccion 
-            WHERE id = r_ord.fase_actual_id;
-
-            v_fase_propuesta := (timezone('America/Mexico_City', now())::date + COALESCE(v_duracion, 2));
-
-            UPDATE orden_fases
-            SET estado = 'en_proceso',
-                fecha_inicio = COALESCE(fecha_inicio, timezone('utc', now())),
-                fecha_propuesta = COALESCE(fecha_propuesta, v_fase_propuesta)
+        -- Verificar si la orden ya tiene fases iniciadas en orden_fases (por si es re-ejecución)
+        SELECT EXISTS (
+            SELECT 1 FROM orden_fases 
             WHERE orden_trabajo_id = r_ord.id 
-              AND fase_id = r_ord.fase_actual_id
-              AND estado = 'pendiente';
+              AND estado != 'pendiente'
+        ) INTO v_tiene_iniciadas;
+
+        IF NOT v_tiene_iniciadas THEN
+            -- Si la orden tenía fase_actual_id previa, buscar la fase en la línea nueva con el mismo orden
+            v_new_fase_id := NULL;
+            IF r_ord.old_fase_orden IS NOT NULL THEN
+                SELECT id, duracion_dias INTO v_new_fase_id, v_duracion
+                FROM fases_produccion
+                WHERE linea_producto_id = v_linea_id
+                  AND grupo = 'principal'
+                  AND orden = r_ord.old_fase_orden
+                  AND activo = true
+                LIMIT 1;
+
+                IF v_new_fase_id IS NULL THEN
+                    SELECT id, duracion_dias INTO v_new_fase_id, v_duracion
+                    FROM fases_produccion
+                    WHERE linea_producto_id = v_linea_id
+                      AND grupo = 'principal'
+                      AND activo = true
+                    ORDER BY orden ASC
+                    LIMIT 1;
+                END IF;
+            END IF;
+
+            -- Tratamiento según el estado existente de la orden:
+            IF r_ord.estado = 'Liberado' THEN
+                UPDATE orden_fases
+                SET estado = 'terminada',
+                    fecha_fin = COALESCE(fecha_fin, r_ord.fecha_fin, timezone('utc', now()))
+                WHERE orden_trabajo_id = r_ord.id;
+
+                UPDATE ordenes_trabajo
+                SET estado = 'Liberado',
+                    estado_kanban = 'completada',
+                    fase_actual_id = NULL,
+                    fecha_inicio = r_ord.fecha_inicio,
+                    fecha_fin = r_ord.fecha_fin
+                WHERE id = r_ord.id;
+
+            ELSIF r_ord.estado = 'Terminado' THEN
+                UPDATE orden_fases
+                SET estado = 'terminada',
+                    fecha_fin = COALESCE(fecha_fin, r_ord.fecha_fin, timezone('utc', now()))
+                WHERE orden_trabajo_id = r_ord.id;
+
+                UPDATE ordenes_trabajo
+                SET estado = 'Terminado',
+                    estado_kanban = 'completada',
+                    fase_actual_id = NULL,
+                    fecha_inicio = r_ord.fecha_inicio,
+                    fecha_fin = r_ord.fecha_fin
+                WHERE id = r_ord.id;
+
+            ELSIF r_ord.estado = 'En Producción' OR r_ord.estado_kanban IN ('en_proceso', 'pausada', 'incompleta') THEN
+                IF v_new_fase_id IS NOT NULL THEN
+                    v_fase_propuesta := (timezone('America/Mexico_City', now())::date + COALESCE(v_duracion, 2));
+
+                    UPDATE orden_fases
+                    SET estado = 'en_proceso',
+                        fecha_inicio = COALESCE(fecha_inicio, r_ord.fecha_inicio, timezone('utc', now())),
+                        fecha_propuesta = COALESCE(fecha_propuesta, v_fase_propuesta)
+                    WHERE orden_trabajo_id = r_ord.id 
+                      AND fase_id = v_new_fase_id;
+
+                    UPDATE ordenes_trabajo
+                    SET fase_actual_id = v_new_fase_id,
+                        estado = 'En Producción',
+                        estado_kanban = COALESCE(r_ord.estado_kanban, 'en_proceso'),
+                        fecha_inicio = COALESCE(r_ord.fecha_inicio, timezone('utc', now())),
+                        fecha_fin = NULL
+                    WHERE id = r_ord.id;
+                ELSE
+                    UPDATE ordenes_trabajo
+                    SET estado = 'En Producción',
+                        estado_kanban = COALESCE(r_ord.estado_kanban, 'en_proceso'),
+                        fecha_inicio = COALESCE(r_ord.fecha_inicio, timezone('utc', now())),
+                        fecha_fin = NULL
+                    WHERE id = r_ord.id;
+                END IF;
+            ELSE
+                UPDATE ordenes_trabajo
+                SET estado = 'Pendiente',
+                    estado_kanban = 'pendiente',
+                    fase_actual_id = NULL,
+                    fecha_inicio = NULL,
+                    fecha_fin = NULL
+                WHERE id = r_ord.id;
+            END IF;
         END IF;
     END LOOP;
+
+    -- 3. Eliminar líneas antiguas que no tengan órdenes asociadas
+    DELETE FROM lineas_producto
+    WHERE clave NOT IN ('plataforma', 'gondola', 'dolly', 'traila')
+      AND id NOT IN (
+          SELECT DISTINCT linea_producto_id 
+          FROM ordenes_trabajo 
+          WHERE linea_producto_id IS NOT NULL
+      );
+    GET DIAGNOSTICS v_borradas = ROW_COUNT;
+    RAISE NOTICE 'Líneas antiguas sin órdenes eliminadas: %', v_borradas;
+
+    -- 4. Desactivar bypass en el trigger
+    PERFORM set_config('app.tablero_respaldo', 'off', true);
+
 END $$;
 
 COMMIT;
