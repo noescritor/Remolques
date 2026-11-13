@@ -238,6 +238,20 @@ export function formatearFechaLarga(fechaStr?: string | null): string {
   return `${partes.dia} de ${mesStr}`;
 }
 
+const DIAS_SEMANA_ES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+
+/**
+ * Formatea la fecha de hoy para la cabecera superior, e.g. "jueves, 12 de noviembre de 2026".
+ */
+export function formatearFechaHoyCompleta(fechaStr?: string | null): string {
+  const partes = parsearFechaPartes(fechaStr || obtenerHoyMexico());
+  if (!partes) return '';
+  const d = new Date(partes.anio, partes.mes - 1, partes.dia, 12, 0, 0);
+  const diaSemana = DIAS_SEMANA_ES[d.getDay()] || '';
+  const mesStr = MESES_LARGOS_ES[partes.mes - 1] || '';
+  return `${diaSemana}, ${partes.dia} de ${mesStr} de ${partes.anio}`;
+}
+
 /**
  * Suma o resta días a una fecha YYYY-MM-DD sin desfase horario.
  */
@@ -366,6 +380,7 @@ export function calcularEstadoVisualCelda(
 }
 
 export type TipoChipFiltro = 'todos' | 'atrasados' | 'con_material' | 'con_pausa';
+export type FiltroChip = TipoChipFiltro;
 
 function normalizarTextoBusqueda(str?: string | null): string {
   if (!str) return '';

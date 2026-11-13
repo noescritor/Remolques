@@ -8,6 +8,7 @@ import {
   parsearFechaPartes,
   formatearFechaCorta,
   formatearFechaLarga,
+  formatearFechaHoyCompleta,
   sumarDiasAFecha,
   calcularEstadoVisualCelda,
   filtrarFilasMatriz,
@@ -163,6 +164,10 @@ Deno.test("tableroProduccion: formateo de fechas y prevención de trampa UTC", (
   // Formato largo para aria-label
   assertEquals(formatearFechaLarga("2026-11-06"), "6 de noviembre");
   assertEquals(formatearFechaLarga("2026-05-15"), "15 de mayo");
+
+  // Formato completo para cabecera superior
+  assertEquals(formatearFechaHoyCompleta("2026-11-12"), "jueves, 12 de noviembre de 2026");
+  assertEquals(formatearFechaHoyCompleta("2026-11-13"), "viernes, 13 de noviembre de 2026");
 
   // Manejo de valores nulos o vacíos
   assertEquals(formatearFechaCorta(null), "");

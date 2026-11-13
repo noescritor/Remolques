@@ -674,11 +674,7 @@ export default function App() {
         } />
                   <Route path="/tablero-produccion" element={
             <TableroProduccionPage
-              lineasProducto={lineasProducto}
-              fasesProduccion={fasesProduccion}
-              ordenesTrabajo={ordenesTrabajo}
-              loading={loading}
-              onMoverOrden={moverOrdenKanban}
+              session={session}
             />
           } />
           <Route path="/plan-semanal" element={

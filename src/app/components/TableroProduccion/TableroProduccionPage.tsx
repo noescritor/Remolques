@@ -1,125 +1,550 @@
-import React, { useState, useMemo } from 'react';
-import { KanbanBoard } from './KanbanBoard';
-import { LineaProducto, FaseProduccion, OrdenTrabajo } from '../../types';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import {
+  fetchMatrizProduccion,
+  actualizarFaseOrden,
+  actualizarPlaneacionOrden,
+  sembrarTableroProduccion,
+  MatrizRespuesta,
+  FilaMatriz,
+} from '../../utils/tableroApi';
+import {
+  obtenerHoyMexico,
+  formatearFechaHoyCompleta,
+  filtrarFilasMatriz,
+  aplicarCambioOptimistaFase,
+  FiltroChip,
+  EstadoFase,
+} from '../../utils/tableroProduccion';
+import { MatrizProduccionView } from './MatrizProduccionView';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Search, LayoutDashboard } from 'lucide-react';
+import { Badge } from '../ui/badge';
+import {
+  Search,
+  RefreshCw,
+  Plus,
+  LayoutGrid,
+  Kanban,
+  AlertTriangle,
+  Clock,
+  PackageX,
+  PauseCircle,
+  Database,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { cn } from '../ui/utils';
 
 interface TableroProduccionPageProps {
-  lineasProducto: LineaProducto[];
-  fasesProduccion: FaseProduccion[];
-  ordenesTrabajo: OrdenTrabajo[];
-  loading: boolean;
-  onMoverOrden: (ordenId: string, faseId: string | null, estado: string) => void;
+  session?: any;
 }
 
-export function TableroProduccionPage({
-  lineasProducto,
-  fasesProduccion,
-  ordenesTrabajo,
-  loading,
-  onMoverOrden
-}: TableroProduccionPageProps) {
-  const [activeTab, setActiveTab] = useState<string>(lineasProducto[0]?.id || '');
-  const [searchTerm, setSearchTerm] = useState('');
+const LINEAS_TABLERO = [
+  { clave: 'plataforma', nombre: 'Plataforma' },
+  { clave: 'gondola', nombre: 'Góndola' },
+  { clave: 'dolly', nombre: 'Dolly' },
+  { clave: 'traila', nombre: 'Traila' },
+];
 
-  // Auto-select first tab if activeTab is not set and lineas are loaded
-  if (!activeTab && lineasProducto.length > 0) {
-    setActiveTab(lineasProducto[0].id);
-  }
+export function TableroProduccionPage({ session }: TableroProduccionPageProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const handleOrderClick = (orden: OrdenTrabajo) => {
-    const folio = orden.nomenclatura_id || orden.cotizacion?.folio || 'Sin folio';
-    const cli = orden.cliente?.nombre || (orden.cliente as any)?.nombre_comercial || orden.etiqueta || 'Inventario';
-    alert(`Orden: ${folio} - ${cli}`);
+  // Línea activa sincronizada con URL (?linea=plataforma|gondola|dolly|traila)
+  const lineaUrl = searchParams.get('linea')?.toLowerCase() || 'plataforma';
+  const lineaActiva = LINEAS_TABLERO.some((l) => l.clave === lineaUrl)
+    ? lineaUrl
+    : 'plataforma';
+
+  // Vista activa sincronizada con URL (?vista=matriz|fase)
+  const vistaUrl = searchParams.get('vista')?.toLowerCase() || 'matriz';
+  const vistaActiva = vistaUrl === 'fase' ? 'fase' : 'matriz';
+
+  // Filtro de chips y búsqueda
+  const [filtroChip, setFiltroChip] = useState<FiltroChip>('todos');
+  const [busqueda, setBusqueda] = useState<string>('');
+
+  // Datos de la matriz
+  const [datosMatriz, setDatosMatriz] = useState<MatrizRespuesta | null>(null);
+  const [cargando, setCargando] = useState<boolean>(true);
+  const [refrescando, setRefrescando] = useState<boolean>(false);
+  const [errorCarga, setErrorCarga] = useState<string | null>(null);
+
+  // Orden seleccionada para panel de detalle (Bloque 2 paso 3)
+  const [ordenSeleccionada, setOrdenSeleccionada] = useState<FilaMatriz | null>(null);
+  // Modal nuevo equipo (Bloque 2 paso 4)
+  const [modalNuevoEquipoAbierto, setModalNuevoEquipoAbierto] = useState<boolean>(false);
+
+  const hoy = useMemo(() => obtenerHoyMexico(), []);
+  const fechaHoyFormateada = useMemo(() => formatearFechaHoyCompleta(hoy), [hoy]);
+
+  // Cambiar línea en URL
+  const cambiarLinea = (nuevaLinea: string) => {
+    setSearchParams(
+      (prev) => {
+        const p = new URLSearchParams(prev);
+        p.set('linea', nuevaLinea);
+        return p;
+      },
+      { replace: true }
+    );
   };
 
-  const filteredOrdenes = useMemo(() => {
-    let filtered = ordenesTrabajo;
-    
-    // Filtro por linea actual
-    filtered = filtered.filter(o => {
-      // By default, if the order doesn't have a linea, we don't show it here. 
-      // We assume during order generation or migration, linea_producto_id is set.
-      return o.linea_producto_id === activeTab;
+  // Cambiar vista en URL
+  const cambiarVista = (nuevaVista: 'matriz' | 'fase') => {
+    setSearchParams(
+      (prev) => {
+        const p = new URLSearchParams(prev);
+        p.set('vista', nuevaVista);
+        return p;
+      },
+      { replace: true }
+    );
+  };
+
+  // Carga de datos
+  const cargarMatriz = useCallback(
+    async (silent: boolean = false) => {
+      try {
+        if (!silent) setCargando(true);
+        else setRefrescando(true);
+        setErrorCarga(null);
+
+        const res = await fetchMatrizProduccion(lineaActiva, session?.access_token);
+        setDatosMatriz(res);
+      } catch (err: any) {
+        console.error('[TableroProduccionPage] Error al cargar matriz:', err);
+        setErrorCarga(err.message || 'Error al conectar con el servidor de producción');
+        if (silent) {
+          toast.error('No se pudo refrescar el tablero', { description: err.message });
+        }
+      } finally {
+        setCargando(false);
+        setRefrescando(false);
+      }
+    },
+    [lineaActiva, session?.access_token]
+  );
+
+  // Carga al montar o cambiar línea
+  useEffect(() => {
+    cargarMatriz(false);
+  }, [cargarMatriz]);
+
+  // Refresco automático: cada 60s y al recuperar foco en ventana
+  useEffect(() => {
+    const handleFocus = () => {
+      if (!document.hidden) {
+        cargarMatriz(true);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    const timer = setInterval(() => {
+      if (!document.hidden) {
+        cargarMatriz(true);
+      }
+    }, 60000);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      clearInterval(timer);
+    };
+  }, [cargarMatriz]);
+
+  // Sembrar líneas si la base está limpia
+  const handleSembrar = async () => {
+    try {
+      setCargando(true);
+      await sembrarTableroProduccion(session?.access_token);
+      toast.success('Tablero configurado con 4 líneas y 55 fases');
+      await cargarMatriz(false);
+    } catch (err: any) {
+      toast.error('Error al sembrar líneas', { description: err.message });
+      setCargando(false);
+    }
+  };
+
+  // Actualización de celda de fase con optimismo y rollback
+  const handleCambiarFase = async (
+    ordenId: string,
+    faseId: string,
+    cambio: {
+      estado: EstadoFase;
+      fecha_propuesta?: string | null;
+      fecha_fin?: string | null;
+      nota?: string | null;
+    }
+  ) => {
+    if (!datosMatriz) return;
+
+    // 1. Aplicación optimista en memoria
+    const { filasActualizadas, filaAnterior } = aplicarCambioOptimistaFase(
+      datosMatriz.filas,
+      ordenId,
+      faseId,
+      cambio,
+      datosMatriz.fases,
+      hoy
+    );
+
+    setDatosMatriz((prev) => (prev ? { ...prev, filas: filasActualizadas } : null));
+
+    try {
+      // 2. Llamada real al API
+      const resp = await actualizarFaseOrden(
+        ordenId,
+        faseId,
+        cambio,
+        session?.access_token
+      );
+
+      // Si el servidor emitió avisos (e.g. subproceso tina), mostrarlos en toast warning
+      if (resp.avisos && resp.avisos.length > 0) {
+        for (const aviso of resp.avisos) {
+          toast.warning(aviso, { duration: 6000 });
+        }
+      }
+    } catch (err: any) {
+      // 3. Rollback en caso de error
+      console.error('[TableroProduccionPage] Error al actualizar fase:', err);
+      if (filaAnterior) {
+        setDatosMatriz((prev) => {
+          if (!prev) return null;
+          const revertidas = prev.filas.map((f) =>
+            f.orden_id === ordenId ? filaAnterior : f
+          );
+          return { ...prev, filas: revertidas };
+        });
+      }
+      toast.error('Error al actualizar fase', { description: err.message });
+    }
+  };
+
+  // Guardar planeación (material faltante, compromiso, etc.)
+  const handleGuardarPlaneacion = async (
+    ordenId: string,
+    cambios: {
+      fecha_compromiso?: string | null;
+      etiqueta?: string | null;
+      material_faltante?: string | null;
+    }
+  ) => {
+    if (!datosMatriz) return;
+
+    // Optimista
+    const filaPrevia = datosMatriz.filas.find((f) => f.orden_id === ordenId);
+    setDatosMatriz((prev) => {
+      if (!prev) return null;
+      const actualizadas = prev.filas.map((f) =>
+        f.orden_id === ordenId ? { ...f, ...cambios } : f
+      );
+      return { ...prev, filas: actualizadas };
     });
 
-    // Búsqueda
-    if (searchTerm) {
-      const s = searchTerm.toLowerCase();
-      filtered = filtered.filter(o => {
-        const cli = (o.cliente?.nombre || (o.cliente as any)?.nombre_comercial || o.etiqueta || '').toLowerCase();
-        const fol = (o.cotizacion?.folio || o.nomenclatura_id || '').toLowerCase();
-        return cli.includes(s) || fol.includes(s);
-      });
+    try {
+      await actualizarPlaneacionOrden(ordenId, cambios, session?.access_token);
+    } catch (err: any) {
+      // Rollback
+      if (filaPrevia) {
+        setDatosMatriz((prev) => {
+          if (!prev) return null;
+          const revertidas = prev.filas.map((f) =>
+            f.orden_id === ordenId ? filaPrevia : f
+          );
+          return { ...prev, filas: revertidas };
+        });
+      }
+      toast.error('Error al guardar planeación', { description: err.message });
     }
+  };
 
-    return filtered;
-  }, [ordenesTrabajo, activeTab, searchTerm]);
+  // Filas filtradas por chips y buscador de texto
+  const filasFiltradas = useMemo(() => {
+    if (!datosMatriz) return [];
+    return filtrarFilasMatriz(datosMatriz.filas, filtroChip, busqueda);
+  }, [datosMatriz, filtroChip, busqueda]);
 
-  const activeFases = useMemo(() => {
-    return fasesProduccion.filter(f => f.linea_producto_id === activeTab);
-  }, [fasesProduccion, activeTab]);
+  const resumen = datosMatriz?.resumen || {
+    en_planta: 0,
+    atrasados: 0,
+    con_material: 0,
+    con_pausa: 0,
+    wip_por_fase: {},
+  };
 
-  if (loading) {
+  // Vista alternativa "Por fase" (placeholder funcional para paso 4)
+  const renderVistaPorFase = () => {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="border border-border/70 rounded-xl p-8 bg-card text-center text-muted-foreground">
+        <Kanban className="w-12 h-12 mx-auto mb-3 text-primary/60" />
+        <h3 className="text-base font-semibold text-foreground mb-1">
+          Vista por fase
+        </h3>
+        <p className="text-sm max-w-md mx-auto mb-4">
+          Visualización de tarjetas agrupadas por fases activas. Cambia a vista Matriz para ver la tabla completa.
+        </p>
+        <Button variant="outline" size="sm" onClick={() => cambiarVista('matriz')}>
+          Ver en Matriz
+        </Button>
       </div>
     );
-  }
-
-  if (lineasProducto.length === 0) {
-    return (
-      <div className="text-center py-20 bg-card/50 rounded-xl border border-border/50">
-        <LayoutDashboard className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <h3 className="text-lg font-medium text-foreground mb-2">Tablero no configurado</h3>
-        <p className="text-muted-foreground">No se encontraron líneas de producto ni fases. Importa el catálogo inicial.</p>
-      </div>
-    );
-  }
+  };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)]">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div className="flex flex-col gap-4 p-4 md:p-6 min-h-[calc(100vh-80px)] max-w-full">
+      {/* 1. CABECERA SUPERIOR */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-border/60">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Tablero de Producción</h1>
-          <p className="text-muted-foreground mt-1">Seguimiento tipo Kanban de unidades en planta</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              Tablero de producción
+            </h1>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              onClick={() => cargarMatriz(true)}
+              disabled={refrescando || cargando}
+              title="Refrescar tablero"
+            >
+              <RefreshCw
+                className={cn('w-4 h-4', (refrescando || cargando) && 'animate-spin text-primary')}
+              />
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground capitalize mt-0.5">
+            {fechaHoyFormateada}
+          </p>
         </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Buscar por cliente o folio..." 
-            className="pl-9 w-full md:w-64"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="flex overflow-x-auto gap-2 mb-6 pb-2 border-b border-border/50">
-        {lineasProducto.map(linea => (
+        {/* Buscador y Botón Nuevo Equipo */}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Buscar cliente o folio..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="pl-8 h-9 text-xs"
+            />
+          </div>
+
           <Button
-            key={linea.id}
-            variant={activeTab === linea.id ? 'default' : 'ghost'}
-            className={`${activeTab === linea.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-            onClick={() => setActiveTab(linea.id)}
+            type="button"
+            variant="default"
+            size="sm"
+            onClick={() => setModalNuevoEquipoAbierto(true)}
+            className="h-9 text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs"
           >
-            {linea.nombre}
+            <Plus className="w-4 h-4 mr-1.5" />
+            Nuevo equipo en planta
           </Button>
-        ))}
+        </div>
       </div>
 
-      {/* Kanban Board Container (Flexible to take remaining height) */}
-      <div className="flex-1 overflow-hidden bg-card/30 rounded-xl border border-border/50 p-4">
-        <KanbanBoard 
-          fases={activeFases}
-          ordenes={filteredOrdenes}
-          onMoverOrden={onMoverOrden}
-          onOrderClick={handleOrderClick}
-        />
+      {/* 2. BARRA DE CONTROL: PESTAÑAS DE LÍNEA, SELECTOR DE VISTA Y CHIPS */}
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 flex-wrap">
+          {/* Pestañas de Línea */}
+          <div className="flex items-center gap-1.5 p-1 bg-muted/50 rounded-lg border border-border/60 overflow-x-auto">
+            {LINEAS_TABLERO.map((l) => (
+              <button
+                key={l.clave}
+                type="button"
+                onClick={() => cambiarLinea(l.clave)}
+                className={cn(
+                  'px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer shrink-0',
+                  lineaActiva === l.clave
+                    ? 'bg-card text-foreground shadow-xs font-semibold'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+                )}
+              >
+                {l.nombre}
+              </button>
+            ))}
+          </div>
+
+          {/* Selector de vista: Matriz / Por fase */}
+          <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-lg border border-border/60">
+            <button
+              type="button"
+              onClick={() => cambiarVista('matriz')}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer',
+                vistaActiva === 'matriz'
+                  ? 'bg-card text-foreground shadow-xs font-semibold'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              Matriz
+            </button>
+
+            <button
+              type="button"
+              onClick={() => cambiarVista('fase')}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer',
+                vistaActiva === 'fase'
+                  ? 'bg-card text-foreground shadow-xs font-semibold'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <Kanban className="w-3.5 h-3.5" />
+              Por fase
+            </button>
+          </div>
+        </div>
+
+        {/* Chips de filtro */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            type="button"
+            onClick={() => setFiltroChip('todos')}
+            className={cn(
+              'px-2.5 py-1 rounded-full text-xs font-medium border transition-colors flex items-center gap-1.5 cursor-pointer',
+              filtroChip === 'todos'
+                ? 'bg-primary text-primary-foreground border-primary font-semibold'
+                : 'bg-card text-muted-foreground hover:text-foreground border-border/60 hover:bg-muted'
+            )}
+          >
+            Todos
+            <Badge variant="secondary" className="px-1.5 py-0 text-[10px] h-4">
+              {resumen.en_planta}
+            </Badge>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFiltroChip('atrasados')}
+            className={cn(
+              'px-2.5 py-1 rounded-full text-xs font-medium border transition-colors flex items-center gap-1.5 cursor-pointer',
+              filtroChip === 'atrasados'
+                ? 'bg-destructive text-destructive-foreground border-destructive font-semibold'
+                : resumen.atrasados > 0
+                ? 'bg-destructive/10 text-destructive border-destructive/30 hover:bg-destructive/20'
+                : 'bg-card text-muted-foreground hover:text-foreground border-border/60 hover:bg-muted'
+            )}
+          >
+            <Clock className="w-3 h-3" />
+            Atrasados
+            <Badge
+              variant="secondary"
+              className={cn(
+                'px-1.5 py-0 text-[10px] h-4',
+                resumen.atrasados > 0 && 'bg-destructive/20 text-destructive'
+              )}
+            >
+              {resumen.atrasados}
+            </Badge>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFiltroChip('con_material')}
+            className={cn(
+              'px-2.5 py-1 rounded-full text-xs font-medium border transition-colors flex items-center gap-1.5 cursor-pointer',
+              filtroChip === 'con_material'
+                ? 'bg-destructive text-destructive-foreground border-destructive font-semibold'
+                : resumen.con_material > 0
+                ? 'bg-destructive/10 text-destructive border-destructive/30 hover:bg-destructive/20'
+                : 'bg-card text-muted-foreground hover:text-foreground border-border/60 hover:bg-muted'
+            )}
+          >
+            <PackageX className="w-3 h-3" />
+            Con material
+            <Badge
+              variant="secondary"
+              className={cn(
+                'px-1.5 py-0 text-[10px] h-4',
+                resumen.con_material > 0 && 'bg-destructive/20 text-destructive'
+              )}
+            >
+              {resumen.con_material}
+            </Badge>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFiltroChip('con_pausa')}
+            className={cn(
+              'px-2.5 py-1 rounded-full text-xs font-medium border transition-colors flex items-center gap-1.5 cursor-pointer',
+              filtroChip === 'con_pausa'
+                ? 'bg-amber-500 text-white border-amber-500 font-semibold'
+                : resumen.con_pausa > 0
+                ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30 hover:bg-amber-500/20'
+                : 'bg-card text-muted-foreground hover:text-foreground border-border/60 hover:bg-muted'
+            )}
+          >
+            <PauseCircle className="w-3 h-3" />
+            Con pausa
+            <Badge
+              variant="secondary"
+              className={cn(
+                'px-1.5 py-0 text-[10px] h-4',
+                resumen.con_pausa > 0 && 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
+              )}
+            >
+              {resumen.con_pausa}
+            </Badge>
+          </button>
+        </div>
       </div>
+
+      {/* 3. CONTENIDO PRINCIPAL */}
+      {cargando ? (
+        <div className="flex flex-col items-center justify-center py-24 gap-3 bg-card/40 rounded-xl border border-border/50">
+          <RefreshCw className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Cargando tablero de producción...</p>
+        </div>
+      ) : errorCarga ? (
+        <div className="p-8 text-center bg-card rounded-xl border border-destructive/30 space-y-3">
+          <AlertTriangle className="w-10 h-10 mx-auto text-destructive" />
+          <h3 className="text-base font-semibold text-foreground">
+            Error al consultar la línea de producción
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-md mx-auto">{errorCarga}</p>
+          <div className="pt-2 flex justify-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => cargarMatriz(false)}>
+              Reintentar
+            </Button>
+            <Button size="sm" variant="default" onClick={handleSembrar}>
+              <Database className="w-3.5 h-3.5 mr-1.5" />
+              Preparar tablero
+            </Button>
+          </div>
+        </div>
+      ) : !datosMatriz || datosMatriz.fases.length === 0 ? (
+        <div className="p-12 text-center bg-card rounded-xl border border-border space-y-4">
+          <Database className="w-12 h-12 mx-auto text-muted-foreground" />
+          <div>
+            <h3 className="text-base font-bold text-foreground">Tablero no configurado</h3>
+            <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
+              No se encontraron líneas de producto ni fases sembradas en la organización.
+            </p>
+          </div>
+          <Button size="sm" variant="default" onClick={handleSembrar}>
+            <Database className="w-4 h-4 mr-1.5" />
+            Preparar tablero (Sembrar catálogo)
+          </Button>
+        </div>
+      ) : vistaActiva === 'fase' ? (
+        renderVistaPorFase()
+      ) : (
+        <MatrizProduccionView
+          lineaClave={lineaActiva}
+          fases={datosMatriz.fases}
+          filas={filasFiltradas}
+          resumen={resumen}
+          hoy={hoy}
+          onCambiarFase={handleCambiarFase}
+          onGuardarPlaneacion={handleGuardarPlaneacion}
+          onSeleccionarOrden={(fila) => setOrdenSeleccionada(fila)}
+        />
+      )}
     </div>
   );
 }
