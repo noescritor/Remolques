@@ -263,15 +263,62 @@ export function formatearTiempoRelativo(isoStr?: string | null): string {
 }
 
 /**
- * Formatea la fecha de hoy para la cabecera superior, e.g. "jueves, 12 de noviembre de 2026".
+ * Formatea la fecha de hoy para la cabecera superior, e.g. "Viernes, 13 de noviembre de 2026".
+ * Solo capitaliza el día de la semana, conservando preposiciones en minúscula.
  */
 export function formatearFechaHoyCompleta(fechaStr?: string | null): string {
   const partes = parsearFechaPartes(fechaStr || obtenerHoyMexico());
   if (!partes) return '';
   const d = new Date(partes.anio, partes.mes - 1, partes.dia, 12, 0, 0);
   const diaSemana = DIAS_SEMANA_ES[d.getDay()] || '';
+  const diaCapitalizado = diaSemana.charAt(0).toUpperCase() + diaSemana.slice(1);
   const mesStr = MESES_LARGOS_ES[partes.mes - 1] || '';
-  return `${diaSemana}, ${partes.dia} de ${mesStr} de ${partes.anio}`;
+  return `${diaCapitalizado}, ${partes.dia} de ${mesStr} de ${partes.anio}`;
+}
+
+/**
+ * Formatea el estado de fase para el historial humano, e.g. "En proceso", "Incompleta".
+ */
+export function formatearEstadoHistorial(estado?: string | null): string {
+  if (!estado) return 'Pendiente';
+  const norm = estado.toLowerCase().replace(/_/g, ' ').trim();
+  switch (norm) {
+    case 'en proceso':
+      return 'En proceso';
+    case 'incompleta':
+      return 'Incompleta';
+    case 'pausada':
+      return 'Pausada';
+    case 'terminada':
+      return 'Terminada';
+    case 'pendiente':
+    default:
+      return 'Pendiente';
+  }
+}
+
+/**
+ * Formatea el usuario responsable del historial, ocultando UUIDs crudos del sistema.
+ */
+export function formatearUsuarioHistorial(usuario?: string | null): string {
+  if (!usuario || usuario.trim() === '' || usuario.toLowerCase() === 'sistema') {
+    return 'Sistema';
+  }
+  // Si es un UUID (36 caracteres hexadecimales con guiones)
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(usuario.trim())) {
+    return 'Usuario';
+  }
+  return usuario;
+}
+
+/**
+ * Formatea el título de fase para un elemento del historial, manejando eventos viejos sin fase.
+ */
+export function formatearFaseHistorial(faseNombre?: string | null, faseOrden?: number | null): string {
+  if (!faseNombre || faseNombre.trim() === '' || faseNombre.trim() === '.') {
+    return 'Sin fase';
+  }
+  return faseOrden ? `${faseOrden}. ${faseNombre}` : faseNombre;
 }
 
 /**
@@ -404,9 +451,10 @@ export function calcularEstadoVisualCelda(
 export type TipoChipFiltro = 'todos' | 'atrasados' | 'con_material' | 'con_pausa';
 export type FiltroChip = TipoChipFiltro;
 
-function normalizarTextoBusqueda(str?: string | null): string {
+export function normalizarTextoBusqueda(str?: string | null): string {
   if (!str) return '';
   return str
+    .trim()
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');

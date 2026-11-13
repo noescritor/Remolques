@@ -4,6 +4,9 @@ import { FilaMatriz, HistorialFaseItem, fetchHistorialOrden } from '../../utils/
 import {
   formatearFechaCorta,
   formatearTiempoRelativo,
+  formatearEstadoHistorial,
+  formatearUsuarioHistorial,
+  formatearFaseHistorial,
   EstadoFase,
 } from '../../utils/tableroProduccion';
 import {
@@ -300,7 +303,7 @@ export function OrdenTrabajoDetalleSheet({
                     <div className="bg-card p-2.5 rounded-lg border border-border/60 shadow-xs space-y-1">
                       <div className="flex items-center justify-between gap-1 flex-wrap">
                         <span className="font-semibold text-foreground text-xs">
-                          {item.fase_orden}. {item.fase_nombre}
+                          {formatearFaseHistorial(item.fase_nombre, item.fase_orden)}
                           {item.fase_grupo === 'tina' && (
                             <span className="ml-1 text-[10px] text-primary font-medium">
                               (Tina)
@@ -314,13 +317,13 @@ export function OrdenTrabajoDetalleSheet({
 
                       {/* Transición de estados */}
                       <div className="flex items-center gap-1.5 text-[11px] font-medium pt-0.5">
-                        <span className="text-muted-foreground capitalize">
-                          {item.estado_anterior || 'pendiente'}
+                        <span className="text-muted-foreground">
+                          {formatearEstadoHistorial(item.estado_anterior)}
                         </span>
                         <span className="text-muted-foreground">→</span>
-                        <span className="flex items-center gap-1 capitalize font-semibold text-foreground">
+                        <span className="flex items-center gap-1 font-semibold text-foreground">
                           {renderIconoEstado(item.estado_nuevo)}
-                          {item.estado_nuevo}
+                          {formatearEstadoHistorial(item.estado_nuevo)}
                         </span>
                       </div>
 
@@ -342,7 +345,7 @@ export function OrdenTrabajoDetalleSheet({
                       {/* Usuario */}
                       <div className="text-[10px] text-muted-foreground/70 flex items-center gap-1 pt-0.5">
                         <User className="w-2.5 h-2.5" />
-                        {item.usuario || 'Sistema'}
+                        {formatearUsuarioHistorial(item.usuario)}
                       </div>
                     </div>
                   </div>

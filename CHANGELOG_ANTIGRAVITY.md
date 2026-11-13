@@ -3,6 +3,32 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-13 - Tablero de producción (Bloque 2 de 2, Ronda 2: corrección clientes reales con buscador, formato de celdas, historial limpio, vista por fase completa y evidencia real PNG)
+**Herramienta:** Antigravity  
+**Tipo:** fix (consulta de clientes reales con popover buscador en NuevoEquipoModal, símbolo limpio de celda sin flecha duplicada, formato de fecha de cabecera en español sin capitalize, formateadores de historial de fases y usuario, cierre inmediato de menú contextual en acciones discretas, vista Por fase con todas las fases principales, eliminación de advertencia Radix DialogContent/SheetContent, script de captura CDP con Chrome Headless y 8 capturas de pantalla reales PNG)  
+**Rama:** `tablero-produccion-b2-2026-11-12`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/TABLERO_B2_REVISION_CLAUDE.md`, `COORDINACION/REPORTES/TABLERO_B2_REPORTE_ANTY.md`, `TABLERO_B2_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `src/app/utils/tableroProduccion.ts`: ajuste a `formatearFechaHoyCompleta` capitalizando únicamente la primera letra del día de la semana; nuevas funciones `formatearEstadoHistorial`, `formatearUsuarioHistorial` y `formatearFaseHistorial`; `normalizarTextoBusqueda` con trim.
+- `src/app/utils/tableroProduccion.test.ts`: pruebas unitarias para formateadores de historial y fecha de cabecera (suite Deno subió a 334 pruebas, 0 fallas).
+- `src/app/components/TableroProduccion/CeldaFaseMenu.tsx`: eliminación del ícono de flecha duplicado en el botón trigger; cierre del popover (`setAbierto(false)`) al ejecutar acciones discretas (`Iniciar`, `Terminar hoy`, `Falta material`, `Pausar`, `Reanudar`, `Limpiar`).
+- `src/app/components/TableroProduccion/NuevoEquipoModal.tsx`: consulta a columnas reales `id, nombre_razon_social, nombre_contacto` de `clientes` eliminando `nombre_comercial`; combobox con buscador popover insensible a acentos y mayúsculas para 50+ clientes; banner de error con botón de reintento; corrección de advertencia Radix `DialogContent`.
+- `src/app/components/TableroProduccion/OrdenTrabajoDetalleSheet.tsx`: integración de formateadores amigables para la bitácora vertical de cambios de fase; corrección de advertencia Radix `SheetContent`.
+- `src/app/components/TableroProduccion/TableroProduccionPage.tsx`: retiro de la clase `capitalize` en el párrafo de fecha del encabezado.
+- `src/app/components/TableroProduccion/VistaPorFase.tsx`: visualización completa de todas las 12 fases principales de la línea más "Por iniciar", con contador dinámico y estado `Sin equipos` en columnas vacías.
+- `src/app/components/WelcomeTour.tsx`: inclusión de `DialogDescription` para estandarizar accesibilidad Radix.
+- `scripts/capturar_evidencia.mjs`: script automatizado con Chrome Headless (CDP) que corre sobre el frontend real para capturar las 8 pantallas reales en PNG y registrar consola limpia.
+- `COORDINACION/EVIDENCIA/*.png`: 8 capturas reales (`matriz_desktop_1440.png`, `matriz_tablet_768.png`, `matriz_mobile_375.png`, `celda_menu_abierto.png`, `gondola_tina_expandida.png`, `detalle_equipo_historial.png`, `vista_por_fase.png`, `nuevo_equipo_modal.png`).
+- Eliminación de `COORDINACION/EVIDENCIA/*.svg` y `scripts/generar_evidencia.mjs` (maquetas vectoriales artificiales retiradas).
+**Qué cambió y por qué:**  
+- **1. Evidencia visual 100% honesta y verificable:** Se reemplazaron maquetas sintéticas por capturas de pantalla PNG reales generadas directamente desde Google Chrome Headless sobre la aplicación React.
+- **2. Alta de equipos funcional con clientes reales:** Se resolvió la falla HTTP 400 en `clientes` y se dotó de un selector filtrable idóneo para catálogos empresariales con decenas de registros.
+- **3. Pulido visual y experiencia de uso:** Eliminación de duplicidad de flechas en celdas en proceso, corrección ortográfica de la fecha larga de cabecera, cierre automático del menú al interactuar y formateo claro del historial de transiciones.
+- **4. Cobertura visual completa en vista Por fase:** Se despliegan todas las columnas de la línea para ofrecer una perspectiva global del flujo productivo.
+**Acciones manuales pendientes:**  
+- Ninguna migración requerida ni cambio en backend.
+- Rebuild en EasyPanel del servicio `remolques-web` tras merge a `main`.
+
 ## 2026-11-13 - Tablero de producción (Bloque 2 de 2: la pantalla, matriz por línea)
 **Herramienta:** Antigravity  
 **Tipo:** feat (matriz de producción interactiva, CeldaFaseMenu con popover de un toque, franja acordeón de tina para góndolas, panel lateral de detalle con historial de fases vertical, vista alternativa por fase tipo kanban seguro, modal nuevo equipo en planta, cliente tableroApi, funciones puras de fechas UTC y retiro de código muerto)  

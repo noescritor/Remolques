@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../../utils/supabase/client';
 import { crearOrdenProduccion } from '../../utils/tableroApi';
+import { normalizarTextoBusqueda } from '../../utils/tableroProduccion';
 import {
   Dialog,
   DialogContent,
@@ -9,6 +10,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '../ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -19,8 +21,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { Plus, Loader2 } from 'lucide-react';
+import {
+  Plus,
+  Loader2,
+  Check,
+  ChevronsUpDown,
+  Search,
+  AlertCircle,
+  RefreshCw,
+} from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '../ui/utils';
 
 interface NuevoEquipoModalProps {
   open: boolean;
@@ -33,6 +44,7 @@ interface NuevoEquipoModalProps {
 interface ClienteOpcion {
   id: string;
   nombre: string;
+  contacto?: string;
 }
 
 const MODELOS_POR_LINEA: Record<string, Array<{ tipo: string; modelo: string }>> = {
@@ -74,9 +86,44 @@ export function NuevoEquipoModal({
   const [observaciones, setObservaciones] = useState<string>('');
   const [guardando, setGuardando] = useState<boolean>(false);
 
-  // Lista de clientes para el select
+  // Lista de clientes con buscador y manejo explícito de errores
   const [clientes, setClientes] = useState<ClienteOpcion[]>([]);
   const [cargandoClientes, setCargandoClientes] = useState<boolean>(false);
+  const [errorClientes, setErrorClientes] = useState<string | null>(null);
+  const [busquedaCliente, setBusquedaCliente] = useState<string>('');
+  const [popoverClienteAbierto, setPopoverClienteAbierto] = useState<boolean>(false);
+
+  const cargarClientes = async () => {
+    try {
+      setCargandoClientes(true);
+      setErrorClientes(null);
+      // Consulta únicamente columnas reales del esquema: id, nombre_razon_social, nombre_contacto
+      const { data, error } = await supabase
+        .from('clientes')
+        .select('id, nombre_razon_social, nombre_contacto')
+        .order('nombre_razon_social');
+
+      if (error) {
+        console.error('[NuevoEquipoModal] Error al consultar clientes:', error);
+        setErrorClientes(error.message || 'Error al consultar clientes');
+        return;
+      }
+
+      if (data) {
+        const list: ClienteOpcion[] = data.map((c: any) => ({
+          id: c.id,
+          nombre: c.nombre_razon_social || c.nombre_contacto || 'Cliente sin nombre',
+          contacto: c.nombre_contacto || undefined,
+        }));
+        setClientes(list);
+      }
+    } catch (err: any) {
+      console.error('[NuevoEquipoModal] Excepción al consultar clientes:', err);
+      setErrorClientes(err?.message || 'Error de conexión al cargar clientes');
+    } finally {
+      setCargandoClientes(false);
+    }
+  };
 
   // Sincronizar línea inicial al abrir
   useEffect(() => {
@@ -90,27 +137,9 @@ export function NuevoEquipoModal({
       setEtiqueta('');
       setFechaCompromiso('');
       setObservaciones('');
+      setBusquedaCliente('');
+      setPopoverClienteAbierto(false);
 
-      // Cargar lista de clientes
-      const cargarClientes = async () => {
-        try {
-          setCargandoClientes(true);
-          const { data, error } = await supabase
-            .from('clientes')
-            .select('id, nombre_razon_social, nombre_comercial, nombre_contacto')
-            .order('nombre_razon_social');
-
-          if (!error && data) {
-            const list: ClienteOpcion[] = data.map((c: any) => ({
-              id: c.id,
-              nombre: c.nombre_razon_social || c.nombre_comercial || c.nombre_contacto || 'Cliente sin nombre',
-            }));
-            setClientes(list);
-          }
-        } finally {
-          setCargandoClientes(false);
-        }
-      };
       cargarClientes();
     }
   }, [open, lineaDefecto]);
@@ -132,6 +161,21 @@ export function NuevoEquipoModal({
       }
     }
   };
+
+  const clienteSeleccionadoObj = useMemo(
+    () => clientes.find((c) => c.id === clienteId),
+    [clientes, clienteId]
+  );
+
+  const clientesFiltrados = useMemo(() => {
+    const q = normalizarTextoBusqueda(busquedaCliente);
+    if (!q) return clientes;
+    return clientes.filter(
+      (c) =>
+        normalizarTextoBusqueda(c.nombre).includes(q) ||
+        (c.contacto && normalizarTextoBusqueda(c.contacto).includes(q))
+    );
+  }, [clientes, busquedaCliente]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,7 +226,9 @@ export function NuevoEquipoModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-card text-card-foreground border-border">
+      <DialogContent
+        className="sm:max-w-md bg-card text-card-foreground border-border"
+      >
         <DialogHeader>
           <DialogTitle className="text-base font-bold text-foreground">
             Nuevo equipo en planta
@@ -240,26 +286,129 @@ export function NuevoEquipoModal({
             )}
           </div>
 
-          {/* Cliente (Opcional) */}
+          {/* Cliente (Opcional) con Buscador / Combobox */}
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Cliente (opcional)</Label>
-            <Select
-              value={clienteId}
-              onValueChange={handleCambioCliente}
-              disabled={cargandoClientes}
-            >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue placeholder={cargandoClientes ? 'Cargando clientes...' : 'Sin cliente asignado'} />
-              </SelectTrigger>
-              <SelectContent className="max-h-56">
-                <SelectItem value="ninguno">Sin cliente (Inventario)</SelectItem>
-                {clientes.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.nombre}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center justify-between">
+              <Label className="text-xs text-muted-foreground">Cliente (opcional)</Label>
+              {cargandoClientes && (
+                <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                  <Loader2 className="w-3 h-3 animate-spin" /> Cargando...
+                </span>
+              )}
+            </div>
+
+            {errorClientes && (
+              <div className="p-2 rounded-md bg-destructive/10 border border-destructive/30 text-destructive text-xs flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 truncate">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">{errorClientes}</span>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-6 text-[11px] px-2 shrink-0 border-destructive/40 hover:bg-destructive/20 text-destructive"
+                  onClick={cargarClientes}
+                >
+                  <RefreshCw className="w-2.5 h-2.5 mr-1" /> Reintentar
+                </Button>
+              </div>
+            )}
+
+            <Popover open={popoverClienteAbierto} onOpenChange={setPopoverClienteAbierto}>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={popoverClienteAbierto}
+                  disabled={cargandoClientes}
+                  className="w-full justify-between h-8 text-xs font-normal border-border bg-background"
+                >
+                  <span className="truncate">
+                    {clienteSeleccionadoObj
+                      ? clienteSeleccionadoObj.nombre
+                      : clienteId === 'ninguno'
+                      ? 'Sin cliente (Inventario)'
+                      : 'Seleccionar cliente...'}
+                  </span>
+                  <ChevronsUpDown className="w-3.5 h-3.5 ml-2 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-[320px] sm:w-[400px] p-2 bg-popover text-popover-foreground shadow-lg border border-border"
+                align="start"
+              >
+                <div className="space-y-2">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar por razón social o contacto..."
+                      value={busquedaCliente}
+                      onChange={(e) => setBusquedaCliente(e.target.value)}
+                      className="pl-8 h-7 text-xs bg-muted/40"
+                      autoFocus
+                    />
+                  </div>
+
+                  <div className="max-h-56 overflow-y-auto space-y-0.5 divide-y divide-border/30">
+                    {/* Opción Sin cliente */}
+                    <button
+                      type="button"
+                      className={cn(
+                        'w-full text-left px-2 py-1.5 rounded-sm text-xs flex items-center justify-between hover:bg-accent hover:text-accent-foreground cursor-pointer',
+                        clienteId === 'ninguno' && 'bg-accent/60 font-semibold text-accent-foreground'
+                      )}
+                      onClick={() => {
+                        handleCambioCliente('ninguno');
+                        setPopoverClienteAbierto(false);
+                        setBusquedaCliente('');
+                      }}
+                    >
+                      <span>Sin cliente (Inventario)</span>
+                      {clienteId === 'ninguno' && <Check className="w-3.5 h-3.5 text-primary" />}
+                    </button>
+
+                    {clientesFiltrados.length === 0 ? (
+                      <div className="py-4 text-center text-xs text-muted-foreground">
+                        {clientes.length === 0
+                          ? 'No hay clientes registrados'
+                          : 'No se encontraron clientes'}
+                      </div>
+                    ) : (
+                      clientesFiltrados.map((c) => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          className={cn(
+                            'w-full text-left px-2 py-1.5 rounded-sm text-xs flex items-center justify-between hover:bg-accent hover:text-accent-foreground cursor-pointer',
+                            clienteId === c.id &&
+                              'bg-accent/60 font-semibold text-accent-foreground'
+                          )}
+                          onClick={() => {
+                            handleCambioCliente(c.id);
+                            setPopoverClienteAbierto(false);
+                            setBusquedaCliente('');
+                          }}
+                        >
+                          <div className="truncate pr-2">
+                            <p className="truncate text-foreground font-medium">{c.nombre}</p>
+                            {c.contacto && (
+                              <p className="truncate text-[10px] text-muted-foreground">
+                                Contacto: {c.contacto}
+                              </p>
+                            )}
+                          </div>
+                          {clienteId === c.id && (
+                            <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                          )}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Etiqueta visible */}

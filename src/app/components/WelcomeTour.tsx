@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
 import { LayoutDashboard, Package, FileText, Users, Calculator, ArrowRight, Check } from 'lucide-react';
 import { supabase } from '../utils/supabase/client';
@@ -69,8 +69,8 @@ export function WelcomeTour({ session }: WelcomeTourProps) {
           {steps[step].icon}
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold mb-2">{steps[step].title}</DialogTitle>
+            <DialogDescription className="text-muted-foreground mt-4">{steps[step].description}</DialogDescription>
           </DialogHeader>
-          <p className="text-muted-foreground mt-4">{steps[step].description}</p>
         </div>
         
         <DialogFooter className="flex w-full sm:justify-between items-center mt-8">

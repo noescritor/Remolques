@@ -127,16 +127,12 @@ export function CeldaFaseMenu({
           disabled={disabled}
           aria-label={estadoVisual.ariaLabel}
           className={cn(
-            'min-w-[78px] min-h-[40px] px-2 py-1 text-xs rounded-md border font-medium flex items-center justify-center gap-1.5 transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-1 select-none',
+            'min-w-[78px] min-h-[40px] px-2 py-1 text-xs rounded-md border font-medium flex items-center justify-center transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-1 select-none',
             estadoVisual.claseColor,
             disabled && 'opacity-50 cursor-not-allowed'
           )}
         >
-          {estadoVisual.simbolo === '✓' && <Check className="w-3.5 h-3.5 shrink-0 stroke-[2.5]" />}
-          {estadoVisual.simbolo === '→' && <span className="text-[11px] font-bold">→</span>}
-          {estadoVisual.simbolo === '!' && <AlertTriangle className="w-3 h-3 shrink-0 text-destructive" />}
-          {estadoVisual.simbolo === '||' && <Pause className="w-3 h-3 shrink-0 text-amber-500" />}
-          <span>{estadoVisual.texto}</span>
+          <span className="truncate">{estadoVisual.texto}</span>
         </button>
       </PopoverTrigger>
 

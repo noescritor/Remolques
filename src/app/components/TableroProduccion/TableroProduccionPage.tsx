@@ -325,7 +325,7 @@ export function TableroProduccionPage({ session }: TableroProduccionPageProps) {
               />
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground capitalize mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             {fechaHoyFormateada}
           </p>
         </div>

@@ -51,11 +51,9 @@ export function VistaPorFase({
       .sort((a, b) => a.orden - b.orden);
   }, [fases]);
 
-  // Agrupamiento por fase activa (incluye duplicación si un equipo tiene múltiples fases activas)
+  // Agrupamiento por fase (muestra todas las fases principales + Por iniciar)
   const columnas = useMemo(() => {
-    const cols = agruparPorFase(filas, fasesPrincipales);
-    // Solo mostrar columnas activas (con tarjetas) o la columna Por iniciar
-    return cols.filter((c) => c.esPorIniciar || c.tarjetas.length > 0);
+    return agruparPorFase(filas, fasesPrincipales);
   }, [filas, fasesPrincipales]);
 
   // Color de punto semáforo

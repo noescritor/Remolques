@@ -10,6 +10,10 @@ import {
   formatearFechaLarga,
   formatearFechaHoyCompleta,
   formatearTiempoRelativo,
+  formatearEstadoHistorial,
+  formatearUsuarioHistorial,
+  formatearFaseHistorial,
+  normalizarTextoBusqueda,
   sumarDiasAFecha,
   calcularEstadoVisualCelda,
   filtrarFilasMatriz,
@@ -166,9 +170,9 @@ Deno.test("tableroProduccion: formateo de fechas y prevención de trampa UTC", (
   assertEquals(formatearFechaLarga("2026-11-06"), "6 de noviembre");
   assertEquals(formatearFechaLarga("2026-05-15"), "15 de mayo");
 
-  // Formato completo para cabecera superior
-  assertEquals(formatearFechaHoyCompleta("2026-11-12"), "jueves, 12 de noviembre de 2026");
-  assertEquals(formatearFechaHoyCompleta("2026-11-13"), "viernes, 13 de noviembre de 2026");
+  // Formato completo para cabecera superior (día capitalizado, preposiciones en minúscula)
+  assertEquals(formatearFechaHoyCompleta("2026-11-12"), "Jueves, 12 de noviembre de 2026");
+  assertEquals(formatearFechaHoyCompleta("2026-11-13"), "Viernes, 13 de noviembre de 2026");
 
   // Formato relativo
   const ahora = new Date();
@@ -434,4 +438,38 @@ Deno.test("tableroProduccion: aplicarCambioOptimistaFase actualiza celda, semáf
   assertEquals(cambioTerminar.filasActualizadas[0].celdas.f1.estado, "terminada");
   assertEquals(cambioTerminar.filasActualizadas[0].celdas.f1.fecha_fin, "2026-11-12");
   assertEquals(cambioTerminar.filasActualizadas[0].avance.terminadas, 1);
+});
+
+Deno.test("tableroProduccion: formateadores de historial y búsqueda", () => {
+  // Estados del historial con formato limpio (sin guión bajo, con mayúscula inicial)
+  assertEquals(formatearEstadoHistorial("en_proceso"), "En proceso");
+  assertEquals(formatearEstadoHistorial("incompleta"), "Incompleta");
+  assertEquals(formatearEstadoHistorial("pausada"), "Pausada");
+  assertEquals(formatearEstadoHistorial("terminada"), "Terminada");
+  assertEquals(formatearEstadoHistorial("pendiente"), "Pendiente");
+  assertEquals(formatearEstadoHistorial(null), "Pendiente");
+
+  // Usuario: ocultar UUIDs crudos
+  assertEquals(
+    formatearUsuarioHistorial("00000000-0000-0000-0000-000000000001"),
+    "Usuario"
+  );
+  assertEquals(
+    formatearUsuarioHistorial("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+    "Usuario"
+  );
+  assertEquals(formatearUsuarioHistorial("Luis"), "Luis");
+  assertEquals(formatearUsuarioHistorial(null), "Sistema");
+  assertEquals(formatearUsuarioHistorial(""), "Sistema");
+
+  // Fase: fallback si está vacía o es un punto
+  assertEquals(formatearFaseHistorial(".", null), "Sin fase");
+  assertEquals(formatearFaseHistorial("", 1), "Sin fase");
+  assertEquals(formatearFaseHistorial(null, null), "Sin fase");
+  assertEquals(formatearFaseHistorial("Corte", 1), "1. Corte");
+  assertEquals(formatearFaseHistorial("Ensamble", null), "Ensamble");
+
+  // Normalización de texto para búsqueda
+  assertEquals(normalizarTextoBusqueda("  Góndola RÁPIDA  "), "gondola rapida");
+  assertEquals(normalizarTextoBusqueda("Chavarría"), "chavarria");
 });
