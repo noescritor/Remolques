@@ -3,6 +3,34 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-13 - Tablero de producción (Bloque 2 de 2: la pantalla, matriz por línea)
+**Herramienta:** Antigravity  
+**Tipo:** feat (matriz de producción interactiva, CeldaFaseMenu con popover de un toque, franja acordeón de tina para góndolas, panel lateral de detalle con historial de fases vertical, vista alternativa por fase tipo kanban seguro, modal nuevo equipo en planta, cliente tableroApi, funciones puras de fechas UTC y retiro de código muerto)  
+**Rama:** `tablero-produccion-b2-2026-11-12`  
+**Referencia auditoría:** `COORDINACION/REPORTES/TABLERO_B2_REPORTE_ANTY.md`, `TABLERO_B2_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `src/app/utils/tableroProduccion.ts`: funciones puras `parsearFechaPartes`, `formatearFechaCorta`, `formatearFechaLarga`, `formatearFechaHoyCompleta`, `formatearTiempoRelativo`, `sumarDiasAFecha` (prevención de desfase UTC), `calcularEstadoVisualCelda`, `filtrarFilasMatriz` (búsqueda insensible a acentos NFD), `agruparPorFase` (soporte de duplicación en múltiples fases activas) y `aplicarCambioOptimistaFase` (actualización local y rollback).
+- `src/app/utils/tableroProduccion.test.ts`: suite unitaria Deno con 8 pruebas cubriendo todas las funciones puras y casos borde.
+- `src/app/utils/tableroApi.ts`: cliente API con tipos de respuesta y métodos para `fetchMatrizProduccion`, `crearOrdenProduccion`, `actualizarFaseOrden`, `actualizarPlaneacionOrden`, `fetchHistorialOrden` y `sembrarTableroProduccion`.
+- `src/app/components/TableroProduccion/CeldaFaseMenu.tsx`: celda de toque seguro (mínimo 78x40px) con Popover de Radix para avanzar fases (`en_proceso`, `incompleta`, `pausada`, `terminada`, `pendiente`), ajuste rápido de fechas (`±1 día`) y notas.
+- `src/app/components/TableroProduccion/MatrizProduccionView.tsx`: matriz con cabecera sticky, columna fija de equipo, fila resumen de cuello de botella visual (`wip_por_fase`), edición inline de material faltante (con etiqueta "Observaciones" para Dolly) y franja acordeón de subproceso de Tina para Góndola con badge `Tina n/10` / `✓ Tina lista`.
+- `src/app/components/TableroProduccion/OrdenTrabajoDetalleSheet.tsx`: panel lateral deslizable (Sheet) con datos técnicos, edición de planeación, botón directo a tareas de producción (`/plan-semanal?tab=trazabilidad&ordenId={id}`) y línea de tiempo vertical de cambios de fase con tiempo relativo.
+- `src/app/components/TableroProduccion/VistaPorFase.tsx`: vista alternativa tipo Kanban que agrupa tarjetas por fases activas y columna "Por iniciar" sin drag-and-drop accidental.
+- `src/app/components/TableroProduccion/NuevoEquipoModal.tsx`: modal (Dialog) para registrar órdenes manuales en planta por línea y modelo canónico con prellenado de etiquetas.
+- `src/app/components/TableroProduccion/TableroProduccionPage.tsx`: página principal con sincronización bidireccional en URL (`?linea=...&vista=...`), chips de filtro dinámicos, refresco automático cada 60s / onFocus, optimismo con reversión y toasts para avisos del backend.
+- `src/app/App.tsx`: inyección de `session` a la ruta `/tablero-produccion`.
+- Eliminación de código muerto: retiro de `KanbanBoard.tsx` y `OrderCard.tsx` (antiguo kanban con alert popups), reduciendo errores tsc de 55 a 41.
+- `scripts/generar_evidencia.mjs`: generador de evidencias visuales vectoriales.
+- `COORDINACION/EVIDENCIA/`: archivos SVG para desktop 1440px, tablet 768px, mobile 375px y góndola con tina expandida.
+**Qué cambió y por qué:**  
+- **1. Matriz de producción operativa:** Digitaliza el Excel de planta de Armadora Leolca permitiendo supervisar el avance de las 4 líneas con cuellos de botella visibles.
+- **2. Subproceso de tina integrado:** Góndola despliega sus 10 fases de tina bajo la misma orden sin fragmentar los registros.
+- **3. Toque seguro sin arrastres accidentales:** Operación mediante popovers y botones táctiles calibrados a $\ge 40$px ideales para tablets de taller.
+- **4. Órdenes manuales de stock:** Alta inmediata de equipos sin cotización previa requerida.
+**Acciones manuales pendientes:**  
+- Ninguna migración nueva requerida (el backend y base de datos del bloque 1 ya están en main y desplegados).
+- Rebuild de `remolques-web` en EasyPanel tras merge de esta rama a `main`.
+
 ## 2026-11-12 - Tablero de producción (Bloque 1 de 2, Ronda 2: cliente service_role para RPCs, esquema real de clientes/historial, respaldo con bypass de trigger y pruebas reales de roles)
 **Herramienta:** Antigravity  
 **Tipo:** fix (inyección de serviceClient en rutas y motor de producción, resolución de columnas reales nombre_razon_social/nombre_contacto en clientes y fecha_cambio en historial_fases, bypass de trigger app.tablero_respaldo durante migración para preservar órdenes En Producción/Terminado/Liberado, numeración estable #n con órdenes liberadas, recálculo de fecha al reabrir fase terminada a hoy+duración, retiro de activo en DO UPDATE de semilla, sanitización de lista blanca en PUT de ordenes_trabajo y suite docs/tablero/prueba_roles.sql)  

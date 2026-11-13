@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 667" width="375" height="667" style="background:#0F172A;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <rect x="0" y="0" width="375" height="45" fill="#090D16" />
+  <text x="15" y="28" fill="#A191FF" font-size="13px" font-weight="800">REMOLQUES LEOLCA (375px)</text>
+
+  <g transform="translate(12, 55)">
+    <text x="0" y="18" fill="#F8FAFC" font-size="16px" font-weight="700">Tablero de producción</text>
+    <text x="0" y="32" fill="#94A3B8" font-size="10px">12 nov 2026</text>
+
+    <!-- Mobile Action Button -->
+    <rect x="220" y="5" width="130" height="30" rx="6" fill="#A191FF" />
+    <text x="285" y="25" fill="#0F172A" font-size="11px" font-weight="700" text-anchor="middle">+ Nuevo equipo</text>
+
+    <!-- Tabs Scrollable -->
+    <rect x="0" y="44" width="350" height="30" rx="6" fill="#1E293B" />
+    <rect x="2" y="46" width="80" height="26" rx="4" fill="#A191FF" />
+    <text x="42" y="63" fill="#0F172A" font-size="10px" font-weight="700" text-anchor="middle">Plataforma</text>
+    <text x="115" y="63" fill="#94A3B8" font-size="10px" text-anchor="middle">Góndola</text>
+    <text x="180" y="63" fill="#94A3B8" font-size="10px" text-anchor="middle">Dolly</text>
+    <text x="245" y="63" fill="#94A3B8" font-size="10px" text-anchor="middle">Traila</text>
+
+    <!-- Mobile Card View in Por Fase -->
+    <g transform="translate(0, 85)">
+      <text x="0" y="15" fill="#F8FAFC" font-size="12px" font-weight="700">Equipos en proceso activo</text>
+
+      <g transform="translate(0, 25)">
+        <rect x="0" y="0" width="350" height="110" rx="8" fill="#1E293B" stroke="#334155" />
+        <circle cx="15" cy="18" r="4" fill="#22C55E" />
+        <text x="26" y="21" fill="#F8FAFC" font-size="12px" font-weight="700">Transportes Azteca #1</text>
+        <text x="26" y="36" fill="#94A3B8" font-size="10px">Plataforma 40 ft 2 ejes · Avance 4/12</text>
+
+        <rect x="15" y="48" width="100" height="26" rx="4" fill="rgba(161,145,255,0.15)" stroke="rgba(161,145,255,0.4)" />
+        <text x="65" y="65" fill="#A191FF" font-size="10px" font-weight="700" text-anchor="middle">4. IPR → 14 nov</text>
+
+        <text x="15" y="96" fill="#94A3B8" font-size="10px">Compromiso: 18 nov · Sin faltantes</text>
+      </g>
+
+      <g transform="translate(0, 145)">
+        <rect x="0" y="0" width="350" height="110" rx="8" fill="#1E293B" stroke="rgba(239,68,68,0.5)" />
+        <circle cx="15" cy="18" r="4" fill="#EF4444" />
+        <text x="26" y="21" fill="#F8FAFC" font-size="12px" font-weight="700">Ferretería Pirámide</text>
+        <text x="26" y="36" fill="#94A3B8" font-size="10px">Plataforma 43 ft · Avance 2/12</text>
+
+        <rect x="15" y="48" width="105" height="26" rx="4" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.4)" />
+        <text x="67" y="65" fill="#F87171" font-size="10px" font-weight="700" text-anchor="middle">3. Armado !</text>
+
+        <rect x="130" y="48" width="95" height="26" rx="4" fill="rgba(239,68,68,0.12)" />
+        <text x="177" y="65" fill="#F87171" font-size="10px" font-weight="600" text-anchor="middle">4. Material</text>
+
+        <text x="15" y="96" fill="#F87171" font-size="10px" font-weight="600">⚠️ Falta solera 1/2 · Vencido: 10 nov</text>
+      </g>
+    </g>
+  </g>
+</svg>
