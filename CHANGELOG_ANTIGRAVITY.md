@@ -3,6 +3,29 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-14 - Plataformas: completar el despiece (solo datos, sin mover precios)
+**Herramienta:** Antigravity  
+**Tipo:** feat (alta de 5 materiales en productos con costo $0.00, 10 renglones de receta_base para placa de logo con seccion NULL en los 10 modelos de plataforma, 26 componentes en opcion_componentes para caja auxiliar, bicicletera, con riel, 9 pisos y fleet master, migración SQL idempotente, script de verificación SQL con todo_ok = true y análisis de condiciones sin mapear)  
+**Rama:** `despiece-plataformas-2026-11-14`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/PLATAFORMAS_AJUSTES_DESPIECE_2026-11-14.xlsx`, `COORDINACION/REVISIONES/DESPIECE_COMPLETO_2026-11-14.xlsx`, `COORDINACION/REPORTES/PLATAFORMAS_DESPIECE_REPORTE_ANTY.md`, `PLATAFORMAS_DESPIECE_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261114_01_plataformas_despiece.sql`: migración SQL transaccional e idempotente que da de alta 5 materiales (`TORNILLO GALVANIZADO 1/2 X 1 1/2 GRADO 5`, `BISAGRA 5/8`, `CADENA 3/16` unidad M, `PIJA 5/16 X 2`, `PIJA 5/16 X 2 1/2`), agrega `TORNILLO CABEZA DE COCHE 1/4 X 1 1/2` (x4, paso `TERMINADO`, uso `Placa de logo`, `seccion = NULL`) a las 10 plataformas, y añade 26 componentes a `opcion_componentes` (`caja_auxiliar`: 4, `bicicletera`: 2, `con_riel`: 1, `piso`: 18, `fleet_master`: 1).
+- `docs/importacion/verificacion_despiece_plat.sql`: consulta SQL atómica que valida los 5 materiales, las 10 líneas de placa de logo en plataformas, los 26 componentes de opciones y la integridad de las líneas de acero, devolviendo `todo_ok = true`.
+- `docs/importacion/analisis_condiciones_plataformas.md`: documento técnico sobre el comportamiento de `sin_mapear` en `resolver_receta.ts` (retorna `false` e inserta en `omitidas`), impacto nulo en precios ($0.00), inviabilidad de mapeo a arreglos en la configuración actual y justificación de mantener las condiciones existentes según la regla de proyecto.
+- `COORDINACION/SQL_PARA_LUIS/20261114_01_plataformas_despiece.sql`: copia del SQL de migración listo para ejecución manual en Supabase.
+- `COORDINACION/SQL_PARA_LUIS/verificacion_despiece_plat.sql`: copia del SQL de verificación para confirmación en Supabase.
+- `PLATAFORMAS_DESPIECE_REPORTE_ANTY.md` y `COORDINACION/REPORTES/PLATAFORMAS_DESPIECE_REPORTE_ANTY.md`: reporte técnico detallado con tablas comparativas, métricas de verificación y tabla de sanidad 2R-1d.
+**Qué cambió y por qué:**  
+- **1. Alta de materiales pendientes:** Se incorporaron 5 insumos de tornillería y herrajes al catálogo con costo $0.00 para no mover precios de venta ni costos antes de la ronda de cotizaciones de compras. Se omitieron `ARNÉS` y `TORNILLO 1/2 X 1 O 1/2 X 1 3/4` por estar pendientes de clarificación con Leolca.
+- **2. Despiece base de logo en plataformas:** Se integró el tornillo cabeza de coche para fijación de placa de logo en las 10 variantes de plataforma (2 y 3 ejes, 35 a 48 ft), reutilizando el insumo existente en catálogo.
+- **3. Componentes físicos en opciones con despiece vacío:** Se dotó de componentes físicos a Caja auxiliar (4), Bicicletera (2), Riel de matracas (1), las 9 opciones de piso con madera/plástico/lámina (18) y suspensión Fleet Master (1 tapón 1/4 en paso AIRE).
+- **4. Respeto estricto de precios y condiciones:** No se alteró ningún precio ni costo (`seccion = NULL`). Se mantuvieron las 10 líneas de `receta_base` con condición `sin_mapear` al constatar que los campos requeridos (`adicionales` múltiple y `plafones`) no son compatibles con el evaluador escalar actual, evitando inventar estructuras ficticias.
+- **5. Compatibilidad comprobada:** Precios idénticos al centavo en la tabla de sanidad 2R-1d (40/3 = $559,237.23, 42/3 = $562,993.87, 45/3 = $568,628.83, 48/3 = $574,263.79), verificación SQL `todo_ok = true`, Deno 334/334 y `verificar.mjs --limpio` 11/11.
+**Acciones manuales pendientes:**  
+- Correr en el SQL Editor de Supabase producción: `COORDINACION/SQL_PARA_LUIS/20261114_01_plataformas_despiece.sql`.
+- Correr en el SQL Editor de Supabase producción: `COORDINACION/SQL_PARA_LUIS/verificacion_despiece_plat.sql` y confirmar `todo_ok = true`.
+- Rebuild en EasyPanel: no requerido (cambio 100% en base de datos).
+
 ## 2026-11-13 - Tablero de producción (Bloque 2 de 2, Ronda 2: corrección clientes reales con buscador, formato de celdas, historial limpio, vista por fase completa y evidencia real PNG)
 **Herramienta:** Antigravity  
 **Tipo:** fix (consulta de clientes reales con popover buscador en NuevoEquipoModal, símbolo limpio de celda sin flecha duplicada, formato de fecha de cabecera en español sin capitalize, formateadores de historial de fases y usuario, cierre inmediato de menú contextual en acciones discretas, vista Por fase con todas las fases principales, eliminación de advertencia Radix DialogContent/SheetContent, script de captura CDP con Chrome Headless y 8 capturas de pantalla reales PNG)  
