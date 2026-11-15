@@ -3,6 +3,26 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-14 - Plataformas: completar despiece (Ronda 2: corrección fases en componentes y tornillo 1/4x3 para placa de logo)
+**Herramienta:** Antigravity  
+**Tipo:** fix (asignación explícita de paso y fase_id condicional en los 26 componentes de opcion_componentes y en receta_base de plataformas para placa de logo, alta de material fiel TORNILLO CABEZA DE COCHE 1/4 X 3 llevando catálogo a 518 productos con costo $0.00, verificación SQL condicional fases_ok con todo_ok = true y validación de simulación de checklist de almacén con 600 pijas en Paso 11, caja auxiliar en Extras y conteoSinFase = 0)  
+**Rama:** `despiece-plataformas-2026-11-14`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/PLATAFORMAS_DESPIECE_REVISION_CLAUDE.md`, `PLATAFORMAS_DESPIECE_REPORTE_ANTY.md`, `COORDINACION/REPORTES/PLATAFORMAS_DESPIECE_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261114_01_plataformas_despiece.sql`: alta de 6 materiales nuevos (incluyendo `TORNILLO CABEZA DE COCHE 1/4 X 3`), asignación explícita de `paso` ('PASO 11', 'EXTRAS', 'TERMINADO', 'AIRE') en los 26 componentes de `opcion_componentes`, y asignación condicional segura de `fase_id` con `to_regclass('public.fases_despiece')` y consultas dinámicas `EXECUTE` para asociar Pisos a `paso_11`, Adicionales a `extras`, Riel y Logo a `paso_12`, y Fleet Master a `paso_9`.
+- `docs/importacion/verificacion_despiece_plat.sql`: verificador actualizado a 6 materiales (`materiales_6_ok`), validación de `TORNILLO CABEZA DE COCHE 1/4 X 3` en las 10 plataformas, verificación de `paso` explícito y comprobación condicional `fases_ok` (retorna `true` si `fases_despiece` no existe; si existe, comprueba que ninguna fila nueva tiene `fase_id IS NULL`, pisos en `paso_11` y adicionales en `extras`), manteniendo un solo SELECT con `todo_ok = true`.
+- `COORDINACION/SQL_PARA_LUIS/20261114_01_plataformas_despiece.sql` y `COORDINACION/SQL_PARA_LUIS/verificacion_despiece_plat.sql`: copias sincronizadas listas para Supabase producción.
+- `PLATAFORMAS_DESPIECE_REPORTE_ANTY.md` y `COORDINACION/REPORTES/PLATAFORMAS_DESPIECE_REPORTE_ANTY.md`: actualización de reporte con simulación de clasificación de `checklist_almacen.ts`, métricas de doble pasada en base local limpia y confirmación de precios idénticos en 2R-1d ($0.00 de impacto).
+**Qué cambió y por qué:**  
+- **1. Asignación de fases para evitar desvíos a Paso 1 en almacén:** Se corrigió el hallazgo donde componentes con `paso = NULL` y `fase_id = NULL` eran enviados por `checklist_almacen.ts` a "Paso 1" e incrementaban `conteoSinFase`. Ahora se asigna `paso` y `fase_id` formalmente conforme a la convención oficial (`piso` → `paso_11`, `adicionales` → `extras`, `riel` y `logo` → `paso_12`, `suspensión FM` → `paso_9`), demostrando en simulación que `conteoSinFase = 0`.
+- **2. Material exacto para fijación de logo:** En lugar de sustituir por `1/4 X 1 1/2`, se dio de alta `TORNILLO CABEZA DE COCHE 1/4 X 3` con costo $0.00 en `productos` y se vinculó en las 10 plataformas (4 pzas, paso `TERMINADO`, `seccion = NULL`).
+- **3. Verificador SQL resiliente y exhaustivo:** `verificacion_despiece_plat.sql` evalúa `fases_ok` dinámicamente sin fallar en bases que carezcan de la tabla de fases y asegurando que, si existe, todas las filas nuevas queden perfectamente enlazadas a su fase correspondiente.
+- **4. Integridad total de costos y pruebas:** Cero variación de precios ($0.00), doble pasada de migración con 0 duplicados (518 / 2100 / 207), 334 pruebas Deno exitosas y `verificar.mjs --limpio` 11/11.
+**Acciones manuales pendientes:**  
+- Ejecutar en Supabase Producción: `COORDINACION/SQL_PARA_LUIS/20261114_01_plataformas_despiece.sql`.
+- Ejecutar en Supabase Producción: `COORDINACION/SQL_PARA_LUIS/verificacion_despiece_plat.sql` y comprobar `todo_ok = true`.
+- Rebuild en EasyPanel: no requerido (cambio 100% en base de datos).
+
 ## 2026-11-14 - Plataformas: completar el despiece (solo datos, sin mover precios)
 **Herramienta:** Antigravity  
 **Tipo:** feat (alta de 5 materiales en productos con costo $0.00, 10 renglones de receta_base para placa de logo con seccion NULL en los 10 modelos de plataforma, 26 componentes en opcion_componentes para caja auxiliar, bicicletera, con riel, 9 pisos y fleet master, migración SQL idempotente, script de verificación SQL con todo_ok = true y análisis de condiciones sin mapear)  
