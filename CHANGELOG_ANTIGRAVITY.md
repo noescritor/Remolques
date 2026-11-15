@@ -3,6 +3,29 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-14 - Dolly: cargar el despiece (solo datos, sin mover precios)
+**Herramienta:** Antigravity  
+**Tipo:** feat (alta de 14 materiales en productos con costo $0.00, 53 renglones en receta_base de DOLLY 2 EJES con seccion NULL y escala fija, 20 componentes en opcion_componentes para opciones de Dona y Quinta con asignación de fases y pasos explícitos, verificación de cero variación en precios con hashes MD5 idénticos, simulación de checklist de almacén con conteoSinFase = 0 y verificación SQL con todo_ok = true)  
+**Rama:** `despiece-dolly-2026-11-14`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/DOLLY_AJUSTES_DESPIECE_2026-11-14.xlsx`, `COORDINACION/REVISIONES/DESPIECE_COMPLETO_2026-11-14.xlsx`, `DOLLY_DESPIECE_REPORTE_ANTY.md`, `COORDINACION/REPORTES/DOLLY_DESPIECE_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261114_02_dolly_despiece.sql`: migración SQL idempotente y transaccional que da de alta 14 materiales con costo $0.00 y precio $0.00 en `productos` (`OREJA`, `BISAGRA DE DOLLY`, `PERNO DE DOLLY`, `BUJE CONICO GRANDE`, `DONA HOLLAND`, `DONA PREMIER`, `DONA PREMIER BESTIA`, `TUERCA GRIPCO 5/8`, `QUINTA HOLLAND`, `QUINTA FONTAINE`, `TORNILLO 5/8 X 2 1/2 GRADO 8`, `JUEGO DE MANGUERA ESPIRAL AZUL Y ROJA`, `MACHO SOLO 7 POLOS`, `CABLE 7 POLOS` unidad M); inserta 53 renglones en `receta_base` de DOLLY 2 EJES (`seccion = NULL`, `escala = 'fija'`, con 4 líneas de amortiguador de alta condicionadas a suspensión alta); carga 20 componentes en `opcion_componentes` (12 en grupo `dona` con paso 'PASO 1' y 8 en grupo `quinta` con paso 'TERMINADO'); y asigna condicionalmente `fase_id` con `to_regclass('public.fases_despiece')` y consultas dinámicas `EXECUTE`.
+- `docs/importacion/verificacion_despiece_dolly.sql`: consulta SQL atómica (un solo `SELECT`) que valida los 14 materiales (`materiales_14_ok`), los 86 renglones de receta base del dolly (`receta_base_dolly_86_ok`), los 12 componentes de dona (`dona_opciones_12_ok`), los 8 componentes de quinta (`quinta_opciones_8_ok`), la integridad del acero estructural (`acero_dolly_intacto`), la asignación condicional de fases (`fases_ok`) y la conjunción total (`todo_ok = true`).
+- `COORDINACION/SQL_PARA_LUIS/20261114_02_dolly_despiece.sql`: copia de la migración para ejecución manual de Luis en Supabase producción.
+- `COORDINACION/SQL_PARA_LUIS/verificacion_despiece_dolly.sql`: copia del verificador para ejecución manual de Luis en Supabase producción.
+- `DOLLY_DESPIECE_REPORTE_ANTY.md` y `COORDINACION/REPORTES/DOLLY_DESPIECE_REPORTE_ANTY.md`: reporte técnico completo con detalle de materiales, tabla de fases, simulación de checklist de almacén, verificación de cotizaciones históricas (0 cotizaciones) y hashes MD5 de integridad de precios.
+**Qué cambió y por qué:**  
+- **1. Alta de 14 insumos sin mover precios:** Se crearon 14 materiales específicos marcados como `CREAR` en la hoja `ALTA_MATERIALES` con costo $0.00 y precio $0.00. No se tocaron los marcados como `NO CREAR` ni los que ya existían.
+- **2. Despiece completo de DOLLY 2 EJES:** El dolly solo tenía los 33 renglones de acero. Se agregaron 53 renglones de ensamble, corte, consumibles, aire, luz, terminado y extras (amortiguador de alta con condición idéntica a plataformas). Todos con `seccion = NULL`, garantizando cero impacto en costos del motor.
+- **3. Componentes físicos en opciones de Dona y Quinta:** Se poblaron las opciones del grupo `dona` (Holland, Premier, Bestia con su dona y herrajes 5/8) y `quinta` (Holland, Fontaine con su quinta y herrajes 5/8x2 1/2).
+- **4. Fases y pasos explícitos en el 100% de las líneas:** Siguiendo la regla del checklist de almacén, cada fila cuenta con su `paso` textual y su `fase_id` vinculado (`paso_1`, `paso_7`, `paso_9`, `paso_10`, `paso_12`, `extras`), demostrando en simulación que `conteoSinFase = 0`.
+- **5. Respeto a exclusiones:** No se tocaron los 55 renglones de `CONFIRMAR`, ni `YA_CUBIERTO_O_DIFERIDO` (retráctil, ejes, llantas, rines, suspensión alta Hendrickson), ni `COBRO_PROPUESTAS`.
+- **6. Verificación exhaustiva:** Hashes MD5 100% idénticos en tablas de precios/costos, 334 pruebas Deno pasando, `verificar.mjs --limpio` 11/11 y consulta SQL de verificación en verde (`todo_ok = true`).
+**Acciones manuales pendientes:**  
+- Correr en el SQL Editor de Supabase producción: `COORDINACION/SQL_PARA_LUIS/20261114_02_dolly_despiece.sql`.
+- Correr en el SQL Editor de Supabase producción: `COORDINACION/SQL_PARA_LUIS/verificacion_despiece_dolly.sql` y confirmar `todo_ok = true`.
+- Rebuild en EasyPanel: no requerido (cambio 100% en base de datos).
+
 ## 2026-11-14 - Plataformas: completar despiece (Ronda 2: corrección fases en componentes y tornillo 1/4x3 para placa de logo)
 **Herramienta:** Antigravity  
 **Tipo:** fix (asignación explícita de paso y fase_id condicional en los 26 componentes de opcion_componentes y en receta_base de plataformas para placa de logo, alta de material fiel TORNILLO CABEZA DE COCHE 1/4 X 3 llevando catálogo a 518 productos con costo $0.00, verificación SQL condicional fases_ok con todo_ok = true y validación de simulación de checklist de almacén con 600 pijas en Paso 11, caja auxiliar en Extras y conteoSinFase = 0)  
