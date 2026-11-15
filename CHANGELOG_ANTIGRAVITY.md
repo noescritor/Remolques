@@ -3,6 +3,30 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-14 - Góndola: cargar el despiece (solo datos, sin mover precios)
+**Herramienta:** Antigravity  
+**Tipo:** feat (alta de 11 materiales en productos con costo $0.00 y precio $0.00, 156 renglones en receta_base distribuidos en GONDOLA 2 EJES 45 M3 [98] y GONDOLA 3 EJES 45 M3 [58] con seccion NULL y escala fija, 9 componentes en opcion_componentes para suspension hj_alta con escala por_eje y paso PASO 5, llave compuesta de idempotencia modelo-material-uso, validación anti-salto silencioso, verificación de cero impacto en precios con hashes MD5 idénticos, simulación de checklist de almacén con conteoSinFase = 0 y verificación SQL con todo_ok = true)  
+**Rama:** `despiece-gondola-2026-11-14`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/GONDOLA_AJUSTES_DESPIECE_2026-11-14.xlsx`, `COORDINACION/REVISIONES/DESPIECE_COMPLETO_2026-11-14.xlsx`, `GONDOLA_DESPIECE_REPORTE_ANTY.md`, `COORDINACION/REPORTES/GONDOLA_DESPIECE_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261114_03_gondola_despiece.sql`: migración SQL idempotente y transaccional que da de alta 11 materiales con costo $0.00 en `productos` (`ROLLO DE SOLIDO`, `DISCO DE CORTE 14`, `ESPARRAGO DE 1"`, `TUERCA ESTANDAR 1"`, `TORNILLO 1 X 2 1/2 GRADO 8`, `TUERCA DE SEGURIDAD 1"`, `CODO 3/8 +1`, `TORNILLO 3/8 X 1 1/4 GRADO 8`, `AMORTIGUADOR GRC85938`, `CAMARA DE SUSPENSION GOOD YEAR R14-232`, `ABRAZADERAS HJ`); inserta 156 renglones en `receta_base` (`seccion = NULL`, `escala = 'fija'`, 98 en 2 ejes y 58 en 3 ejes) con llave de unicidad `(modelo_id, material_id, uso)` y validación anti-salto silencioso; carga 9 componentes en `opcion_componentes` para `suspension/hj_alta` (`paso = 'PASO 5'`, `escala = 'por_eje'`); y asigna dinámicamente `fase_id` con `to_regclass('public.fases_despiece')`.
+- `docs/importacion/verificacion_despiece_gondola.sql`: consulta SQL atómica (un solo `SELECT`) que valida los 11 materiales (`materiales_11_ok`), los 147 renglones de Góndola 2 Ejes (`receta_2ejes_147_ok`), los 107 renglones de Góndola 3 Ejes (`receta_3ejes_107_ok`), la integridad del acero estructural (`acero_gondolas_intacto`), los 9 componentes de hj_alta (`hj_alta_9_ok`), la asignación condicional de fases (`fases_ok`) y la conjunción total (`todo_ok = true`).
+- `COORDINACION/SQL_PARA_LUIS/20261114_03_gondola_despiece.sql`: copia de la migración para ejecución manual de Luis en Supabase producción.
+- `COORDINACION/SQL_PARA_LUIS/verificacion_despiece_gondola.sql`: copia del verificador para ejecución manual de Luis en Supabase producción.
+- `GONDOLA_DESPIECE_REPORTE_ANTY.md` y `COORDINACION/REPORTES/GONDOLA_DESPIECE_REPORTE_ANTY.md`: reporte técnico detallado con desglose de fases, simulación de checklist de almacén, verificación de cotizaciones históricas (0 cotizaciones) y hashes MD5 de integridad de precios.
+**Qué cambió y por qué:**  
+- **1. Alta de 11 materiales sin mover precios:** Creados exclusivamente los 11 insumos de `ALTA_MATERIALES` marcados como `CREAR` con costo $0.00 y precio $0.00. No se tocaron los marcados como `NO CREAR` y se reutilizaron insumos existentes bajo nombres equivalentes (`TE CENTRO 3/8*1/4`, `MANITA AZUL/ROJA C/LLAVE`, `ROLLO DE MICROALAMBRE`).
+- **2. Despiece completo de ambas góndolas:** Cada góndola tenía únicamente los 49 renglones de acero. Se agregaron 58 renglones comunes (corte, soldadura, puerta, perno rey, patines, limpieza, tornillería de gancho, luz, terminado y amortiguador de alta) a ambas góndolas, y 40 renglones de kit de aire Leolca a la góndola de 2 ejes (el aire de 3 ejes queda diferido por confirmar). Todos con `seccion = NULL`, asegurando cero impacto en costos del motor.
+- **3. Componentes físicos en opción compartida suspension/hj_alta:** Se poblaron 9 componentes por eje (8 componentes + 1 sustituto con cantidad 0) para HJ tipo Low alta, habilitando automáticamente el despiece para el dolly y plataformas.
+- **4. Llave de idempotencia compuesta:** Implementada como `(modelo_id, material_id, coalesce(uso, ''))` para soportar materiales que se repiten con usos distintos (tornillería de loderas vs porta placa, gancho vs amortiguador de alta, ABS vs luz). El UPDATE posterior no toca filas de acero (`rb.seccion IS NULL`).
+- **5. Sin saltos silenciosos:** Se incorporó validación previa obligatoria que arroja `RAISE EXCEPTION` con el nombre exacto de cualquier insumo si no existe en el catálogo.
+- **6. Asignación de fases y pasos en el 100% de las filas:** Cada fila cuenta con su `paso` textual y `fase_id` vinculado, con pasos provisionales señalados para armado/puerta (`PASO 1`) y perno rey (`PASO 3`), demostrando en simulación que `conteoSinFase = 0`.
+- **7. Verificación integral:** Hashes MD5 100% idénticos en tablas de precios/costos, 334 pruebas Deno pasando, `verificar.mjs --limpio` 11/11 y consulta SQL de verificación en verde (`todo_ok = true`).
+**Acciones manuales pendientes:**  
+- Correr en el SQL Editor de Supabase producción: `COORDINACION/SQL_PARA_LUIS/20261114_03_gondola_despiece.sql`.
+- Correr en el SQL Editor de Supabase producción: `COORDINACION/SQL_PARA_LUIS/verificacion_despiece_gondola.sql` y confirmar `todo_ok = true`.
+- Rebuild en EasyPanel: no requerido (cambio 100% en base de datos).
+
 ## 2026-11-14 - Dolly: cargar el despiece (solo datos, sin mover precios)
 **Herramienta:** Antigravity  
 **Tipo:** feat (alta de 14 materiales en productos con costo $0.00, 53 renglones en receta_base de DOLLY 2 EJES con seccion NULL y escala fija, 20 componentes en opcion_componentes para opciones de Dona y Quinta con asignación de fases y pasos explícitos, verificación de cero variación en precios con hashes MD5 idénticos, simulación de checklist de almacén con conteoSinFase = 0 y verificación SQL con todo_ok = true)  
