@@ -3,6 +3,25 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-21 - Portal del cliente: corrección de aprobación atómica, manejo de errores en portal y visibilidad en sistema interno
+**Herramienta:** Antigravity  
+**Tipo:** fix (verificación real de `res.ok` y mensajes específicos en `PortalCliente.tsx` / `portalAcciones.ts`; extracción de lógica a `motor/portal_aprobacion.ts` con comparación atómica `WHERE id = ? AND estado = 'Enviada'`; aislamiento de fallos en efectos posteriores con registro de evento `efectos pendientes` sin devolver 500; idempotencia de `ejecutarAprobacionCotizacion`; refresco automático en `useSupabaseData.ts` al volver a la pestaña / cada 30s; marca de aprobación por el cliente y tabla de historial de eventos en lista y detalle)  
+**Rama:** `fix-portal-aprobacion-2026-11-21`  
+**Referencia auditoría:** `COORDINACION/PLAN_CAMBIOS_VISITA_2026-11-20.md` (Bloque A), `COORDINACION/REPORTES/PORTAL_APROBACION_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/portal_aprobacion.ts`: nuevo módulo con `aprobarPorPortal`, `rechazarPorPortal` y `solicitarCambiosPorPortal` usando `UPDATE ... WHERE id = ? AND estado = 'Enviada'`, validación de firma/comentario, registro obligatorio en `cotizacion_eventos` y captura resiliente de fallos en efectos posteriores.
+- `supabase/functions/make-server-feea4382/motor/generar_presupuesto_cotizacion.ts`: validación de `{ error }` al actualizar `estado_produccion`, protección contra degradación si ya avanzó de `'Pendiente'` y prevención de evento `"Cotizacion aprobada"` duplicado.
+- `supabase/functions/make-server-feea4382/index.ts`: delegación de `/portal/:token/{aprobar,rechazar,solicitar-cambios}` a `motor/portal_aprobacion.ts` con logging en `catch`.
+- `src/app/components/Portal/portalAcciones.ts` y `src/app/components/Portal/PortalCliente.tsx`: validación estricta de `res.ok`, mensajes diferenciados por estado/expiración/error con botón Reintentar, uso de tokens semánticos e íconos Lucide.
+- `src/app/hooks/useSupabaseData.ts`, `src/app/components/Cotizaciones/CotizacionesTableModern.tsx`, `src/app/components/Cotizaciones/CotizacionDetalle.tsx`, `src/app/App.tsx`: refresco automático al recuperar foco/visibilidad y cada 30s, marca `"Aprobada por el cliente — <nombre>, <fecha>"` en lista y detalle, y tarjeta de Historial de Eventos en detalle.
+- `supabase/functions/make-server-feea4382/motor/portal_aprobacion.test.ts` y `portal_acciones_frontend.test.ts`: 14 pruebas Deno nuevas (223 → 237 pasan).
+**Hallazgo pendiente de decisión (Hipótesis 4):**  
+- Confirmado que `PUT /cotizaciones/:id` sobrescribe `estado` si un usuario interno guarda con copia vieja (`Enviada` pisa `Aprobada`). No modificado en este bloque por instrucción; propuesta documentada en el reporte para decisión de Claude y Luis.
+**Acciones manuales pendientes:**  
+- Redeploy de la función Edge (`make-server-feea4382` / Rebuild de `remolques-api` en EasyPanel).
+- Rebuild del frontend (`remolques-web` en EasyPanel).
+- Migración SQL: no requerida.
+
 ## 2026-11-14 - Góndola: cargar el despiece (solo datos, sin mover precios)
 **Herramienta:** Antigravity  
 **Tipo:** feat (alta de 11 materiales en productos con costo $0.00 y precio $0.00, 156 renglones en receta_base distribuidos en GONDOLA 2 EJES 45 M3 [98] y GONDOLA 3 EJES 45 M3 [58] con seccion NULL y escala fija, 9 componentes en opcion_componentes para suspension hj_alta con escala por_eje y paso PASO 5, llave compuesta de idempotencia modelo-material-uso, validación anti-salto silencioso, verificación de cero impacto en precios con hashes MD5 idénticos, simulación de checklist de almacén con conteoSinFase = 0 y verificación SQL con todo_ok = true)  
