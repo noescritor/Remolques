@@ -3,6 +3,20 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-21 - Calidad parte 2 de 2: pantallas, editor de plantillas e impresión
+**Herramienta:** Antigravity  
+**Tipo:** feat (módulo UI `/calidad` con pestañas Inspecciones y Plantillas, modal de llenado con autoguardado y cero scroll horizontal en tableta/móvil, impresión carta con datos y en blanco, editor de plantillas con pegar varias líneas y vista previa, pestaña Calidad reutilizable en `OrdenTrabajoDetalleSheet`, insignias en `MatrizProduccionView` con una sola llamada a `/calidad/resumen-ordenes`, y aviso no bloqueante al liberar en `OrdenesTrabajoList`; pruebas Deno de `calidadUtils.ts` y verificación real en navegador con 8 capturas PNG)  
+**Rama:** `calidad-c2-pantallas-2026-11-21`  
+**Referencia auditoría:** `PROMPT_ANTY_CALIDAD_C2_PANTALLAS_2026-11-21.md`, `COORDINACION/REPORTES/CALIDAD_C2_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `src/app/components/Calidad/calidadUtils.ts`, `calidadApi.ts`, `CalidadPage.tsx`, `CalidadInspeccionModal.tsx`, `CalidadImpresion.tsx`, `CalidadPlantillaEditorModal.tsx`, `OrdenCalidadTab.tsx`.
+- `src/app/components/ModernLayout.tsx`, `src/app/App.tsx`, `src/app/components/TableroProduccion/OrdenTrabajoDetalleSheet.tsx`, `MatrizProduccionView.tsx`, `src/app/components/OrdenesTrabajo/OrdenesTrabajoList.tsx`.
+- `supabase/functions/make-server-feea4382/motor/calidad_ui_utils.test.ts`: 7 pruebas Deno (247 → 254 pasan).
+- `COORDINACION/EVIDENCIA/calidad_01..08_*.png` y `COORDINACION/REPORTES/CALIDAD_C2_REPORTE_ANTY.md`.
+**Acciones manuales pendientes:**  
+- Rebuild de `remolques-web` en EasyPanel.
+- Migración SQL y rebuild de `remolques-api`: **no requeridos**.
+
 ## 2026-11-21 - Calidad parte 1 de 2 (Ronda 2: unidad en rango, plantilla activa, cama baja y guardias org)
 **Herramienta:** Antigravity  
 **Tipo:** fix (validación `UNIDAD_INVALIDA` en `guardar_resultados_calidad` y filtrado de unidades en rango en `resumen_calidad_ordenes`/`cerrar_inspeccion_calidad`/`calcularResumenInspeccion`; exigencia de `estado = 'activa'` cuando llega `p_plantilla`; resolución automática de plantilla `cama_baja` para `tipo_equipo = '05'`; `evaluado_por = NULL`; `scripts/test_calidad_pg.cjs` versionado; guardias de `organizacion_id` y `p_org` en `motor/calidad.test.ts` con 3/3 mutaciones detectadas)  
