@@ -102,3 +102,36 @@ todo_ok                     | t
    - Hacer **Rebuild** para desplegar `motor/calidad.ts` y las rutas `/calidad/*` en `index.ts`.
 3. **Frontend (`remolques-web`)**:
    - **NO hace falta rebuild del frontend en esta parte 1** (las pantallas llegan en Calidad parte 2).
+
+---
+
+## 6. Ronda 2 — Correcciones a observaciones de Claude
+
+### Qué cambió
+1. **Unidad fuera de rango (Obs. 1)**:
+   - `guardar_resultados_calidad` (`20261121_01_calidad.sql`) valida `unidad BETWEEN 1 AND jsonb_array_length(config->'unidades')` y lanza `UNIDAD_INVALIDA` (mapeado a HTTP `400` en `motor/calidad.ts`).
+   - `cerrar_inspeccion_calidad`, `resumen_calidad_ordenes` y `calcularResumenInspeccion` (`motor/calidad.ts`) cuentan únicamente resultados con `unidad` dentro de rango (`1..num_unidades`).
+2. **Solo plantillas activas con `p_plantilla` (Obs. 2)**:
+   - `crear_inspeccion_calidad` exige `estado = 'activa'` y `formato = p_formato` cuando se pasa `p_plantilla` explícita (permitiendo elegir otra línea a propósito, pero rechazando borradores y archivadas con `PLANTILLA_NO_ENCONTRADA`).
+3. **Resolución automática de Cama baja (Obs. 3)**:
+   - Sin `p_plantilla`, si `ordenes_trabajo.tipo_equipo = '05'` (o su modelo/etiqueta menciona `cama baja`), `crear_inspeccion_calidad` busca primero la plantilla activa de la línea `cama_baja` para ese formato; si no existe (por ejemplo `control_total`), cae a la plantilla activa de la línea de la orden (`plataforma`). No se modificó `src/app/utils/tableroProduccion.ts` ni el motor del tablero.
+4. **Pruebas versionadas y guardias de organización (Obs. 4)**:
+   - Se versionó `scripts/test_calidad_pg.cjs` con casos reales de `UNIDAD_INVALIDA` (unidad 0 y 3), rechazo de borrador/archivada, `tipo_equipo = '05'` (cama baja en `entrega` y fallback a `plataforma` en `control_total`) y `evaluado_por = NULL`.
+   - **Cómo correr `scripts/test_calidad_pg.cjs`**:
+     - `createdb -h localhost -p 54331 -U tester -T remolques test_calidad_c1`
+     - `psql -h localhost -p 54331 -U tester -d test_calidad_c1 -v ON_ERROR_STOP=1 -f supabase/migrations/20261121_01_calidad.sql`
+     - `node scripts/test_calidad_pg.cjs` (variables opcionales: `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`).
+   - En `motor/calidad.test.ts`, los simuladores registran llamadas `.eq("organizacion_id", ...)` (distinguiendo el `head` de siembra) y `p_org` de los 7 RPCs.
+5. **Menor (Obs. 5a)**:
+   - `crear_inspeccion_calidad` inicializa `evaluado_por` en `NULL` en lugar de `''`.
+
+### Conteo de pruebas y mutaciones (Ronda 2)
+- **Pruebas Deno desde raíz del repo**: antes `244 passed` → después **`247 passed | 0 failed`** (+3 pruebas en `motor/calidad.test.ts`).
+- **Pruebas reales contra Postgres (`scripts/test_calidad_pg.cjs`)**: **9/9 OK**.
+- **Doble corrida de migración (`ON_ERROR_STOP=1`)**: ambas exitosas; hashes MD5 de las 5 tablas de precios idénticos; `scripts/verificar_calidad.sql` → `todo_ok = t`.
+- **`node scripts/verificar.mjs --limpio`**: **11/11 comprobaciones OK**.
+- **Mutaciones de aislamiento detectadas (3/3)**:
+  1. Quitar `.eq("organizacion_id", orgId)` en `listarPlantillasCalidad` → **detectada** por `calidad.test.ts`.
+  2. Quitar `.eq("organizacion_id", orgId)` en `obtenerPlantillaCalidad` → **detectada** por `calidad.test.ts`.
+  3. Enviar otra organización en `p_org` de `crear_inspeccion_calidad` → **detectada** por `calidad.test.ts`.
+

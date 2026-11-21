@@ -3,6 +3,17 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-21 - Calidad parte 1 de 2 (Ronda 2: unidad en rango, plantilla activa, cama baja y guardias org)
+**Herramienta:** Antigravity  
+**Tipo:** fix (validación `UNIDAD_INVALIDA` en `guardar_resultados_calidad` y filtrado de unidades en rango en `resumen_calidad_ordenes`/`cerrar_inspeccion_calidad`/`calcularResumenInspeccion`; exigencia de `estado = 'activa'` cuando llega `p_plantilla`; resolución automática de plantilla `cama_baja` para `tipo_equipo = '05'`; `evaluado_por = NULL`; `scripts/test_calidad_pg.cjs` versionado; guardias de `organizacion_id` y `p_org` en `motor/calidad.test.ts` con 3/3 mutaciones detectadas)  
+**Rama:** `calidad-c1-datos-2026-11-21`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/CALIDAD_C1_REVISION_CLAUDE.md`, `COORDINACION/REPORTES/CALIDAD_C1_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261121_01_calidad.sql`: validaciones de rango de `unidad` (`UNIDAD_INVALIDA`), filtro de unidades en rango en `cerrar` y `resumen`, `estado = 'activa'` en `p_plantilla`, resolución automática de `cama_baja` para `tipo_equipo = '05'`, y `evaluado_por = NULL`.
+- `supabase/functions/make-server-feea4382/motor/calidad.ts` y `motor/calidad.test.ts`: mapeo de `UNIDAD_INVALIDA` (400), filtro en `calcularResumenInspeccion`, y pruebas guardia para filtros `organizacion_id` y `p_org` en RPCs (244 → 247 pasan).
+- `scripts/test_calidad_pg.cjs`: script versionado de pruebas reales contra Postgres (9/9 OK).
+- `COORDINACION/REPORTES/CALIDAD_C1_REPORTE_ANTY.md`: sección Ronda 2 e instrucciones de `test_calidad_pg.cjs`.
+
 ## 2026-11-21 - Calidad parte 1 de 2: datos, plantillas semilla y API
 **Herramienta:** Antigravity  
 **Tipo:** feat (migración idempotente `20261121_01_calidad.sql` con 6 tablas, RLS solo lectura y 12 funciones `SECURITY DEFINER` `service_role`; semilla de las 5 plantillas de `docs/calidad/calidad_plantillas_seed.json` incluyendo alta de línea `cama_baja`; motor `motor/calidad.ts` y 14 endpoints `/calidad/*`; verificador SQL de solo lectura `scripts/verificar_calidad.sql`; pruebas unitarias Deno, pruebas reales de concurrencia y aislamiento en Postgres, y mutación de unicidad verificada)  
