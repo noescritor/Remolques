@@ -3,6 +3,25 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-21 - Calidad parte 1 de 2: datos, plantillas semilla y API
+**Herramienta:** Antigravity  
+**Tipo:** feat (migración idempotente `20261121_01_calidad.sql` con 6 tablas, RLS solo lectura y 12 funciones `SECURITY DEFINER` `service_role`; semilla de las 5 plantillas de `docs/calidad/calidad_plantillas_seed.json` incluyendo alta de línea `cama_baja`; motor `motor/calidad.ts` y 14 endpoints `/calidad/*`; verificador SQL de solo lectura `scripts/verificar_calidad.sql`; pruebas unitarias Deno, pruebas reales de concurrencia y aislamiento en Postgres, y mutación de unicidad verificada)  
+**Rama:** `calidad-c1-datos-2026-11-21`  
+**Referencia auditoría:** `PROMPT_ANTY_CALIDAD_C1_DATOS_2026-11-21.md`, `COORDINACION/PLAN_CAMBIOS_VISITA_2026-11-20.md` (Bloque C), `COORDINACION/REPORTES/CALIDAD_C1_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `docs/calidad/calidad_plantillas_seed.json`: copia versionada de las 5 plantillas semilla extraídas de los Excel.
+- `supabase/migrations/20261121_01_calidad.sql`: tablas `calidad_plantillas`, `calidad_plantilla_grupos`, `calidad_plantilla_items`, `orden_calidad_inspecciones`, `orden_calidad_resultados`, `calidad_folios`; RLS de solo lectura (`SELECT` con `get_current_org_id()`); funciones `SECURITY DEFINER` (`sembrar_calidad_plantillas`, `crear_plantilla_borrador`, `guardar_plantilla_calidad`, `duplicar_plantilla`, `nueva_version_plantilla`, `publicar_plantilla`, `eliminar_plantilla_borrador`, `crear_inspeccion_calidad`, `actualizar_encabezado_inspeccion`, `guardar_resultados_calidad`, `cerrar_inspeccion_calidad`, `reabrir_inspeccion_calidad`, `resumen_calidad_ordenes`).
+- `supabase/functions/make-server-feea4382/motor/calidad.ts` y `index.ts`: lógica de negocio, siembra bajo demanda, mapeo de códigos (`SIN_PLANTILLA`, `YA_EXISTE`, `BLOQUEADA_POR_NO_CONFORMES`, `NO_EDITABLE`) y 14 rutas `/calidad/*`.
+- `scripts/verificar_calidad.sql`: verificador SQL de solo lectura (5 plantillas activas, 13 grupos / 116 ítems en control total plataforma, 57/52/28/39 en entrega, unicidad de activa, RLS en 6 tablas, hashes MD5 sin cambio, `todo_ok = true`).
+- `supabase/functions/make-server-feea4382/motor/calidad.test.ts`: 7 pruebas unitarias Deno (237 → 244 pasan).
+**Hallazgo importante (choque con `main`):**  
+- `sembrar_tablero_produccion` solo siembra 4 líneas (`plataforma`, `gondola`, `dolly`, `traila`), pero el JSON semilla incluye `cama_baja`. `sembrar_calidad_plantillas` asegura `cama_baja` en `lineas_producto` con `ON CONFLICT DO NOTHING` para que la FK sea válida sin alterar las 4 líneas del tablero.
+**Acciones manuales pendientes:**  
+- Ejecutar en Supabase SQL Editor: `supabase/migrations/20261121_01_calidad.sql`.
+- Ejecutar verificador: `scripts/verificar_calidad.sql` y confirmar `todo_ok = true`.
+- Rebuild de `remolques-api` en EasyPanel.
+- Rebuild del frontend: **NO requerido en esta parte 1**.
+
 ## 2026-11-21 - Portal del cliente: corrección de aprobación atómica, manejo de errores en portal y visibilidad en sistema interno
 **Herramienta:** Antigravity  
 **Tipo:** fix (verificación real de `res.ok` y mensajes específicos en `PortalCliente.tsx` / `portalAcciones.ts`; extracción de lógica a `motor/portal_aprobacion.ts` con comparación atómica `WHERE id = ? AND estado = 'Enviada'`; aislamiento de fallos en efectos posteriores con registro de evento `efectos pendientes` sin devolver 500; idempotencia de `ejecutarAprobacionCotizacion`; refresco automático en `useSupabaseData.ts` al volver a la pestaña / cada 30s; marca de aprobación por el cliente y tabla de historial de eventos en lista y detalle)  
