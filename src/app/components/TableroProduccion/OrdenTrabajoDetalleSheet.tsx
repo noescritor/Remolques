@@ -372,7 +372,7 @@ export function OrdenTrabajoDetalleSheet({
                 tipo_equipo: fila.tipo_equipo,
               }}
               onIrAPlantillas={() => {
-                onClose();
+                onOpenChange(false);
                 navigate('/calidad/plantillas');
               }}
             />
