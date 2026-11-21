@@ -298,13 +298,49 @@ export async function ejecutarAprobacionCotizacion(
   usuarioId: string | null,
   clientParaPresupuesto?: any
 ) {
-  await supabase.from("cotizaciones").update({ estado_produccion: "Aprobada" }).eq("id", cotizacionId);
-  await registrarEventoHelper(supabase, {
-    cotizacion_id: cotizacionId,
-    organizacion_id: orgId,
-    evento: "Cotizacion aprobada",
-    usuario_id: usuarioId
-  });
+  const tablaCotizaciones = supabase.from("cotizaciones");
+  let debeActualizarProduccion = true;
+
+  // Evitar degradar estado_produccion si la orden ya avanzó (ej. 'En Producción' o 'Terminada')
+  if (typeof tablaCotizaciones?.select === "function") {
+    try {
+      const selQuery = tablaCotizaciones.select("estado_produccion").eq("id", cotizacionId);
+      if (typeof selQuery?.maybeSingle === "function") {
+        const { data: cotActual } = await selQuery.maybeSingle();
+        if (cotActual?.estado_produccion && cotActual.estado_produccion !== "Pendiente") {
+          debeActualizarProduccion = false;
+        }
+      }
+    } catch (_e) {
+      // Mocks sin maybeSingle en cotizaciones siguen con el update estándar
+    }
+  }
+
+  if (debeActualizarProduccion) {
+    const resProd = await supabase.from("cotizaciones").update({ estado_produccion: "Aprobada" }).eq("id", cotizacionId);
+    if (resProd?.error) throw resProd.error;
+  }
+
+  // Registrar evento "Cotizacion aprobada" de forma idempotente (sin duplicar en reintentos)
+  const tablaEventos = supabase.from("cotizacion_eventos");
+  let yaTieneEvento = false;
+  if (typeof tablaEventos?.select === "function") {
+    try {
+      const { data: existentes } = await tablaEventos.select("id, evento").eq("cotizacion_id", cotizacionId);
+      yaTieneEvento = (existentes || []).some((e: any) => e.evento === "Cotizacion aprobada");
+    } catch (_e) {
+      // Mocks sin select en cotizacion_eventos
+    }
+  }
+
+  if (!yaTieneEvento) {
+    await registrarEventoHelper(supabase, {
+      cotizacion_id: cotizacionId,
+      organizacion_id: orgId,
+      evento: "Cotizacion aprobada",
+      usuario_id: usuarioId
+    });
+  }
 
   await generarPresupuestoAlAprobar(supabase, cotizacionId, orgId, usuarioId, clientParaPresupuesto);
 }

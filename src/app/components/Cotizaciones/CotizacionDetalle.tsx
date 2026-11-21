@@ -9,8 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
 import { Alert, AlertDescription } from '../ui/alert';
-import { ArrowLeft, FileDown, Edit, Save, Eye, Mail, GitBranch, ExternalLink, Link2, Copy, Loader2, ShoppingCart, Factory } from 'lucide-react';
-import { Cotizacion, Pago, EstadoCotizacion, TRANSICIONES_ESTADO, Cliente } from '../../types';
+import { ArrowLeft, FileDown, Edit, Save, Eye, Mail, GitBranch, ExternalLink, Link2, Copy, Loader2, ShoppingCart, Factory, CheckCircle2, History } from 'lucide-react';
+import { Cotizacion, Pago, EstadoCotizacion, TRANSICIONES_ESTADO, Cliente, CotizacionEvento } from '../../types';
 import { formatearMoneda, formatearFecha } from '../../utils/calculations';
 import { EnviarEmailDialog } from './EnviarEmailDialog';
 import { toast } from 'sonner';
@@ -40,6 +40,7 @@ interface CotizacionDetalleProps {
   onCrearCompraProveedor?: (compra: any) => Promise<any>;
   onRegistrarMovimientoInventario?: (movimiento: any) => Promise<any>;
   onGenerarOrdenesTrabajo?: (cotizacionId: string) => Promise<any>;
+  eventos?: CotizacionEvento[];
 }
 
 const estadoColors: Record<EstadoCotizacion, string> = {
@@ -70,7 +71,8 @@ export function CotizacionDetalle({
   proveedores = [],
   onCrearCompraProveedor,
   onRegistrarMovimientoInventario,
-  onGenerarOrdenesTrabajo
+  onGenerarOrdenesTrabajo,
+  eventos = []
 }: CotizacionDetalleProps) {
 
   const navigate = useNavigate();
@@ -297,6 +299,19 @@ export function CotizacionDetalle({
           </Button>
         </div>
       </div>
+
+      {cotizacion.estado === 'Aprobada' && cotizacion.firma_nombre && (
+        <Alert className="border-emerald-500/30 bg-emerald-500/10 text-foreground">
+          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+          <AlertDescription className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <span>
+              <strong>Aprobada por el cliente</strong> — {cotizacion.firma_nombre}
+              {cotizacion.firma_fecha ? `, ${formatearFecha(cotizacion.firma_fecha)}` : ''}
+              {cotizacion.firma_ip && cotizacion.firma_ip !== 'unknown' ? ` (IP: ${cotizacion.firma_ip})` : ''}
+            </span>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Resumen */}
       <Card>
@@ -691,6 +706,32 @@ export function CotizacionDetalle({
           </TabsContent>
         )}
       </Tabs>
+
+      {/* Historial de Eventos */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <History className="h-5 w-5 text-muted-foreground" />
+            Historial de Eventos
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {eventos.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No hay eventos registrados para esta cotización.</p>
+          ) : (
+            <div className="space-y-3">
+              {eventos.map((ev) => (
+                <div key={ev.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-border/50 pb-2 last:border-0 last:pb-0">
+                  <span className="text-sm text-foreground">{ev.evento}</span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {ev.created_at ? new Date(ev.created_at).toLocaleString('es-MX') : ''}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <EnviarEmailDialog
         open={emailDialogOpen}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
 import { Badge } from '../ui/badge';
-import { MoreVertical, Edit2, Copy, Trash2, FileText, ClipboardList, Factory } from 'lucide-react';
+import { MoreVertical, Edit2, Copy, Trash2, FileText, ClipboardList, Factory, CheckCircle2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { formatearMoneda, formatearFecha } from '../../utils/calculations';
 import { Cotizacion, EstadoCotizacion } from '../../types';
@@ -61,6 +61,19 @@ function ModernCheckbox({ checked, onCheckedChange }: { checked: boolean; onChec
         onCheckedChange={onCheckedChange}
         className="border-0 bg-transparent w-3 h-3"
       />
+    </div>
+  );
+}
+
+function AprobacionPortalMarca({ cotizacion }: { cotizacion: Cotizacion }) {
+  if (cotizacion.estado !== 'Aprobada' || !cotizacion.firma_nombre) return null;
+  const fechaTexto = cotizacion.firma_fecha ? formatearFecha(cotizacion.firma_fecha) : '';
+  return (
+    <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+      <span className="truncate">
+        Aprobada por el cliente — {cotizacion.firma_nombre}{fechaTexto ? `, ${fechaTexto}` : ''}
+      </span>
     </div>
   );
 }
@@ -314,9 +327,12 @@ export function CotizacionesTableModern({
                 <span className="text-muted-foreground">Total:</span>
                 <span className="font-semibold text-foreground">{formatearMoneda(cotizacion.total)}</span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-start gap-2">
                 <span className="text-muted-foreground">Estado:</span>
-                <ModernBadge estado={cotizacion.estado} />
+                <div className="flex flex-col items-end">
+                  <ModernBadge estado={cotizacion.estado} />
+                  <AprobacionPortalMarca cotizacion={cotizacion} />
+                </div>
               </div>
             </div>
             
@@ -464,7 +480,10 @@ export function CotizacionesTableModern({
               </ModernCell>
               
               <ModernCell>
-                <ModernBadge estado={cotizacion.estado} />
+                <div className="flex flex-col items-start">
+                  <ModernBadge estado={cotizacion.estado} />
+                  <AprobacionPortalMarca cotizacion={cotizacion} />
+                </div>
               </ModernCell>
               
               <ModernCell>

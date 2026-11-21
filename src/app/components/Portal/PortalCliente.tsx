@@ -12,8 +12,15 @@ import { LogoIdeally } from '../Cotizaciones/LogoIdeally';
 import { formatearMoneda } from '../../utils/calculations';
 import { obtenerConfiguracion, normalizarResumenLineas } from '../../utils/configuracionEquipo';
 import { BASE_URL } from '../../utils/api';
+import { enviarAccionPortal } from './portalAcciones';
 
 type Accion = 'idle' | 'aprobar' | 'rechazar' | 'cambios' | 'done';
+
+interface ErrorAccionState {
+  mensaje: string;
+  reintentable: boolean;
+  ultimaAccion?: 'aprobar' | 'rechazar' | 'cambios';
+}
 
 export function PortalCliente() {
   const { token } = useParams<{ token: string }>();
@@ -26,6 +33,7 @@ export function PortalCliente() {
   const [comentario, setComentario] = useState('');
   const [firmaNombre, setFirmaNombre] = useState('');
   const [resultado, setResultado] = useState<'aprobado' | 'rechazado' | 'cambios' | null>(null);
+  const [errorAccion, setErrorAccion] = useState<ErrorAccionState | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sigPadRef = useRef<SignaturePad | null>(null);
@@ -80,56 +88,111 @@ export function PortalCliente() {
   };
 
   const handleAprobar = async () => {
+    if (!token) return;
     const firma = sigPadRef.current;
     const firmaVacia = !firma || firma.isEmpty();
-    if (!firmaNombre.trim()) { alert('Por favor escribe tu nombre para firmar.'); return; }
-    if (firmaVacia) { alert('Por favor dibuja tu firma en el recuadro.'); return; }
+    if (!firmaNombre.trim()) {
+      setErrorAccion({ mensaje: 'Por favor escribe tu nombre para firmar.', reintentable: false });
+      return;
+    }
+    if (firmaVacia) {
+      setErrorAccion({ mensaje: 'Por favor dibuja tu firma en el recuadro.', reintentable: false });
+      return;
+    }
+    setErrorAccion(null);
     setEnviando(true);
     try {
       const ip = await getUserIP();
-      await fetch(`${BASE_URL}/portal/${token}/aprobar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firma_imagen: firma!.toDataURL('image/png'),
-          firma_nombre: firmaNombre,
-          firma_ip: ip,
-        }),
+      const res = await enviarAccionPortal(BASE_URL, token, 'aprobar', {
+        firma_imagen: firma!.toDataURL('image/png'),
+        firma_nombre: firmaNombre.trim(),
+        firma_ip: ip,
       });
+
+      if (!res.ok) {
+        setErrorAccion({
+          mensaje: res.error || 'No se pudo aprobar la cotización.',
+          reintentable: Boolean(res.reintentable),
+          ultimaAccion: 'aprobar',
+        });
+        if (res.codigo === 'YA_APROBADA') {
+          setCotizacion((prev: any) => prev ? { ...prev, estado: 'Aprobada' } : prev);
+        }
+        return;
+      }
+
+      setCotizacion((prev: any) => prev ? { ...prev, estado: 'Aprobada', firma_nombre: firmaNombre.trim() } : prev);
       setResultado('aprobado');
       setAccion('done');
-    } catch { alert('Error al enviar. Intenta de nuevo.'); }
-    finally { setEnviando(false); }
+    } finally {
+      setEnviando(false);
+    }
   };
 
   const handleRechazar = async () => {
-    if (!comentario.trim()) { alert('Por favor indica el motivo de rechazo.'); return; }
+    if (!token) return;
+    if (!comentario.trim()) {
+      setErrorAccion({ mensaje: 'Por favor indica el motivo de rechazo.', reintentable: false });
+      return;
+    }
+    setErrorAccion(null);
     setEnviando(true);
     try {
-      await fetch(`${BASE_URL}/portal/${token}/rechazar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ comentario }),
+      const res = await enviarAccionPortal(BASE_URL, token, 'rechazar', {
+        comentario: comentario.trim(),
       });
+
+      if (!res.ok) {
+        setErrorAccion({
+          mensaje: res.error || 'No se pudo rechazar la cotización.',
+          reintentable: Boolean(res.reintentable),
+          ultimaAccion: 'rechazar',
+        });
+        return;
+      }
+
+      setCotizacion((prev: any) => prev ? { ...prev, estado: 'Cancelada' } : prev);
       setResultado('rechazado');
       setAccion('done');
-    } catch { alert('Error al enviar. Intenta de nuevo.'); }
-    finally { setEnviando(false); }
+    } finally {
+      setEnviando(false);
+    }
   };
 
   const handleCambios = async () => {
-    if (!comentario.trim()) { alert('Por favor describe los cambios que necesitas.'); return; }
+    if (!token) return;
+    if (!comentario.trim()) {
+      setErrorAccion({ mensaje: 'Por favor describe los cambios que necesitas.', reintentable: false });
+      return;
+    }
+    setErrorAccion(null);
     setEnviando(true);
     try {
-      await fetch(`${BASE_URL}/portal/${token}/solicitar-cambios`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ comentario }),
+      const res = await enviarAccionPortal(BASE_URL, token, 'solicitar-cambios', {
+        comentario: comentario.trim(),
       });
+
+      if (!res.ok) {
+        setErrorAccion({
+          mensaje: res.error || 'No se pudieron enviar los comentarios.',
+          reintentable: Boolean(res.reintentable),
+          ultimaAccion: 'cambios',
+        });
+        return;
+      }
+
       setResultado('cambios');
       setAccion('done');
-    } catch { alert('Error al enviar. Intenta de nuevo.'); }
-    finally { setEnviando(false); }
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  const reintentarUltimaAccion = () => {
+    if (!errorAccion?.ultimaAccion) return;
+    if (errorAccion.ultimaAccion === 'aprobar') handleAprobar();
+    else if (errorAccion.ultimaAccion === 'rechazar') handleRechazar();
+    else if (errorAccion.ultimaAccion === 'cambios') handleCambios();
   };
 
   if (loading) return (
@@ -180,20 +243,20 @@ export function PortalCliente() {
       <div id="portal-content" className="max-w-3xl mx-auto space-y-6">
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-700 to-purple-900 rounded-xl p-6 text-foreground flex items-center gap-4">
+        <div className="bg-primary rounded-xl p-6 text-primary-foreground flex items-center gap-4">
           <LogoIdeally size={48} />
           <div>
             <h1 className="text-2xl font-bold">IDEALLY</h1>
-            <p className="text-purple-200 text-sm">Arte · Diseño · Ingeniería</p>
+            <p className="text-primary-foreground/80 text-sm">Arte · Diseño · Ingeniería</p>
           </div>
           <div className="ml-auto text-right flex items-center gap-3">
             <div>
-              <div className="text-xs text-purple-300">Folio</div>
+              <div className="text-xs text-primary-foreground/75">Folio</div>
               <div className="font-mono font-bold text-lg">{cot.folio}</div>
             </div>
             <button
               onClick={() => navigate(`/cotizacion/${token}/pdf`)}
-              className="print:hidden bg-white/20 hover:bg-white/30 transition-colors rounded-lg p-2.5"
+              className="print:hidden bg-primary-foreground/15 hover:bg-primary-foreground/25 transition-colors rounded-lg p-2.5"
               title="Descargar cotización en PDF"
             >
               <Download className="h-5 w-5" />
@@ -286,18 +349,33 @@ export function PortalCliente() {
           </div>
         )}
 
+        {/* Error al procesar acción */}
+        {errorAccion && (
+          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 flex items-start gap-3 text-sm text-destructive" role="alert">
+            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-medium">{errorAccion.mensaje}</p>
+            </div>
+            {errorAccion.reintentable && (
+              <Button size="sm" variant="outline" onClick={reintentarUltimaAccion} disabled={enviando}>
+                Reintentar
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* Acciones (solo si no está decidido) */}
         {!yaDecidido && accion === 'idle' && (
           <Card>
             <CardHeader><CardTitle className="text-base">Tu respuesta</CardTitle></CardHeader>
             <CardContent className="flex flex-col sm:flex-row gap-3">
-              <Button className="flex-1 bg-green-600 hover:bg-green-700 text-foreground" onClick={() => setAccion('aprobar')}>
+              <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={() => { setErrorAccion(null); setAccion('aprobar'); }}>
                 <CheckCircle className="mr-2 h-4 w-4" /> Aprobar cotización
               </Button>
-              <Button variant="outline" className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50" onClick={() => setAccion('cambios')}>
+              <Button variant="outline" className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50" onClick={() => { setErrorAccion(null); setAccion('cambios'); }}>
                 <MessageSquare className="mr-2 h-4 w-4" /> Solicitar cambios
               </Button>
-              <Button variant="outline" className="flex-1 border-red-300 text-red-600 hover:bg-red-50" onClick={() => setAccion('rechazar')}>
+              <Button variant="outline" className="flex-1 border-red-300 text-red-600 hover:bg-red-50" onClick={() => { setErrorAccion(null); setAccion('rechazar'); }}>
                 <XCircle className="mr-2 h-4 w-4" /> Rechazar
               </Button>
             </CardContent>
@@ -331,9 +409,9 @@ export function PortalCliente() {
                 <p className="text-xs text-gray-400 mt-1">Dibuja tu firma con el mouse o con el dedo en pantalla táctil</p>
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" onClick={() => setAccion('idle')} disabled={enviando}>Cancelar</Button>
-                <Button className="flex-1 bg-green-600 hover:bg-green-700" onClick={handleAprobar} disabled={enviando}>
-                  {enviando ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enviando…</> : '✅ Confirmar aprobación'}
+                <Button variant="outline" onClick={() => { setErrorAccion(null); setAccion('idle'); }} disabled={enviando}>Cancelar</Button>
+                <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={handleAprobar} disabled={enviando}>
+                  {enviando ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enviando…</> : <><CheckCircle className="mr-2 h-4 w-4" />Confirmar aprobación</>}
                 </Button>
               </div>
             </CardContent>
@@ -350,9 +428,9 @@ export function PortalCliente() {
                 value={comentario} onChange={e => setComentario(e.target.value)} rows={4}
               />
               <div className="flex gap-3">
-                <Button variant="outline" onClick={() => setAccion('idle')} disabled={enviando}>Cancelar</Button>
-                <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-foreground" onClick={handleCambios} disabled={enviando}>
-                  {enviando ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enviando…</> : '💬 Enviar comentarios'}
+                <Button variant="outline" onClick={() => { setErrorAccion(null); setAccion('idle'); }} disabled={enviando}>Cancelar</Button>
+                <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white" onClick={handleCambios} disabled={enviando}>
+                  {enviando ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enviando…</> : <><MessageSquare className="mr-2 h-4 w-4" />Enviar comentarios</>}
                 </Button>
               </div>
             </CardContent>
@@ -369,9 +447,9 @@ export function PortalCliente() {
                 value={comentario} onChange={e => setComentario(e.target.value)} rows={4}
               />
               <div className="flex gap-3">
-                <Button variant="outline" onClick={() => setAccion('idle')} disabled={enviando}>Cancelar</Button>
-                <Button className="flex-1 bg-red-600 hover:bg-red-700 text-foreground" onClick={handleRechazar} disabled={enviando}>
-                  {enviando ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enviando…</> : '❌ Confirmar rechazo'}
+                <Button variant="outline" onClick={() => { setErrorAccion(null); setAccion('idle'); }} disabled={enviando}>Cancelar</Button>
+                <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white" onClick={handleRechazar} disabled={enviando}>
+                  {enviando ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Enviando…</> : <><XCircle className="mr-2 h-4 w-4" />Confirmar rechazo</>}
                 </Button>
               </div>
             </CardContent>

@@ -556,6 +556,7 @@ export default function App() {
             onCrearCompraProveedor={crearCompraProveedor}
             onRegistrarMovimientoInventario={registrarMovimientoInventario}
             onGenerarOrdenesTrabajo={generarOrdenesDesdeCotizacion}
+            cotizacionEventos={cotizacionEventos}
           />
         } />
 
@@ -861,14 +862,18 @@ function CotizacionDetalleWrapper({ cotizaciones, loading, ...props }: any) {
   const currentCliente = props.clientes.find((cl: any) => cl.id === cotizacion.cliente_id);
   const pagos = props.obtenerPagosPorCotizacion(id);
   const saldoPendiente = props.calcularSaldoPendiente(id);
+  const eventosCotizacion = Array.isArray(props.cotizacionEventos)
+    ? props.cotizacionEventos.filter((ev: any) => ev.cotizacion_id === id)
+    : [];
   return (
     <CotizacionDetalle
       cotizacion={cotizacion}
       todasLasCotizaciones={cotizaciones}
       comprasProveedor={props.comprasProveedor}
-        cliente={currentCliente}
+      cliente={currentCliente}
       pagos={pagos}
       saldoPendiente={saldoPendiente}
+      eventos={eventosCotizacion}
       onVerCotizacion={(vid) => navigate(`/cotizaciones/${vid}`)}
       {...props}
     />

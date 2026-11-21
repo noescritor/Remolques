@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../utils/supabase/client';
 import { Cliente, Producto, Cotizacion, Pago, Ajustes, Plantilla, PerfilOrganizacion, InvitacionEquipo, MovimientoInventario, CategoriaProducto, CategoriaCliente, NotaSimple, Proveedor, CompraProveedor, CotizacionEvento, OrdenTrabajo, Presupuesto } from '../types';
 import { toast } from 'sonner';
@@ -408,6 +408,56 @@ export function useSupabaseData(token?: string) {
   useEffect(() => {
     loadData();
   }, [token]);
+
+  const ultimoRefrescoRef = useRef<number>(0);
+
+  const refrescarCotizaciones = useCallback(async (forzar = false) => {
+    if (!token || useLocalData) return;
+    const ahora = Date.now();
+    if (!forzar && ahora - ultimoRefrescoRef.current < 3000) return;
+    ultimoRefrescoRef.current = ahora;
+
+    try {
+      const [cotizacionesData, eventosData] = await Promise.all([
+        fetchJson('cotizaciones', `${BASE_URL}/cotizaciones`, token),
+        fetchJson('cotizacion-eventos', `${BASE_URL}/cotizacion-eventos`, token).catch(() => null),
+      ]);
+      if (Array.isArray(cotizacionesData)) {
+        setCotizaciones(cotizacionesData);
+        saveToLocalStorage('cotizaciones', cotizacionesData);
+      }
+      if (Array.isArray(eventosData)) {
+        setCotizacionEventos(eventosData);
+        saveToLocalStorage('cotizacion_eventos', eventosData);
+      }
+    } catch (_error) {
+      // Refresco silencioso en segundo plano; no interrumpir la vista actual
+    }
+  }, [token, useLocalData]);
+
+  useEffect(() => {
+    if (!token || useLocalData) return;
+
+    const manejarFoco = () => {
+      if (document.visibilityState === 'visible') {
+        refrescarCotizaciones();
+      }
+    };
+
+    window.addEventListener('focus', manejarFoco);
+    document.addEventListener('visibilitychange', manejarFoco);
+    const intervalo = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        refrescarCotizaciones();
+      }
+    }, 30000);
+
+    return () => {
+      window.removeEventListener('focus', manejarFoco);
+      document.removeEventListener('visibilitychange', manejarFoco);
+      window.clearInterval(intervalo);
+    };
+  }, [token, useLocalData, refrescarCotizaciones]);
 
   
   // CRUD Proveedores
