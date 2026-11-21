@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { calidadApi } from '../Calidad/calidadApi';
 import {
   FaseMatriz,
   FilaMatriz,
@@ -97,6 +98,36 @@ export function MatrizProduccionView({
   // Edición inline de material_faltante
   const [editandoMaterialId, setEditandoMaterialId] = useState<string | null>(null);
   const [valorMaterialTemp, setValorMaterialTemp] = useState<string>('');
+
+  // Resumen de calidad (una sola petición para todo el tablero)
+  const [resumenCalidadMap, setResumenCalidadMap] = useState<
+    Map<string, { capturados: number; total_esperados: number; no_conformes: number }>
+  >(new Map());
+
+  useEffect(() => {
+    let activo = true;
+    calidadApi
+      .resumenOrdenes()
+      .then((rows) => {
+        if (!activo || !Array.isArray(rows)) return;
+        const mapa = new Map<string, { capturados: number; total_esperados: number; no_conformes: number }>();
+        for (const r of rows) {
+          const prev = mapa.get(r.orden_trabajo_id) || { capturados: 0, total_esperados: 0, no_conformes: 0 };
+          mapa.set(r.orden_trabajo_id, {
+            capturados: prev.capturados + (Number(r.capturados) || 0),
+            total_esperados: prev.total_esperados + (Number(r.total_esperados) || 0),
+            no_conformes: prev.no_conformes + (Number(r.no_conformes) || 0),
+          });
+        }
+        setResumenCalidadMap(mapa);
+      })
+      .catch(() => {
+        // Silencioso: las insignias de calidad no deben bloquear el tablero
+      });
+    return () => {
+      activo = false;
+    };
+  }, [lineaClave]);
 
   const iniciarEdicionMaterial = (fila: FilaMatriz) => {
     setEditandoMaterialId(fila.orden_id);
@@ -310,7 +341,23 @@ export function MatrizProduccionView({
 
                       {/* AVANCE */}
                       <td className="px-3 py-2 text-center border-r border-border/50 text-xs font-medium text-foreground">
-                        {fila.avance?.terminadas ?? 0}/{fila.avance?.total ?? 12}
+                        <div>{fila.avance?.terminadas ?? 0}/{fila.avance?.total ?? 12}</div>
+                        {(() => {
+                          const q = resumenCalidadMap.get(fila.orden_id);
+                          if (!q) return null;
+                          return (
+                            <div className="mt-1 flex items-center justify-center gap-1 flex-wrap">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                                Calidad {q.capturados}/{q.total_esperados}
+                              </span>
+                              {q.no_conformes > 0 && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-destructive/15 text-destructive font-semibold">
+                                  {q.no_conformes} NC
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </td>
 
                       {/* COMPROMISO */}

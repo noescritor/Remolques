@@ -30,6 +30,7 @@ import { AjustesForm } from './components/Ajustes/AjustesForm';
 import { PlantillasList } from './components/Plantillas/PlantillasList';
 import { EquipoManager } from './components/Equipo/EquipoManager';
 import { NotasManager } from './components/Notas/NotasManager';
+import { CalidadPage } from './components/Calidad/CalidadPage';
 import { Toaster } from './components/ui/sonner';
 import { useSupabaseData } from './hooks/useSupabaseData';
 import { toast } from "sonner";
@@ -447,6 +448,7 @@ export default function App() {
     if (path.startsWith('/cxp')) return 'cxp';
     if (path.startsWith('/produccion') || path.startsWith('/ordenes-trabajo')) return 'produccion';
     if (path.startsWith('/tablero-produccion')) return 'tablero-produccion';
+    if (path.startsWith('/calidad')) return 'calidad';
     if (path.startsWith('/plan-semanal')) return 'plan-semanal';
     if (path.startsWith('/presupuestos')) return 'presupuestos';
     if (path.startsWith('/trazabilidad')) return 'trazabilidad';
@@ -676,6 +678,22 @@ export default function App() {
                   <Route path="/tablero-produccion" element={
             <TableroProduccionPage
               session={session}
+            />
+          } />
+          <Route path="/calidad" element={
+            <CalidadPage
+              ordenesTrabajo={ordenesTrabajo}
+              lineasProducto={lineasProducto}
+              ajustes={ajustes}
+              tabInicial="inspecciones"
+            />
+          } />
+          <Route path="/calidad/plantillas" element={
+            <CalidadPage
+              ordenesTrabajo={ordenesTrabajo}
+              lineasProducto={lineasProducto}
+              ajustes={ajustes}
+              tabInicial="plantillas"
             />
           } />
           <Route path="/plan-semanal" element={

@@ -20,6 +20,8 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Badge } from '../ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { OrdenCalidadTab } from '../Calidad/OrdenCalidadTab';
 import {
   Clock,
   Calendar,
@@ -154,11 +156,17 @@ export function OrdenTrabajoDetalleSheet({
             </Badge>
           </div>
           <SheetDescription className="text-xs text-muted-foreground">
-            Consulta la información técnica, planeación e historial de cambios de fase.
+            Consulta la información técnica, planeación, calidad e historial de cambios de fase.
           </SheetDescription>
         </SheetHeader>
 
-        <div className="space-y-6 pt-4">
+        <Tabs defaultValue="general" className="pt-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger value="calidad">Calidad</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="general" className="space-y-6 pt-3">
           {/* ACCIÓN RÁPIDA: VER TAREAS DE PRODUCCIÓN */}
           <Button
             type="button"
@@ -353,7 +361,23 @@ export function OrdenTrabajoDetalleSheet({
               </div>
             )}
           </div>
-        </div>
+          </TabsContent>
+
+          <TabsContent value="calidad" className="pt-3">
+            <OrdenCalidadTab
+              orden={{
+                id: fila.orden_id,
+                etiqueta: fila.etiqueta,
+                modelo: fila.modelo,
+                tipo_equipo: fila.tipo_equipo,
+              }}
+              onIrAPlantillas={() => {
+                onClose();
+                navigate('/calidad/plantillas');
+              }}
+            />
+          </TabsContent>
+        </Tabs>
       </SheetContent>
     </Sheet>
   );

@@ -11,6 +11,7 @@ import {
   Menu,
   X,
   ClipboardList,
+  ClipboardCheck,
   DollarSign,
   Calendar
 } from 'lucide-react';
@@ -73,6 +74,7 @@ function ModernSideNav({ currentPage, onNavigate, session, organizacion, loading
     { id: 'dashboard',    label: 'Dashboard',     icon: LayoutDashboard, isActive: currentPage === 'dashboard' },
     { id: 'cotizaciones', label: 'Cotizaciones',  icon: FileText,        isActive: currentPage === 'cotizaciones', visible: modulos.cotizaciones !== false },
         { id: 'tablero-produccion', label: 'Tablero Producción', icon: LayoutDashboard, isActive: currentPage === 'tablero-produccion' },
+    { id: 'calidad',            label: 'Calidad',            icon: ClipboardCheck,  isActive: currentPage === 'calidad' },
     { id: 'plan-semanal', label: 'Plan semanal', icon: Calendar, isActive: currentPage === 'plan-semanal' },
     { id: 'trazabilidad', label: 'Trazabilidad',  icon: ClipboardList,   isActive: currentPage === 'trazabilidad' },
     { id: 'presupuestos', label: 'Presupuestos',  icon: Calculator,      isActive: currentPage === 'presupuestos' },

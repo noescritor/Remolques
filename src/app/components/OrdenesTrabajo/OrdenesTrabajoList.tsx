@@ -5,9 +5,10 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Dialog, DialogContent } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Printer, FileCheck, Search, Edit, Calendar, ClipboardCheck } from 'lucide-react';
+import { Printer, FileCheck, Search, Edit, Calendar, ClipboardCheck, AlertTriangle } from 'lucide-react';
+import { calidadApi } from '../Calidad/calidadApi';
 import { OrdenTrabajoPDF } from './OrdenTrabajoPDF';
 import { LiberacionPDF } from './LiberacionPDF';
 import { ChecklistDespieceModal } from './ChecklistDespieceModal';
@@ -28,6 +29,10 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
   const [ordenParaPDF, setOrdenParaPDF] = useState<OrdenTrabajo | null>(null);
   const [ordenParaChecklist, setOrdenParaChecklist] = useState<OrdenTrabajo | null>(null);
   const [clienteLiberacion, setClienteLiberacion] = useState<string | null>(null);
+  const [avisoLiberar, setAvisoLiberar] = useState<{
+    mensajes: string[];
+    payload: { id: string; data: Partial<OrdenTrabajo> };
+  } | null>(null);
 
   // Estados de edición básicos
   const [editNiv, setEditNiv] = useState('');
@@ -98,7 +103,7 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
       nota: editNota
     };
 
-    await onActualizarOrden(ordenEditando.id, {
+    const payloadUpdate = {
       niv: editNiv,
       modelo: editModelo,
       estado: editEstado,
@@ -107,7 +112,36 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
         color: editColor,
         ficha: nuevaFicha
       }
-    });
+    };
+
+    if (editEstado === 'Liberado' && ordenEditando.estado !== 'Liberado') {
+      try {
+        const insps = await calidadApi.listarInspecciones({ orden_trabajo_id: ordenEditando.id });
+        const entregaCerrada = (insps || []).some((i: any) => i.formato === 'entrega' && i.estado === 'cerrada');
+        const noConformesTotal = (insps || []).reduce(
+          (acc: number, i: any) => acc + (Number(i.resumen?.no_conformes) || 0),
+          0
+        );
+        const mensajes: string[] = [];
+        if (!entregaCerrada) {
+          mensajes.push('Esta orden no tiene una inspección de calidad de entrega cerrada.');
+        }
+        if (noConformesTotal > 0) {
+          mensajes.push(`Esta orden tiene ${noConformesTotal} puntos marcados como No Conforme sin resolver.`);
+        }
+        if (mensajes.length > 0) {
+          setAvisoLiberar({
+            mensajes,
+            payload: { id: ordenEditando.id, data: payloadUpdate },
+          });
+          return;
+        }
+      } catch {
+        // Si falla la consulta de calidad, no bloqueamos la liberación
+      }
+    }
+
+    await onActualizarOrden(ordenEditando.id, payloadUpdate);
 
     setOrdenEditando(null);
   };
@@ -375,6 +409,43 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
         open={!!ordenParaChecklist}
         onOpenChange={(o) => !o && setOrdenParaChecklist(null)}
       />
+
+      {/* Aviso no bloqueante de Calidad al liberar */}
+      <Dialog open={Boolean(avisoLiberar)} onOpenChange={(o) => { if (!o) setAvisoLiberar(null); }}>
+        <DialogContent className="max-w-md bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-600" />
+              Aviso de calidad antes de liberar
+            </DialogTitle>
+            <DialogDescription>
+              Puedes continuar con la liberación de todos modos; estas observaciones son solo informativas:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 text-sm">
+            {avisoLiberar?.mensajes.map((m, i) => (
+              <div key={i} className="p-2.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-foreground">
+                {m}
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAvisoLiberar(null)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={async () => {
+                if (!avisoLiberar) return;
+                await onActualizarOrden(avisoLiberar.payload.id, avisoLiberar.payload.data);
+                setAvisoLiberar(null);
+                setOrdenEditando(null);
+              }}
+            >
+              Continuar de todos modos
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
