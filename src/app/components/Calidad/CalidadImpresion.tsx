@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Printer, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { decidirLogoEncabezado } from '../../utils/logo';
@@ -63,8 +64,8 @@ export function CalidadImpresion({
   const folioTexto = enBlanco ? '' : (inspeccion?.folio || '');
   const nivTexto = enBlanco ? '' : (orden?.niv || '');
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/70 overflow-y-auto p-4 sm:p-6">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] bg-black/80 overflow-y-auto p-4 sm:p-6">
       <style>{`
         @media print {
           @page { size: letter; margin: 10mm; }
@@ -329,6 +330,7 @@ export function CalidadImpresion({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

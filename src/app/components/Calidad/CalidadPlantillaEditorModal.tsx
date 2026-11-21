@@ -275,7 +275,7 @@ export function CalidadPlantillaEditorModal({
   return (
     <>
       <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-        <DialogContent className="w-[96vw] max-w-5xl h-[92vh] flex flex-col p-0 overflow-hidden bg-card border-border">
+        <DialogContent className="w-[96vw] max-w-5xl sm:max-w-5xl h-[92vh] flex flex-col p-0 overflow-hidden bg-card border-border">
           <DialogHeader className="px-6 pt-4 pb-3 border-b border-border shrink-0">
             <div className="flex items-center justify-between gap-2 pr-8 flex-wrap">
               <div>

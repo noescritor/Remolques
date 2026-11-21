@@ -379,7 +379,7 @@ export function CalidadInspeccionModal({
   return (
     <>
       <Dialog open={open} onOpenChange={(v) => { if (!v) intentarCerrarDialogo(); }}>
-        <DialogContent className="w-[96vw] max-w-6xl h-[92vh] flex flex-col p-0 overflow-hidden bg-card border-border">
+        <DialogContent className="w-[96vw] max-w-6xl sm:max-w-6xl h-[92vh] flex flex-col p-0 overflow-hidden bg-card border-border">
           {/* Encabezado fijo */}
           <DialogHeader className="px-4 sm:px-6 pt-4 pb-3 border-b border-border shrink-0 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2 pr-8">
