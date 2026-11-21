@@ -48,6 +48,24 @@ import {
   sembrarTableroMotor,
 } from "./motor/tablero_produccion.ts";
 import {
+  CalidadError,
+  listarPlantillasCalidad,
+  obtenerPlantillaCalidad,
+  crearPlantillaCalidad,
+  guardarPlantillaCalidad,
+  nuevaVersionPlantillaCalidad,
+  publicarPlantillaCalidad,
+  eliminarPlantillaCalidad,
+  crearInspeccionCalidad,
+  listarInspeccionesCalidad,
+  obtenerInspeccionCalidad,
+  actualizarEncabezadoInspeccion,
+  guardarResultadosCalidad,
+  cerrarInspeccionCalidad,
+  reabrirInspeccionCalidad,
+  obtenerResumenCalidadOrdenes,
+} from "./motor/calidad.ts";
+import {
   exportarPrecios,
   previsualizarCambios,
   aplicarLote,
@@ -1213,6 +1231,254 @@ app.get("/produccion/trazabilidad/operario/:operarioId", async (c) => {
     return c.json(data);
   } catch (error: any) {
     return c.json({ error: error.message }, error.status || 500);
+  }
+});
+
+function responderErrorCalidad(c: any, error: any) {
+  if (error instanceof CalidadError) {
+    return c.json(
+      { error: error.message, codigo: error.codigo, ...(error.extra || {}) },
+      error.status as any,
+    );
+  }
+  return c.json({ error: error?.message || "Error inesperado en calidad" }, error?.status || 500);
+}
+
+// --- CALIDAD ---
+
+app.get("/calidad/plantillas", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const serviceClient = getServiceClient();
+    const data = await listarPlantillasCalidad(
+      supabase,
+      orgId,
+      {
+        formato: c.req.query("formato"),
+        linea: c.req.query("linea"),
+        estado: c.req.query("estado"),
+      },
+      serviceClient,
+    );
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.get("/calidad/plantillas/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const data = await obtenerPlantillaCalidad(supabase, orgId, c.req.param("id"));
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.post("/calidad/plantillas", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const serviceClient = getServiceClient();
+    const body = await c.req.json();
+    const data = await crearPlantillaCalidad(supabase, orgId, body, serviceClient);
+    return c.json(data, 201);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.put("/calidad/plantillas/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const serviceClient = getServiceClient();
+    const body = await c.req.json();
+    const data = await guardarPlantillaCalidad(supabase, orgId, c.req.param("id"), body, serviceClient);
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.post("/calidad/plantillas/:id/nueva-version", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const serviceClient = getServiceClient();
+    const data = await nuevaVersionPlantillaCalidad(supabase, orgId, c.req.param("id"), serviceClient);
+    return c.json(data, 201);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.post("/calidad/plantillas/:id/publicar", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const serviceClient = getServiceClient();
+    const data = await publicarPlantillaCalidad(supabase, orgId, c.req.param("id"), serviceClient);
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.delete("/calidad/plantillas/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const serviceClient = getServiceClient();
+    const data = await eliminarPlantillaCalidad(supabase, orgId, c.req.param("id"), serviceClient);
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.post("/calidad/inspecciones", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user") as any;
+    const serviceClient = getServiceClient();
+    const body = await c.req.json();
+    const data = await crearInspeccionCalidad(supabase, orgId, body, user?.id || null, serviceClient);
+    return c.json(data, 201);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.get("/calidad/inspecciones", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const serviceClient = getServiceClient();
+    const data = await listarInspeccionesCalidad(
+      supabase,
+      orgId,
+      {
+        orden_trabajo_id: c.req.query("orden_trabajo_id"),
+        formato: c.req.query("formato"),
+        estado: c.req.query("estado"),
+        con_no_conformes: c.req.query("con_no_conformes"),
+      },
+      serviceClient,
+    );
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.get("/calidad/inspecciones/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const data = await obtenerInspeccionCalidad(supabase, orgId, c.req.param("id"));
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.put("/calidad/inspecciones/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user") as any;
+    const serviceClient = getServiceClient();
+    const body = await c.req.json();
+    const data = await actualizarEncabezadoInspeccion(
+      supabase,
+      orgId,
+      c.req.param("id"),
+      body,
+      user?.id || null,
+      serviceClient,
+    );
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.put("/calidad/inspecciones/:id/resultados", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user") as any;
+    const serviceClient = getServiceClient();
+    const body = await c.req.json();
+    const resultados = Array.isArray(body) ? body : (body?.resultados || []);
+    const data = await guardarResultadosCalidad(
+      supabase,
+      orgId,
+      c.req.param("id"),
+      resultados,
+      user?.id || null,
+      serviceClient,
+    );
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.post("/calidad/inspecciones/:id/cerrar", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user") as any;
+    const serviceClient = getServiceClient();
+    const body = await c.req.json().catch(() => ({}));
+    const data = await cerrarInspeccionCalidad(
+      supabase,
+      orgId,
+      c.req.param("id"),
+      body,
+      user?.id || null,
+      serviceClient,
+    );
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.post("/calidad/inspecciones/:id/reabrir", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user") as any;
+    const serviceClient = getServiceClient();
+    const data = await reabrirInspeccionCalidad(
+      supabase,
+      orgId,
+      c.req.param("id"),
+      user?.id || null,
+      serviceClient,
+    );
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
+  }
+});
+
+app.get("/calidad/resumen-ordenes", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const serviceClient = getServiceClient();
+    const data = await obtenerResumenCalidadOrdenes(supabase, orgId, serviceClient);
+    return c.json(data);
+  } catch (error: any) {
+    return responderErrorCalidad(c, error);
   }
 });
 

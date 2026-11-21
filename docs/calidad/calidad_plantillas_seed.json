@@ -1,0 +1,1775 @@
+{
+ "generado": "2026-11-21",
+ "fuente": [
+  "Check list control calidad total.xlsx",
+  "Check list calidad entrega equipo cliente.xlsb"
+ ],
+ "plantillas": [
+  {
+   "formato": "control_total",
+   "linea": "plataforma",
+   "nombre": "Control de calidad total — Plataforma",
+   "columnas_resultado": [
+    "conforme",
+    "no_conforme"
+   ],
+   "grupos": [
+    {
+     "clave_origen": "PROCESO 1 (Corte de almas)",
+     "nombre": "Corte de almas",
+     "items": [
+      {
+       "numero": 1,
+       "texto": "Corte de almas",
+       "aplica_si": null
+      },
+      {
+       "numero": 2,
+       "texto": "Barrenado de IPR",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "1",
+     "fase_orden": 1,
+     "fase_confirmada": true
+    },
+    {
+     "clave_origen": "PROCESO 2 (Ensambre de baras)",
+     "nombre": "Ensambre de baras",
+     "items": [
+      {
+       "numero": 3,
+       "texto": "Alineacion de solera respecto a alma",
+       "aplica_si": null
+      },
+      {
+       "numero": 4,
+       "texto": "Soldadura con bugo de Bara 1",
+       "aplica_si": null
+      },
+      {
+       "numero": 5,
+       "texto": "Soldadura con bugo de Bara 2",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "2",
+     "fase_orden": 3,
+     "fase_confirmada": true
+    },
+    {
+     "clave_origen": "PROCESO 3 (Ensamble de chasis)",
+     "nombre": "Ensamble de chasis",
+     "items": [
+      {
+       "numero": 6,
+       "texto": "Colocacion de Botones",
+       "aplica_si": null
+      },
+      {
+       "numero": 7,
+       "texto": "Colocacion de Puentes Internos",
+       "aplica_si": null
+      },
+      {
+       "numero": 8,
+       "texto": "Colocacion de Puentes de Suspensión",
+       "aplica_si": null
+      },
+      {
+       "numero": 9,
+       "texto": "Colocacion de Puentes de la Quinta",
+       "aplica_si": null
+      },
+      {
+       "numero": 10,
+       "texto": "Colocacion de Borda Delantera",
+       "aplica_si": null
+      },
+      {
+       "numero": 11,
+       "texto": "Colocacion de Borda Trasera",
+       "aplica_si": null
+      },
+      {
+       "numero": 12,
+       "texto": "Colocacion de Plancha para la Quinta",
+       "aplica_si": null
+      },
+      {
+       "numero": 13,
+       "texto": "Sub-ensamble de Refuerso interno del Jalon",
+       "aplica_si": null
+      },
+      {
+       "numero": 14,
+       "texto": "Colocacion del Jalon",
+       "aplica_si": null
+      },
+      {
+       "numero": 15,
+       "texto": "Colocacion de Atizadores internos",
+       "aplica_si": null
+      },
+      {
+       "numero": 16,
+       "texto": "Colocacion de Atizadores externos",
+       "aplica_si": null
+      },
+      {
+       "numero": 17,
+       "texto": "Colocacion del Perno Rey (Con su respectiva tapa)",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "3",
+     "fase_orden": 2,
+     "fase_confirmada": false
+    },
+    {
+     "clave_origen": "PROCESO 4 (Ensamble de cargadores)",
+     "nombre": "Ensamble de cargadores",
+     "items": [
+      {
+       "numero": 18,
+       "texto": "Alineación de baras",
+       "aplica_si": null
+      },
+      {
+       "numero": 19,
+       "texto": "Colocación de Cargadores tipo IPR",
+       "aplica_si": null
+      },
+      {
+       "numero": 20,
+       "texto": "Colocación de Bordas Laterales (Canal tipo \"U\" de 15Kg)",
+       "aplica_si": null
+      },
+      {
+       "numero": 21,
+       "texto": "Colocación de Esquineros Frontales",
+       "aplica_si": null
+      },
+      {
+       "numero": 22,
+       "texto": "Colocación de Esquineros Traseros",
+       "aplica_si": null
+      },
+      {
+       "numero": 23,
+       "texto": "Colocación de Buchacas",
+       "aplica_si": null
+      },
+      {
+       "numero": 24,
+       "texto": "Colocación de Tubos laterales",
+       "aplica_si": null
+      },
+      {
+       "numero": 25,
+       "texto": "Colocación de Aletas",
+       "aplica_si": null
+      },
+      {
+       "numero": 26,
+       "texto": "Sub-ensamble de Porta Estribo",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "4",
+     "fase_orden": 4,
+     "fase_confirmada": true
+    },
+    {
+     "clave_origen": "PROCESO 5 (Resoldado)",
+     "nombre": "Resoldado",
+     "items": [
+      {
+       "numero": 27,
+       "texto": "Colocación de Riel logístico",
+       "aplica_si": null
+      },
+      {
+       "numero": 28,
+       "texto": "Colocación de Ganchos para lona",
+       "aplica_si": null
+      },
+      {
+       "numero": 29,
+       "texto": "Colocación de Bases para Tanques",
+       "aplica_si": null
+      },
+      {
+       "numero": 30,
+       "texto": "Colocacion de Bases para Patines",
+       "aplica_si": null
+      },
+      {
+       "numero": 31,
+       "texto": "Colocacion de Base para Manitas",
+       "aplica_si": null
+      },
+      {
+       "numero": 32,
+       "texto": "Colocacion de Base para Perchas",
+       "aplica_si": null
+      },
+      {
+       "numero": 33,
+       "texto": "Colocacion de Bases para Platos",
+       "aplica_si": null
+      },
+      {
+       "numero": 34,
+       "texto": "Colocacion de Base para Valvula del ABS",
+       "aplica_si": null
+      },
+      {
+       "numero": 35,
+       "texto": "Colocación de Base para Foco del ABS",
+       "aplica_si": null
+      },
+      {
+       "numero": 36,
+       "texto": "Colocacion de Plafones ovalados",
+       "aplica_si": null
+      },
+      {
+       "numero": 37,
+       "texto": "Colocacion de Perchas y Platos",
+       "aplica_si": null
+      },
+      {
+       "numero": 38,
+       "texto": "Colocacion de Solera para Esquineros",
+       "aplica_si": null
+      },
+      {
+       "numero": 39,
+       "texto": "Colocacion de Cartabones para Jalon",
+       "aplica_si": null
+      },
+      {
+       "numero": 40,
+       "texto": "Colocacion de \"U\" para Cadenas",
+       "aplica_si": null
+      },
+      {
+       "numero": 41,
+       "texto": "Colocacion del Porta Placas",
+       "aplica_si": null
+      },
+      {
+       "numero": 42,
+       "texto": "Resoldado general de todos los componentes",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "5",
+     "fase_orden": 5,
+     "fase_confirmada": false
+    },
+    {
+     "clave_origen": "PROCESO 6 (Terminados)",
+     "nombre": "Terminados",
+     "items": [
+      {
+       "numero": 43,
+       "texto": "Colocacion de Estribo",
+       "aplica_si": null
+      },
+      {
+       "numero": 44,
+       "texto": "Colocacion de Cincho",
+       "aplica_si": null
+      },
+      {
+       "numero": 45,
+       "texto": "Instalacion de Patines con componentes",
+       "aplica_si": null
+      },
+      {
+       "numero": 46,
+       "texto": "Instalacion de Frente (Concha o Burro)",
+       "aplica_si": null
+      },
+      {
+       "numero": 47,
+       "texto": "Colocacion de Caja de Herramientas",
+       "aplica_si": null
+      },
+      {
+       "numero": 48,
+       "texto": "Instalacion de Porta llantas con componentes",
+       "aplica_si": null
+      },
+      {
+       "numero": 49,
+       "texto": "Instalacion de Ejes",
+       "aplica_si": null
+      },
+      {
+       "numero": 50,
+       "texto": "Torqueado de perchas",
+       "aplica_si": null
+      },
+      {
+       "numero": 51,
+       "texto": "Colocacion de Porta loderas",
+       "aplica_si": null
+      },
+      {
+       "numero": 52,
+       "texto": "Colocacion de Plafones laterales (en caso de llevarlos)",
+       "aplica_si": "en caso de llevarlos"
+      },
+      {
+       "numero": 53,
+       "texto": "Colocacion de Plafones en Estribo (en caso de llevarlos)",
+       "aplica_si": "en caso de llevarlos"
+      },
+      {
+       "numero": 54,
+       "texto": "Colocacion de Pestañas",
+       "aplica_si": null
+      },
+      {
+       "numero": 55,
+       "texto": "Colocacion de Banderolas",
+       "aplica_si": null
+      },
+      {
+       "numero": 56,
+       "texto": "Colocacion de Sistema Retractil con componentes",
+       "aplica_si": null
+      },
+      {
+       "numero": 57,
+       "texto": "Colocacion de Base para Valvula Ponchadora",
+       "aplica_si": null
+      },
+      {
+       "numero": 58,
+       "texto": "Colocacion de Base para Valvula Niveladora",
+       "aplica_si": null
+      },
+      {
+       "numero": 59,
+       "texto": "Colocacion de Cajas Auxiliares (en caso de llevarla)",
+       "aplica_si": "en caso de llevarla"
+      },
+      {
+       "numero": 60,
+       "texto": "Instalacion de Canastilla o Polinera (en caso de llevarla)",
+       "aplica_si": "en caso de llevarla"
+      },
+      {
+       "numero": 61,
+       "texto": "Instalacion de Bicicleteros (en caso de llevarlo)",
+       "aplica_si": "en caso de llevarlo"
+      },
+      {
+       "numero": 62,
+       "texto": "Alineacion de Ejes",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "6",
+     "fase_orden": 6,
+     "fase_confirmada": true
+    },
+    {
+     "clave_origen": "PROCESO 7 (Escoreado)",
+     "nombre": "Escoreado",
+     "items": [
+      {
+       "numero": 63,
+       "texto": "Escoreado del Frente de la unidad",
+       "aplica_si": null
+      },
+      {
+       "numero": 64,
+       "texto": "Escoreado de Bordas laterales y Buchacas",
+       "aplica_si": null
+      },
+      {
+       "numero": 65,
+       "texto": "Escoreado de Cargadores",
+       "aplica_si": null
+      },
+      {
+       "numero": 66,
+       "texto": "Escoreado de Patines",
+       "aplica_si": null
+      },
+      {
+       "numero": 67,
+       "texto": "Escoreado de Aletones",
+       "aplica_si": null
+      },
+      {
+       "numero": 68,
+       "texto": "Escoreado de Almas",
+       "aplica_si": null
+      },
+      {
+       "numero": 69,
+       "texto": "Escoreado de Caja",
+       "aplica_si": null
+      },
+      {
+       "numero": 70,
+       "texto": "Escoreado del Porta Llantas",
+       "aplica_si": null
+      },
+      {
+       "numero": 71,
+       "texto": "Escoreado en Suspensión",
+       "aplica_si": null
+      },
+      {
+       "numero": 72,
+       "texto": "Escoreado de Porta Loderas",
+       "aplica_si": null
+      },
+      {
+       "numero": 73,
+       "texto": "Escoreado del Estribo",
+       "aplica_si": null
+      },
+      {
+       "numero": 74,
+       "texto": "Escoreado del Jalon",
+       "aplica_si": null
+      },
+      {
+       "numero": 75,
+       "texto": "Escoreado de Puentes Internos",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "7",
+     "fase_orden": 7,
+     "fase_confirmada": true
+    },
+    {
+     "clave_origen": "PROCESO 8 (Lavado)",
+     "nombre": "Lavado",
+     "items": [
+      {
+       "numero": 76,
+       "texto": "Lavado del Frente de la unidad",
+       "aplica_si": null
+      },
+      {
+       "numero": 77,
+       "texto": "Lavado del Lateral Derecho",
+       "aplica_si": null
+      },
+      {
+       "numero": 78,
+       "texto": "Lavado del Lateral Izquierdo",
+       "aplica_si": null
+      },
+      {
+       "numero": 79,
+       "texto": "Lavado de la parte Posterior de la unidad",
+       "aplica_si": null
+      },
+      {
+       "numero": 80,
+       "texto": "Lavado Interno de chasis",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "8",
+     "fase_orden": 7,
+     "fase_confirmada": true
+    },
+    {
+     "clave_origen": "PROCESO 9 (Praimer)",
+     "nombre": "Praimer",
+     "items": [
+      {
+       "numero": 81,
+       "texto": "Aplicación de praimer parte Frontal de la unidad",
+       "aplica_si": null
+      },
+      {
+       "numero": 82,
+       "texto": "Aplicación de praimer lateral Derecho",
+       "aplica_si": null
+      },
+      {
+       "numero": 83,
+       "texto": "Aplicación de praimer lateral Izquierdo",
+       "aplica_si": null
+      },
+      {
+       "numero": 84,
+       "texto": "Aplicación de praimer parte Posterior de la unidad",
+       "aplica_si": null
+      },
+      {
+       "numero": 85,
+       "texto": "Aplicación de praimer interna del chasis",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "9",
+     "fase_orden": 8,
+     "fase_confirmada": true
+    },
+    {
+     "clave_origen": "PROCESO 11 (Pintura)",
+     "nombre": "Pintura",
+     "items": [
+      {
+       "numero": 86,
+       "texto": "Aplicación de pintura parte Frontal de la unidad",
+       "aplica_si": null
+      },
+      {
+       "numero": 87,
+       "texto": "Aplicación de pintura lateral Derecho",
+       "aplica_si": null
+      },
+      {
+       "numero": 88,
+       "texto": "Aplicación de pintura lateral Izquierdo",
+       "aplica_si": null
+      },
+      {
+       "numero": 89,
+       "texto": "Aplicación de pintura parte Posterior de la unidad",
+       "aplica_si": null
+      },
+      {
+       "numero": 90,
+       "texto": "Aplicación de pintura interna del chasis",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "11",
+     "fase_orden": 9,
+     "fase_confirmada": true
+    },
+    {
+     "clave_origen": "PROCESO 12 (Sistema neumatico)",
+     "nombre": "Sistema neumatico",
+     "items": [
+      {
+       "numero": 91,
+       "texto": "Colocación de bolsas de aire",
+       "aplica_si": null
+      },
+      {
+       "numero": 92,
+       "texto": "Colocación de Amortiguadores",
+       "aplica_si": null
+      },
+      {
+       "numero": 93,
+       "texto": "Colocación de conexión de chambers",
+       "aplica_si": null
+      },
+      {
+       "numero": 94,
+       "texto": "Colocación de conexión de Modulo ABS",
+       "aplica_si": null
+      },
+      {
+       "numero": 95,
+       "texto": "Colocación de conexión de valvula niveladora",
+       "aplica_si": null
+      },
+      {
+       "numero": 96,
+       "texto": "Colocación de conexión de valvula protectora",
+       "aplica_si": null
+      },
+      {
+       "numero": 97,
+       "texto": "Colocación de conexión de valvula ponchadora",
+       "aplica_si": null
+      },
+      {
+       "numero": 98,
+       "texto": "Colocación de conexión de kit de 1° retractil",
+       "aplica_si": null
+      },
+      {
+       "numero": 99,
+       "texto": "Colocación de conexión de kit de 2° retractil",
+       "aplica_si": null
+      },
+      {
+       "numero": 100,
+       "texto": "Colocación de \"Manita azul de servicio\" y \"Manita roja de emergencia, en parte frontal",
+       "aplica_si": null
+      },
+      {
+       "numero": 101,
+       "texto": "Colocación de \"Manita azul de servicio\" y \"Manita roja de emergencia, en parte trasera",
+       "aplica_si": null
+      },
+      {
+       "numero": 102,
+       "texto": "Instalacion de Gancho de arrastre",
+       "aplica_si": null
+      },
+      {
+       "numero": 103,
+       "texto": "Calibracion de balatas",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "12",
+     "fase_orden": 11,
+     "fase_confirmada": true
+    },
+    {
+     "clave_origen": "PROCESO 12 (Sistema electrico)",
+     "nombre": "Sistema electrico",
+     "items": [
+      {
+       "numero": 104,
+       "texto": "Plafones laterales Derechos (1 Ambar de 2\", 1 Rojo de 2\", 2 Ovalados Ambar).",
+       "aplica_si": null
+      },
+      {
+       "numero": 105,
+       "texto": "Cuartos",
+       "aplica_si": null
+      },
+      {
+       "numero": 106,
+       "texto": "Direccionales",
+       "aplica_si": null
+      },
+      {
+       "numero": 107,
+       "texto": "Stop",
+       "aplica_si": null
+      },
+      {
+       "numero": 108,
+       "texto": "Indicador de ABS",
+       "aplica_si": null
+      },
+      {
+       "numero": 109,
+       "texto": "3 Marias",
+       "aplica_si": null
+      },
+      {
+       "numero": 110,
+       "texto": "Plafones laterales Auxiliares",
+       "aplica_si": null
+      },
+      {
+       "numero": 111,
+       "texto": "Plafones laterales Izquierdos (1 Ambar de 2\", 1 Rojo de 2\", 2 Ovalados Ambar).",
+       "aplica_si": null
+      },
+      {
+       "numero": 112,
+       "texto": "Plafones en Estribo",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "12",
+     "fase_orden": 10,
+     "fase_confirmada": true
+    },
+    {
+     "clave_origen": "Proceso 13 (Piso)",
+     "nombre": "Piso",
+     "items": [
+      {
+       "numero": 113,
+       "texto": "Instalacion de Piso.",
+       "aplica_si": null
+      },
+      {
+       "numero": 114,
+       "texto": "Instalacion de Rotulado",
+       "aplica_si": null
+      },
+      {
+       "numero": 115,
+       "texto": "Instalacion de Reflejante.",
+       "aplica_si": null
+      },
+      {
+       "numero": 116,
+       "texto": "Colocacion de Rines y Llantas.",
+       "aplica_si": null
+      }
+     ],
+     "numero_original": "13",
+     "fase_orden": 12,
+     "fase_confirmada": true
+    }
+   ],
+   "unidades": [
+    "Única"
+   ],
+   "etiquetas_resultado": {
+    "conforme": "√",
+    "no_conforme": "X"
+   }
+  },
+  {
+   "formato": "entrega",
+   "linea": "plataforma",
+   "nombre": "Calidad de entrega — Plataforma",
+   "grupos": [
+    {
+     "nombre": "PARTE FRONTAL DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 1,
+       "texto": "CALCOMANIA \" LEOLCA\" Y LEON PARTE SUPERIOR CENTRADA.",
+       "aplica_si": null
+      },
+      {
+       "numero": 2,
+       "texto": "CUARTOS FRONTALES IZQUIERDO & DERECHO \"AMBAR\".",
+       "aplica_si": null
+      },
+      {
+       "numero": 3,
+       "texto": "MANITA AZUL DE SERVICIO Y MANITA ROJA DE EMERGENCIA.",
+       "aplica_si": null
+      },
+      {
+       "numero": 4,
+       "texto": "SOQUET HEMBRA DE 7 POLOS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 5,
+       "texto": "CALCAMONIA HECHO EN MEXICO.",
+       "aplica_si": null
+      },
+      {
+       "numero": 6,
+       "texto": "GANCHOS PARA LONA",
+       "aplica_si": null
+      },
+      {
+       "numero": 7,
+       "texto": "PINTURA EN BUEN ESTADO.",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE IZQUIERDA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 8,
+       "texto": "CINTA REFLEJANTE.",
+       "aplica_si": null
+      },
+      {
+       "numero": 9,
+       "texto": "MANIVELA DE PATINES.",
+       "aplica_si": null
+      },
+      {
+       "numero": 10,
+       "texto": "UN JUEGO DE PATINES Y TORNILLERIA GRADO 5.",
+       "aplica_si": null
+      },
+      {
+       "numero": 11,
+       "texto": "SEGUNDO JUEGO DE PATINES EN BUEN ESTADO (SI LLEVA).",
+       "aplica_si": "SI LLEVA"
+      },
+      {
+       "numero": 12,
+       "texto": "PLAFONERAS OVALADAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 13,
+       "texto": "CALCOMANIA \"LEOLCA\" PARTE CENTRAL DEL EQUIPO.",
+       "aplica_si": null
+      },
+      {
+       "numero": 14,
+       "texto": "SISTEMA RETRACTIL 1ER. EJE (EN CASO DE LLEVARLO).",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 15,
+       "texto": "SISTEMA RETRACTIL 2o. EJE (EN CASO DE LLEVARLO).",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 16,
+       "texto": "LLANTAS EN BUEN ESTADO Y ACEITE EN MASAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 17,
+       "texto": "TORQUE TORNILLO DE PERCHA (CAPADOS).",
+       "aplica_si": null
+      },
+      {
+       "numero": 18,
+       "texto": "PINTURA EN BUEN ESTADO",
+       "aplica_si": null
+      },
+      {
+       "numero": 19,
+       "texto": "RIEL LOGISTICO CON LAS MATRACAS SOLICITADAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 20,
+       "texto": "GANCHOS PARA LONA",
+       "aplica_si": null
+      },
+      {
+       "numero": 21,
+       "texto": "CAJA DE HERRAMIENTAS",
+       "aplica_si": null
+      },
+      {
+       "numero": 22,
+       "texto": "INDICACIONES DE ABS \"BENDIX\".",
+       "aplica_si": null
+      },
+      {
+       "numero": 23,
+       "texto": "PLAFONES LATERALES (EN CASO DE LLEVARLOS).",
+       "aplica_si": "EN CASO DE LLEVARLOS"
+      },
+      {
+       "numero": 24,
+       "texto": "BICICLETERO (EN CASO DE LLEVARLO).",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 25,
+       "texto": "CANASTILLA O POLINERA (EN CASO DE LLEVARLA).",
+       "aplica_si": "EN CASO DE LLEVARLA"
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE TRASERA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 26,
+       "texto": "LODERAS EN BUEN ESTADO",
+       "aplica_si": null
+      },
+      {
+       "numero": 27,
+       "texto": "CUARTOS TRASEROS 3 PLAFONES IZQUIERDOS & 3 DERECHOS ROJOS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 28,
+       "texto": "CINTA REFLEJANTE EN ESTRIBO Y BORDA.",
+       "aplica_si": null
+      },
+      {
+       "numero": 29,
+       "texto": "GANCHO DE ARRASTRE Y APRIETE DE TORNILLERIA GRADO 8",
+       "aplica_si": null
+      },
+      {
+       "numero": 30,
+       "texto": "SOCKET HEMBRA DE 7 POLOS",
+       "aplica_si": null
+      },
+      {
+       "numero": 31,
+       "texto": "MANITA DE SERVICIO & EMERGENCIA CON LLAVE",
+       "aplica_si": null
+      },
+      {
+       "numero": 32,
+       "texto": "REVICION DE PISO.",
+       "aplica_si": null
+      },
+      {
+       "numero": 33,
+       "texto": "PINTURA EN BUEN ESTADO.",
+       "aplica_si": null
+      },
+      {
+       "numero": 34,
+       "texto": "DOS TOPES DE GOMA",
+       "aplica_si": null
+      },
+      {
+       "numero": 35,
+       "texto": "DIRECCIONALES.",
+       "aplica_si": null
+      },
+      {
+       "numero": 36,
+       "texto": "CUARTOS TRASEROS ROJOS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 37,
+       "texto": "BANDEROLAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 38,
+       "texto": "CALCOMANIA ECHO EN MEXICO Y LEON EN EL JALON.",
+       "aplica_si": null
+      },
+      {
+       "numero": 39,
+       "texto": "FUNCIONAMIENTO DE VALVULA PONCHADORA.",
+       "aplica_si": null
+      },
+      {
+       "numero": 40,
+       "texto": "GANCHOS PARA LONA",
+       "aplica_si": null
+      },
+      {
+       "numero": 41,
+       "texto": "TORNILLOS DEL PORTA PLACAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 42,
+       "texto": "PRECAUCION DOBLE SEMI REMOLQUE (EN CASO DE LLEVARLO)",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 43,
+       "texto": "PLAFONERAS EN ESTRIBO (EN CASO DE LLEVARLOS).",
+       "aplica_si": "EN CASO DE LLEVARLOS"
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE DERECHA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 44,
+       "texto": "PLACA Y NUMERO SERIE.",
+       "aplica_si": null
+      },
+      {
+       "numero": 45,
+       "texto": "CINTA REFLEJANTE.",
+       "aplica_si": null
+      },
+      {
+       "numero": 46,
+       "texto": "UN JUEGO DE PATINES Y TORNILLERIA GRADO 5",
+       "aplica_si": null
+      },
+      {
+       "numero": 47,
+       "texto": "SEGUNDO JUEGO DE PATINES EN BUEN ESTADO (SI LLEVA)",
+       "aplica_si": "SI LLEVA"
+      },
+      {
+       "numero": 48,
+       "texto": "PLAFONERAS OVALADAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 49,
+       "texto": "CALCOMANIA \"LEOLCA\" PARTE CENTRAL LADO DERECHO",
+       "aplica_si": null
+      },
+      {
+       "numero": 50,
+       "texto": "LLANTAS EN BUEN ESTADO Y ACEITE EN MASAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 51,
+       "texto": "PINTURA EN BUEN ESTADO",
+       "aplica_si": null
+      },
+      {
+       "numero": 52,
+       "texto": "TORQUE TORNILLO DE PERCHA (CAPADOS).",
+       "aplica_si": null
+      },
+      {
+       "numero": 53,
+       "texto": "CAJA DE HERRAMIENTAS",
+       "aplica_si": null
+      },
+      {
+       "numero": 54,
+       "texto": "TORNILLO DEL PORTA LLANTAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 55,
+       "texto": "GANCHOS PARA LONA",
+       "aplica_si": null
+      },
+      {
+       "numero": 56,
+       "texto": "PLAFONES LATERALES (EN CASO DE LLEVARLOS).",
+       "aplica_si": "EN CASO DE LLEVARLOS"
+      },
+      {
+       "numero": 57,
+       "texto": "BICICLETERO (EN CASO DE LLEVARLO).",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      }
+     ],
+     "fase_orden": null
+    }
+   ],
+   "unidades": [
+    "Plana 1",
+    "Plana 2"
+   ],
+   "etiquetas_resultado": {
+    "conforme": "√",
+    "no_conforme": "X"
+   }
+  },
+  {
+   "formato": "entrega",
+   "linea": "gondola",
+   "nombre": "Calidad de entrega — Góndola",
+   "grupos": [
+    {
+     "nombre": "PARTE FRONTAL DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 1,
+       "texto": "LEYENDA: \"HECHO EN MEXICO\" PARTE INFERIOR LADO DERECHO DE BORDA",
+       "aplica_si": null
+      },
+      {
+       "numero": 2,
+       "texto": "CONEXIÓN HEMBRA PARA GATO",
+       "aplica_si": null
+      },
+      {
+       "numero": 3,
+       "texto": "MANITA AZUL DE SERVICIO & MANITA ROJA DE EMERGENCIA",
+       "aplica_si": null
+      },
+      {
+       "numero": 4,
+       "texto": "SOQUET HEMBRA 7 POLOS",
+       "aplica_si": null
+      },
+      {
+       "numero": 5,
+       "texto": "TORNILLOS DEL PERNO SUPERIOR",
+       "aplica_si": null
+      },
+      {
+       "numero": 6,
+       "texto": "GANCHOS PARA LONAS",
+       "aplica_si": null
+      },
+      {
+       "numero": 7,
+       "texto": "PINTURA EN BUEN ESTADO",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE IZQUIERDA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 8,
+       "texto": "CINTA REFLEJANTE",
+       "aplica_si": null
+      },
+      {
+       "numero": 9,
+       "texto": "PLAFONES EN CADA CARGADOR",
+       "aplica_si": null
+      },
+      {
+       "numero": 10,
+       "texto": "MANIVELA DE PATINES EN BUEN ESTADO",
+       "aplica_si": null
+      },
+      {
+       "numero": 11,
+       "texto": "UN JUEGO DE PATINES Y TORNILLERIA GRADO 5",
+       "aplica_si": null
+      },
+      {
+       "numero": 12,
+       "texto": "SEGUNDO JUEGO DE PATINES Y TORNILLERIA GRADO 5 (EN CASO DE LLEVARLO)",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 13,
+       "texto": "LEYENDA: \"LEOLCA\" PARTE CENTRAL DE CHASIS",
+       "aplica_si": null
+      },
+      {
+       "numero": 14,
+       "texto": "LLANTAS EN BUEN ESTADO Y TORQUE DE TUERCAS",
+       "aplica_si": null
+      },
+      {
+       "numero": 15,
+       "texto": "TORQUE DE PERCHAS Y TORNILLOS CAPADOS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 16,
+       "texto": "GANCHOS PARA LONAS",
+       "aplica_si": null
+      },
+      {
+       "numero": 17,
+       "texto": "INDICADOR DE ABS \"BENDIX\" Y PLAFON AMBAR",
+       "aplica_si": null
+      },
+      {
+       "numero": 18,
+       "texto": "PINTURA EN BUEN ESTADO",
+       "aplica_si": null
+      },
+      {
+       "numero": 19,
+       "texto": "SISTEMA RETRACTIL 1ER. EJE (EN CASO DE LLEVARLO)",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 20,
+       "texto": "SISTEMA RETRACTIL 2O. EJE (EN CASO DE LLEVARLO)",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 21,
+       "texto": "FUNCIONAMIENTO DE VALVULA PONCHADORA",
+       "aplica_si": null
+      },
+      {
+       "numero": 22,
+       "texto": "TORNILLO DEL PERNO POSTERIOR",
+       "aplica_si": null
+      },
+      {
+       "numero": 23,
+       "texto": "REVICION DEL CHAMBER",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE TRASERA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 24,
+       "texto": "LODERAS EN BUEN ESTADO",
+       "aplica_si": null
+      },
+      {
+       "numero": 25,
+       "texto": "CUARTOS TRASEROS 3 PLAFONES IZQUIERDOS & 3 PLAFONES DERECHOS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 26,
+       "texto": "CINTA REFLEJANTE.",
+       "aplica_si": null
+      },
+      {
+       "numero": 27,
+       "texto": "GANCHO DE ARRASTRE Y APRIETE DE TORNILLERIA GRADO 8",
+       "aplica_si": null
+      },
+      {
+       "numero": 28,
+       "texto": "SOQUET HEMBRA 7 POLOS",
+       "aplica_si": null
+      },
+      {
+       "numero": 29,
+       "texto": "MANITA AZUL DE SERVICIO & MANITA ROJA DE EMERGENCIA",
+       "aplica_si": null
+      },
+      {
+       "numero": 30,
+       "texto": "CONEXIÓN HEMBRA COSTADO DERECHO DE BORDA (EN CASO DE LLEVARLO)",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 31,
+       "texto": "DIRECCIONALES.",
+       "aplica_si": null
+      },
+      {
+       "numero": 32,
+       "texto": "CUARTOS TRASEROS ROJOS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 33,
+       "texto": "SEGUROS DE PUERTA",
+       "aplica_si": null
+      },
+      {
+       "numero": 34,
+       "texto": "TORNILLOS DEL PORTA PLACAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 35,
+       "texto": "FUNCIONAMIENTO DE GANCHOS DE PUERTA",
+       "aplica_si": null
+      },
+      {
+       "numero": 36,
+       "texto": "TORNILLOS DE PUERTA",
+       "aplica_si": null
+      },
+      {
+       "numero": 37,
+       "texto": "\"U\" DEL JALON",
+       "aplica_si": null
+      },
+      {
+       "numero": 38,
+       "texto": "PASO DE CABLEADO Y MANGUERAS ADECUADO",
+       "aplica_si": null
+      },
+      {
+       "numero": 39,
+       "texto": "PINTURA EN BUEN ESTADO",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE DERECHA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 40,
+       "texto": "CINTA REFLEJANTE",
+       "aplica_si": null
+      },
+      {
+       "numero": 41,
+       "texto": "PLACA Y NUMERO SERIE.",
+       "aplica_si": null
+      },
+      {
+       "numero": 42,
+       "texto": "PLAFONES EN CADA CARGADOR",
+       "aplica_si": null
+      },
+      {
+       "numero": 43,
+       "texto": "UN JUEGO DE PATINES Y TORNILLERIA GRADO 5",
+       "aplica_si": null
+      },
+      {
+       "numero": 44,
+       "texto": "SEGUNDO JUEGO DE PATINES Y TORNILLERIA GRADO 5 (EN CASO DE LLEVARLO)",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 45,
+       "texto": "LEYENDA: \"LEOLCA\" PARTE CENTRAL DE CHASIS",
+       "aplica_si": null
+      },
+      {
+       "numero": 46,
+       "texto": "LLANTAS EN BUEN ESTADO Y TORQUE DE TUERCAS",
+       "aplica_si": null
+      },
+      {
+       "numero": 47,
+       "texto": "TORQUE DE PERCHAS Y TORNILLOS CAPADOS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 48,
+       "texto": "GANCHOS PARA LONAS",
+       "aplica_si": null
+      },
+      {
+       "numero": 49,
+       "texto": "PINTURA EN BUEN ESTADO",
+       "aplica_si": null
+      },
+      {
+       "numero": 50,
+       "texto": "TORNILLO DEL PERNO POSTERIOR",
+       "aplica_si": null
+      },
+      {
+       "numero": 51,
+       "texto": "REVICION DEL CHAMBER",
+       "aplica_si": null
+      },
+      {
+       "numero": 52,
+       "texto": "TORNILLO DEL PORTA LLANTAS",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    }
+   ],
+   "unidades": [
+    "Unidad 1",
+    "Unidad 2"
+   ],
+   "etiquetas_resultado": {
+    "conforme": "√",
+    "no_conforme": "X"
+   }
+  },
+  {
+   "formato": "entrega",
+   "linea": "dolly",
+   "nombre": "Calidad de entrega — Dolly",
+   "grupos": [
+    {
+     "nombre": "PARTE FRONTAL DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 1,
+       "texto": "GATA DE LANZA CON BUCHACA.",
+       "aplica_si": null
+      },
+      {
+       "numero": 2,
+       "texto": "CADENA O CHICOTE CON GANCHO DE SEGURIDAD.",
+       "aplica_si": null
+      },
+      {
+       "numero": 3,
+       "texto": "TORNILLOS DE DONA GRADO 8.",
+       "aplica_si": null
+      },
+      {
+       "numero": 4,
+       "texto": "SISTEMA DE RETRACTIL.",
+       "aplica_si": null
+      },
+      {
+       "numero": 5,
+       "texto": "CONEXIÓN A TIERRA DE LANZA.",
+       "aplica_si": null
+      },
+      {
+       "numero": 6,
+       "texto": "MANGUERA ROJA CON MANITAS (2).",
+       "aplica_si": null
+      },
+      {
+       "numero": 7,
+       "texto": "MANGUERA AZUL CON MANITAS (2).",
+       "aplica_si": null
+      },
+      {
+       "numero": 8,
+       "texto": "CALCOMANIA \"ECHO EN MEXICO\".",
+       "aplica_si": null
+      },
+      {
+       "numero": 9,
+       "texto": "CABLE PERMACOIL.",
+       "aplica_si": null
+      },
+      {
+       "numero": 10,
+       "texto": "MACHO ARMADO.",
+       "aplica_si": null
+      },
+      {
+       "numero": 11,
+       "texto": "CINTA REFLEJANTE.",
+       "aplica_si": null
+      },
+      {
+       "numero": 12,
+       "texto": "PINTURA EN BUEN ESTADO.",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE IZQUIERDA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 13,
+       "texto": "INDICADOR DE ABS \"BENDIX\".",
+       "aplica_si": null
+      },
+      {
+       "numero": 14,
+       "texto": "LLANTAS EN BUEN ESTADO Y ACEITE EN MASAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 15,
+       "texto": "TORQUE DE TORNILLOS DE PERCHAS (CAPADOS).",
+       "aplica_si": null
+      },
+      {
+       "numero": 16,
+       "texto": "TORNILLOS DE QUINTA RUEDA GRADO 8.",
+       "aplica_si": null
+      },
+      {
+       "numero": 17,
+       "texto": "PINTURA EN BUEN ESTADO.",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE TRASERA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 18,
+       "texto": "LODERAS EN BUEN ESTADO.",
+       "aplica_si": null
+      },
+      {
+       "numero": 19,
+       "texto": "CUARTOS TRASEROS 3 PLAFONES IZQUIERDOS Y 3 DERECHOS ROJOS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 20,
+       "texto": "DIRECCIONALES.",
+       "aplica_si": null
+      },
+      {
+       "numero": 21,
+       "texto": "TORNILLOS DEL PORTA LODERAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 22,
+       "texto": "PINTURA EN BUEN ESTADO.",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE DERECHA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 23,
+       "texto": "PLACA Y NUMERO DE SERIE.",
+       "aplica_si": null
+      },
+      {
+       "numero": 24,
+       "texto": "LLANTAS EN BUEN ESTADO Y ACEITE EN MASAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 25,
+       "texto": "TORQUE DE TORNILLOS DE PERCHAS (CAPADOS).",
+       "aplica_si": null
+      },
+      {
+       "numero": 26,
+       "texto": "TORNILLOS DE QUINTA RUEDA GRADO 8.",
+       "aplica_si": null
+      },
+      {
+       "numero": 27,
+       "texto": "CONEXIÓN A TIERRA DE QUINTA RUEDA.",
+       "aplica_si": null
+      },
+      {
+       "numero": 28,
+       "texto": "PINTURA EN BUEN ESTADO.",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    }
+   ],
+   "unidades": [
+    "Única"
+   ],
+   "etiquetas_resultado": {
+    "conforme": "Sí",
+    "no_conforme": "No"
+   }
+  },
+  {
+   "formato": "entrega",
+   "linea": "cama_baja",
+   "nombre": "Calidad de entrega — Cama baja",
+   "grupos": [
+    {
+     "nombre": "PARTE FRONTAL DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 1,
+       "texto": "CUARTOS FRONTALES IZQUIERDO & DERECHO \"AMBAR\".",
+       "aplica_si": null
+      },
+      {
+       "numero": 2,
+       "texto": "MANITA AZUL DE SERVICIO Y MANITA ROJA DE EMERGENCIA.",
+       "aplica_si": null
+      },
+      {
+       "numero": 3,
+       "texto": "SOQUET HEMBRA DE 7 POLOS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 4,
+       "texto": "CALCAMONIA HECHO EN MEXICO.",
+       "aplica_si": null
+      },
+      {
+       "numero": 5,
+       "texto": "GANCHOS PARA LONA",
+       "aplica_si": null
+      },
+      {
+       "numero": 6,
+       "texto": "CAJA DE HERRAMIENTAS (EN CASO DE LLEVARLA).",
+       "aplica_si": "EN CASO DE LLEVARLA"
+      },
+      {
+       "numero": 7,
+       "texto": "PINTURA EN BUEN ESTADO.",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE IZQUIERDA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 8,
+       "texto": "CINTA REFLEJANTE.",
+       "aplica_si": null
+      },
+      {
+       "numero": 9,
+       "texto": "MANIVELA DE PATINES.",
+       "aplica_si": null
+      },
+      {
+       "numero": 10,
+       "texto": "UN JUEGO DE PATINES Y TORNILLERIA GRADO 5.",
+       "aplica_si": null
+      },
+      {
+       "numero": 11,
+       "texto": "PLAFONERAS LATERALES.",
+       "aplica_si": null
+      },
+      {
+       "numero": 12,
+       "texto": "CALCOMANIA \"LEOLCA\" PARTE CENTRAL DEL EQUIPO.",
+       "aplica_si": null
+      },
+      {
+       "numero": 13,
+       "texto": "SISTEMA RETRACTIL 1ER. EJE (EN CASO DE LLEVARLO).",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 14,
+       "texto": "SISTEMA RETRACTIL 2o. EJE (EN CASO DE LLEVARLO).",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 15,
+       "texto": "LLANTAS EN BUEN ESTADO Y ACEITE EN MASAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 16,
+       "texto": "TORQUE TORNILLO DE PERCHA (CAPADOS).",
+       "aplica_si": null
+      },
+      {
+       "numero": 17,
+       "texto": "PINTURA EN BUEN ESTADO",
+       "aplica_si": null
+      },
+      {
+       "numero": 18,
+       "texto": "RIEL LOGISTICO CON LAS MATRACAS SOLICITADAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 19,
+       "texto": "FUNCIONAMIENTO DE VALVULA PONCHADORA.",
+       "aplica_si": null
+      },
+      {
+       "numero": 20,
+       "texto": "GANCHOS PARA LONA",
+       "aplica_si": null
+      },
+      {
+       "numero": 21,
+       "texto": "INDICACIONES DE ABS \"BENDIX\".",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE TRASERA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 22,
+       "texto": "CUARTOS TRASEROS 3 PLAFONES IZQUIERDOS & 3 DERECHOS ROJOS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 23,
+       "texto": "CINTA REFLEJANTE EN ESTRIBO Y BORDA.",
+       "aplica_si": null
+      },
+      {
+       "numero": 24,
+       "texto": "REVICION DE PISO.",
+       "aplica_si": null
+      },
+      {
+       "numero": 25,
+       "texto": "PINTURA EN BUEN ESTADO.",
+       "aplica_si": null
+      },
+      {
+       "numero": 26,
+       "texto": "DIRECCIONALES.",
+       "aplica_si": null
+      },
+      {
+       "numero": 27,
+       "texto": "CUARTOS TRASEROS ROJOS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 28,
+       "texto": "TORNILLOS DEL PORTA PLACAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 29,
+       "texto": "FUNCIONAMIENTO DE RAMPAS",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    },
+    {
+     "nombre": "PARTE DERECHA DE LA UNIDAD",
+     "items": [
+      {
+       "numero": 30,
+       "texto": "PLACA Y NUMERO SERIE.",
+       "aplica_si": null
+      },
+      {
+       "numero": 31,
+       "texto": "CINTA REFLEJANTE.",
+       "aplica_si": null
+      },
+      {
+       "numero": 32,
+       "texto": "UN JUEGO DE PATINES Y TORNILLERIA GRADO 5",
+       "aplica_si": null
+      },
+      {
+       "numero": 33,
+       "texto": "PLAFONERAS LATERALES.",
+       "aplica_si": null
+      },
+      {
+       "numero": 34,
+       "texto": "CALCOMANIA \"LEOLCA\" PARTE CENTRAL LADO DERECHO",
+       "aplica_si": null
+      },
+      {
+       "numero": 35,
+       "texto": "LLANTAS EN BUEN ESTADO Y ACEITE EN MASAS.",
+       "aplica_si": null
+      },
+      {
+       "numero": 36,
+       "texto": "PINTURA EN BUEN ESTADO",
+       "aplica_si": null
+      },
+      {
+       "numero": 37,
+       "texto": "TORQUE TORNILLO DE PERCHA (CAPADOS).",
+       "aplica_si": null
+      },
+      {
+       "numero": 38,
+       "texto": "PORTA LLANTAS. (EN CASO DE LLEVARLO).",
+       "aplica_si": "EN CASO DE LLEVARLO"
+      },
+      {
+       "numero": 39,
+       "texto": "GANCHOS PARA LONA",
+       "aplica_si": null
+      }
+     ],
+     "fase_orden": null
+    }
+   ],
+   "unidades": [
+    "Única"
+   ],
+   "etiquetas_resultado": {
+    "conforme": "√",
+    "no_conforme": "X"
+   }
+  }
+ ],
+ "sin_plantilla": [
+  {
+   "formato": "control_total",
+   "linea": "dolly",
+   "motivo": "El Excel es copia idéntica de Plataforma; Leolca debe mandar el correcto. Se crea desde el editor duplicando Plataforma."
+  },
+  {
+   "formato": "control_total",
+   "linea": "gondola",
+   "motivo": "La hoja del Excel está vacía."
+  },
+  {
+   "formato": "entrega",
+   "linea": "traila",
+   "motivo": "No existe formato."
+  }
+ ]
+}
