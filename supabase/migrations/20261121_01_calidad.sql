@@ -579,7 +579,7 @@ BEGIN
     END IF;
 
     -- Lock de fila en ordenes_trabajo para serializar creaciones concurrentes
-    SELECT id, linea_producto_id INTO v_orden
+    SELECT id, linea_producto_id, tipo_equipo, modelo, etiqueta INTO v_orden
     FROM ordenes_trabajo
     WHERE id = p_orden AND organizacion_id = p_org
     FOR UPDATE;
@@ -603,17 +603,34 @@ BEGIN
         FROM calidad_plantillas
         WHERE id = p_plantilla
           AND organizacion_id = p_org
-          AND formato = p_formato;
+          AND formato = p_formato
+          AND estado = 'activa';
         IF v_plantilla_id IS NULL THEN
             RAISE EXCEPTION 'PLANTILLA_NO_ENCONTRADA';
         END IF;
     ELSE
-        SELECT id INTO v_plantilla_id
-        FROM calidad_plantillas
-        WHERE organizacion_id = p_org
-          AND linea_producto_id = v_orden.linea_producto_id
-          AND formato = p_formato
-          AND estado = 'activa';
+        -- Si la orden es Cama baja (tipo_equipo '05' o descripción/etiqueta), priorizar plantilla activa de cama_baja
+        IF trim(COALESCE(v_orden.tipo_equipo, '')) = '05'
+           OR lower(COALESCE(v_orden.modelo, '') || ' ' || COALESCE(v_orden.etiqueta, '')) ~ 'cama\s*baja' THEN
+            SELECT cp.id INTO v_plantilla_id
+            FROM calidad_plantillas cp
+            JOIN lineas_producto lp ON lp.id = cp.linea_producto_id
+            WHERE cp.organizacion_id = p_org
+              AND lp.organizacion_id = p_org
+              AND lp.clave = 'cama_baja'
+              AND cp.formato = p_formato
+              AND cp.estado = 'activa'
+            LIMIT 1;
+        END IF;
+
+        IF v_plantilla_id IS NULL THEN
+            SELECT id INTO v_plantilla_id
+            FROM calidad_plantillas
+            WHERE organizacion_id = p_org
+              AND linea_producto_id = v_orden.linea_producto_id
+              AND formato = p_formato
+              AND estado = 'activa';
+        END IF;
 
         IF v_plantilla_id IS NULL THEN
             RAISE EXCEPTION 'SIN_PLANTILLA: No hay plantilla activa para esta línea y formato. Créala en Calidad → Plantillas';
@@ -637,7 +654,7 @@ BEGIN
         intento, estado, evaluado_por, fecha_inicio, actualizado_por
     ) VALUES (
         p_org, p_orden, v_plantilla_id, p_formato, v_folio,
-        v_intento, 'en_proceso', '', CURRENT_DATE, p_usuario
+        v_intento, 'en_proceso', NULL, CURRENT_DATE, p_usuario
     ) RETURNING id INTO v_new_id;
 
     RETURN v_new_id;
@@ -668,6 +685,7 @@ DECLARE
     v_colaborador text;
     v_fecha date;
     v_obs text;
+    v_max_unidades integer;
     v_procesados integer := 0;
 BEGIN
     SELECT * INTO v_insp
@@ -683,10 +701,18 @@ BEGIN
         RAISE EXCEPTION 'INSPECCION_CERRADA: La inspección ya está cerrada y no admite cambios';
     END IF;
 
+    SELECT GREATEST(1, COALESCE(jsonb_array_length(config->'unidades'), 1)) INTO v_max_unidades
+    FROM calidad_plantillas
+    WHERE id = v_insp.plantilla_id;
+
     FOR v_elem IN SELECT * FROM jsonb_array_elements(COALESCE(p_resultados, '[]'::jsonb)) LOOP
         v_item_id := (v_elem->>'item_id')::uuid;
         v_unidad := COALESCE(NULLIF(v_elem->>'unidad', '')::integer, 1);
         v_resultado := NULLIF(trim(COALESCE(v_elem->>'resultado', '')), '');
+
+        IF v_unidad < 1 OR v_unidad > v_max_unidades THEN
+            RAISE EXCEPTION 'UNIDAD_INVALIDA: La unidad % está fuera de rango (1..%)', v_unidad, v_max_unidades;
+        END IF;
 
         IF NOT EXISTS (
             SELECT 1 FROM calidad_plantilla_items
@@ -803,7 +829,8 @@ BEGIN
         COUNT(*) FILTER (WHERE resultado = 'no_conforme')
     INTO v_capturados, v_no_conformes
     FROM orden_calidad_resultados
-    WHERE inspeccion_id = p_inspeccion;
+    WHERE inspeccion_id = p_inspeccion
+      AND unidad BETWEEN 1 AND v_unidades;
 
     v_pendientes := GREATEST(0, v_total_esperados - v_capturados);
 
@@ -933,7 +960,9 @@ AS $$
             COUNT(*) FILTER (WHERE r.resultado = 'no_conforme')::integer AS no_conformes,
             COUNT(*) FILTER (WHERE r.resultado = 'no_aplica')::integer AS no_aplica
         FROM orden_calidad_resultados r
+        JOIN ultimas u ON u.id = r.inspeccion_id
         WHERE r.organizacion_id = p_org
+          AND r.unidad BETWEEN 1 AND u.num_unidades
         GROUP BY r.inspeccion_id
     )
     SELECT

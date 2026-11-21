@@ -7,7 +7,12 @@ import {
   listarPlantillasCalidad,
   obtenerPlantillaCalidad,
   crearInspeccionCalidad,
+  guardarPlantillaCalidad,
+  publicarPlantillaCalidad,
+  guardarResultadosCalidad,
   cerrarInspeccionCalidad,
+  reabrirInspeccionCalidad,
+  obtenerResumenCalidadOrdenes,
 } from "./calidad.ts";
 
 Deno.test("calidad: mapearErrorRpcCalidad mapea SIN_PLANTILLA, YA_EXISTE y BLOQUEADA_POR_NO_CONFORMES a 409", () => {
@@ -27,6 +32,10 @@ Deno.test("calidad: mapearErrorRpcCalidad mapea SIN_PLANTILLA, YA_EXISTE y BLOQU
   const e4 = mapearErrorRpcCalidad({ message: "NO_EDITABLE" });
   assertEquals(e4.status, 409);
   assertEquals(e4.codigo, "NO_EDITABLE");
+
+  const e5 = mapearErrorRpcCalidad({ message: "UNIDAD_INVALIDA: La unidad 3 está fuera de rango (1..2)" });
+  assertEquals(e5.status, 400);
+  assertEquals(e5.codigo, "UNIDAD_INVALIDA");
 });
 
 Deno.test("calidad: calcularResumenInspeccion con 2 unidades (57 ítems x 2 = 114 esperados)", () => {
@@ -178,4 +187,114 @@ Deno.test("calidad: cerrarInspeccionCalidad propaga advertencias y bloquea cuand
     CalidadError,
     "bloqueo de liberación",
   );
+});
+
+Deno.test("calidad: calcularResumenInspeccion ignora filas con unidad fuera de rango", () => {
+  const res = calcularResumenInspeccion(
+    10,
+    ["Plana 1", "Plana 2"],
+    [
+      { resultado: "conforme", unidad: 1 },
+      { resultado: "no_conforme", unidad: 3 },
+      { resultado: "conforme", unidad: 0 },
+    ],
+  );
+  assertEquals(res.total, 20);
+  assertEquals(res.capturados, 1);
+  assertEquals(res.conformes, 1);
+  assertEquals(res.no_conformes, 0);
+  assertEquals(res.pendientes, 19);
+});
+
+Deno.test("calidad (guardia org): listarPlantillasCalidad y obtenerPlantillaCalidad filtran por organizacion_id", async () => {
+  const eqCalls: Array<{ tabla: string; col: string; val: any; head: boolean }> = [];
+
+  const mockSupabase = {
+    from: (tabla: string) => ({
+      select: (_cols: string, opts?: any) => {
+        const esHead = Boolean(opts?.head);
+        const builder: any = {
+          eq: (col: string, val: any) => {
+            eqCalls.push({ tabla, col, val, head: esHead });
+            return builder;
+          },
+          order: () => builder,
+          maybeSingle: async () => {
+            if (tabla === "calidad_plantillas") {
+              return { data: { id: "p-1", organizacion_id: "org-esperada", config: {} }, error: null };
+            }
+            return { data: null, error: null };
+          },
+          then: (resolve: (val: any) => void) => {
+            if (esHead) return resolve({ count: 1, error: null });
+            return resolve({ data: [], error: null });
+          },
+        };
+        return builder;
+      },
+    }),
+  };
+
+  await listarPlantillasCalidad(mockSupabase, "org-esperada");
+  const filtroLista = eqCalls.some(
+    (c) => !c.head && c.tabla === "calidad_plantillas" && c.col === "organizacion_id" && c.val === "org-esperada",
+  );
+  assertEquals(filtroLista, true, "listarPlantillasCalidad debe filtrar por organizacion_id");
+
+  eqCalls.length = 0;
+  await obtenerPlantillaCalidad(mockSupabase, "org-esperada", "p-1");
+  for (const t of ["calidad_plantillas", "calidad_plantilla_grupos", "calidad_plantilla_items"]) {
+    const tieneFiltro = eqCalls.some((c) => c.tabla === t && c.col === "organizacion_id" && c.val === "org-esperada");
+    assertEquals(tieneFiltro, true, `obtenerPlantillaCalidad debe filtrar ${t} por organizacion_id`);
+  }
+});
+
+Deno.test("calidad (guardia org): todos los RPCs de escritura/resumen reciben p_org = orgId del contexto", async () => {
+  const rpcCalls: Array<{ fn: string; args: Record<string, any> }> = [];
+  const mockSupabase = {
+    from: (tabla: string) => ({
+      select: (_cols: string, opts?: any) => {
+        const builder: any = {
+          eq: () => builder,
+          order: () => builder,
+          maybeSingle: async () => {
+            if (tabla === "calidad_plantillas") return { data: { id: "p-1", config: {} }, error: null };
+            if (tabla === "orden_calidad_inspecciones") return { data: { id: "i-1", orden_trabajo_id: "o-1", plantilla_id: "p-1" }, error: null };
+            return { data: null, error: null };
+          },
+          then: (resolve: (val: any) => void) => {
+            if (opts?.head) return resolve({ count: 1, error: null });
+            return resolve({ data: [], error: null });
+          },
+        };
+        return builder;
+      },
+    }),
+  };
+  const mockService = {
+    rpc: async (fn: string, args: Record<string, any>) => {
+      rpcCalls.push({ fn, args });
+      if (fn === "cerrar_inspeccion_calidad") {
+        return { data: { id: "i-1", estado: "cerrada", advertencias: { pendientes: 0, no_conformes: 0 } }, error: null };
+      }
+      if (fn === "resumen_calidad_ordenes") {
+        return { data: [], error: null };
+      }
+      return { data: "id-ret", error: null };
+    },
+  };
+
+  const org = "org-segura-123";
+  await crearInspeccionCalidad(mockSupabase, org, { orden_trabajo_id: "o-1", formato: "entrega" }, "u-1", mockService);
+  await guardarPlantillaCalidad(mockSupabase, org, "p-1", { nombre: "N" }, mockService);
+  await publicarPlantillaCalidad(mockSupabase, org, "p-1", mockService);
+  await guardarResultadosCalidad(mockSupabase, org, "i-1", [], "u-1", mockService);
+  await cerrarInspeccionCalidad(mockSupabase, org, "i-1", {}, "u-1", mockService);
+  await reabrirInspeccionCalidad(mockSupabase, org, "i-1", "u-1", mockService);
+  await obtenerResumenCalidadOrdenes(mockSupabase, org, mockService);
+
+  assertEquals(rpcCalls.length, 7);
+  for (const call of rpcCalls) {
+    assertEquals(call.args.p_org, org, `RPC ${call.fn} debe recibir p_org === ${org}`);
+  }
 });

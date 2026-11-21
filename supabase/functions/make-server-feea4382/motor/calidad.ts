@@ -70,6 +70,9 @@ export function mapearErrorRpcCalidad(err: any): CalidadError {
   if (msg.includes("OPERARIO_NO_ENCONTRADO")) {
     return new CalidadError(404, "OPERARIO_NO_ENCONTRADO", "Operario no encontrado en esta organización.");
   }
+  if (msg.includes("UNIDAD_INVALIDA")) {
+    return new CalidadError(400, "UNIDAD_INVALIDA", msg);
+  }
   if (
     msg.includes("FORMATO_INVALIDO") ||
     msg.includes("NOMBRE_REQUERIDO") ||
@@ -301,7 +304,7 @@ export async function obtenerResumenCalidadOrdenes(
 export function calcularResumenInspeccion(
   numItems: number,
   unidadesConfig: unknown,
-  resultados: Array<{ resultado: string }>,
+  resultados: Array<{ resultado: string; unidad?: number }>,
 ) {
   const unidades = Array.isArray(unidadesConfig) && unidadesConfig.length > 0 ? unidadesConfig.length : 1;
   const total = numItems * unidades;
@@ -309,6 +312,7 @@ export function calcularResumenInspeccion(
   let no_conformes = 0;
   let no_aplica = 0;
   for (const r of resultados) {
+    if (typeof r.unidad === "number" && (r.unidad < 1 || r.unidad > unidades)) continue;
     if (r.resultado === "conforme") conformes++;
     else if (r.resultado === "no_conforme") no_conformes++;
     else if (r.resultado === "no_aplica") no_aplica++;
