@@ -28,6 +28,7 @@ interface OrdenCalidadTabProps {
     modelo?: string | null;
     tipo_equipo?: string | null;
     linea_producto_id?: string | null;
+    linea_clave?: string | null;
   };
   ajustes?: any;
   onIrAPlantillas?: () => void;
@@ -50,8 +51,8 @@ export function OrdenCalidadTab({
   const [creandoFormato, setCreandoFormato] = useState<FormatoCalidad | null>(null);
   const [inspeccionAbiertaId, setInspeccionAbiertaId] = useState<string | null>(null);
 
-  const cargar = async () => {
-    setLoading(true);
+  const cargar = async (silencioso = false) => {
+    if (!silencioso) setLoading(true);
     try {
       const [insps, pls] = await Promise.all([
         calidadApi.listarInspecciones({ orden_trabajo_id: orden.id }),
@@ -63,19 +64,21 @@ export function OrdenCalidadTab({
 
       const sugCt = resolverPlantillaSugerida(orden, activas, 'control_total');
       const sugEnt = resolverPlantillaSugerida(orden, activas, 'entrega');
-      setPlantillaSeleccionada({
-        control_total: sugCt?.id || '',
-        entrega: sugEnt?.id || '',
-      });
+      setPlantillaSeleccionada((prev) => ({
+        control_total: prev.control_total || sugCt?.id || '',
+        entrega: prev.entrega || sugEnt?.id || '',
+      }));
     } catch (e: any) {
-      toast.error(e.message || 'No se pudo cargar calidad de la orden');
+      if (!silencioso) {
+        toast.error(e.message || 'No se pudo cargar calidad de la orden');
+      }
     } finally {
-      setLoading(false);
+      if (!silencioso) setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (orden?.id) cargar();
+    if (orden?.id) cargar(false);
   }, [orden?.id]);
 
   const iniciarInspeccion = async (formato: FormatoCalidad) => {
@@ -193,7 +196,7 @@ export function OrdenCalidadTab({
                     <div className="p-2.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-xs flex items-start gap-2">
                       <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                       <div className="space-y-1">
-                        <p>Esta línea no tiene plantilla propia; puedes elegir otra plantilla activa o crear una en Calidad → Plantillas.</p>
+                        <p>No se identificó una plantilla sugerida automáticamente; puedes elegir una plantilla activa o crear una en Calidad → Plantillas.</p>
                         {onIrAPlantillas && (
                           <button
                             type="button"
@@ -217,7 +220,7 @@ export function OrdenCalidadTab({
                         }
                       >
                         <SelectTrigger className="h-8 text-xs">
-                          <SelectValue placeholder="Selecciona una plantilla activa" />
+                          <SelectValue placeholder="Automática por línea de la orden" />
                         </SelectTrigger>
                         <SelectContent>
                           {opcionesFormato.map((p) => (
@@ -232,7 +235,7 @@ export function OrdenCalidadTab({
 
                   <Button
                     size="sm"
-                    disabled={!selId || creandoFormato === formato}
+                    disabled={creandoFormato === formato}
                     onClick={() => iniciarInspeccion(formato)}
                   >
                     {creandoFormato === formato ? (
@@ -270,7 +273,7 @@ export function OrdenCalidadTab({
         ajustes={ajustes}
         onClose={() => setInspeccionAbiertaId(null)}
         onActualizado={() => {
-          cargar();
+          cargar(true);
           onActualizado?.();
         }}
         onAbrirInspeccion={(nuevoId) => setInspeccionAbiertaId(nuevoId)}

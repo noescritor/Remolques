@@ -37,8 +37,13 @@ import {
   claveResultado,
   contarResumenGrupo,
   contarResumenPorPlantilla,
+  encolarCambioResultado,
+  faltanObservacionesNoConforme,
+  limpiarLoteEnviado,
   normalizarConfigPlantilla,
   obtenerSiguienteNoConforme,
+  puedeCerrarInspeccion,
+  seleccionarUnidadObservacion,
 } from './calidadUtils';
 
 interface CalidadInspeccionModalProps {
@@ -82,8 +87,10 @@ export function CalidadInspeccionModal({
   const [grupoDefaults, setGrupoDefaults] = useState<Record<string, { colaborador: string; fecha: string }>>({});
   const [cursorNoConforme, setCursorNoConforme] = useState<{ item_id: string; unidad: number } | null>(null);
   const [avisoCierreSinGuardar, setAvisoCierreSinGuardar] = useState(false);
+  const [encabezadoMovilAbierto, setEncabezadoMovilAbierto] = useState(false);
 
   const timerRef = useRef<number | null>(null);
+  const guardandoEnVueloRef = useRef<boolean>(false);
   const pendientesRef = useRef<Map<string, ResultadoInspeccionCalidad>>(new Map());
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
@@ -141,30 +148,38 @@ export function CalidadInspeccionModal({
     return contarResumenPorPlantilla(grupos, config, mapaResultados);
   }, [grupos, config, mapaResultados, plantilla]);
 
-  const enviarLotePendiente = async () => {
-    if (!inspeccionId) return;
-    const cambios = Array.from(pendientesRef.current.values());
-    if (cambios.length === 0) return;
+  const enviarLotePendiente = async (): Promise<boolean> => {
+    if (!inspeccionId) return false;
+    if (pendientesRef.current.size === 0) return true;
+    if (guardandoEnVueloRef.current) return false;
 
-    const lote = armarLoteResultados(cambios);
+    guardandoEnVueloRef.current = true;
+    const snapshot = new Map(pendientesRef.current);
+    const lote = armarLoteResultados(Array.from(snapshot.values()));
     setEstadoGuardado('guardando');
     setErrorGuardado(null);
+
+    let exito = false;
     try {
       await calidadApi.guardarResultados(inspeccionId, lote);
-      // Limpiar solo los que se enviaron (si no cambiaron mientras viajaba)
-      const restantes = new Map(pendientesRef.current);
-      for (const item of cambios) {
-        const key = claveResultado(item.item_id, item.unidad);
-        if (restantes.get(key) === item) restantes.delete(key);
-      }
+      const restantes = limpiarLoteEnviado(pendientesRef.current, snapshot);
       pendientesRef.current = restantes;
       setPendientesMap(restantes);
       setEstadoGuardado('guardado');
       onActualizado?.();
+      exito = true;
     } catch (e: any) {
       setEstadoGuardado('error');
       setErrorGuardado(e.message || 'Error al guardar resultados');
+      exito = false;
+    } finally {
+      guardandoEnVueloRef.current = false;
     }
+
+    if (exito && pendientesRef.current.size > 0) {
+      return await enviarLotePendiente();
+    }
+    return exito && pendientesRef.current.size === 0;
   };
 
   const programarAutoguardado = () => {
@@ -210,8 +225,7 @@ export function CalidadInspeccionModal({
     }
     setMapaResultados(nuevoMapa);
 
-    const nuevosPend = new Map(pendientesRef.current);
-    nuevosPend.set(key, siguiente);
+    const nuevosPend = encolarCambioResultado(pendientesRef.current, siguiente);
     pendientesRef.current = nuevosPend;
     setPendientesMap(nuevosPend);
     programarAutoguardado();
@@ -317,6 +331,12 @@ export function CalidadInspeccionModal({
     if (pendientesRef.current.size > 0) {
       await enviarLotePendiente();
     }
+    const check = puedeCerrarInspeccion(pendientesRef.current.size);
+    if (!check.permitido) {
+      setConfirmCerrarOpen(false);
+      toast.error(check.motivo || 'No se pudo guardar los cambios pendientes antes de cerrar.');
+      return;
+    }
     setCerrando(true);
     try {
       const res = await calidadApi.cerrarInspeccion(inspeccionId, {
@@ -356,7 +376,9 @@ export function CalidadInspeccionModal({
         orden_trabajo_id: inspeccion.orden_trabajo_id,
         formato: inspeccion.formato,
       });
-      toast.success(`Re-inspección ${nueva.inspeccion.folio} creada`);
+      toast.success(
+        `Re-inspección ${nueva.inspeccion.folio} creada (plantilla: ${nueva.plantilla?.nombre || 'activa'})`,
+      );
       onActualizado?.();
       if (onAbrirInspeccion && nueva?.inspeccion?.id) {
         onAbrirInspeccion(nueva.inspeccion.id);
@@ -434,9 +456,17 @@ export function CalidadInspeccionModal({
               </div>
             </div>
 
-            {/* Datos de cabecera de inspección */}
+            {/* Datos de cabecera de inspección (plegable en móvil para dar espacio a la lista) */}
             {inspeccion && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setEncabezadoMovilAbierto((v) => !v)}
+                  className="sm:hidden text-xs font-medium text-primary underline mb-1.5"
+                >
+                  {encabezadoMovilAbierto ? 'Ocultar datos del encabezado' : 'Editar evaluador y fechas'}
+                </button>
+                <div className={`${encabezadoMovilAbierto ? 'grid' : 'hidden'} sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2`}>
                 <div>
                   <Label className="text-[11px] text-muted-foreground">Evaluado por</Label>
                   <Input
@@ -480,6 +510,7 @@ export function CalidadInspeccionModal({
                     onBlur={guardarEncabezado}
                     className="h-8 text-xs"
                   />
+                </div>
                 </div>
               </div>
             )}
@@ -637,8 +668,17 @@ export function CalidadInspeccionModal({
                             mapaResultados.get(claveResultado(itemId, ui + 1))?.resultado === 'no_conforme',
                           ).some(Boolean);
 
-                          const primerRes = mapaResultados.get(claveResultado(itemId, 1));
-                          const faltaObsNoConf = tieneNoConforme && !String(primerRes?.observaciones || '').trim();
+                          const { unidadActiva, resultado: resObs } = seleccionarUnidadObservacion(
+                            itemId,
+                            config.unidades.length,
+                            mapaResultados,
+                          );
+                          const faltaObsNoConf = faltanObservacionesNoConforme(
+                            itemId,
+                            config.unidades.length,
+                            mapaResultados,
+                          );
+                          const sinResultado = unidadActiva === null;
 
                           return (
                             <div
@@ -736,17 +776,18 @@ export function CalidadInspeccionModal({
                                 </div>
                               </div>
 
-                              {/* Colaborador, fecha y observaciones */}
+                              {/* Colaborador, fecha y observaciones (sobre la primera unidad con resultado) */}
                               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                 <div>
                                   <Input
                                     list={`operarios-list-${gKey}`}
-                                    disabled={esCerrada}
-                                    placeholder="Colaborador responsable"
-                                    value={primerRes?.colaborador || ''}
+                                    disabled={esCerrada || sinResultado}
+                                    placeholder={sinResultado ? 'Marca primero un resultado' : 'Colaborador responsable'}
+                                    value={resObs?.colaborador || ''}
                                     onChange={(e) => {
+                                      if (!unidadActiva) return;
                                       const opMatch = operarios.find((o) => o.nombre === e.target.value);
-                                      actualizarResultado(itemId, 1, {
+                                      actualizarResultado(itemId, unidadActiva, {
                                         colaborador: e.target.value,
                                         operario_id: opMatch?.id || null,
                                       });
@@ -757,22 +798,24 @@ export function CalidadInspeccionModal({
                                 <div>
                                   <Input
                                     type="date"
-                                    disabled={esCerrada}
-                                    value={primerRes?.fecha_inspeccion || ''}
-                                    onChange={(e) =>
-                                      actualizarResultado(itemId, 1, { fecha_inspeccion: e.target.value })
-                                    }
+                                    disabled={esCerrada || sinResultado}
+                                    value={resObs?.fecha_inspeccion || ''}
+                                    onChange={(e) => {
+                                      if (!unidadActiva) return;
+                                      actualizarResultado(itemId, unidadActiva, { fecha_inspeccion: e.target.value });
+                                    }}
                                     className="h-9 text-xs"
                                   />
                                 </div>
                                 <div>
                                   <Input
-                                    disabled={esCerrada}
-                                    placeholder="Observaciones (opcional)"
-                                    value={primerRes?.observaciones || ''}
-                                    onChange={(e) =>
-                                      actualizarResultado(itemId, 1, { observaciones: e.target.value })
-                                    }
+                                    disabled={esCerrada || sinResultado}
+                                    placeholder={sinResultado ? 'Marca primero un resultado' : 'Observaciones (opcional)'}
+                                    value={resObs?.observaciones || ''}
+                                    onChange={(e) => {
+                                      if (!unidadActiva) return;
+                                      actualizarResultado(itemId, unidadActiva, { observaciones: e.target.value });
+                                    }}
                                     className="h-9 text-xs"
                                   />
                                 </div>

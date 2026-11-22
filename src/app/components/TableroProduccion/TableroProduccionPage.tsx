@@ -40,6 +40,7 @@ import { cn } from '../ui/utils';
 
 interface TableroProduccionPageProps {
   session?: any;
+  ajustes?: any;
 }
 
 const LINEAS_TABLERO = [
@@ -49,7 +50,7 @@ const LINEAS_TABLERO = [
   { clave: 'traila', nombre: 'Traila' },
 ];
 
-export function TableroProduccionPage({ session }: TableroProduccionPageProps) {
+export function TableroProduccionPage({ session, ajustes }: TableroProduccionPageProps) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Línea activa sincronizada con URL (?linea=plataforma|gondola|dolly|traila)
@@ -76,6 +77,7 @@ export function TableroProduccionPage({ session }: TableroProduccionPageProps) {
   const [ordenSeleccionada, setOrdenSeleccionada] = useState<FilaMatriz | null>(null);
   // Modal nuevo equipo (Bloque 2 paso 4)
   const [modalNuevoEquipoAbierto, setModalNuevoEquipoAbierto] = useState<boolean>(false);
+  const [calidadRefreshKey, setCalidadRefreshKey] = useState<number>(0);
 
   const hoy = useMemo(() => obtenerHoyMexico(), []);
   const fechaHoyFormateada = useMemo(() => formatearFechaHoyCompleta(hoy), [hoy]);
@@ -557,6 +559,7 @@ export function TableroProduccionPage({ session }: TableroProduccionPageProps) {
           filas={filasFiltradas}
           resumen={resumen}
           hoy={hoy}
+          calidadRefreshKey={calidadRefreshKey}
           onCambiarFase={handleCambiarFase}
           onGuardarPlaneacion={handleGuardarPlaneacion}
           onSeleccionarOrden={(fila) => setOrdenSeleccionada(fila)}
@@ -571,6 +574,9 @@ export function TableroProduccionPage({ session }: TableroProduccionPageProps) {
           if (!abierto) setOrdenSeleccionada(null);
         }}
         token={session?.access_token}
+        lineaClave={lineaActiva}
+        ajustes={ajustes}
+        onCalidadActualizada={() => setCalidadRefreshKey((k) => k + 1)}
         onGuardarPlaneacion={handleGuardarPlaneacion}
       />
 

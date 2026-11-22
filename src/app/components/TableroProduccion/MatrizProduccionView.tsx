@@ -48,6 +48,7 @@ interface MatrizProduccionViewProps {
     }
   ) => Promise<void>;
   onSeleccionarOrden?: (fila: FilaMatriz) => void;
+  calidadRefreshKey?: number;
 }
 
 export function MatrizProduccionView({
@@ -59,6 +60,7 @@ export function MatrizProduccionView({
   onCambiarFase,
   onGuardarPlaneacion,
   onSeleccionarOrden,
+  calidadRefreshKey = 0,
 }: MatrizProduccionViewProps) {
   // Fases principales para las columnas de la matriz
   const fasesPrincipales = useMemo(() => {
@@ -127,7 +129,7 @@ export function MatrizProduccionView({
     return () => {
       activo = false;
     };
-  }, [lineaClave]);
+  }, [lineaClave, calidadRefreshKey]);
 
   const iniciarEdicionMaterial = (fila: FilaMatriz) => {
     setEditandoMaterialId(fila.orden_id);
@@ -346,7 +348,10 @@ export function MatrizProduccionView({
                           const q = resumenCalidadMap.get(fila.orden_id);
                           if (!q) return null;
                           return (
-                            <div className="mt-1 flex items-center justify-center gap-1 flex-wrap">
+                            <div
+                              className="mt-1 flex items-center justify-center gap-1 flex-wrap"
+                              title="Avance de calidad (Control Total + Entrega). Haz clic en la fila para ver el detalle."
+                            >
                               <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
                                 Calidad {q.capturados}/{q.total_esperados}
                               </span>

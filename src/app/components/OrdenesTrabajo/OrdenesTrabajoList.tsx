@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Printer, FileCheck, Search, Edit, Calendar, ClipboardCheck, AlertTriangle } from 'lucide-react';
 import { calidadApi } from '../Calidad/calidadApi';
+import { avisosAlLiberar } from '../Calidad/calidadUtils';
 import { OrdenTrabajoPDF } from './OrdenTrabajoPDF';
 import { LiberacionPDF } from './LiberacionPDF';
 import { ChecklistDespieceModal } from './ChecklistDespieceModal';
@@ -117,18 +118,7 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
     if (editEstado === 'Liberado' && ordenEditando.estado !== 'Liberado') {
       try {
         const insps = await calidadApi.listarInspecciones({ orden_trabajo_id: ordenEditando.id });
-        const entregaCerrada = (insps || []).some((i: any) => i.formato === 'entrega' && i.estado === 'cerrada');
-        const noConformesTotal = (insps || []).reduce(
-          (acc: number, i: any) => acc + (Number(i.resumen?.no_conformes) || 0),
-          0
-        );
-        const mensajes: string[] = [];
-        if (!entregaCerrada) {
-          mensajes.push('Esta orden no tiene una inspección de calidad de entrega cerrada.');
-        }
-        if (noConformesTotal > 0) {
-          mensajes.push(`Esta orden tiene ${noConformesTotal} puntos marcados como No Conforme sin resolver.`);
-        }
+        const mensajes = avisosAlLiberar(insps || []);
         if (mensajes.length > 0) {
           setAvisoLiberar({
             mensajes,

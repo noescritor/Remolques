@@ -678,6 +678,7 @@ export default function App() {
                   <Route path="/tablero-produccion" element={
             <TableroProduccionPage
               session={session}
+              ajustes={ajustes}
             />
           } />
           <Route path="/calidad" element={

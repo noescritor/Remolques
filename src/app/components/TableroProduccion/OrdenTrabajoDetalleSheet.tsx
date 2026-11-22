@@ -45,6 +45,9 @@ interface OrdenTrabajoDetalleSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   token?: string;
+  lineaClave?: string;
+  ajustes?: any;
+  onCalidadActualizada?: () => void;
   onGuardarPlaneacion: (
     ordenId: string,
     cambios: {
@@ -60,6 +63,9 @@ export function OrdenTrabajoDetalleSheet({
   open,
   onOpenChange,
   token,
+  lineaClave,
+  ajustes,
+  onCalidadActualizada,
   onGuardarPlaneacion,
 }: OrdenTrabajoDetalleSheetProps) {
   const navigate = useNavigate();
@@ -370,7 +376,10 @@ export function OrdenTrabajoDetalleSheet({
                 etiqueta: fila.etiqueta,
                 modelo: fila.modelo,
                 tipo_equipo: fila.tipo_equipo,
+                linea_clave: lineaClave,
               }}
+              ajustes={ajustes}
+              onActualizado={onCalidadActualizada}
               onIrAPlantillas={() => {
                 onOpenChange(false);
                 navigate('/calidad/plantillas');

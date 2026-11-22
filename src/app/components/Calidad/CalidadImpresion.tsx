@@ -9,6 +9,7 @@ import {
   agruparResultadosPorClave,
   claveResultado,
   etiquetaResultado,
+  formatearFechaImpresion,
   normalizarConfigPlantilla,
 } from './calidadUtils';
 
@@ -47,7 +48,7 @@ export function CalidadImpresion({
   const etq = config.etiquetas_resultado;
   const mapaResultados = enBlanco ? new Map() : agruparResultadosPorClave(resultados);
   const grupos = [...(plantilla.grupos || [])].sort((a, b) => a.orden - b.orden);
-  const decisionLogo = decidirLogoEncabezado(ajustes);
+  const decisionLogo = decidirLogoEncabezado(ajustes, 'claro');
 
   const esControlTotal = plantilla.formato === 'control_total';
   const titulo = esControlTotal
@@ -147,7 +148,7 @@ export function CalidadImpresion({
                 <td className="bg-slate-200 font-bold p-1 border-r border-black">CLIENTE</td>
                 <td className="p-1 border-r border-black">{clienteTexto || '\u00A0'}</td>
                 <td className="bg-slate-200 font-bold p-1 border-r border-black">FECHA DE REVISIÓN</td>
-                <td className="p-1">{plantilla.fecha_revision_formato || '\u00A0'}</td>
+                <td className="p-1">{formatearFechaImpresion(plantilla.fecha_revision_formato) || '\u00A0'}</td>
               </tr>
               <tr className="border-b border-black">
                 <td className="bg-slate-200 font-bold p-1 border-r border-black">EQUIPO EVALUADO</td>
@@ -157,9 +158,9 @@ export function CalidadImpresion({
               </tr>
               <tr>
                 <td className="bg-slate-200 font-bold p-1 border-r border-black">FECHA DE INICIO</td>
-                <td className="p-1 border-r border-black">{enBlanco ? '\u00A0' : (inspeccion?.fecha_inicio || '\u00A0')}</td>
+                <td className="p-1 border-r border-black">{enBlanco ? '\u00A0' : (formatearFechaImpresion(inspeccion?.fecha_inicio) || '\u00A0')}</td>
                 <td className="bg-slate-200 font-bold p-1 border-r border-black">FECHA DE LIBERACIÓN</td>
-                <td className="p-1">{enBlanco ? '\u00A0' : (inspeccion?.fecha_liberacion || '\u00A0')}</td>
+                <td className="p-1">{enBlanco ? '\u00A0' : (formatearFechaImpresion(inspeccion?.fecha_liberacion) || '\u00A0')}</td>
               </tr>
             </tbody>
           </table>
@@ -171,7 +172,7 @@ export function CalidadImpresion({
                   <td className="w-[15%] bg-slate-200 font-bold p-1 border-r border-black">FOLIO</td>
                   <td className="w-[35%] p-1 border-r border-black font-mono">{folioTexto || '\u00A0'}</td>
                   <td className="w-[15%] bg-slate-200 font-bold p-1 border-r border-black">FECHA</td>
-                  <td className="w-[35%] p-1">{enBlanco ? '\u00A0' : (inspeccion?.fecha_inicio || '\u00A0')}</td>
+                  <td className="w-[35%] p-1">{enBlanco ? '\u00A0' : (formatearFechaImpresion(inspeccion?.fecha_inicio) || '\u00A0')}</td>
                 </tr>
                 <tr className="border-b border-black">
                   <td className="bg-slate-200 font-bold p-1 border-r border-black">CLIENTE</td>
@@ -184,7 +185,7 @@ export function CalidadImpresion({
                   <td className="p-1 border-r border-black">{equipoTexto || '\u00A0'}</td>
                   <td className="bg-slate-200 font-bold p-1 border-r border-black">REVISIÓN</td>
                   <td className="p-1">
-                    {[plantilla.revision_formato, plantilla.fecha_revision_formato].filter(Boolean).join(' · ') || '\u00A0'}
+                    {[plantilla.revision_formato, formatearFechaImpresion(plantilla.fecha_revision_formato)].filter(Boolean).join(' · ') || '\u00A0'}
                   </td>
                 </tr>
               </tbody>
@@ -237,7 +238,7 @@ export function CalidadImpresion({
                             {enBlanco ? '\u00A0' : (res?.colaborador || '\u00A0')}
                           </td>
                           <td className="p-1 border-r border-black text-center">
-                            {enBlanco ? '\u00A0' : (res?.fecha_inspeccion || '\u00A0')}
+                            {enBlanco ? '\u00A0' : (formatearFechaImpresion(res?.fecha_inspeccion) || '\u00A0')}
                           </td>
                           <td className="p-1 border-r border-black text-center font-bold">
                             {esConf ? etq.conforme : esNa ? 'N/A' : '\u00A0'}
