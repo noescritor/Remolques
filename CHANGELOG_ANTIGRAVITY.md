@@ -3,6 +3,19 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-22 - Calidad parte 2 de 2 (Ronda 3: R2-A commit linea_clave, R2-B prioridad observación, R2-C pruebas)
+**Herramienta:** Antigravity  
+**Tipo:** fix (commit de `linea_clave` en `resolverPlantillaSugerida` [R2-A]; prioridad de `seleccionarUnidadObservacion` —con texto → No Conforme → primera con resultado— y `faltanObservacionesNoConforme` sobre cualquier unidad con texto [R2-B]; pruebas Deno para matar mutaciones de R2-C y M15 [R2-C])  
+**Rama:** `calidad-c2-pantallas-2026-11-21`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/CALIDAD_C2_REVISION_CLAUDE.md` (R2.3 / R2.5), `COORDINACION/REPORTES/CALIDAD_C2_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `src/app/components/Calidad/calidadUtils.ts` (`bcdffde`).
+- `supabase/functions/make-server-feea4382/motor/calidad_ui_utils.test.ts` (`bcdffde`): 13 pruebas (260 total pasan).
+- `COORDINACION/REPORTES/CALIDAD_C2_REPORTE_ANTY.md`: sección Ronda 3 con commit `bcdffde` verificado con árbol limpio.
+**Acciones manuales pendientes:**  
+- Rebuild de `remolques-web` en EasyPanel.
+- Migración SQL y rebuild de `remolques-api`: **no requeridos**.
+
 ## 2026-11-22 - Calidad parte 2 de 2 (Ronda 2: D1-D5, menores y pruebas anti-mutación)
 **Herramienta:** Antigravity  
 **Tipo:** fix (refresco silencioso en `OrdenCalidadTab` y autoguardado de un solo vuelo en `CalidadInspeccionModal` [D1]; bloqueo de cierre con cambios sin guardar [D2]; colaborador/fecha/observaciones ligados a la primera unidad con resultado y deshabilitados si no hay ninguno [D3]; `avisosAlLiberar` sobre el intento vigente por formato y singular/plural [D4]; paso de `lineaClave`, `ajustes` y `onCalidadActualizada` desde `TableroProduccionPage`/`OrdenTrabajoDetalleSheet` y refresco de insignias en `MatrizProduccionView` [D5, M2, M6]; `decidirLogoEncabezado(ajustes, 'claro')` y fechas `DD/MM/AAAA` en `CalidadImpresion` [M1, M4]; encabezado plegable en 375px y toast de re-inspección [M3, M5]; pruebas Deno `254 -> 260` y Chrome CDP por ruta Tablero -> Sheet)  

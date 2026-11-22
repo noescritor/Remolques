@@ -95,3 +95,17 @@
    - `calidad_ui_utils.test.ts` ampliado a **13 pruebas** (suite completa: **`260 passed | 0 failed`**); mutaciones M4, M9, M10, M14–M19: **10/10 eliminadas, 0 sobrevivientes**.
    - Prueba real en Chrome CDP por la ruta **Tablero → Sheet → Calidad**:
      - `calidad_r2_01_tablero.png`, `calidad_r2_02_sheet_tab.png`, `calidad_r2_03_modal_scroll_d1.png` (latencia 450ms, scroll en `900px` sin perder posición), `calidad_r2_04_plana2_obs.png` (solo Plana 2 + observación persistida en Postgres), `calidad_r2_05_cierre_bloqueado_d2.png` (API cortado → cierre abortado con aviso), `calidad_r2_06_movil_375.png` (encabezado plegable en 375px).
+
+---
+
+## 6. Ronda 3 (cierre de R2-A, R2-B y R2-C)
+
+- **Commit de código verificado:** `bcdffde` (`fix(calidad-ui): R2-A linea_clave en sugerencia, R2-B unidad de observacion y pruebas R2-C`), con árbol limpio (`git status` vacío antes y después de las pruebas).
+- **R2-A (`resolverPlantillaSugerida` con `linea_clave`)**: commiteada la lectura de `orden.linea_clave` (case-insensitive y `trim`) en [calidadUtils.ts](file:///C:/Users/luisa/Downloads/proyectos_antygravity/Remolques_calidad_c2/src/app/components/Calidad/calidadUtils.ts) + pruebas Deno en [calidad_ui_utils.test.ts](file:///C:/Users/luisa/Downloads/proyectos_antygravity/Remolques_calidad_c2/supabase/functions/make-server-feea4382/motor/calidad_ui_utils.test.ts) (sin `linea_producto_id` con `'plataforma'`, `'  PLATAFORMA  '` e `'inexistente'` → `null`).
+- **R2-B (`seleccionarUnidadObservacion` y `faltanObservacionesNoConforme`)**:
+  - Prioridad de unidad visible/editable: 1) primera unidad con texto en `observaciones`, 2) primera con `no_conforme`, 3) primera con resultado. Si primero se marca Plana 2 en `X` con `"Falla en soldadura Plana 2"` y luego se marca Plana 1 conforme, el campo sigue mostrando Plana 2 y su texto.
+  - `faltanObservacionesNoConforme` devuelve `false` si **cualquier** unidad con resultado tiene texto no vacío (con `trim()`).
+- **R2-C (pruebas y mutaciones)**:
+  - Agregadas aserciones para `puedeCerrarInspeccion(1)`, `limpiarLoteEnviado` sin cambios nuevos (0 restantes), `seleccionarUnidadObservacion` (inicio en unidad 1 e ignorar filas con `resultado: null`), `faltanObservacionesNoConforme` (sin NC / solo espacios), `avisosAlLiberar` con `intento` ausente, `encolarCambioResultado` con `unidad` ausente, `formatearFechaImpresion` con formato no ISO (`22/11/2026`), y `traducirErrorCalidad("UNIDAD_INVALIDA", msg)` respetando el mensaje del servidor.
+  - Ejecución de las 44 mutaciones de `mutar_r2.cjs` sobre copia de `bcdffde`: **38 detectadas, 1 equivalente (`M18` en la guarda redundante `: ['Única']` de `normalizarConfigPlantilla`), 5 inválidas (por refactorización R2-B)**.
+- **Verificación sobre árbol limpio**: `deno test` desde raíz (**260 passed | 0 failed**), `npm run build` OK y `node scripts/verificar.mjs --limpio` **11/11 OK** (`tsc: 0 nombres sin definir/duplicados`, `371 pasan, 0 fallan` en `HEAD` limpio).
