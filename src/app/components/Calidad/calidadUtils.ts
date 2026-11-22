@@ -275,3 +275,121 @@ export function traducirErrorCalidad(codigo?: string | null, mensajeFallback?: s
       return mensajeFallback || 'Ocurrió un error al procesar la solicitud de calidad.';
   }
 }
+
+export function formatearFechaImpresion(fechaRaw?: string | null): string {
+  if (!fechaRaw) return '';
+  const str = String(fechaRaw).trim();
+  const match = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) {
+    return `${match[3]}/${match[2]}/${match[1]}`;
+  }
+  return str;
+}
+
+export function avisosAlLiberar(
+  inspecciones: Array<{
+    formato: string;
+    intento?: number;
+    estado: string;
+    resumen?: { no_conformes?: number } | null;
+  }>
+): string[] {
+  const vigentes = new Map<string, { formato: string; intento: number; estado: string; resumen?: { no_conformes?: number } | null }>();
+
+  for (const insp of inspecciones || []) {
+    if (!insp?.formato) continue;
+    const intento = Number(insp.intento) || 1;
+    const prev = vigentes.get(insp.formato);
+    if (!prev || intento > prev.intento) {
+      vigentes.set(insp.formato, { ...insp, intento });
+    }
+  }
+
+  const mensajes: string[] = [];
+  const entregaVigente = vigentes.get('entrega');
+  if (!entregaVigente || entregaVigente.estado !== 'cerrada') {
+    mensajes.push('Esta orden no tiene una inspección de calidad de entrega cerrada.');
+  }
+
+  let noConformesTotal = 0;
+  for (const v of vigentes.values()) {
+    noConformesTotal += Number(v.resumen?.no_conformes) || 0;
+  }
+
+  if (noConformesTotal === 1) {
+    mensajes.push('Esta orden tiene 1 punto marcado como No Conforme sin resolver.');
+  } else if (noConformesTotal > 1) {
+    mensajes.push(`Esta orden tiene ${noConformesTotal} puntos marcados como No Conforme sin resolver.`);
+  }
+
+  return mensajes;
+}
+
+export function puedeCerrarInspeccion(pendientesGuardarCount: number): {
+  permitido: boolean;
+  motivo: string | null;
+} {
+  if (pendientesGuardarCount > 0) {
+    return {
+      permitido: false,
+      motivo: 'Hay cambios sin guardar. Guarda o reintenta antes de cerrar la inspección.',
+    };
+  }
+  return { permitido: true, motivo: null };
+}
+
+export function seleccionarUnidadObservacion(
+  itemId: string,
+  numUnidades: number,
+  mapaResultados: Map<string, ResultadoInspeccionCalidad>
+): { unidadActiva: number | null; resultado: ResultadoInspeccionCalidad | null } {
+  const uMax = Math.max(1, numUnidades);
+  for (let u = 1; u <= uMax; u++) {
+    const res = mapaResultados.get(claveResultado(itemId, u));
+    if (res && res.resultado) {
+      return { unidadActiva: u, resultado: res };
+    }
+  }
+  return { unidadActiva: null, resultado: null };
+}
+
+export function faltanObservacionesNoConforme(
+  itemId: string,
+  numUnidades: number,
+  mapaResultados: Map<string, ResultadoInspeccionCalidad>
+): boolean {
+  const uMax = Math.max(1, numUnidades);
+  let hayNoConforme = false;
+  for (let u = 1; u <= uMax; u++) {
+    if (mapaResultados.get(claveResultado(itemId, u))?.resultado === 'no_conforme') {
+      hayNoConforme = true;
+      break;
+    }
+  }
+  if (!hayNoConforme) return false;
+  const { resultado } = seleccionarUnidadObservacion(itemId, uMax, mapaResultados);
+  return !String(resultado?.observaciones || '').trim();
+}
+
+export function encolarCambioResultado(
+  pendientes: Map<string, ResultadoInspeccionCalidad>,
+  cambio: ResultadoInspeccionCalidad
+): Map<string, ResultadoInspeccionCalidad> {
+  const siguiente = new Map(pendientes);
+  const u = Number(cambio.unidad) || 1;
+  siguiente.set(claveResultado(cambio.item_id, u), { ...cambio, unidad: u });
+  return siguiente;
+}
+
+export function limpiarLoteEnviado(
+  pendientesActuales: Map<string, ResultadoInspeccionCalidad>,
+  snapshotEnviado: Map<string, ResultadoInspeccionCalidad>
+): Map<string, ResultadoInspeccionCalidad> {
+  const restantes = new Map(pendientesActuales);
+  for (const [key, itemEnviado] of snapshotEnviado.entries()) {
+    if (restantes.get(key) === itemEnviado) {
+      restantes.delete(key);
+    }
+  }
+  return restantes;
+}
