@@ -19,6 +19,7 @@ import {
   regenerarFichaDeOrden
 } from "./motor/generar_ordenes_cotizacion.ts";
 import { construirFichaOrdenTrabajo } from "./motor/ficha_orden_trabajo.ts";
+import { resumenEntregasOrdenesMotor } from "./motor/resumen_entregas.ts";
 import {
   obtenerResumenCatalogo,
   guardarOpcionCosto,
@@ -3556,6 +3557,18 @@ function manejarErrorDespiece(c: any, error: any) {
   const { status, body } = formatearErrorRespuesta(error);
   return c.json(body, status as any);
 }
+
+app.get("/ordenes-trabajo/resumen-entregas", async (c) => {
+  try {
+    const supabase = (c.get("supabase") || getServiceClient()) as any;
+    const orgId = c.get("organizacionId");
+    const data = await resumenEntregasOrdenesMotor(supabase, orgId);
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error en resumen-entregas:", error);
+    return c.json({ error: error?.message || "Error consultando resumen de entregas" }, 500);
+  }
+});
 
 app.get("/ordenes-trabajo/:id/despiece", async (c) => {
   try {
