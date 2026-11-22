@@ -908,13 +908,13 @@ export function CalidadInspeccionModal({
             {resumen.pendientes > 0 && (
               <div className="flex items-center gap-2 p-2.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-foreground">
                 <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
-                <span>Hay <strong>{resumen.pendientes}</strong> puntos pendientes por capturar.</span>
+                <span>Hay <strong>{resumen.pendientes}</strong> {resumen.pendientes === 1 ? 'punto pendiente' : 'puntos pendientes'} por capturar.</span>
               </div>
             )}
             {resumen.no_conformes > 0 && (
               <div className="flex items-center gap-2 p-2.5 rounded-md bg-destructive/10 border border-destructive/30 text-destructive">
                 <XCircle className="h-4 w-4 shrink-0" />
-                <span>Hay <strong>{resumen.no_conformes}</strong> puntos marcados como No Conforme.</span>
+                <span>Hay <strong>{resumen.no_conformes}</strong> {resumen.no_conformes === 1 ? 'punto marcado' : 'puntos marcados'} como No Conforme.</span>
               </div>
             )}
           </div>
