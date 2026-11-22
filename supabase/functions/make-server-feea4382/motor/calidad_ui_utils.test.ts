@@ -92,6 +92,7 @@ Deno.test("calidadUtils: conteo con 2 unidades (Plana 1 / Plana 2) e ignora unid
 Deno.test("calidadUtils: normalizarConfigPlantilla valores por omisión (M16-M18) y unidad ausente -> 1 (M19)", () => {
   const cfgVacio = normalizarConfigPlantilla(null);
   assertEquals(cfgVacio.unidades, ["Única"]);
+  assertEquals(normalizarConfigPlantilla({ unidades: ["  "] }).unidades, ["Única"]);
   assertEquals(cfgVacio.etiquetas_resultado, { conforme: "√", no_conforme: "X" });
   assertEquals(cfgVacio.bloquea_liberacion, false);
 
