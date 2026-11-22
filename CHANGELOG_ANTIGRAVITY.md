@@ -3,6 +3,21 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-22 - Bloque H: Expediente por equipo + liberación de material por fase
+**Herramienta:** Antigravity  
+**Tipo:** feat (ruta de solo lectura `GET /ordenes-trabajo/resumen-entregas` con aislamiento org; utilidades puras `expedienteUtils.ts` y pruebas Deno; extracción de `ChecklistDespiecePanel` manteniendo `ChecklistDespieceModal`; pantalla `/expediente/:ordenId` con 7 pestañas sincronizadas en URL y 4 puntos de entrada desde Tablero, Órdenes, Calidad y Plan Semanal; insignia `Almacén X/Y` en `MatrizProduccionView`)  
+**Rama:** `expediente-h-2026-11-22`  
+**Referencia auditoría:** `PROMPT_ANTY_EXPEDIENTE_H_2026-11-22.md`, `COORDINACION/REPORTES/EXPEDIENTE_H_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/resumen_entregas.ts`, `motor/resumen_entregas.test.ts`, `index.ts` (`e10e699`).
+- `src/app/components/Expediente/expedienteUtils.ts`, `motor/expediente_utils.test.ts` (`236fa4d`).
+- `src/app/components/OrdenesTrabajo/ChecklistDespiecePanel.tsx`, `ChecklistDespieceModal.tsx` (`7f73b78`).
+- `src/app/components/Expediente/ExpedienteEquipoPage.tsx`, `expedienteApi.ts`, `App.tsx`, `OrdenTrabajoDetalleSheet.tsx`, `MatrizProduccionView.tsx`, `OrdenesTrabajoList.tsx`, `CalidadPage.tsx`, `CuadriculaSemanal.tsx` (`9facf4a`).
+- `COORDINACION/EVIDENCIA/expediente_h_01..08_*.png` y `COORDINACION/REPORTES/EXPEDIENTE_H_REPORTE_ANTY.md`.
+**Acciones manuales pendientes:**  
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel (cuando se apruebe el merge).
+- Migración SQL: **no requerida**.
+
 ## 2026-11-22 - Calidad parte 2 de 2 (Ronda 3: R2-A commit linea_clave, R2-B prioridad observación, R2-C pruebas)
 **Herramienta:** Antigravity  
 **Tipo:** fix (commit de `linea_clave` en `resolverPlantillaSugerida` [R2-A]; prioridad de `seleccionarUnidadObservacion` —con texto → No Conforme → primera con resultado— y `faltanObservacionesNoConforme` sobre cualquier unidad con texto [R2-B]; pruebas Deno para matar mutaciones de R2-C y M15 [R2-C])  
