@@ -7,7 +7,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Printer, FileCheck, Search, Edit, Calendar, ClipboardCheck, AlertTriangle } from 'lucide-react';
+import { Printer, FileCheck, Search, Edit, Calendar, ClipboardCheck, AlertTriangle, FolderOpen } from 'lucide-react';
 import { calidadApi } from '../Calidad/calidadApi';
 import { avisosAlLiberar } from '../Calidad/calidadUtils';
 import { OrdenTrabajoPDF } from './OrdenTrabajoPDF';
@@ -255,6 +255,14 @@ export function OrdenesTrabajoList({ ordenes, clientes, loading, onActualizarOrd
                     </td>
                     <td className="px-6 py-4 text-xs">{fechaPedido}</td>
                     <td className="px-6 py-4 text-right space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => navigate(`/expediente/${orden.id}`)}
+                        title="Abrir expediente del equipo"
+                      >
+                        <FolderOpen className="w-4 h-4 text-primary" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"

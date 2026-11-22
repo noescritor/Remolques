@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -52,6 +53,7 @@ export function CalidadPage({
   ajustes,
   tabInicial = 'inspecciones',
 }: CalidadPageProps) {
+  const navigate = useNavigate();
   const [tab, setTab] = useState<'inspecciones' | 'plantillas'>(tabInicial);
   const [loading, setLoading] = useState(true);
   const [inspecciones, setInspecciones] = useState<any[]>([]);
@@ -387,9 +389,14 @@ export function CalidadPage({
                           {insp.formato === 'control_total' ? 'Control Total' : 'Entrega'}
                         </TableCell>
                         <TableCell className="text-xs">
-                          <div className="font-medium text-foreground">
+                          <button
+                            type="button"
+                            onClick={() => navigate(`/expediente/${insp.orden_trabajo_id}?tab=calidad`)}
+                            className="font-medium text-primary hover:underline text-left"
+                            title="Abrir expediente del equipo"
+                          >
                             {insp.orden?.etiqueta || insp.orden?.modelo || 'Orden'}
-                          </div>
+                          </button>
                           {insp.orden?.niv && (
                             <div className="text-muted-foreground font-mono text-[11px]">
                               NIV: {insp.orden.niv}

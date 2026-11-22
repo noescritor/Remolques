@@ -17,6 +17,7 @@ import { ComprasProveedorList } from './components/ComprasProveedor/ComprasProve
 import { CuentasPorCobrar } from './components/Finanzas/CuentasPorCobrar';
 import { CuentasPorPagarMain } from './components/Finanzas/CuentasPorPagarMain';
 import { TableroProduccionPage } from './components/TableroProduccion/TableroProduccionPage';
+import { ExpedienteEquipoPage } from './components/Expediente/ExpedienteEquipoPage';
 import { PlanSemanalMain } from './components/PlanProduccion/PlanSemanalMain';
 import { TrazabilidadList } from './components/Trazabilidad/TrazabilidadList';
 import { OrdenesTrabajoList } from './components/OrdenesTrabajo/OrdenesTrabajoList';
@@ -678,6 +679,13 @@ export default function App() {
                   <Route path="/tablero-produccion" element={
             <TableroProduccionPage
               session={session}
+              ajustes={ajustes}
+            />
+          } />
+          <Route path="/expediente/:ordenId" element={
+            <ExpedienteEquipoPage
+              ordenesTrabajo={ordenesTrabajo}
+              cotizaciones={cotizaciones}
               ajustes={ajustes}
             />
           } />

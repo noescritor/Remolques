@@ -173,16 +173,30 @@ export function OrdenTrabajoDetalleSheet({
           </TabsList>
 
           <TabsContent value="general" className="space-y-6 pt-3">
-          {/* ACCIÓN RÁPIDA: VER TAREAS DE PRODUCCIÓN */}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full justify-between text-xs h-9 border-primary/30 hover:bg-primary/5 hover:text-primary text-foreground"
-            onClick={irATareasProduccion}
-          >
-            <span className="font-semibold">Ver tareas de producción</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </Button>
+          {/* ACCIÓN RÁPIDA: ABRIR EXPEDIENTE Y VER TAREAS */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant="default"
+              className="w-full justify-between text-xs h-9"
+              onClick={() => {
+                onOpenChange(false);
+                navigate(`/expediente/${fila.orden_id}`);
+              }}
+            >
+              <span className="font-semibold">Abrir expediente</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full justify-between text-xs h-9 border-primary/30 hover:bg-primary/5 hover:text-primary text-foreground"
+              onClick={irATareasProduccion}
+            >
+              <span className="font-semibold">Ver tareas de producción</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Button>
+          </div>
 
           {/* DATOS GENERALES */}
           <div className="space-y-3 bg-muted/30 p-3.5 rounded-lg border border-border/50 text-xs">

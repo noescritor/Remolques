@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -93,6 +94,8 @@ export function CuadriculaSemanal({
     if (horas === 0) return `${mins}m`;
     return `${horas}h ${mins}m`;
   };
+
+  const navigate = useNavigate();
 
   const dias = useMemo(() => {
     return diasDeSemana(lunesActual, { sabado: mostrarSabado });
@@ -377,12 +380,21 @@ export function CuadriculaSemanal({
 
                                 {/* Orden de Trabajo si existe */}
                                 {t.orden_trabajo && (
-                                  <div className="text-[10px] text-primary font-mono bg-primary/10 px-1 py-0.5 rounded flex items-center gap-1 w-fit">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const oid = t.orden_trabajo_id || t.orden_trabajo?.id;
+                                      if (oid) navigate(`/expediente/${oid}?tab=plan`);
+                                    }}
+                                    title="Abrir expediente del equipo"
+                                    className="text-[10px] text-primary font-mono bg-primary/10 hover:bg-primary/20 px-1 py-0.5 rounded flex items-center gap-1 w-fit"
+                                  >
                                     <FileText className="w-2.5 h-2.5" />
-                                    <span>
+                                    <span className="underline">
                                       {t.orden_trabajo.nomenclatura_id || t.orden_trabajo.modelo || 'OT'}
                                     </span>
-                                  </div>
+                                  </button>
                                 )}
 
                                 {/* Operarios */}

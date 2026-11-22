@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { calidadApi } from '../Calidad/calidadApi';
+import { expedienteApi } from '../Expediente/expedienteApi';
 import {
   FaseMatriz,
   FilaMatriz,
@@ -101,9 +102,12 @@ export function MatrizProduccionView({
   const [editandoMaterialId, setEditandoMaterialId] = useState<string | null>(null);
   const [valorMaterialTemp, setValorMaterialTemp] = useState<string>('');
 
-  // Resumen de calidad (una sola petición para todo el tablero)
+  // Resumen de calidad y entregas de almacén (una sola petición cada uno)
   const [resumenCalidadMap, setResumenCalidadMap] = useState<
     Map<string, { capturados: number; total_esperados: number; no_conformes: number }>
+  >(new Map());
+  const [resumenEntregasMap, setResumenEntregasMap] = useState<
+    Map<string, { partidas_completas: number; total_partidas: number; porcentaje: number | null }>
   >(new Map());
 
   useEffect(() => {
@@ -126,6 +130,25 @@ export function MatrizProduccionView({
       .catch(() => {
         // Silencioso: las insignias de calidad no deben bloquear el tablero
       });
+
+    expedienteApi
+      .resumenEntregasOrdenes()
+      .then((rows) => {
+        if (!activo || !Array.isArray(rows)) return;
+        const mapa = new Map<string, { partidas_completas: number; total_partidas: number; porcentaje: number | null }>();
+        for (const r of rows) {
+          mapa.set(r.orden_trabajo_id, {
+            partidas_completas: Number(r.partidas_completas) || 0,
+            total_partidas: Number(r.total_partidas) || 0,
+            porcentaje: r.porcentaje ?? null,
+          });
+        }
+        setResumenEntregasMap(mapa);
+      })
+      .catch(() => {
+        // Silencioso: la insignia de almacén no debe bloquear el tablero
+      });
+
     return () => {
       activo = false;
     };
@@ -346,16 +369,27 @@ export function MatrizProduccionView({
                         <div>{fila.avance?.terminadas ?? 0}/{fila.avance?.total ?? 12}</div>
                         {(() => {
                           const q = resumenCalidadMap.get(fila.orden_id);
-                          if (!q) return null;
+                          const e = resumenEntregasMap.get(fila.orden_id);
+                          if (!q && (!e || e.total_partidas === 0)) return null;
                           return (
-                            <div
-                              className="mt-1 flex items-center justify-center gap-1 flex-wrap"
-                              title="Avance de calidad (Control Total + Entrega). Haz clic en la fila para ver el detalle."
-                            >
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                                Calidad {q.capturados}/{q.total_esperados}
-                              </span>
-                              {q.no_conformes > 0 && (
+                            <div className="mt-1 flex items-center justify-center gap-1 flex-wrap">
+                              {e && e.total_partidas > 0 && (
+                                <span
+                                  className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
+                                  title="Entregas de almacén (partidas completas / partidas totales). Haz clic en la fila para abrir el expediente."
+                                >
+                                  Almacén {e.partidas_completas}/{e.total_partidas}
+                                </span>
+                              )}
+                              {q && (
+                                <span
+                                  className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
+                                  title="Avance de calidad (Control Total + Entrega). Haz clic en la fila para ver el detalle."
+                                >
+                                  Calidad {q.capturados}/{q.total_esperados}
+                                </span>
+                              )}
+                              {q && q.no_conformes > 0 && (
                                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-destructive/15 text-destructive font-semibold">
                                   {q.no_conformes} NC
                                 </span>
