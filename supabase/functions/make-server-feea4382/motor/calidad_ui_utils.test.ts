@@ -230,16 +230,38 @@ Deno.test("calidadUtils: resolverPlantillaSugerida prueba tipo_equipo 05 solo (M
   assertEquals(traducirErrorCalidad("SIN_PLANTILLA").includes("Calidad → Plantillas"), true);
   assertEquals(traducirErrorCalidad("YA_EXISTE").includes("Ya existe una inspección en proceso"), true);
   assertEquals(traducirErrorCalidad("UNIDAD_INVALIDA").includes("fuera del rango"), true);
+  assertEquals(traducirErrorCalidad("UNIDAD_INVALIDA", "Unidad 5 fuera de rango"), "Unidad 5 fuera de rango");
+
+  // R2-A: resolverPlantillaSugerida con linea_clave sin linea_producto_id
+  assertEquals(
+    resolverPlantillaSugerida({ tipo_equipo: "01", linea_clave: "plataforma" }, plantillas, "control_total")?.id,
+    "pl-plat-ct",
+  );
+  assertEquals(
+    resolverPlantillaSugerida({ tipo_equipo: "01", linea_clave: "  PLATAFORMA  " }, plantillas, "control_total")?.id,
+    "pl-plat-ct",
+  );
+  assertEquals(
+    resolverPlantillaSugerida({ tipo_equipo: "01", linea_clave: "inexistente" }, plantillas, "control_total"),
+    null,
+  );
 });
 
 Deno.test("calidadUtils (D4): avisosAlLiberar evalúa solo el intento vigente por formato y cuida singular/plural", () => {
   // Sin inspecciones
   assertEquals(avisosAlLiberar([]), ["Esta orden no tiene una inspección de calidad de entrega cerrada."]);
 
-  // Entrega cerrada sin NC
+  // Entrega cerrada sin NC (incluye intento ausente -> 1)
   assertEquals(
-    avisosAlLiberar([{ formato: "entrega", intento: 1, estado: "cerrada", resumen: { no_conformes: 0 } }]),
+    avisosAlLiberar([{ formato: "entrega", estado: "cerrada", resumen: { no_conformes: 0 } }]),
     [],
+  );
+  assertEquals(
+    avisosAlLiberar([
+      { formato: "entrega", estado: "cerrada", resumen: { no_conformes: 0 } },
+      { formato: "entrega", intento: 2, estado: "en_proceso", resumen: { no_conformes: 0 } },
+    ]),
+    ["Esta orden no tiene una inspección de calidad de entrega cerrada."],
   );
 
   // Entrega cerrada con 1 NC (singular: "1 punto")
@@ -269,38 +291,62 @@ Deno.test("calidadUtils (D4): avisosAlLiberar evalúa solo el intento vigente po
 
 Deno.test("calidadUtils (D2): puedeCerrarInspeccion bloquea cierre si quedan cambios sin guardar", () => {
   assertEquals(puedeCerrarInspeccion(0).permitido, true);
+  assertEquals(puedeCerrarInspeccion(1).permitido, false);
   const res = puedeCerrarInspeccion(2);
   assertEquals(res.permitido, false);
   assertEquals(res.motivo?.includes("cambios sin guardar"), true);
 });
 
-Deno.test("calidadUtils (D3): seleccionarUnidadObservacion y faltanObservacionesNoConforme en Plana 2", () => {
+Deno.test("calidadUtils (D3 y R2-B): seleccionarUnidadObservacion y faltanObservacionesNoConforme", () => {
   const mapaVacio = new Map();
   assertEquals(seleccionarUnidadObservacion("it-1", 2, mapaVacio), { unidadActiva: null, resultado: null });
 
-  // Solo Plana 2 marcada como no_conforme sin observación
-  const mapaPlana2 = agruparResultadosPorClave([
-    { item_id: "it-1", unidad: 2, resultado: "no_conforme", observaciones: "" },
+  // Fila sin resultado (resultado: null) se ignora; unidad 2 sí tiene resultado
+  const mapaSinRes1 = agruparResultadosPorClave([
+    { item_id: "it-1", unidad: 1, resultado: null, observaciones: "huérfana" },
+    { item_id: "it-1", unidad: 2, resultado: "conforme", observaciones: "" },
   ]);
-  const sel = seleccionarUnidadObservacion("it-1", 2, mapaPlana2);
-  assertEquals(sel.unidadActiva, 2);
-  assertEquals(faltanObservacionesNoConforme("it-1", 2, mapaPlana2), true);
+  assertEquals(seleccionarUnidadObservacion("it-1", 2, mapaSinRes1).unidadActiva, 2);
 
-  // Al agregar observación en Plana 2, ya no falta
-  mapaPlana2.set(claveResultado("it-1", 2), {
-    item_id: "it-1",
-    unidad: 2,
-    resultado: "no_conforme",
-    observaciones: "Falta soldadura",
-  });
-  assertEquals(faltanObservacionesNoConforme("it-1", 2, mapaPlana2), false);
+  // Ambas unidades conformes sin texto -> empieza en unidad 1; faltanObservacionesNoConforme = false (sin NC)
+  const mapaConf = agruparResultadosPorClave([
+    { item_id: "it-1", unidad: 1, resultado: "conforme", observaciones: "" },
+    { item_id: "it-1", unidad: 2, resultado: "conforme", observaciones: "" },
+  ]);
+  assertEquals(seleccionarUnidadObservacion("it-1", 2, mapaConf).unidadActiva, 1);
+  assertEquals(faltanObservacionesNoConforme("it-1", 2, mapaConf), false);
+
+  // Plana 1 conforme sin texto + Plana 2 no_conforme sin texto -> prioriza Plana 2 (NC)
+  const mapaSoloPlana2NC = agruparResultadosPorClave([
+    { item_id: "it-1", unidad: 1, resultado: "conforme", observaciones: "" },
+    { item_id: "it-1", unidad: 2, resultado: "no_conforme", observaciones: "   " },
+  ]);
+  assertEquals(seleccionarUnidadObservacion("it-1", 2, mapaSoloPlana2NC).unidadActiva, 2);
+  assertEquals(faltanObservacionesNoConforme("it-1", 2, mapaSoloPlana2NC), true);
+
+  // R2-B: Plana 2 con observación + luego se marca Plana 1 conforme (sin texto) -> sigue mostrando Plana 2 y su texto!
+  const mapaR2B = agruparResultadosPorClave([
+    { item_id: "it-1", unidad: 1, resultado: "conforme", observaciones: "" },
+    { item_id: "it-1", unidad: 2, resultado: "no_conforme", observaciones: "Falla en soldadura Plana 2" },
+  ]);
+  const selR2B = seleccionarUnidadObservacion("it-1", 2, mapaR2B);
+  assertEquals(selR2B.unidadActiva, 2);
+  assertEquals(selR2B.resultado?.observaciones, "Falla en soldadura Plana 2");
+  assertEquals(faltanObservacionesNoConforme("it-1", 2, mapaR2B), false);
 });
 
-Deno.test("calidadUtils (D1): cola de autoguardado conserva ediciones ocurridas durante el vuelo", () => {
+Deno.test("calidadUtils (D1): cola de autoguardado conserva ediciones durante el vuelo y limpia si no hubo nuevas", () => {
   let cola = new Map();
+  const cSinUnidad = { item_id: "it-0", resultado: "conforme" } as any;
+  const colaUnidad = encolarCambioResultado(cola, cSinUnidad);
+  assertEquals(colaUnidad.get("it-0:1")?.unidad, 1);
+
   const c1 = { item_id: "it-1", unidad: 1, resultado: "conforme" as const };
   cola = encolarCambioResultado(cola, c1);
   const snapshotVuelo = new Map(cola);
+
+  // Si no hubo cambios nuevos durante el vuelo, limpiarLoteEnviado deja 0 pendientes
+  assertEquals(limpiarLoteEnviado(new Map(cola), snapshotVuelo).size, 0);
 
   // Mientras viaja c1, usuario marca it-2 y cambia it-1
   const c1Nuevo = { item_id: "it-1", unidad: 1, resultado: "no_conforme" as const };
@@ -314,8 +360,9 @@ Deno.test("calidadUtils (D1): cola de autoguardado conserva ediciones ocurridas 
   assertEquals(restantes.get("it-2:1")?.resultado, "conforme");
 });
 
-Deno.test("calidadUtils (Menor 4): formatearFechaImpresion convierte YYYY-MM-DD a DD/MM/AAAA", () => {
+Deno.test("calidadUtils (Menor 4): formatearFechaImpresion convierte YYYY-MM-DD a DD/MM/AAAA y respeta no ISO", () => {
   assertEquals(formatearFechaImpresion("2026-11-22"), "22/11/2026");
   assertEquals(formatearFechaImpresion("2026-11-22T06:00:00.000Z"), "22/11/2026");
+  assertEquals(formatearFechaImpresion("22/11/2026"), "22/11/2026");
   assertEquals(formatearFechaImpresion(null), "");
 });

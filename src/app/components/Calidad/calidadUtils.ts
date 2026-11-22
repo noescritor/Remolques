@@ -227,7 +227,7 @@ export function parsearLineasActividades(
 }
 
 export function resolverPlantillaSugerida(
-  orden: { tipo_equipo?: string | null; modelo?: string | null; etiqueta?: string | null; linea_producto_id?: string | null } | null | undefined,
+  orden: { tipo_equipo?: string | null; modelo?: string | null; etiqueta?: string | null; linea_producto_id?: string | null; linea_clave?: string | null } | null | undefined,
   plantillasActivas: PlantillaCalidad[],
   formato: FormatoCalidad
 ): PlantillaCalidad | null {
@@ -248,6 +248,12 @@ export function resolverPlantillaSugerida(
   if (orden.linea_producto_id) {
     const porLinea = candidatas.find((p) => p.linea_producto_id === orden.linea_producto_id);
     if (porLinea) return porLinea;
+  }
+
+  if (orden.linea_clave) {
+    const clave = String(orden.linea_clave).trim().toLowerCase();
+    const porClave = candidatas.find((p) => p.linea?.clave === clave);
+    if (porClave) return porClave;
   }
 
   return null;
@@ -344,13 +350,22 @@ export function seleccionarUnidadObservacion(
   mapaResultados: Map<string, ResultadoInspeccionCalidad>
 ): { unidadActiva: number | null; resultado: ResultadoInspeccionCalidad | null } {
   const uMax = Math.max(1, numUnidades);
+  const conResultado: Array<{ u: number; res: ResultadoInspeccionCalidad }> = [];
   for (let u = 1; u <= uMax; u++) {
     const res = mapaResultados.get(claveResultado(itemId, u));
     if (res && res.resultado) {
-      return { unidadActiva: u, resultado: res };
+      conResultado.push({ u, res });
     }
   }
-  return { unidadActiva: null, resultado: null };
+  if (conResultado.length === 0) return { unidadActiva: null, resultado: null };
+
+  const conTexto = conResultado.find((x) => Boolean(String(x.res.observaciones || '').trim()));
+  if (conTexto) return { unidadActiva: conTexto.u, resultado: conTexto.res };
+
+  const noConforme = conResultado.find((x) => x.res.resultado === 'no_conforme');
+  if (noConforme) return { unidadActiva: noConforme.u, resultado: noConforme.res };
+
+  return { unidadActiva: conResultado[0].u, resultado: conResultado[0].res };
 }
 
 export function faltanObservacionesNoConforme(
@@ -360,15 +375,14 @@ export function faltanObservacionesNoConforme(
 ): boolean {
   const uMax = Math.max(1, numUnidades);
   let hayNoConforme = false;
+  let hayObservacion = false;
   for (let u = 1; u <= uMax; u++) {
-    if (mapaResultados.get(claveResultado(itemId, u))?.resultado === 'no_conforme') {
-      hayNoConforme = true;
-      break;
-    }
+    const res = mapaResultados.get(claveResultado(itemId, u));
+    if (!res || !res.resultado) continue;
+    if (res.resultado === 'no_conforme') hayNoConforme = true;
+    if (String(res.observaciones || '').trim()) hayObservacion = true;
   }
-  if (!hayNoConforme) return false;
-  const { resultado } = seleccionarUnidadObservacion(itemId, uMax, mapaResultados);
-  return !String(resultado?.observaciones || '').trim();
+  return hayNoConforme && !hayObservacion;
 }
 
 export function encolarCambioResultado(
