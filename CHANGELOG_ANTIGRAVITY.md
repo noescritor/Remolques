@@ -3,6 +3,20 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-22 - Calidad parte 2 de 2 (Ronda 2: D1-D5, menores y pruebas anti-mutación)
+**Herramienta:** Antigravity  
+**Tipo:** fix (refresco silencioso en `OrdenCalidadTab` y autoguardado de un solo vuelo en `CalidadInspeccionModal` [D1]; bloqueo de cierre con cambios sin guardar [D2]; colaborador/fecha/observaciones ligados a la primera unidad con resultado y deshabilitados si no hay ninguno [D3]; `avisosAlLiberar` sobre el intento vigente por formato y singular/plural [D4]; paso de `lineaClave`, `ajustes` y `onCalidadActualizada` desde `TableroProduccionPage`/`OrdenTrabajoDetalleSheet` y refresco de insignias en `MatrizProduccionView` [D5, M2, M6]; `decidirLogoEncabezado(ajustes, 'claro')` y fechas `DD/MM/AAAA` en `CalidadImpresion` [M1, M4]; encabezado plegable en 375px y toast de re-inspección [M3, M5]; pruebas Deno `254 -> 260` y Chrome CDP por ruta Tablero -> Sheet)  
+**Rama:** `calidad-c2-pantallas-2026-11-21`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/CALIDAD_C2_REVISION_CLAUDE.md`, `COORDINACION/REPORTES/CALIDAD_C2_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `src/app/components/Calidad/calidadUtils.ts`, `CalidadInspeccionModal.tsx`, `OrdenCalidadTab.tsx`, `CalidadImpresion.tsx`.
+- `src/app/components/OrdenesTrabajo/OrdenesTrabajoList.tsx`, `src/app/components/TableroProduccion/OrdenTrabajoDetalleSheet.tsx`, `MatrizProduccionView.tsx`, `TableroProduccionPage.tsx`, `src/app/App.tsx`.
+- `supabase/functions/make-server-feea4382/motor/calidad_ui_utils.test.ts`: 13 pruebas (260 total pasan).
+- `COORDINACION/EVIDENCIA/calidad_r2_01..06_*.png` y `COORDINACION/REPORTES/CALIDAD_C2_REPORTE_ANTY.md`.
+**Acciones manuales pendientes:**  
+- Rebuild de `remolques-web` en EasyPanel.
+- Migración SQL y rebuild de `remolques-api`: **no requeridos**.
+
 ## 2026-11-21 - Calidad parte 2 de 2: pantallas, editor de plantillas e impresión
 **Herramienta:** Antigravity  
 **Tipo:** feat (módulo UI `/calidad` con pestañas Inspecciones y Plantillas, modal de llenado con autoguardado y cero scroll horizontal en tableta/móvil, impresión carta con datos y en blanco, editor de plantillas con pegar varias líneas y vista previa, pestaña Calidad reutilizable en `OrdenTrabajoDetalleSheet`, insignias en `MatrizProduccionView` con una sola llamada a `/calidad/resumen-ordenes`, y aviso no bloqueante al liberar en `OrdenesTrabajoList`; pruebas Deno de `calidadUtils.ts` y verificación real en navegador con 8 capturas PNG)  

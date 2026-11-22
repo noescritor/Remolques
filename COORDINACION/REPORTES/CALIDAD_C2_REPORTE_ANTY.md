@@ -72,3 +72,26 @@
 1. **Migración SQL**: **No requerida** (la parte 1 ya está en `main`).
 2. **Backend (`remolques-api`)**: **No requiere rebuild** (0 cambios de servidor).
 3. **Frontend (`remolques-web` en EasyPanel)**: Hacer **Rebuild**.
+
+---
+
+## 5. Ronda 2 (correcciones tras revisión de Claude `CALIDAD_C2_REVISION_CLAUDE.md`)
+
+1. **D1 — Refresco sin desmontar modal y cola de autoguardado de un solo vuelo**:
+   - `OrdenCalidadTab.cargar(silencioso = false)` evita activar `loading` en refrescos de fondo tras `onActualizado`, manteniendo montado `CalidadInspeccionModal`.
+   - `CalidadInspeccionModal` usa `guardandoEnVueloRef`, `limpiarLoteEnviado` y drenado automático si llegan cambios mientras una petición sigue en vuelo.
+2. **D2 — Bloqueo de cierre con cambios sin guardar**:
+   - `enviarLotePendiente` retorna `boolean`; `handleConfirmarCierre` evalúa `puedeCerrarInspeccion(pendientesRef.current.size)` y aborta el cierre con `toast.error` si queda algún cambio pendiente o falló el guardado.
+3. **D3 — Unidad activa de observación en formatos multi-unidad**:
+   - Extraídas `seleccionarUnidadObservacion` y `faltanObservacionesNoConforme` en `calidadUtils.ts`; colaborador, fecha y observaciones se ligan a la primera unidad con resultado (ej. Plana 2 si solo Plana 2 tiene marca) y se deshabilitan con `"Marca primero un resultado"` cuando no hay ninguno.
+4. **D4 — Aviso al liberar sobre la inspección vigente por formato**:
+   - `OrdenesTrabajoList.tsx` usa `avisosAlLiberar(insps)` de `calidadUtils.ts` (evalúa solo el intento más alto por formato y corrige singular/plural `"1 punto marcado"`). Singular/plural corregido también en el diálogo de cierre de `CalidadInspeccionModal.tsx`.
+5. **D5 y Menores 1–6**:
+   - `TableroProduccionPage` pasa `lineaClave`, `ajustes` y `onCalidadActualizada` (`calidadRefreshKey`) a `OrdenTrabajoDetalleSheet` → `OrdenCalidadTab` y `MatrizProduccionView` (refresco en vivo de insignias + `title` explicativo).
+   - `OrdenCalidadTab` ya no deshabilita `Iniciar` si no hay plantilla preseleccionada y elimina el texto engañoso para Plataforma normal.
+   - `CalidadImpresion.tsx` llama `decidirLogoEncabezado(ajustes, 'claro')` (corrige TS2554) y formatea fechas a `DD/MM/AAAA` con `formatearFechaImpresion`.
+   - Encabezado plegable en móvil (`375px`) dentro de `CalidadInspeccionModal` y toast de re-inspección con el nombre de la plantilla usada.
+6. **Pruebas Deno, mutaciones y navegador (Ronda 2)**:
+   - `calidad_ui_utils.test.ts` ampliado a **13 pruebas** (suite completa: **`260 passed | 0 failed`**); mutaciones M4, M9, M10, M14–M19: **10/10 eliminadas, 0 sobrevivientes**.
+   - Prueba real en Chrome CDP por la ruta **Tablero → Sheet → Calidad**:
+     - `calidad_r2_01_tablero.png`, `calidad_r2_02_sheet_tab.png`, `calidad_r2_03_modal_scroll_d1.png` (latencia 450ms, scroll en `900px` sin perder posición), `calidad_r2_04_plana2_obs.png` (solo Plana 2 + observación persistida en Postgres), `calidad_r2_05_cierre_bloqueado_d2.png` (API cortado → cierre abortado con aviso), `calidad_r2_06_movil_375.png` (encabezado plegable en 375px).
