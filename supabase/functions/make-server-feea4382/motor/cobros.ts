@@ -620,20 +620,34 @@ export async function guardarValorEquipo(
     throw new CobrosError(400, "valor_invalido", "El valor pactado del equipo debe ser mayor a cero.");
   }
 
-  const { data, error } = await supabase
+  const { data: existente } = await supabase
     .from("equipo_valor_cobranza")
-    .upsert(
-      {
-        organizacion_id: orgId,
-        orden_trabajo_id: ordenId,
-        valor_pactado: val,
-        notas: notas ?? null,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "orden_trabajo_id" },
-    )
-    .select()
-    .single();
+    .select("orden_trabajo_id")
+    .eq("orden_trabajo_id", ordenId)
+    .eq("organizacion_id", orgId)
+    .maybeSingle();
+
+  const payloadValor = {
+    organizacion_id: orgId,
+    orden_trabajo_id: ordenId,
+    valor_pactado: val,
+    notas: notas ?? null,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data, error } = existente
+    ? await supabase
+        .from("equipo_valor_cobranza")
+        .update(payloadValor)
+        .eq("orden_trabajo_id", ordenId)
+        .eq("organizacion_id", orgId)
+        .select()
+        .single()
+    : await supabase
+        .from("equipo_valor_cobranza")
+        .insert(payloadValor)
+        .select()
+        .single();
   if (error) throw error;
   return data;
 }
