@@ -1,5 +1,6 @@
 import { BASE_URL } from '../../utils/api';
 import { supabase } from '../../utils/supabase/client';
+import { extraerListaOperarios } from '../../utils/operarios';
 import {
   FormatoCalidad,
   PlantillaCalidad,
@@ -161,6 +162,6 @@ export const calidadApi = {
   },
 
   listarOperarios() {
-    return requestCalidad<any[]>('/produccion/operarios');
+    return requestCalidad<any>('/produccion/operarios').then(extraerListaOperarios);
   },
 };

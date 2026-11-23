@@ -23,6 +23,7 @@ import {
   FileSpreadsheet,
 } from 'lucide-react';
 import { BASE_URL } from '../../utils/api';
+import { extraerListaOperarios } from '../../utils/operarios';
 import { resolverVolumenGondola, formatearVolumenM3 } from '../../utils/volumenGondola';
 import {
   esPartidaCompletaLinea,
@@ -141,10 +142,10 @@ export function ChecklistDespiecePanel({
 
       // Cargar lista de operarios si no se ha cargado
       if (operarios.length === 0) {
-        const resOps = await fetch(`${BASE_URL}/operarios`, { headers });
+        const resOps = await fetch(`${BASE_URL}/produccion/operarios?activos=1`, { headers });
         if (resOps.ok) {
           const opsData = await resOps.json();
-          setOperarios(opsData || []);
+          setOperarios(extraerListaOperarios(opsData));
         }
       }
     } catch (err: any) {
