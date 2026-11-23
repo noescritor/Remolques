@@ -3,6 +3,21 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-23 - Bloque E1: Cobros, plan de pagos y cobranza por equipo
+**Herramienta:** Antigravity  
+**Tipo:** feat (migración idempotente `20261123_01_cobros_e1.sql` con `pago_aplicaciones`, `equipo_valor_cobranza`, `planes_pago`, `plan_pagos_parcialidades`, vistas FIFO y RPCs `registrar_cobro` / `anular_cobro`; motor `motor/cobros.ts` y rutas `/cobros`, `/cobranza/*`, `/planes-pago`, `/pagos` paginado y sin anulados por defecto; utilidades puras `cobros.ts`; pestaña `Cobranza` en `ExpedienteEquipoPage` y actualizaciones en `CuentasPorCobrar` y `CotizacionDetalle`)  
+**Rama:** `cobros-e1-2026-11-22`  
+**Referencia auditoría:** `PROMPT_ANTY_COBROS_E1_2026-11-22.md`, `COORDINACION/REPORTES/COBROS_E1_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261123_01_cobros_e1.sql`, `docs/cobros/verificacion_E1.sql`, `docs/cobros/prueba_concurrencia_dos_sesiones_E1.sql` (`dfdf7bf`).
+- `src/app/utils/cobros.ts`, `supabase/functions/make-server-feea4382/motor/cobros_utils.test.ts` (`47c2acf`).
+- `supabase/functions/make-server-feea4382/motor/cobros.ts`, `motor/cobros.test.ts`, `index.ts` (`1e6844c`, `99d4b00`).
+- `src/app/types/index.ts`, `Expediente/expedienteApi.ts`, `ExpedienteEquipoPage.tsx`, `src/app/components/Cobros/*`, `Finanzas/CuentasPorCobrar.tsx`, `Cotizaciones/CotizacionDetalle.tsx` (`fe64b8c`, `31f4479`).
+- `COORDINACION/EVIDENCIA/cobros_e1_01..06_*.png` y `COORDINACION/REPORTES/COBROS_E1_REPORTE_ANTY.md`.
+**Acciones manuales pendientes:**  
+- Ejecutar `supabase/migrations/20261123_01_cobros_e1.sql` en el SQL Editor de Supabase (cuando se apruebe el merge).
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel (cuando se apruebe el merge).
+
 ## 2026-11-22 - Bloque H (Ronda 2: D1-D5, paginación y criterio único de partida completa)
 **Herramienta:** Antigravity  
 **Tipo:** fix (D1 lectura real `{ orden, tareas, bitacora }` en Plan semanal; D2 `Promise.allSettled` + estado `cargando | error | ok` con Reintentar por pestaña y conservación en refresco silencioso; D3 eliminación de emparejamiento numérico en `ChecklistDespiecePanel` y chip `Tablero: en <fase>` en encabezado; D4 paginación `.range()` en bloques de 1000 por `linea_id` en `resumenEntregasOrdenesMotor`; D5 cierre de mutaciones con 38/38 detectadas en `mutar_h.cjs`; criterio único `esPartidaCompleta` / `esPartidaCompletaLinea` y `key={ordenId}` en `App.tsx`)  
