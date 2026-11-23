@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
 import { Alert, AlertDescription } from '../ui/alert';
+import { hoyMexicoIso } from '../../utils/cobros';
 import { ArrowLeft, FileDown, Edit, Save, Eye, Mail, GitBranch, ExternalLink, Link2, Copy, Loader2, ShoppingCart, Factory, CheckCircle2, History } from 'lucide-react';
 import { Cotizacion, Pago, EstadoCotizacion, TRANSICIONES_ESTADO, Cliente, CotizacionEvento } from '../../types';
 import { formatearMoneda, formatearFecha } from '../../utils/calculations';
@@ -157,7 +158,7 @@ export function CotizacionDetalle({
     referencia: '',
     descripcion_especie: '',
     monto: 0,
-    fecha: new Date().toISOString().split('T')[0]
+    fecha: hoyMexicoIso()
   });
   const [erroresPago, setErroresPago] = useState<string[]>([]);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
@@ -211,7 +212,7 @@ export function CotizacionDetalle({
       referencia: '',
       descripcion_especie: '',
       monto: 0,
-      fecha: new Date().toISOString().split('T')[0]
+      fecha: hoyMexicoIso()
     });
   };
 
