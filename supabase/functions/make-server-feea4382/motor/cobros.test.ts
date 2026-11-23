@@ -2,10 +2,14 @@ import { assertEquals, assertRejects } from "jsr:@std/assert@1";
 import {
   CobrosError,
   crearPlanPago,
+  estatusParcialidad,
+  imputarCobrosAParcialidades,
   listarPagosPaginados,
   mapearErrorRpcCobros,
   obtenerCobranzaCotizacion,
   obtenerCobranzaEquipo,
+  registrarCobro,
+  validarPlanParcialidades,
 } from "./cobros.ts";
 
 function makeMockSupabase(tables: Record<string, Array<Record<string, unknown>>>) {
@@ -84,18 +88,23 @@ function makeMockSupabase(tables: Record<string, Array<Record<string, unknown>>>
   } as unknown as Parameters<typeof listarPagosPaginados>[0];
 }
 
-Deno.test("mapearErrorRpcCobros mapea codigos de negocio a HTTP status", () => {
+Deno.test("mapearErrorRpcCobros mapea codigos reales de PG a HTTP status", () => {
   const e1 = mapearErrorRpcCobros(new Error("saldo_excedido: excede"));
   assertEquals(e1.status, 409);
   assertEquals(e1.codigo, "saldo_excedido");
   assertEquals(e1.extra?.requiere_confirmacion_saldo_a_favor, true);
 
-  assertEquals(mapearErrorRpcCobros(new Error("cotizacion_no_cobrable: x")).status, 409);
-  assertEquals(mapearErrorRpcCobros(new Error("cotizacion_no_encontrada: x")).status, 404);
-  assertEquals(mapearErrorRpcCobros(new Error("cobro_no_encontrado: x")).status, 404);
-  assertEquals(mapearErrorRpcCobros(new Error("especie_sin_descripcion: x")).status, 400);
-  assertEquals(mapearErrorRpcCobros(new Error("aplicaciones_exceden_monto: x")).status, 400);
-  assertEquals(mapearErrorRpcCobros(new Error("motivo_requerido: x")).status, 400);
+  assertEquals(mapearErrorRpcCobros(new Error("cotizacion_no_cobrable: Solo se pueden cobrar")).status, 409);
+  assertEquals(mapearErrorRpcCobros(new Error("cotizacion_no_encontrada: La cotización no existe")).status, 404);
+  assertEquals(mapearErrorRpcCobros(new Error("cobro_no_encontrado: El cobro no existe")).status, 404);
+  assertEquals(mapearErrorRpcCobros(new Error("plan_no_encontrado: Plan no encontrado")).status, 404);
+  assertEquals(mapearErrorRpcCobros(new Error("metodo_pago_invalido: Método de pago no válido (Bitcoin)")).status, 400);
+  assertEquals(mapearErrorRpcCobros(new Error("aplicacion_orden_invalida: El equipo no pertenece")).status, 400);
+  assertEquals(mapearErrorRpcCobros(new Error("aplicacion_duplicada: No puedes repetir")).status, 400);
+  assertEquals(mapearErrorRpcCobros(new Error("fecha_invalida: Fecha de vencimiento inválida (2026-02-31)")).status, 400);
+  assertEquals(mapearErrorRpcCobros(new Error("especie_sin_descripcion: Describe el bien")).status, 400);
+  assertEquals(mapearErrorRpcCobros(new Error("aplicaciones_exceden_monto: La suma")).status, 400);
+  assertEquals(mapearErrorRpcCobros(new Error("motivo_requerido: El motivo")).status, 400);
 });
 
 Deno.test("listarPagosPaginados pagina >1000 filas, filtra por org y excluye anulados por defecto", async () => {
@@ -190,4 +199,76 @@ Deno.test("obtenerCobranzaEquipo para orden manual retorna es_manual=true y sin 
   assertEquals(res.orden.es_manual, true);
   assertEquals(res.cobranza_cotizacion, null);
   assertEquals(res.valor_pactado, null);
+});
+
+Deno.test("D5 M1/M4/M7: vencida hoy vs ayer, orden FIFO por fecha y plan igual al total", () => {
+  // M1: vencida ayer pero NO hoy
+  assertEquals(estatusParcialidad(1000, 0, "2026-11-22", "2026-11-22"), "pendiente");
+  assertEquals(estatusParcialidad(1000, 500, "2026-11-22", "2026-11-22"), "parcial");
+  assertEquals(estatusParcialidad(1000, 500, "2026-11-21", "2026-11-22"), "vencida");
+
+  // M4: imputarCobrosAParcialidades ordena por fecha_vencimiento ASC antes que numero
+  const out = imputarCobrosAParcialidades(
+    [
+      { numero: 1, fecha_vencimiento: "2026-12-10", monto: 500 },
+      { numero: 2, fecha_vencimiento: "2026-11-10", monto: 500 },
+    ],
+    500,
+    "2026-11-22",
+  );
+  assertEquals(out[0].numero, 2);
+  assertEquals(out[0].estatus, "pagada");
+  assertEquals(out[1].numero, 1);
+  assertEquals(out[1].estatus, "pendiente");
+
+  // M7: suma exactamente igual al total es valida
+  assertEquals(validarPlanParcialidades([{ numero: 1, fecha_vencimiento: "2026-12-01", monto: 100000 }], 100000).valido, true);
+});
+
+Deno.test("D5 M8: registrarCobro envia p_permitir_saldo_a_favor=false por defecto", async () => {
+  let capturedParams: Record<string, unknown> | null = null;
+  const mockRpcClient = {
+    rpc(_fn: string, params: Record<string, unknown>) {
+      capturedParams = params;
+      return Promise.resolve({ data: { pago: { id: "p-1" } }, error: null });
+    },
+  } as unknown as Parameters<typeof registrarCobro>[0];
+
+  await registrarCobro(mockRpcClient, "org-1", "user-1", {
+    cotizacion_id: "cot-1",
+    monto: 1000,
+    tipo_pago: "Cheque",
+  });
+  assertEquals(capturedParams?.["p_permitir_saldo_a_favor"], false);
+  assertEquals(capturedParams?.["p_tipo_pago"], "Cheque");
+});
+
+Deno.test("D5 M11/M12: cobrado_asignado excluye anulados y sin_asignar_equipo >= 0", async () => {
+  const sb = makeMockSupabase({
+    cotizaciones: [{ id: "cot-1", organizacion_id: "org-1", folio: "COT-1", estado: "Aprobada", total: 1000, cliente_id: null }],
+    ordenes_trabajo: [{ id: "ord-1", organizacion_id: "org-1", cotizacion_id: "cot-1", nomenclatura_id: "N1", modelo: "M1", tipo_equipo: "Plana" }],
+    equipo_valor_cobranza: [],
+    pagos: [
+      { id: "p-anulado", organizacion_id: "org-1", cotizacion_id: "cot-1", monto: 500, fecha: "2026-11-20", estado: "anulado", tipo_pago: "Transferencia" },
+    ],
+    pago_aplicaciones: [
+      { id: "a-1", organizacion_id: "org-1", pago_id: "p-anulado", orden_trabajo_id: "ord-1", monto: 500 },
+    ],
+    planes_pago: [],
+  });
+  const dto = await obtenerCobranzaCotizacion(sb, "org-1", "cot-1", "2026-11-22");
+  assertEquals(dto.equipos[0].cobrado_asignado, 0);
+  assertEquals(dto.resumen.sin_asignar_equipo, 0);
+
+  // M12: incluso si aplicaciones > cobrado (corrupcion hipotetica), sin_asignar_equipo no es negativo
+  const sb2 = makeMockSupabase({
+    cotizaciones: [{ id: "cot-1", organizacion_id: "org-1", folio: "COT-1", estado: "Aprobada", total: 1000, cliente_id: null }],
+    ordenes_trabajo: [{ id: "ord-1", organizacion_id: "org-1", cotizacion_id: "cot-1", nomenclatura_id: "N1", modelo: "M1", tipo_equipo: "Plana" }],
+    equipo_valor_cobranza: [],
+    pagos: [{ id: "p1", organizacion_id: "org-1", cotizacion_id: "cot-1", monto: 100, fecha: "2026-11-20", estado: "vigente", tipo_pago: "Efectivo" }],
+    pago_aplicaciones: [{ id: "a1", organizacion_id: "org-1", pago_id: "p1", orden_trabajo_id: "ord-1", monto: 200 }],
+    planes_pago: [],
+  });
+  const dto2 = await obtenerCobranzaCotizacion(sb2, "org-1", "cot-1", "2026-11-22");
+  assertEquals(dto2.resumen.sin_asignar_equipo, 0);
 });

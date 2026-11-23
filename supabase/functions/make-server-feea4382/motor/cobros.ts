@@ -125,7 +125,7 @@ function saldoCotizacion(
   };
 }
 
-function estatusParcialidad(
+export function estatusParcialidad(
   monto: number,
   montoCubierto: number,
   fechaVencimiento: string,
@@ -137,7 +137,7 @@ function estatusParcialidad(
   return "pendiente";
 }
 
-function imputarCobrosAParcialidades(
+export function imputarCobrosAParcialidades(
   parcialidades: ReadonlyArray<ParcialidadInput>,
   totalCobradoVigente: number,
   hoy: string,
@@ -163,7 +163,7 @@ function imputarCobrosAParcialidades(
   });
 }
 
-function validarPlanParcialidades(
+export function validarPlanParcialidades(
   parcialidades: ReadonlyArray<{ numero: number; fecha_vencimiento: string; monto: number }>,
   limiteTotal?: number | null,
 ): { valido: boolean; error?: string } {
@@ -223,6 +223,9 @@ export function mapearErrorRpcCobros(err: unknown): CobrosError {
   if (msg.includes("cotizacion_no_encontrada")) {
     return new CobrosError(404, "cotizacion_no_encontrada", msg);
   }
+  if (msg.includes("plan_no_encontrado")) {
+    return new CobrosError(404, "plan_no_encontrado", msg);
+  }
   if (msg.includes("cotizacion_no_cobrable")) {
     return new CobrosError(409, "cotizacion_no_cobrable", msg);
   }
@@ -234,12 +237,20 @@ export function mapearErrorRpcCobros(err: unknown): CobrosError {
   }
   if (
     msg.includes("monto_invalido") ||
+    msg.includes("metodo_pago_invalido") ||
     msg.includes("tipo_pago_invalido") ||
     msg.includes("especie_sin_descripcion") ||
     msg.includes("fecha_futura_invalida") ||
+    msg.includes("fecha_invalida") ||
     msg.includes("aplicacion_monto_invalido") ||
     msg.includes("aplicaciones_exceden_monto") ||
+    msg.includes("aplicacion_orden_invalida") ||
+    msg.includes("aplicacion_duplicada") ||
     msg.includes("orden_no_pertenece_cotizacion") ||
+    msg.includes("plan_excede_total") ||
+    msg.includes("plan_sin_parcialidades") ||
+    msg.includes("numero_parcialidad_duplicado") ||
+    msg.includes("numero_parcialidad_invalido") ||
     msg.includes("motivo_requerido") ||
     msg.includes("org_requerida")
   ) {
@@ -265,6 +276,7 @@ export async function listarPagosPaginados(
       .eq("organizacion_id", orgId)
       .order("fecha", { ascending: false })
       .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
       .range(offset, offset + pageSize - 1);
 
     if (opts.cotizacionId) {
@@ -646,7 +658,7 @@ export async function listarPlanesPago(
 }
 
 export async function crearPlanPago(
-  supabase: SupabaseClient,
+  serviceClient: SupabaseClient,
   orgId: string,
   payload: {
     cotizacion_id: string;
@@ -656,7 +668,7 @@ export async function crearPlanPago(
     parcialidades: Array<{ numero: number; fecha_vencimiento: string; monto: number; nota?: string | null }>;
   },
 ) {
-  const { data: cot, error: cotErr } = await supabase
+  const { data: cot, error: cotErr } = await serviceClient
     .from("cotizaciones")
     .select("id, total")
     .eq("id", payload.cotizacion_id)
@@ -668,16 +680,7 @@ export async function crearPlanPago(
 
   let limite = Number(cot.total || 0);
   if (payload.orden_trabajo_id) {
-    const { data: ord } = await supabase
-      .from("ordenes_trabajo")
-      .select("id, cotizacion_id")
-      .eq("id", payload.orden_trabajo_id)
-      .eq("organizacion_id", orgId)
-      .single();
-    if (!ord || ord.cotizacion_id !== payload.cotizacion_id) {
-      throw new CobrosError(400, "orden_no_pertenece_cotizacion", "El equipo no pertenece a la cotización.");
-    }
-    const { data: val } = await supabase
+    const { data: val } = await serviceClient
       .from("equipo_valor_cobranza")
       .select("valor_pactado")
       .eq("orden_trabajo_id", payload.orden_trabajo_id)
@@ -693,54 +696,21 @@ export async function crearPlanPago(
     throw new CobrosError(400, "plan_excede_total", check.error || "Plan de pagos inválido.");
   }
 
-  let deactQ = supabase
-    .from("planes_pago")
-    .update({ activo: false, updated_at: new Date().toISOString() })
-    .eq("organizacion_id", orgId)
-    .eq("cotizacion_id", payload.cotizacion_id)
-    .eq("activo", true);
-
-  if (payload.orden_trabajo_id) {
-    deactQ = deactQ.eq("orden_trabajo_id", payload.orden_trabajo_id);
-  } else {
-    deactQ = deactQ.is("orden_trabajo_id", null);
-  }
-  await deactQ;
-
-  const { data: plan, error: planErr } = await supabase
-    .from("planes_pago")
-    .insert({
-      organizacion_id: orgId,
-      cotizacion_id: payload.cotizacion_id,
-      orden_trabajo_id: payload.orden_trabajo_id ?? null,
-      nombre: (payload.nombre || "Plan de pagos").trim(),
-      notas: payload.notas ?? null,
-      activo: true,
-    })
-    .select()
-    .single();
-  if (planErr || !plan) throw planErr;
-
-  const rows = payload.parcialidades.map((p) => ({
-    organizacion_id: orgId,
-    plan_id: plan.id,
-    numero: p.numero,
-    fecha_vencimiento: p.fecha_vencimiento,
-    monto: redondear2(Number(p.monto)),
-    nota: p.nota ?? null,
-  }));
-
-  const { data: parcs, error: parcErr } = await supabase
-    .from("plan_pagos_parcialidades")
-    .insert(rows)
-    .select();
-  if (parcErr) throw parcErr;
-
-  return { ...plan, parcialidades: parcs || [] };
+  const { data, error } = await serviceClient.rpc("guardar_plan_pago", {
+    p_org_id: orgId,
+    p_cotizacion_id: payload.cotizacion_id,
+    p_plan_id: null,
+    p_orden_trabajo_id: payload.orden_trabajo_id ?? null,
+    p_nombre: (payload.nombre || "Plan de pagos").trim(),
+    p_notas: payload.notas ?? null,
+    p_parcialidades: payload.parcialidades ?? [],
+  });
+  if (error) throw mapearErrorRpcCobros(error);
+  return data;
 }
 
 export async function actualizarPlanPago(
-  supabase: SupabaseClient,
+  serviceClient: SupabaseClient,
   orgId: string,
   planId: string,
   payload: {
@@ -750,9 +720,9 @@ export async function actualizarPlanPago(
     parcialidades?: Array<{ numero: number; fecha_vencimiento: string; monto: number; nota?: string | null }>;
   },
 ) {
-  const { data: plan, error: planErr } = await supabase
+  const { data: plan, error: planErr } = await serviceClient
     .from("planes_pago")
-    .select("id, cotizacion_id, orden_trabajo_id")
+    .select("id, cotizacion_id, orden_trabajo_id, nombre, notas")
     .eq("id", planId)
     .eq("organizacion_id", orgId)
     .single();
@@ -761,7 +731,7 @@ export async function actualizarPlanPago(
   }
 
   if (payload.parcialidades) {
-    const { data: cot } = await supabase
+    const { data: cot } = await serviceClient
       .from("cotizaciones")
       .select("total")
       .eq("id", plan.cotizacion_id)
@@ -769,7 +739,7 @@ export async function actualizarPlanPago(
       .single();
     let limite = Number(cot?.total || 0);
     if (plan.orden_trabajo_id) {
-      const { data: val } = await supabase
+      const { data: val } = await serviceClient
         .from("equipo_valor_cobranza")
         .select("valor_pactado")
         .eq("orden_trabajo_id", plan.orden_trabajo_id)
@@ -781,6 +751,18 @@ export async function actualizarPlanPago(
     if (!check.valido) {
       throw new CobrosError(400, "plan_excede_total", check.error || "Plan de pagos inválido.");
     }
+
+    const { data, error } = await serviceClient.rpc("guardar_plan_pago", {
+      p_org_id: orgId,
+      p_cotizacion_id: plan.cotizacion_id,
+      p_plan_id: planId,
+      p_orden_trabajo_id: plan.orden_trabajo_id ?? null,
+      p_nombre: (payload.nombre !== undefined ? payload.nombre : plan.nombre || "Plan de pagos").trim(),
+      p_notas: payload.notas !== undefined ? payload.notas : (plan.notas ?? null),
+      p_parcialidades: payload.parcialidades,
+    });
+    if (error) throw mapearErrorRpcCobros(error);
+    return data;
   }
 
   const updateFields: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -788,7 +770,7 @@ export async function actualizarPlanPago(
   if (payload.notas !== undefined) updateFields.notas = payload.notas;
   if (payload.activo !== undefined) updateFields.activo = payload.activo;
 
-  const { data: updated, error: updErr } = await supabase
+  const { data: updated, error: updErr } = await serviceClient
     .from("planes_pago")
     .update(updateFields)
     .eq("id", planId)
@@ -796,33 +778,7 @@ export async function actualizarPlanPago(
     .select()
     .single();
   if (updErr) throw updErr;
-
-  let parcsOut: unknown[] | undefined;
-  if (payload.parcialidades) {
-    const { error: delErr } = await supabase
-      .from("plan_pagos_parcialidades")
-      .delete()
-      .eq("plan_id", planId)
-      .eq("organizacion_id", orgId);
-    if (delErr) throw delErr;
-
-    const rows = payload.parcialidades.map((p) => ({
-      organizacion_id: orgId,
-      plan_id: planId,
-      numero: p.numero,
-      fecha_vencimiento: p.fecha_vencimiento,
-      monto: redondear2(Number(p.monto)),
-      nota: p.nota ?? null,
-    }));
-    const { data: parcs, error: insErr } = await supabase
-      .from("plan_pagos_parcialidades")
-      .insert(rows)
-      .select();
-    if (insErr) throw insErr;
-    parcsOut = parcs || [];
-  }
-
-  return parcsOut !== undefined ? { ...updated, parcialidades: parcsOut } : updated;
+  return updated;
 }
 
 export async function eliminarPlanPago(

@@ -2367,10 +2367,9 @@ app.get("/planes-pago", async (c) => {
 
 app.post("/planes-pago", async (c) => {
   try {
-    const supabase = c.get("supabase") as SupabaseClient;
     const organizacionId = c.get("organizacionId") as string;
     const body = await c.req.json();
-    const res = await crearPlanPago(supabase, organizacionId, body);
+    const res = await crearPlanPago(getServiceClient(), organizacionId, body);
     return c.json(res, 201);
   } catch (error) {
     return responderErrorCobros(c, error, "Error creando plan de pago");
@@ -2379,11 +2378,10 @@ app.post("/planes-pago", async (c) => {
 
 app.put("/planes-pago/:id", async (c) => {
   try {
-    const supabase = c.get("supabase") as SupabaseClient;
     const organizacionId = c.get("organizacionId") as string;
     const planId = c.req.param("id");
     const body = await c.req.json();
-    const res = await actualizarPlanPago(supabase, organizacionId, planId, body);
+    const res = await actualizarPlanPago(getServiceClient(), organizacionId, planId, body);
     return c.json(res);
   } catch (error) {
     return responderErrorCobros(c, error, "Error actualizando plan de pago");
