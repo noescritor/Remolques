@@ -25,6 +25,8 @@ import { ChecklistDespiecePanel } from '../OrdenesTrabajo/ChecklistDespiecePanel
 import { OrdenTrabajoPDF } from '../OrdenesTrabajo/OrdenTrabajoPDF';
 import { OrdenCalidadTab } from '../Calidad/OrdenCalidadTab';
 import { calidadApi } from '../Calidad/calidadApi';
+import { CobranzaTabPanel } from '../Cobros/CobranzaTabPanel';
+import type { CobranzaEquipoDto } from '../../utils/cobros';
 import { expedienteApi, ResumenEntregaOrdenDto } from './expedienteApi';
 import {
   estadoVacioPestana,
@@ -115,7 +117,7 @@ export function ExpedienteEquipoPage({
 
   const [estadoCobranza, setEstadoCobranza] = useState<EstadoCarga>('cargando');
   const [errorCobranza, setErrorCobranza] = useState<string | null>(null);
-  const [pagos, setPagos] = useState<any[]>([]);
+  const [cobranzaEquipo, setCobranzaEquipo] = useState<CobranzaEquipoDto | null>(null);
 
   const [estadoPlan, setEstadoPlan] = useState<EstadoCarga>('cargando');
   const [errorPlan, setErrorPlan] = useState<string | null>(null);
@@ -267,24 +269,19 @@ export function ExpedienteEquipoPage({
     }
   }, [ordenId]);
 
-  const cargarCobranza = useCallback(async (cotId: string | null | undefined) => {
-    if (!cotId) {
-      setPagos([]);
-      setEstadoCobranza('ok');
-      setErrorCobranza(null);
-      return;
-    }
+  const cargarCobranza = useCallback(async () => {
+    if (!ordenId) return;
     setEstadoCobranza('cargando');
     setErrorCobranza(null);
     try {
-      const data = await expedienteApi.pagosPorCotizacion(cotId);
-      setPagos(Array.isArray(data) ? data : []);
+      const data = await expedienteApi.cobranzaEquipo(ordenId);
+      setCobranzaEquipo(data);
       setEstadoCobranza('ok');
     } catch (err: any) {
-      setErrorCobranza(err?.message || 'No se pudieron cargar los pagos de la cotización.');
+      setErrorCobranza(err?.message || 'No se pudo cargar la cobranza del equipo.');
       setEstadoCobranza('error');
     }
-  }, []);
+  }, [ordenId]);
 
   const cargarMatriz = useCallback(async (clave: string) => {
     if (!ordenId) return;
@@ -405,7 +402,7 @@ export function ExpedienteEquipoPage({
     if (ordActual) {
       const clave = ordActual?.linea?.clave || lineaClave;
       await Promise.allSettled([
-        cargarCobranza(ordActual.cotizacion_id),
+        cargarCobranza(),
         cargarMatriz(clave),
       ]);
     } else {
@@ -480,10 +477,6 @@ export function ExpedienteEquipoPage({
 
   const vacioCotizacion = estadoVacioPestana('cotizacion', { cotizacionId: orden.cotizacion_id });
   const vacioPlan = estadoVacioPestana('plan', { totalTareasPlan: tareasPlan.length });
-  const vacioCobranza = estadoVacioPestana('cobranza', {
-    cotizacionId: orden.cotizacion_id,
-    totalPagos: pagos.length,
-  });
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -925,69 +918,14 @@ export function ExpedienteEquipoPage({
             </div>
           </TabsContent>
 
-          {/* 7. COBRANZA (SOLO LECTURA) */}
+          {/* 7. COBRANZA */}
           <TabsContent value="cobranza" className="mt-4 space-y-4">
-            <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground flex items-center gap-2">
-              <Info className="w-4 h-4 text-primary shrink-0" />
-              <span>
-                El plan de pagos y la cartera por equipo llegan con el bloque de cobranza.
-                {totalEquiposCotizacion > 1
-                  ? ` Esta cotización cubre ${totalEquiposCotizacion} equipos; los pagos mostrados corresponden al total de la cotización.`
-                  : ''}
-              </span>
-            </div>
-
-            {estadoCobranza === 'cargando' ? (
-              <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
-                Cargando pagos de la cotización...
-              </div>
-            ) : estadoCobranza === 'error' ? (
-              <BloqueErrorCarga
-                mensaje={errorCobranza || 'Error al cargar pagos de la cotización'}
-                onReintentar={() =>
-                  orden.cotizacion_id ? cargarCobranza(orden.cotizacion_id) : cargarTodo()
-                }
-              />
-            ) : vacioCobranza.vacio ? (
-              <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center space-y-2">
-                <CreditCard className="w-8 h-8 text-muted-foreground mx-auto" />
-                <div className="font-semibold">{vacioCobranza.titulo}</div>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  {vacioCobranza.mensaje}
-                </p>
-              </div>
-            ) : (
-              <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-bold flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-primary" />
-                    Pagos de la cotización
-                  </h2>
-                  <Badge variant="outline" className="font-mono">
-                    {cotizacionVinculada?.folio || orden.cotizacion_id}
-                  </Badge>
-                </div>
-                <div className="divide-y divide-border/60">
-                  {pagos.map((p: any) => (
-                    <div key={p.id} className="py-2.5 flex flex-wrap items-center justify-between gap-2 text-sm">
-                      <div>
-                        <div className="font-medium flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-                          {p.metodo_pago || p.metodo || 'Pago'}
-                          {p.referencia ? ` · Ref: ${p.referencia}` : ''}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Fecha: {p.fecha || p.created_at?.slice(0, 10) || '—'}
-                        </div>
-                      </div>
-                      <div className="font-mono font-bold text-foreground">
-                        {formatearMoneda(p.monto)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <CobranzaTabPanel
+              estado={estadoCobranza}
+              error={errorCobranza}
+              datos={cobranzaEquipo}
+              onRecargar={cargarCobranza}
+            />
           </TabsContent>
         </Tabs>
       </main>

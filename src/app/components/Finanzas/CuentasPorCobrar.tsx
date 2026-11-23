@@ -1,14 +1,15 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { DollarSign, AlertTriangle, Calendar, FileText, CheckCircle } from 'lucide-react';
+import { DollarSign, AlertTriangle, Calendar, FileText, CheckCircle, ExternalLink } from 'lucide-react';
 import { Cotizacion, Pago, Cliente } from '../../types';
 import { formatearMoneda } from '../../utils/calculations';
+import { hoyMexicoIso, saldoCotizacion, traducirErrorCobros } from '../../utils/cobros';
 
 interface CuentasPorCobrarProps {
   cotizaciones: Cotizacion[];
@@ -25,18 +26,19 @@ export function CuentasPorCobrar({ cotizaciones, pagos, clientes, loading, onCre
     monto: 0,
     metodo_pago: 'Transferencia',
     referencia: '',
+    descripcion_especie: '',
   });
+  const [guardando, setGuardando] = useState(false);
+  const [errorModal, setErrorModal] = useState<string | null>(null);
 
   const cuentas = useMemo(() => {
-    // Solo consideramos cotizaciones aprobadas, entregadas (que no sean borradores o canceladas)
-    const activas = cotizaciones.filter(c => 
+    const activas = cotizaciones.filter(c =>
       c.estado !== 'Borrador' && c.estado !== 'Cancelada' && c.estado !== 'Rechazada'
     );
 
     return activas.map(cot => {
       const pagosCot = pagos.filter(p => p.cotizacion_id === cot.id);
-      const totalPagado = pagosCot.reduce((sum, p) => sum + p.monto, 0);
-      const saldoPendiente = cot.total - totalPagado;
+      const { cobrado: totalPagado, saldo: saldoPendiente } = saldoCotizacion(cot.total, pagosCot);
       const cliente = clientes.find(c => c.id === cot.cliente_id);
 
       return {
@@ -46,8 +48,8 @@ export function CuentasPorCobrar({ cotizaciones, pagos, clientes, loading, onCre
         saldoPendiente,
         pagadoCompleto: saldoPendiente <= 0
       };
-    }).filter(c => c.saldoPendiente > 0) // Solo mostramos las que tienen saldo
-      .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()); // Las más antiguas primero
+    }).filter(c => c.saldoPendiente > 0)
+      .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
   }, [cotizaciones, pagos, clientes]);
 
   const totalPorCobrar = cuentas.reduce((sum, c) => sum + c.saldoPendiente, 0);
@@ -55,26 +57,37 @@ export function CuentasPorCobrar({ cotizaciones, pagos, clientes, loading, onCre
   const handleCobrar = (c: any) => {
     setCotizacionSeleccionada(c);
     setFormData({
-      monto: c.saldoPendiente, // Por defecto todo el saldo
+      monto: c.saldoPendiente,
       metodo_pago: 'Transferencia',
-      referencia: ''
+      referencia: '',
+      descripcion_especie: '',
     });
+    setErrorModal(null);
     setModalOpen(true);
   };
 
   const confirmarCobro = async () => {
-    if (!cotizacionSeleccionada || formData.monto <= 0) return;
+    if (!cotizacionSeleccionada || formData.monto <= 0 || guardando) return;
+    if (formData.metodo_pago === 'Especie' && !formData.descripcion_especie.trim()) {
+      setErrorModal('Describe el bien o servicio recibido en especie.');
+      return;
+    }
+    setErrorModal(null);
+    setGuardando(true);
     try {
       await onCrearPago({
         cotizacion_id: cotizacionSeleccionada.id,
         monto: formData.monto,
         tipo_pago: formData.metodo_pago as any,
         referencia: formData.referencia,
-        fecha: new Date().toISOString()
+        descripcion_especie: formData.metodo_pago === 'Especie' ? formData.descripcion_especie.trim() : null,
+        fecha: hoyMexicoIso()
       });
       setModalOpen(false);
     } catch (e) {
-      console.error(e);
+      setErrorModal(traducirErrorCobros(e));
+    } finally {
+      setGuardando(false);
     }
   };
 
@@ -127,9 +140,25 @@ export function CuentasPorCobrar({ cotizaciones, pagos, clientes, loading, onCre
                   <div className="text-xs text-muted-foreground">Saldo Pendiente</div>
                   <div className="font-mono font-bold text-accent-red text-lg">{formatearMoneda(c.saldoPendiente)}</div>
                 </div>
-                <Button onClick={() => handleCobrar(c)} className="bg-accent-blue text-white hover:bg-accent-blue/90">
-                  <DollarSign className="w-4 h-4 mr-2" /> Registrar Cobro
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to={`/cotizaciones/${c.id}`}>
+                      <ExternalLink className="w-3.5 h-3.5 mr-1" /> Ver
+                    </Link>
+                  </Button>
+                  <Button
+                    onClick={() => handleCobrar(c)}
+                    disabled={c.estado !== 'Aprobada' && c.estado !== 'Pagada'}
+                    title={
+                      c.estado !== 'Aprobada' && c.estado !== 'Pagada'
+                        ? 'Solo disponible para cotizaciones aprobadas'
+                        : undefined
+                    }
+                    className="bg-accent-blue text-white hover:bg-accent-blue/90"
+                  >
+                    <DollarSign className="w-4 h-4 mr-2" /> Registrar Cobro
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
@@ -160,17 +189,36 @@ export function CuentasPorCobrar({ cotizaciones, pagos, clientes, loading, onCre
                   <SelectItem value="Tarjeta">Tarjeta</SelectItem>
                   <SelectItem value="Efectivo">Efectivo</SelectItem>
                   <SelectItem value="Cheque">Cheque</SelectItem>
+                  <SelectItem value="Especie">Especie</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+            {formData.metodo_pago === 'Especie' && (
+              <div className="space-y-2">
+                <Label>Descripción en especie *</Label>
+                <Input
+                  value={formData.descripcion_especie}
+                  onChange={e => setFormData({ ...formData, descripcion_especie: e.target.value })}
+                  placeholder="Describe el bien o servicio recibido..."
+                />
+              </div>
+            )}
             <div className="space-y-2">
               <Label>Referencia</Label>
               <Input value={formData.referencia} onChange={e => setFormData({...formData, referencia: e.target.value})} placeholder="Folio de transferencia..." />
             </div>
+            {errorModal && (
+              <div className="rounded-md border border-destructive/40 bg-destructive/10 p-2.5 text-sm text-destructive flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{errorModal}</span>
+              </div>
+            )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setModalOpen(false)}>Cancelar</Button>
-            <Button onClick={confirmarCobro}>Confirmar Cobro</Button>
+            <Button variant="outline" onClick={() => setModalOpen(false)} disabled={guardando}>Cancelar</Button>
+            <Button onClick={confirmarCobro} disabled={guardando}>
+              {guardando ? 'Registrando...' : 'Confirmar Cobro'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

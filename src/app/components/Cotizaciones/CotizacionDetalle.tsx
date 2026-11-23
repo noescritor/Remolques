@@ -155,6 +155,7 @@ export function CotizacionDetalle({
   const [formPago, setFormPago] = useState({
     tipo_pago: '' as any,
     referencia: '',
+    descripcion_especie: '',
     monto: 0,
     fecha: new Date().toISOString().split('T')[0]
   });
@@ -169,6 +170,10 @@ export function CotizacionDetalle({
     
     if (!formPago.tipo_pago) {
       errores.push('Debe seleccionar un tipo de pago');
+    }
+
+    if (formPago.tipo_pago === 'Especie' && !formPago.descripcion_especie.trim()) {
+      errores.push('Debe describir el bien o servicio recibido en especie');
     }
     
     if (formPago.monto <= 0) {
@@ -193,13 +198,18 @@ export function CotizacionDetalle({
     
     onCrearPago({
       cotizacion_id: cotizacion.id,
-      ...formPago
+      tipo_pago: formPago.tipo_pago,
+      referencia: formPago.referencia,
+      descripcion_especie: formPago.tipo_pago === 'Especie' ? formPago.descripcion_especie.trim() : null,
+      monto: formPago.monto,
+      fecha: formPago.fecha,
     });
     
     // Limpiar formulario
     setFormPago({
       tipo_pago: '' as any,
       referencia: '',
+      descripcion_especie: '',
       monto: 0,
       fecha: new Date().toISOString().split('T')[0]
     });
@@ -494,8 +504,11 @@ export function CotizacionDetalle({
                     </TableHeader>
                     <TableBody>
                       {pagos.map((pago) => (
-                        <TableRow key={pago.id}>
-                          <TableCell>{pago.tipo_pago}</TableCell>
+                        <TableRow key={pago.id} className={pago.estado === 'anulado' ? 'opacity-60 line-through' : ''}>
+                          <TableCell>
+                            {pago.tipo_pago}
+                            {pago.estado === 'anulado' && <Badge variant="destructive" className="ml-2">Anulado</Badge>}
+                          </TableCell>
                           <TableCell>{pago.referencia || '-'}</TableCell>
                           <TableCell>{formatearFecha(pago.fecha)}</TableCell>
                           <TableCell className="text-right">{formatearMoneda(pago.monto)}</TableCell>
@@ -558,6 +571,7 @@ export function CotizacionDetalle({
                           <SelectItem value="Efectivo">Efectivo</SelectItem>
                           <SelectItem value="PayPal">PayPal</SelectItem>
                           <SelectItem value="Crédito 30 días">Crédito 30 días</SelectItem>
+                          <SelectItem value="Especie">Especie</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -593,6 +607,16 @@ export function CotizacionDetalle({
                       />
                     </div>
                   </div>
+                  {formPago.tipo_pago === 'Especie' && (
+                    <div className="mt-4">
+                      <Label>Descripción en especie *</Label>
+                      <Input
+                        value={formPago.descripcion_especie}
+                        onChange={(e) => setFormPago(prev => ({ ...prev, descripcion_especie: e.target.value }))}
+                        placeholder="Describe el bien o servicio recibido..."
+                      />
+                    </div>
+                  )}
                   
                   <div className="mt-6">
                     <Button onClick={manejarCrearPago}>

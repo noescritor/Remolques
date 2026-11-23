@@ -245,10 +245,15 @@ export interface Cotizacion {
 export interface Pago {
   id: string;
   cotizacion_id: string;
-  tipo_pago: 'Transferencia' | 'Tarjeta' | 'Efectivo' | 'PayPal' | 'Crédito 30 días';
+  tipo_pago: 'Transferencia' | 'Tarjeta' | 'Efectivo' | 'Cheque' | 'PayPal' | 'Crédito 30 días' | 'Especie';
   referencia?: string;
   monto: number;
   fecha: string;
+  estado?: 'vigente' | 'anulado';
+  anulado_at?: string | null;
+  motivo_anulacion?: string | null;
+  notas?: string | null;
+  descripcion_especie?: string | null;
 }
 
 export interface Ajustes {
