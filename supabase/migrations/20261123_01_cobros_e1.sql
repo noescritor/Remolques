@@ -111,11 +111,35 @@ CREATE TABLE IF NOT EXISTS equipo_valor_cobranza (
   orden_trabajo_id UUID PRIMARY KEY REFERENCES ordenes_trabajo(id) ON DELETE CASCADE,
   organizacion_id UUID NOT NULL REFERENCES organizaciones(id) ON DELETE CASCADE,
   valor_pactado NUMERIC(12, 2) NOT NULL CHECK (valor_pactado >= 0),
+  notas TEXT,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+ALTER TABLE equipo_valor_cobranza
+  ADD COLUMN IF NOT EXISTS notas TEXT;
+
 CREATE INDEX IF NOT EXISTS idx_equipo_valor_cobranza_org
   ON equipo_valor_cobranza(organizacion_id);
+
+CREATE OR REPLACE FUNCTION trg_validar_equipo_valor_cobranza_fn()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_ord_org UUID;
+BEGIN
+  SELECT organizacion_id INTO v_ord_org FROM ordenes_trabajo WHERE id = NEW.orden_trabajo_id;
+  IF v_ord_org IS NULL OR v_ord_org <> NEW.organizacion_id THEN
+    RAISE EXCEPTION 'aplicacion_orden_invalida: La orden no pertenece a la organización';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_validar_equipo_valor_cobranza ON equipo_valor_cobranza;
+CREATE TRIGGER trg_validar_equipo_valor_cobranza
+  BEFORE INSERT OR UPDATE ON equipo_valor_cobranza
+  FOR EACH ROW EXECUTE FUNCTION trg_validar_equipo_valor_cobranza_fn();
 
 -- 4. Planes de pago y parcialidades
 CREATE TABLE IF NOT EXISTS planes_pago (
@@ -132,6 +156,14 @@ CREATE TABLE IF NOT EXISTS planes_pago (
 
 CREATE INDEX IF NOT EXISTS idx_planes_pago_org_cot
   ON planes_pago(organizacion_id, cotizacion_id, activo);
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_planes_pago_activo_cot
+  ON planes_pago(cotizacion_id)
+  WHERE activo AND orden_trabajo_id IS NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_planes_pago_activo_orden
+  ON planes_pago(orden_trabajo_id)
+  WHERE activo AND orden_trabajo_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS plan_pagos_parcialidades (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -391,6 +423,8 @@ DECLARE
   v_pago RECORD;
   v_app JSONB;
   v_orden_id UUID;
+  v_ordenes_vistas UUID[] := '{}'::UUID[];
+  v_ord_check RECORD;
   v_app_monto NUMERIC(12, 2);
   v_suma_apps NUMERIC(12, 2) := 0;
   v_nuevo_estado TEXT;
@@ -422,7 +456,7 @@ BEGIN
     RAISE EXCEPTION 'fecha_futura_invalida: La fecha del cobro no puede ser mayor a un día en el futuro';
   END IF;
 
-  IF p_tipo_pago IS NULL OR p_tipo_pago NOT IN ('Transferencia', 'Tarjeta', 'Efectivo', 'PayPal', 'Crédito 30 días', 'Especie') THEN
+  IF p_tipo_pago IS NULL OR p_tipo_pago NOT IN ('Transferencia', 'Tarjeta', 'Efectivo', 'Cheque', 'PayPal', 'Crédito 30 días', 'Especie') THEN
     RAISE EXCEPTION 'metodo_pago_invalido: Método de pago no válido (%)', COALESCE(p_tipo_pago, '');
   END IF;
 
@@ -448,7 +482,27 @@ BEGIN
   IF p_aplicaciones IS NOT NULL AND jsonb_typeof(p_aplicaciones) = 'array' THEN
     FOR v_app IN SELECT * FROM jsonb_array_elements(p_aplicaciones)
     LOOP
-      v_orden_id := (v_app->>'orden_trabajo_id')::UUID;
+      BEGIN
+        v_orden_id := NULLIF(TRIM(COALESCE(v_app->>'orden_trabajo_id', '')), '')::UUID;
+      EXCEPTION WHEN invalid_text_representation THEN
+        RAISE EXCEPTION 'aplicacion_orden_invalida: Identificador de equipo inválido';
+      END;
+      IF v_orden_id IS NULL THEN
+        RAISE EXCEPTION 'aplicacion_orden_invalida: Cada aplicación debe indicar un equipo válido';
+      END IF;
+      IF v_orden_id = ANY(v_ordenes_vistas) THEN
+        RAISE EXCEPTION 'aplicacion_duplicada: No puedes repetir el mismo equipo en un cobro';
+      END IF;
+      v_ordenes_vistas := array_append(v_ordenes_vistas, v_orden_id);
+
+      SELECT id, organizacion_id, cotizacion_id
+      INTO v_ord_check
+      FROM ordenes_trabajo
+      WHERE id = v_orden_id;
+      IF NOT FOUND OR v_ord_check.organizacion_id <> p_org_id OR v_ord_check.cotizacion_id IS DISTINCT FROM p_cotizacion_id THEN
+        RAISE EXCEPTION 'aplicacion_orden_invalida: El equipo no pertenece a la cotización u organización';
+      END IF;
+
       v_app_monto := ROUND(COALESCE((v_app->>'monto')::NUMERIC, 0), 2);
       IF v_app_monto <= 0 THEN
         RAISE EXCEPTION 'aplicacion_monto_invalido: Cada aplicación por equipo debe ser mayor a cero';
@@ -605,5 +659,164 @@ $$;
 
 REVOKE ALL ON FUNCTION anular_cobro(UUID, TEXT, TEXT, UUID) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION anular_cobro(UUID, TEXT, TEXT, UUID) TO service_role;
+
+CREATE OR REPLACE FUNCTION guardar_plan_pago(
+  p_org_id UUID,
+  p_cotizacion_id TEXT,
+  p_plan_id UUID DEFAULT NULL,
+  p_orden_trabajo_id UUID DEFAULT NULL,
+  p_nombre TEXT DEFAULT 'Plan de pagos',
+  p_notas TEXT DEFAULT NULL,
+  p_parcialidades JSONB DEFAULT '[]'::jsonb
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_cot RECORD;
+  v_limite NUMERIC(12, 2);
+  v_valor_eq NUMERIC(12, 2);
+  v_ord_check RECORD;
+  v_plan RECORD;
+  v_item JSONB;
+  v_num INTEGER;
+  v_nums INTEGER[] := '{}'::INTEGER[];
+  v_fecha DATE;
+  v_monto NUMERIC(12, 2);
+  v_suma NUMERIC(12, 2) := 0;
+  v_parcs JSONB;
+BEGIN
+  IF p_org_id IS NULL THEN
+    RAISE EXCEPTION 'org_requerida: Organización requerida';
+  END IF;
+
+  SELECT id, organizacion_id, ROUND(COALESCE(total, 0), 2) AS total
+  INTO v_cot
+  FROM cotizaciones
+  WHERE id = p_cotizacion_id AND organizacion_id = p_org_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'cotizacion_no_encontrada: La cotización no existe o pertenece a otra organización';
+  END IF;
+
+  v_limite := v_cot.total;
+
+  IF p_orden_trabajo_id IS NOT NULL THEN
+    SELECT id, organizacion_id, cotizacion_id
+    INTO v_ord_check
+    FROM ordenes_trabajo
+    WHERE id = p_orden_trabajo_id;
+    IF NOT FOUND OR v_ord_check.organizacion_id <> p_org_id OR v_ord_check.cotizacion_id IS DISTINCT FROM p_cotizacion_id THEN
+      RAISE EXCEPTION 'aplicacion_orden_invalida: El equipo no pertenece a la cotización';
+    END IF;
+    SELECT valor_pactado INTO v_valor_eq
+    FROM equipo_valor_cobranza
+    WHERE orden_trabajo_id = p_orden_trabajo_id AND organizacion_id = p_org_id;
+    IF v_valor_eq IS NOT NULL THEN
+      v_limite := v_valor_eq;
+    END IF;
+  END IF;
+
+  IF p_parcialidades IS NULL OR jsonb_typeof(p_parcialidades) <> 'array' OR jsonb_array_length(p_parcialidades) = 0 THEN
+    RAISE EXCEPTION 'plan_sin_parcialidades: El plan debe incluir al menos una parcialidad';
+  END IF;
+
+  FOR v_item IN SELECT * FROM jsonb_array_elements(p_parcialidades)
+  LOOP
+    BEGIN
+      v_num := (v_item->>'numero')::INTEGER;
+    EXCEPTION WHEN OTHERS THEN
+      RAISE EXCEPTION 'numero_parcialidad_invalido: El número de parcialidad debe ser un entero >= 1';
+    END;
+    IF v_num IS NULL OR v_num < 1 THEN
+      RAISE EXCEPTION 'numero_parcialidad_invalido: El número de parcialidad debe ser >= 1';
+    END IF;
+    IF v_num = ANY(v_nums) THEN
+      RAISE EXCEPTION 'numero_parcialidad_duplicado: No puede haber números de parcialidad repetidos';
+    END IF;
+    v_nums := array_append(v_nums, v_num);
+
+    BEGIN
+      IF COALESCE(v_item->>'fecha_vencimiento', '') !~ '^\d{4}-\d{2}-\d{2}$' THEN
+        RAISE EXCEPTION 'fecha_invalida: Fecha de vencimiento inválida';
+      END IF;
+      v_fecha := (v_item->>'fecha_vencimiento')::DATE;
+    EXCEPTION WHEN datetime_field_overflow OR invalid_datetime_format THEN
+      RAISE EXCEPTION 'fecha_invalida: Fecha de vencimiento inválida (%)', COALESCE(v_item->>'fecha_vencimiento', '');
+    END;
+
+    v_monto := ROUND(COALESCE((v_item->>'monto')::NUMERIC, 0), 2);
+    IF v_monto <= 0 THEN
+      RAISE EXCEPTION 'monto_invalido: El monto de cada parcialidad debe ser mayor a cero';
+    END IF;
+    v_suma := ROUND(v_suma + v_monto, 2);
+  END LOOP;
+
+  IF v_suma > v_limite + 0.005 THEN
+    RAISE EXCEPTION 'plan_excede_total: La suma de parcialidades (%) excede el total (%)', v_suma, v_limite;
+  END IF;
+
+  IF p_plan_id IS NOT NULL THEN
+    SELECT * INTO v_plan
+    FROM planes_pago
+    WHERE id = p_plan_id AND organizacion_id = p_org_id
+    FOR UPDATE;
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'plan_no_encontrado: Plan de pagos no encontrado';
+    END IF;
+
+    UPDATE planes_pago
+    SET nombre = COALESCE(NULLIF(TRIM(p_nombre), ''), 'Plan de pagos'),
+        notas = p_notas,
+        updated_at = NOW()
+    WHERE id = p_plan_id AND organizacion_id = p_org_id
+    RETURNING * INTO v_plan;
+
+    DELETE FROM plan_pagos_parcialidades
+    WHERE plan_id = p_plan_id AND organizacion_id = p_org_id;
+  ELSE
+    UPDATE planes_pago
+    SET activo = false, updated_at = NOW()
+    WHERE organizacion_id = p_org_id
+      AND cotizacion_id = p_cotizacion_id
+      AND activo = true
+      AND orden_trabajo_id IS NOT DISTINCT FROM p_orden_trabajo_id;
+
+    INSERT INTO planes_pago (organizacion_id, cotizacion_id, orden_trabajo_id, nombre, notas, activo)
+    VALUES (
+      p_org_id,
+      p_cotizacion_id,
+      p_orden_trabajo_id,
+      COALESCE(NULLIF(TRIM(p_nombre), ''), 'Plan de pagos'),
+      p_notas,
+      true
+    )
+    RETURNING * INTO v_plan;
+  END IF;
+
+  INSERT INTO plan_pagos_parcialidades (organizacion_id, plan_id, numero, fecha_vencimiento, monto, nota)
+  SELECT
+    p_org_id,
+    v_plan.id,
+    (elem->>'numero')::INTEGER,
+    (elem->>'fecha_vencimiento')::DATE,
+    ROUND((elem->>'monto')::NUMERIC, 2),
+    NULLIF(TRIM(COALESCE(elem->>'nota', '')), '')
+  FROM jsonb_array_elements(p_parcialidades) AS elem;
+
+  SELECT COALESCE(jsonb_agg(to_jsonb(pp) ORDER BY pp.fecha_vencimiento ASC, pp.numero ASC), '[]'::jsonb)
+  INTO v_parcs
+  FROM plan_pagos_parcialidades pp
+  WHERE pp.plan_id = v_plan.id;
+
+  RETURN to_jsonb(v_plan) || jsonb_build_object('parcialidades', v_parcs);
+END;
+$$;
+
+REVOKE ALL ON FUNCTION guardar_plan_pago(UUID, TEXT, UUID, UUID, TEXT, TEXT, JSONB) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION guardar_plan_pago(UUID, TEXT, UUID, UUID, TEXT, TEXT, JSONB) TO service_role;
 
 COMMIT;
