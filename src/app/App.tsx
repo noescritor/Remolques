@@ -18,6 +18,12 @@ import { CuentasPorCobrar } from './components/Finanzas/CuentasPorCobrar';
 import { CuentasPorPagarMain } from './components/Finanzas/CuentasPorPagarMain';
 import { TableroProduccionPage } from './components/TableroProduccion/TableroProduccionPage';
 import { ExpedienteEquipoPage } from './components/Expediente/ExpedienteEquipoPage';
+import { useParams } from 'react-router-dom';
+
+function ExpedienteEquipoRoute(props: { ordenesTrabajo: any[]; cotizaciones: any[]; ajustes: any }) {
+  const { ordenId } = useParams<{ ordenId: string }>();
+  return <ExpedienteEquipoPage key={ordenId} {...props} />;
+}
 import { PlanSemanalMain } from './components/PlanProduccion/PlanSemanalMain';
 import { TrazabilidadList } from './components/Trazabilidad/TrazabilidadList';
 import { OrdenesTrabajoList } from './components/OrdenesTrabajo/OrdenesTrabajoList';
@@ -683,7 +689,7 @@ export default function App() {
             />
           } />
           <Route path="/expediente/:ordenId" element={
-            <ExpedienteEquipoPage
+            <ExpedienteEquipoRoute
               ordenesTrabajo={ordenesTrabajo}
               cotizaciones={cotizaciones}
               ajustes={ajustes}

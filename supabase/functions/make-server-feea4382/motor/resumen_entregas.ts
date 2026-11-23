@@ -4,6 +4,7 @@
  */
 
 export interface LineaAvanceDespiece {
+  linea_id?: string;
   orden_trabajo_id: string;
   fase_clave?: string | null;
   fase_nombre?: string | null;
@@ -27,10 +28,21 @@ export interface ResumenEntregasOrden {
   por_fase: Record<string, ResumenFaseEntrega>;
 }
 
-function esPartidaCompleta(row: LineaAvanceDespiece): boolean {
+const TAMANO_PAGINA_ENTREGAS = 1000;
+
+/**
+ * Criterio único de "partida completa":
+ * - Si viene estado_entrega de la vista SQL, usa estado_entrega === 'completo'.
+ * - Si no viene estado_entrega, requiere cantidad_entregada > 0 y >= cantidad_requerida
+ *   (evita que 0 >= 0 cuente como completa cuando la vista lo marca 'pendiente').
+ */
+export function esPartidaCompleta(row: LineaAvanceDespiece): boolean {
+  if (row.estado_entrega !== undefined && row.estado_entrega !== null) {
+    return row.estado_entrega === "completo";
+  }
   const req = Number(row.cantidad_requerida ?? 0);
   const ent = Number(row.cantidad_entregada ?? 0);
-  return ent >= req;
+  return ent > 0 && ent >= req;
 }
 
 export function agruparResumenEntregas(
@@ -109,13 +121,26 @@ export async function resumenEntregasOrdenesMotor(
     throw new Error("Organización requerida para consultar resumen de entregas");
   }
 
-  const { data, error } = await supabase
-    .from("v_orden_despiece_avance")
-    .select(
-      "orden_trabajo_id, fase_clave, fase_nombre, cantidad_requerida, cantidad_entregada, estado_entrega"
-    )
-    .eq("organizacion_id", orgId);
+  const todas: LineaAvanceDespiece[] = [];
+  let desde = 0;
 
-  if (error) throw error;
-  return agruparResumenEntregas(data || []);
+  while (true) {
+    const hasta = desde + TAMANO_PAGINA_ENTREGAS - 1;
+    const { data, error } = await supabase
+      .from("v_orden_despiece_avance")
+      .select(
+        "linea_id, orden_trabajo_id, fase_clave, fase_nombre, cantidad_requerida, cantidad_entregada, estado_entrega"
+      )
+      .eq("organizacion_id", orgId)
+      .order("linea_id", { ascending: true })
+      .range(desde, hasta);
+
+    if (error) throw error;
+    const bloque = Array.isArray(data) ? data : [];
+    todas.push(...bloque);
+    if (bloque.length < TAMANO_PAGINA_ENTREGAS) break;
+    desde += TAMANO_PAGINA_ENTREGAS;
+  }
+
+  return agruparResumenEntregas(todas);
 }

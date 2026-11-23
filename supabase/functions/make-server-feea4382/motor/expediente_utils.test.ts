@@ -1,7 +1,9 @@
 import { assertEquals } from "https://deno.land/std@0.192.0/testing/asserts.ts";
 import {
+  esPartidaCompletaLinea,
   estadoVacioPestana,
   estadoVisualFase,
+  extraerTareasPlan,
   faseEnCurso,
   normalizarTabExpediente,
   porcentajeEntregas,
@@ -10,7 +12,7 @@ import {
   resumenEntregasPorFase,
 } from "../../../../src/app/components/Expediente/expedienteUtils.ts";
 
-Deno.test("expedienteUtils: faseEnCurso prioriza en_proceso, luego primera no terminada, luego null", () => {
+Deno.test("expedienteUtils: faseEnCurso prioriza en_proceso, luego primera no terminada, orden ausente y luego null", () => {
   assertEquals(faseEnCurso([]), null);
   assertEquals(faseEnCurso(null), null);
 
@@ -19,6 +21,15 @@ Deno.test("expedienteUtils: faseEnCurso prioriza en_proceso, luego primera no te
   const f2 = { fase_id: "f2", orden: 2, estado: "terminada" };
   const f3 = { fase_id: "f3", orden: 3, estado: "en_proceso" };
   assertEquals(faseEnCurso([f3, f1, f2])?.fase_id, "f3");
+
+  // E7: orden ausente cae al final (999), no antes que orden: 1
+  assertEquals(
+    faseEnCurso([
+      { fase_id: "f-sin-orden", estado: "pendiente" },
+      { fase_id: "f-primera", orden: 1, estado: "pendiente" },
+    ])?.fase_id,
+    "f-primera",
+  );
 
   // Sin en_proceso: primera no terminada según orden ascendente
   assertEquals(
@@ -40,7 +51,7 @@ Deno.test("expedienteUtils: faseEnCurso prioriza en_proceso, luego primera no te
   );
 });
 
-Deno.test("expedienteUtils: estadoVisualFase distingue pasada, en_curso y futura", () => {
+Deno.test("expedienteUtils: estadoVisualFase cubre pasada, en_curso, futura y bordes E8-E12", () => {
   const f1 = { fase_id: "f1", orden: 1, estado: "terminada" };
   const f2 = { fase_id: "f2", orden: 2, estado: "pendiente" };
   const f3 = { fase_id: "f3", orden: 3, estado: "en_proceso" };
@@ -50,10 +61,21 @@ Deno.test("expedienteUtils: estadoVisualFase distingue pasada, en_curso y futura
   assertEquals(estadoVisualFase(f2, f3), "pasada"); // orden < orden(enCurso)
   assertEquals(estadoVisualFase(f3, f3), "en_curso");
   assertEquals(estadoVisualFase(f4, f3), "futura");
-  assertEquals(estadoVisualFase(f1, null), "pasada");
+
+  // E8: fase terminada posterior a la en curso sigue siendo pasada
+  assertEquals(estadoVisualFase({ fase_id: "f5", orden: 5, estado: "terminada" }, f3), "pasada");
+
+  // E9: sin fase en curso, incluso una pendiente devuelve pasada
+  assertEquals(estadoVisualFase(f2, null), "pasada");
+
+  // E11: mismo orden pero distinto fase_id NO es en_curso
+  assertEquals(estadoVisualFase({ fase_id: "f3-otra", orden: 3, estado: "pendiente" }, f3), "futura");
+
+  // E12: sin ids, compara por orden
+  assertEquals(estadoVisualFase({ orden: 3, estado: "pendiente" }, { orden: 3, estado: "en_proceso" }), "en_curso");
 });
 
-Deno.test("expedienteUtils: resumenEntregasPorFase y porcentajeEntregas cubren bordes", () => {
+Deno.test("expedienteUtils: resumenEntregasPorFase y porcentajeEntregas cubren bordes y E18", () => {
   // Sin líneas -> porcentaje null (no 0%)
   const vacio = resumenEntregasPorFase([]);
   assertEquals(vacio.total_partidas, 0);
@@ -65,6 +87,13 @@ Deno.test("expedienteUtils: resumenEntregasPorFase y porcentajeEntregas cubren b
     { fase_clave: "corte", cantidad_requerida: 5, cantidad_entregada: 0 },
   ]);
   assertEquals(porcentajeEntregas(nada), 0);
+
+  // Requerido 0 con entregado 0 -> NO completa (consistente con estado_entrega = 'pendiente')
+  assertEquals(esPartidaCompletaLinea({ cantidad_requerida: 0, cantidad_entregada: 0 }), false);
+  assertEquals(esPartidaCompletaLinea({ estado_entrega: "completo", cantidad_requerida: 0, cantidad_entregada: 0 }), true);
+
+  // E18: 2/3 -> 67 (Math.round, no floor)
+  assertEquals(porcentajeEntregas({ total_partidas: 3, partidas_completas: 2 }), 67);
 
   // Todo entregado + sobre-entrega + manual + anulada excluida
   const mix = resumenEntregasPorFase([
@@ -89,8 +118,9 @@ Deno.test("expedienteUtils: puedeLiberarFase siempre permite liberar aunque la f
   assertEquals(puedeLiberarFase(null, "pasada"), { permitido: true, motivo: null });
 });
 
-Deno.test("expedienteUtils: estadoVacioPestana y normalizarTabExpediente", () => {
-  assertEquals(normalizarTabExpediente("ALMACEN"), "almacen");
+Deno.test("expedienteUtils: estadoVacioPestana, normalizarTabExpediente y extraerTareasPlan (E3, E21, E22, D1)", () => {
+  // E3: espacios alrededor
+  assertEquals(normalizarTabExpediente("  ALMACEN  "), "almacen");
   assertEquals(normalizarTabExpediente("desconocido"), "resumen");
   assertEquals(normalizarTabExpediente(null), "resumen");
 
@@ -98,16 +128,38 @@ Deno.test("expedienteUtils: estadoVacioPestana y normalizarTabExpediente", () =>
   assertEquals(estadoVacioPestana("cotizacion", { cotizacionId: null }).vacio, true);
   assertEquals(estadoVacioPestana("cotizacion", { cotizacionId: "cot-1" }).vacio, false);
 
-  assertEquals(estadoVacioPestana("cobranza", { cotizacionId: null }).vacio, true);
+  // E21: cobranza sin cotizacionId incluso si totalPagos > 0
+  assertEquals(estadoVacioPestana("cobranza", { cotizacionId: null, totalPagos: 3 }).vacio, true);
   assertEquals(estadoVacioPestana("cobranza", { cotizacionId: "cot-1", totalPagos: 0 }).vacio, true);
   assertEquals(estadoVacioPestana("cobranza", { cotizacionId: "cot-1", totalPagos: 2 }).vacio, false);
 
-  assertEquals(estadoVacioPestana("almacen", { admiteDespiece: false }).vacio, true);
+  // E22: admiteDespiece === false incluso si totalLineasDespiece > 0
+  assertEquals(estadoVacioPestana("almacen", { admiteDespiece: false, totalLineasDespiece: 5 }).vacio, true);
   assertEquals(estadoVacioPestana("almacen", { admiteDespiece: true, totalLineasDespiece: 0 }).vacio, true);
   assertEquals(estadoVacioPestana("almacen", { admiteDespiece: true, totalLineasDespiece: 4 }).vacio, false);
 
   assertEquals(estadoVacioPestana("plan", { totalTareasPlan: 0 }).vacio, true);
   assertEquals(estadoVacioPestana("plan", { totalTareasPlan: 1 }).vacio, false);
+
+  // D1: forma real { orden, tareas, bitacora }
+  const respReal = {
+    orden: { id: "ot-1" },
+    tareas: [
+      {
+        id: "t-1",
+        fecha: "2026-11-18",
+        descripcion: "Armado de dispositivo plataforma",
+        estado: "en_proceso",
+        frente: { nombre: "DOLLYS", area: { nombre: "Nave" } },
+        operarios: [{ nombre: "Carlos López" }],
+      },
+    ],
+    bitacora: [],
+  };
+  assertEquals(extraerTareasPlan(respReal).length, 1);
+  assertEquals(extraerTareasPlan(respReal)[0].frente.area.nombre, "Nave");
+  assertEquals(extraerTareasPlan(null), []);
+  assertEquals(extraerTareasPlan({}), []);
 });
 
 Deno.test("expedienteUtils: resolverPresupuestoDeOrden liga por cotizacion_id o folio PRE-", () => {

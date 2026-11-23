@@ -35,6 +35,12 @@ export interface ResumenEntregaOrdenDto {
   >;
 }
 
+export interface TrazabilidadOrdenResponse {
+  orden?: any;
+  tareas?: any[];
+  bitacora?: any[];
+}
+
 export const expedienteApi = {
   resumenEntregasOrdenes: () =>
     fetchJson<ResumenEntregaOrdenDto[]>('/ordenes-trabajo/resumen-entregas'),
@@ -43,7 +49,7 @@ export const expedienteApi = {
   pagosPorCotizacion: (cotizacionId: string) =>
     fetchJson<any[]>(`/pagos/cotizacion/${encodeURIComponent(cotizacionId)}`),
   trazabilidadOrden: (ordenId: string) =>
-    fetchJson<any[]>(`/produccion/trazabilidad/orden/${encodeURIComponent(ordenId)}`),
+    fetchJson<TrazabilidadOrdenResponse>(`/produccion/trazabilidad/orden/${encodeURIComponent(ordenId)}`),
   matrizLinea: (lineaClave: string) =>
     fetchJson<any>(`/produccion/matriz?linea=${encodeURIComponent(lineaClave)}`),
 };

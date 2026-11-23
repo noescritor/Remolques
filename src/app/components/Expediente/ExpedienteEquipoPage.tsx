@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   Calendar,
   CheckCircle2,
-  ClipboardCheck,
   CreditCard,
   ExternalLink,
   FileText,
@@ -13,6 +12,7 @@ import {
   Info,
   Package,
   Printer,
+  RefreshCw,
   ShieldCheck,
   Wrench,
 } from 'lucide-react';
@@ -28,6 +28,8 @@ import { calidadApi } from '../Calidad/calidadApi';
 import { expedienteApi, ResumenEntregaOrdenDto } from './expedienteApi';
 import {
   estadoVacioPestana,
+  extraerTareasPlan,
+  faseEnCurso,
   FaseOrdenTablero,
   normalizarTabExpediente,
   resolverPresupuestoDeOrden,
@@ -40,6 +42,8 @@ interface ExpedienteEquipoPageProps {
   ajustes?: any;
   onRegenerarFicha?: (id: string) => Promise<void>;
 }
+
+type EstadoCarga = 'cargando' | 'error' | 'ok';
 
 const TAB_ITEMS: Array<{ id: TabExpediente; label: string }> = [
   { id: 'resumen', label: 'Resumen' },
@@ -64,6 +68,30 @@ function etiquetaEstadoFase(estado?: string | null): string {
   return 'Pendiente';
 }
 
+function BloqueErrorCarga({
+  mensaje,
+  onReintentar,
+}: {
+  mensaje: string;
+  onReintentar: () => void;
+}) {
+  return (
+    <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-5 text-destructive flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-start gap-2.5 text-sm">
+        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+        <div>
+          <div className="font-semibold">Error al cargar datos</div>
+          <div className="text-xs opacity-90">{mensaje}</div>
+        </div>
+      </div>
+      <Button size="sm" variant="outline" onClick={onReintentar} className="border-destructive/40 text-destructive">
+        <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+        Reintentar
+      </Button>
+    </div>
+  );
+}
+
 export function ExpedienteEquipoPage({
   ordenesTrabajo = [],
   cotizaciones = [],
@@ -76,19 +104,38 @@ export function ExpedienteEquipoPage({
 
   const tabActiva = normalizarTabExpediente(searchParams.get('tab'));
 
-  const [loading, setLoading] = useState(true);
-  const [errorCarga, setErrorCarga] = useState<string | null>(null);
+  const [estadoOrden, setEstadoOrden] = useState<EstadoCarga>('cargando');
+  const [errorOrden, setErrorOrden] = useState<string | null>(null);
   const [ordenRemota, setOrdenRemota] = useState<any | null>(null);
   const [totalEquiposCotizacion, setTotalEquiposCotizacion] = useState<number>(1);
+
+  const [estadoPresupuestos, setEstadoPresupuestos] = useState<EstadoCarga>('cargando');
+  const [errorPresupuestos, setErrorPresupuestos] = useState<string | null>(null);
   const [presupuestos, setPresupuestos] = useState<any[]>([]);
+
+  const [estadoCobranza, setEstadoCobranza] = useState<EstadoCarga>('cargando');
+  const [errorCobranza, setErrorCobranza] = useState<string | null>(null);
   const [pagos, setPagos] = useState<any[]>([]);
+
+  const [estadoPlan, setEstadoPlan] = useState<EstadoCarga>('cargando');
+  const [errorPlan, setErrorPlan] = useState<string | null>(null);
   const [tareasPlan, setTareasPlan] = useState<any[]>([]);
+
+  const [estadoCalidad, setEstadoCalidad] = useState<EstadoCarga>('cargando');
+  const [errorCalidad, setErrorCalidad] = useState<string | null>(null);
   const [inspeccionesCalidad, setInspeccionesCalidad] = useState<any[]>([]);
+
+  const [estadoAlmacenResumen, setEstadoAlmacenResumen] = useState<EstadoCarga>('cargando');
+  const [errorAlmacenResumen, setErrorAlmacenResumen] = useState<string | null>(null);
   const [resumenEntrega, setResumenEntrega] = useState<ResumenEntregaOrdenDto | null>(null);
+
+  const [estadoMatriz, setEstadoMatriz] = useState<EstadoCarga>('cargando');
+  const [errorMatriz, setErrorMatriz] = useState<string | null>(null);
   const [fasesEquipo, setFasesEquipo] = useState<FaseOrdenTablero[]>([]);
   const [materialFaltanteTablero, setMaterialFaltanteTablero] = useState<string | null>(null);
   const [fechaCompromisoTablero, setFechaCompromisoTablero] = useState<string | null>(null);
   const [etiquetaTablero, setEtiquetaTablero] = useState<string | null>(null);
+
   const [modalPdfAbierto, setModalPdfAbierto] = useState(false);
 
   const ordenLocal = useMemo(
@@ -122,6 +169,8 @@ export function ExpedienteEquipoPage({
     [orden, presupuestos]
   );
 
+  const faseActualTablero = useMemo(() => faseEnCurso(fasesEquipo), [fasesEquipo]);
+
   const cambiarTab = (nuevaTab: string) => {
     const valida = normalizarTabExpediente(nuevaTab);
     setSearchParams(
@@ -144,103 +193,236 @@ export function ExpedienteEquipoPage({
 
   const refrescarResumenSilencioso = useCallback(async () => {
     if (!ordenId) return;
-    try {
-      const [resEnt, insps] = await Promise.all([
-        expedienteApi.resumenEntregasOrdenes().catch(() => []),
-        calidadApi.listarInspecciones({ orden_trabajo_id: ordenId }).catch(() => []),
-      ]);
-      const miResumen = (resEnt || []).find((r) => r.orden_trabajo_id === ordenId) || null;
+    const [resEntRes, inspsRes] = await Promise.allSettled([
+      expedienteApi.resumenEntregasOrdenes(),
+      calidadApi.listarInspecciones({ orden_trabajo_id: ordenId }),
+    ]);
+    if (resEntRes.status === 'fulfilled') {
+      const miResumen = (resEntRes.value || []).find((r) => r.orden_trabajo_id === ordenId) || null;
       setResumenEntrega(miResumen);
-      setInspeccionesCalidad(insps || []);
-    } catch {
-      // Silencioso en refresco de fondo
+      setEstadoAlmacenResumen('ok');
+      setErrorAlmacenResumen(null);
+    }
+    if (inspsRes.status === 'fulfilled') {
+      setInspeccionesCalidad(Array.isArray(inspsRes.value) ? inspsRes.value : []);
+      setEstadoCalidad('ok');
+      setErrorCalidad(null);
     }
   }, [ordenId]);
 
-  useEffect(() => {
+  const cargarPresupuestos = useCallback(async () => {
+    setEstadoPresupuestos('cargando');
+    setErrorPresupuestos(null);
+    try {
+      const data = await expedienteApi.listarPresupuestos();
+      setPresupuestos(Array.isArray(data) ? data : []);
+      setEstadoPresupuestos('ok');
+    } catch (err: any) {
+      setErrorPresupuestos(err?.message || 'No se pudieron cargar los presupuestos.');
+      setEstadoPresupuestos('error');
+    }
+  }, []);
+
+  const cargarPlan = useCallback(async () => {
     if (!ordenId) return;
-    let activo = true;
-    setLoading(true);
-    setErrorCarga(null);
+    setEstadoPlan('cargando');
+    setErrorPlan(null);
+    try {
+      const data = await expedienteApi.trazabilidadOrden(ordenId);
+      setTareasPlan(extraerTareasPlan(data));
+      setEstadoPlan('ok');
+    } catch (err: any) {
+      setErrorPlan(err?.message || 'No se pudo cargar el plan semanal.');
+      setEstadoPlan('error');
+    }
+  }, [ordenId]);
 
-    const cargar = async () => {
-      try {
-        const [ordenesRes, presupuestosRes, trazRes, resEntRes, inspsRes] = await Promise.all([
-          expedienteApi.listarOrdenesTrabajo(),
-          expedienteApi.listarPresupuestos().catch(() => []),
-          expedienteApi.trazabilidadOrden(ordenId).catch(() => []),
-          expedienteApi.resumenEntregasOrdenes().catch(() => []),
-          calidadApi.listarInspecciones({ orden_trabajo_id: ordenId }).catch(() => []),
-        ]);
-        if (!activo) return;
+  const cargarAlmacenResumen = useCallback(async () => {
+    if (!ordenId) return;
+    setEstadoAlmacenResumen('cargando');
+    setErrorAlmacenResumen(null);
+    try {
+      const data = await expedienteApi.resumenEntregasOrdenes();
+      const miResumen =
+        (data || []).find((r: ResumenEntregaOrdenDto) => r.orden_trabajo_id === ordenId) || null;
+      setResumenEntrega(miResumen);
+      setEstadoAlmacenResumen('ok');
+    } catch (err: any) {
+      setErrorAlmacenResumen(err?.message || 'No se pudo cargar el resumen de entregas.');
+      setEstadoAlmacenResumen('error');
+    }
+  }, [ordenId]);
 
-        const listaOrdenes = Array.isArray(ordenesRes) ? ordenesRes : [];
-        const encontrada = listaOrdenes.find((o: any) => o.id === ordenId) || null;
-        if (!encontrada && !ordenLocal) {
-          setErrorCarga('No se encontró la orden de trabajo solicitada.');
-          setLoading(false);
-          return;
+  const cargarCalidad = useCallback(async () => {
+    if (!ordenId) return;
+    setEstadoCalidad('cargando');
+    setErrorCalidad(null);
+    try {
+      const data = await calidadApi.listarInspecciones({ orden_trabajo_id: ordenId });
+      setInspeccionesCalidad(Array.isArray(data) ? data : []);
+      setEstadoCalidad('ok');
+    } catch (err: any) {
+      setErrorCalidad(err?.message || 'No se pudieron cargar las inspecciones de calidad.');
+      setEstadoCalidad('error');
+    }
+  }, [ordenId]);
+
+  const cargarCobranza = useCallback(async (cotId: string | null | undefined) => {
+    if (!cotId) {
+      setPagos([]);
+      setEstadoCobranza('ok');
+      setErrorCobranza(null);
+      return;
+    }
+    setEstadoCobranza('cargando');
+    setErrorCobranza(null);
+    try {
+      const data = await expedienteApi.pagosPorCotizacion(cotId);
+      setPagos(Array.isArray(data) ? data : []);
+      setEstadoCobranza('ok');
+    } catch (err: any) {
+      setErrorCobranza(err?.message || 'No se pudieron cargar los pagos de la cotización.');
+      setEstadoCobranza('error');
+    }
+  }, []);
+
+  const cargarMatriz = useCallback(async (clave: string) => {
+    if (!ordenId) return;
+    setEstadoMatriz('cargando');
+    setErrorMatriz(null);
+    try {
+      const matrizRes = await expedienteApi.matrizLinea(clave);
+      if (matrizRes?.filas) {
+        const fila = matrizRes.filas.find((f: any) => f.orden_id === ordenId);
+        if (fila) {
+          setMaterialFaltanteTablero(fila.material_faltante || null);
+          setFechaCompromisoTablero(fila.fecha_compromiso || null);
+          setEtiquetaTablero(fila.etiqueta || null);
+          const fasesLista: FaseOrdenTablero[] = (matrizRes.fases || [])
+            .filter((f: any) => f.grupo === 'principal')
+            .sort((a: any, b: any) => a.orden - b.orden)
+            .map((f: any) => ({
+              fase_id: f.id,
+              nombre: f.nombre,
+              orden: f.orden,
+              estado: fila.fases?.[f.id]?.estado || 'pendiente',
+            }));
+          setFasesEquipo(fasesLista);
         }
-        const ordActual = encontrada || ordenLocal;
+      }
+      setEstadoMatriz('ok');
+    } catch (err: any) {
+      setErrorMatriz(err?.message || 'No se pudieron cargar las fases del tablero.');
+      setEstadoMatriz('error');
+    }
+  }, [ordenId]);
+
+  const cargarTodo = useCallback(async () => {
+    if (!ordenId) return;
+    setEstadoOrden('cargando');
+    setErrorOrden(null);
+    setEstadoPresupuestos('cargando');
+    setEstadoPlan('cargando');
+    setEstadoAlmacenResumen('cargando');
+    setEstadoCalidad('cargando');
+    setEstadoCobranza('cargando');
+    setEstadoMatriz('cargando');
+
+    const [ordenesRes, presupuestosRes, trazRes, resEntRes, inspsRes] =
+      await Promise.allSettled([
+        expedienteApi.listarOrdenesTrabajo(),
+        expedienteApi.listarPresupuestos(),
+        expedienteApi.trazabilidadOrden(ordenId),
+        expedienteApi.resumenEntregasOrdenes(),
+        calidadApi.listarInspecciones({ orden_trabajo_id: ordenId }),
+      ]);
+
+    let ordActual: any = ordenLocal;
+    if (ordenesRes.status === 'fulfilled') {
+      const lista = Array.isArray(ordenesRes.value) ? ordenesRes.value : [];
+      const encontrada = lista.find((o: any) => o.id === ordenId) || null;
+      if (encontrada) {
         setOrdenRemota(encontrada);
-        setPresupuestos(Array.isArray(presupuestosRes) ? presupuestosRes : []);
-        setTareasPlan(Array.isArray(trazRes) ? trazRes : []);
-        setInspeccionesCalidad(Array.isArray(inspsRes) ? inspsRes : []);
-
-        const miResumen =
-          (resEntRes || []).find((r: ResumenEntregaOrdenDto) => r.orden_trabajo_id === ordenId) ||
-          null;
-        setResumenEntrega(miResumen);
-
-        if (ordActual?.cotizacion_id) {
-          const mismosCot = listaOrdenes.filter(
-            (o: any) => o.cotizacion_id === ordActual.cotizacion_id
+        ordActual = encontrada;
+        if (encontrada.cotizacion_id) {
+          const mismosCot = lista.filter(
+            (o: any) => o.cotizacion_id === encontrada.cotizacion_id
           ).length;
           setTotalEquiposCotizacion(Math.max(1, mismosCot));
-
-          const pagosRes = await expedienteApi
-            .pagosPorCotizacion(ordActual.cotizacion_id)
-            .catch(() => []);
-          if (activo) setPagos(Array.isArray(pagosRes) ? pagosRes : []);
-        } else {
-          setPagos([]);
-          setTotalEquiposCotizacion(1);
         }
-
-        const clave = ordActual?.linea?.clave || lineaClave;
-        const matrizRes = await expedienteApi.matrizLinea(clave).catch(() => null);
-        if (activo && matrizRes?.filas) {
-          const fila = matrizRes.filas.find((f: any) => f.orden_id === ordenId);
-          if (fila) {
-            setMaterialFaltanteTablero(fila.material_faltante || null);
-            setFechaCompromisoTablero(fila.fecha_compromiso || null);
-            setEtiquetaTablero(fila.etiqueta || null);
-            const fasesLista: FaseOrdenTablero[] = (matrizRes.fases || [])
-              .filter((f: any) => f.grupo === 'principal')
-              .sort((a: any, b: any) => a.orden - b.orden)
-              .map((f: any) => ({
-                fase_id: f.id,
-                nombre: f.nombre,
-                orden: f.orden,
-                estado: fila.fases?.[f.id]?.estado || 'pendiente',
-              }));
-            setFasesEquipo(fasesLista);
-          }
-        }
-      } catch (err: any) {
-        if (activo) {
-          setErrorCarga(err?.message || 'Error al cargar el expediente del equipo');
-        }
-      } finally {
-        if (activo) setLoading(false);
+        setEstadoOrden('ok');
+      } else if (!ordenLocal) {
+        setErrorOrden('No se encontró la orden de trabajo solicitada.');
+        setEstadoOrden('error');
+      } else {
+        setEstadoOrden('ok');
       }
-    };
+    } else {
+      setErrorOrden(ordenesRes.reason?.message || 'No se pudo consultar la orden de trabajo.');
+      setEstadoOrden('error');
+    }
 
-    cargar();
-    return () => {
-      activo = false;
-    };
-  }, [ordenId]);
+    if (presupuestosRes.status === 'fulfilled') {
+      setPresupuestos(Array.isArray(presupuestosRes.value) ? presupuestosRes.value : []);
+      setEstadoPresupuestos('ok');
+      setErrorPresupuestos(null);
+    } else {
+      setErrorPresupuestos(presupuestosRes.reason?.message || 'No se pudieron cargar los presupuestos.');
+      setEstadoPresupuestos('error');
+    }
+
+    if (trazRes.status === 'fulfilled') {
+      setTareasPlan(extraerTareasPlan(trazRes.value));
+      setEstadoPlan('ok');
+      setErrorPlan(null);
+    } else {
+      setErrorPlan(trazRes.reason?.message || 'No se pudo cargar el plan semanal.');
+      setEstadoPlan('error');
+    }
+
+    if (resEntRes.status === 'fulfilled') {
+      const miResumen =
+        (resEntRes.value || []).find(
+          (r: ResumenEntregaOrdenDto) => r.orden_trabajo_id === ordenId
+        ) || null;
+      setResumenEntrega(miResumen);
+      setEstadoAlmacenResumen('ok');
+      setErrorAlmacenResumen(null);
+    } else {
+      setErrorAlmacenResumen(resEntRes.reason?.message || 'No se pudo cargar el resumen de entregas.');
+      setEstadoAlmacenResumen('error');
+    }
+
+    if (inspsRes.status === 'fulfilled') {
+      setInspeccionesCalidad(Array.isArray(inspsRes.value) ? inspsRes.value : []);
+      setEstadoCalidad('ok');
+      setErrorCalidad(null);
+    } else {
+      setErrorCalidad(inspsRes.reason?.message || 'No se pudieron cargar las inspecciones de calidad.');
+      setEstadoCalidad('error');
+    }
+
+    if (ordActual) {
+      const clave = ordActual?.linea?.clave || lineaClave;
+      await Promise.allSettled([
+        cargarCobranza(ordActual.cotizacion_id),
+        cargarMatriz(clave),
+      ]);
+    } else {
+      setEstadoCobranza(ordenesRes.status === 'rejected' ? 'error' : 'ok');
+      if (ordenesRes.status === 'rejected') {
+        setErrorCobranza('No se pudo verificar la cotización porque falló la carga de la orden.');
+      }
+      setEstadoMatriz(ordenesRes.status === 'rejected' ? 'error' : 'ok');
+      if (ordenesRes.status === 'rejected') {
+        setErrorMatriz('No se pudieron cargar las fases porque falló la carga de la orden.');
+      }
+    }
+  }, [ordenId, ordenLocal, lineaClave, cargarCobranza, cargarMatriz]);
+
+  useEffect(() => {
+    cargarTodo();
+  }, [cargarTodo]);
 
   const calidadVigenteResumen = useMemo(() => {
     const porFormato = new Map<string, any>();
@@ -259,7 +441,7 @@ export function ExpedienteEquipoPage({
     return { vigentes, ncTotal };
   }, [inspeccionesCalidad]);
 
-  if (loading && !orden) {
+  if (estadoOrden === 'cargando' && !orden) {
     return (
       <div className="p-6 max-w-6xl mx-auto">
         <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
@@ -269,20 +451,17 @@ export function ExpedienteEquipoPage({
     );
   }
 
-  if (errorCarga && !orden) {
+  if (estadoOrden === 'error' && !orden) {
     return (
       <div className="p-6 max-w-4xl mx-auto space-y-4">
         <Button variant="outline" size="sm" onClick={volver}>
           <ArrowLeft className="w-4 h-4 mr-1.5" />
           Volver
         </Button>
-        <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-6 text-destructive flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 shrink-0" />
-          <div>
-            <div className="font-semibold">No se pudo abrir el expediente</div>
-            <div className="text-sm">{errorCarga}</div>
-          </div>
-        </div>
+        <BloqueErrorCarga
+          mensaje={errorOrden || 'No se pudo abrir el expediente'}
+          onReintentar={cargarTodo}
+        />
       </div>
     );
   }
@@ -327,6 +506,15 @@ export function ExpedienteEquipoPage({
                   <Badge variant="secondary" className="text-[11px]">
                     {orden.estado || 'Pendiente'}
                   </Badge>
+                  {faseActualTablero ? (
+                    <Badge variant="outline" className="text-[11px] border-primary/40 text-primary">
+                      Tablero: en {faseActualTablero.nombre}
+                    </Badge>
+                  ) : fasesEquipo.length > 0 ? (
+                    <Badge variant="outline" className="text-[11px]">
+                      Tablero: todas terminadas
+                    </Badge>
+                  ) : null}
                 </div>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground mt-0.5">
                   <span>Cliente: {clienteNombre}</span>
@@ -338,6 +526,15 @@ export function ExpedienteEquipoPage({
               </div>
             </div>
           </div>
+
+          {estadoOrden === 'error' && (
+            <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-xs text-destructive flex items-center justify-between gap-2">
+              <span>{errorOrden || 'Error al actualizar la orden desde el servidor (mostrando copia local).'}</span>
+              <Button size="sm" variant="ghost" onClick={cargarTodo} className="h-6 text-xs text-destructive">
+                Reintentar
+              </Button>
+            </div>
+          )}
 
           {materialFaltante && (
             <div className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs text-foreground flex items-center gap-2">
@@ -399,7 +596,16 @@ export function ExpedienteEquipoPage({
                   <Package className="w-3.5 h-3.5 text-primary" />
                   Entregas de almacén
                 </div>
-                {resumenEntrega && resumenEntrega.total_partidas > 0 ? (
+                {estadoAlmacenResumen === 'cargando' ? (
+                  <div className="text-xs text-muted-foreground">Cargando resumen...</div>
+                ) : estadoAlmacenResumen === 'error' ? (
+                  <div className="space-y-2 text-xs text-destructive">
+                    <div>{errorAlmacenResumen}</div>
+                    <Button size="sm" variant="outline" onClick={cargarAlmacenResumen}>
+                      Reintentar
+                    </Button>
+                  </div>
+                ) : resumenEntrega && resumenEntrega.total_partidas > 0 ? (
                   <div className="space-y-2">
                     <div className="text-2xl font-bold font-mono text-foreground">
                       {resumenEntrega.partidas_completas} / {resumenEntrega.total_partidas}{' '}
@@ -426,7 +632,16 @@ export function ExpedienteEquipoPage({
                   <ShieldCheck className="w-3.5 h-3.5 text-primary" />
                   Calidad
                 </div>
-                {calidadVigenteResumen.vigentes.length > 0 ? (
+                {estadoCalidad === 'cargando' ? (
+                  <div className="text-xs text-muted-foreground">Cargando inspecciones...</div>
+                ) : estadoCalidad === 'error' ? (
+                  <div className="space-y-2 text-xs text-destructive">
+                    <div>{errorCalidad}</div>
+                    <Button size="sm" variant="outline" onClick={cargarCalidad}>
+                      Reintentar
+                    </Button>
+                  </div>
+                ) : calidadVigenteResumen.vigentes.length > 0 ? (
                   <div className="space-y-2">
                     <div className="text-sm space-y-1">
                       {calidadVigenteResumen.vigentes.map((insp: any) => (
@@ -466,7 +681,14 @@ export function ExpedienteEquipoPage({
                 <Wrench className="w-3.5 h-3.5 text-primary" />
                 Fases de producción
               </div>
-              {fasesEquipo.length === 0 ? (
+              {estadoMatriz === 'cargando' ? (
+                <div className="text-sm text-muted-foreground">Cargando fases del tablero...</div>
+              ) : estadoMatriz === 'error' ? (
+                <BloqueErrorCarga
+                  mensaje={errorMatriz || 'Error al cargar fases del tablero'}
+                  onReintentar={() => cargarMatriz(orden?.linea?.clave || lineaClave)}
+                />
+              ) : fasesEquipo.length === 0 ? (
                 <div className="text-sm text-muted-foreground">
                   No hay fases registradas en el tablero para este equipo.
                 </div>
@@ -541,7 +763,14 @@ export function ExpedienteEquipoPage({
                       <Badge variant="outline">{(presupuestoVinculado as any).estado || 'Generado'}</Badge>
                     )}
                   </div>
-                  {presupuestoVinculado ? (
+                  {estadoPresupuestos === 'cargando' ? (
+                    <div className="text-sm text-muted-foreground">Cargando presupuestos...</div>
+                  ) : estadoPresupuestos === 'error' ? (
+                    <BloqueErrorCarga
+                      mensaje={errorPresupuestos || 'Error al cargar presupuestos'}
+                      onReintentar={cargarPresupuestos}
+                    />
+                  ) : presupuestoVinculado ? (
                     <>
                       <div className="text-lg font-bold font-mono">
                         {presupuestoVinculado.folio}
@@ -618,7 +847,16 @@ export function ExpedienteEquipoPage({
                 </Link>
               </Button>
             </div>
-            {vacioPlan.vacio ? (
+            {estadoPlan === 'cargando' ? (
+              <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
+                Cargando tareas del plan semanal...
+              </div>
+            ) : estadoPlan === 'error' ? (
+              <BloqueErrorCarga
+                mensaje={errorPlan || 'Error al cargar plan semanal'}
+                onReintentar={cargarPlan}
+              />
+            ) : vacioPlan.vacio ? (
               <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center space-y-2">
                 <Info className="w-8 h-8 text-muted-foreground mx-auto" />
                 <div className="font-semibold">{vacioPlan.titulo}</div>
@@ -628,22 +866,31 @@ export function ExpedienteEquipoPage({
               </div>
             ) : (
               <div className="space-y-2">
-                {tareasPlan.map((t: any) => (
-                  <div
-                    key={t.id}
-                    className="rounded-lg border border-border bg-card p-3 flex flex-wrap items-center justify-between gap-2 text-sm"
-                  >
-                    <div>
-                      <div className="font-medium">{t.descripcion || t.actividad || 'Tarea'}</div>
-                      <div className="text-xs text-muted-foreground">
-                        Semana: {t.semana || t.fecha_inicio || '—'} · Área/Frente:{' '}
-                        {t.area_nombre || t.frente_nombre || '—'} · Operario:{' '}
-                        {t.operario_nombre || 'Sin asignar'}
+                {tareasPlan.map((t: any) => {
+                  const frenteNombre = t.frente?.nombre || 'Sin frente';
+                  const areaNombre = t.frente?.area?.nombre || null;
+                  const operariosTexto =
+                    Array.isArray(t.operarios) && t.operarios.length > 0
+                      ? t.operarios.map((o: any) => o.nombre).filter(Boolean).join(', ')
+                      : 'Sin asignar';
+
+                  return (
+                    <div
+                      key={t.id}
+                      className="rounded-lg border border-border bg-card p-3 flex flex-wrap items-center justify-between gap-2 text-sm"
+                    >
+                      <div>
+                        <div className="font-medium">{t.descripcion || 'Tarea'}</div>
+                        <div className="text-xs text-muted-foreground">
+                          Fecha: {t.fecha || '—'} · Frente:{' '}
+                          {areaNombre ? `${areaNombre} / ${frenteNombre}` : frenteNombre} · Operarios:{' '}
+                          {operariosTexto}
+                        </div>
                       </div>
+                      <Badge variant="outline">{t.estado || 'pendiente'}</Badge>
                     </div>
-                    <Badge variant="outline">{t.estado || 'Pendiente'}</Badge>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </TabsContent>
@@ -655,7 +902,6 @@ export function ExpedienteEquipoPage({
                 orden={orden}
                 activo={tabActiva === 'almacen'}
                 modoEmbebido
-                fasesProduccion={fasesEquipo}
                 onActualizado={refrescarResumenSilencioso}
               />
             </div>
@@ -691,7 +937,18 @@ export function ExpedienteEquipoPage({
               </span>
             </div>
 
-            {vacioCobranza.vacio ? (
+            {estadoCobranza === 'cargando' ? (
+              <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
+                Cargando pagos de la cotización...
+              </div>
+            ) : estadoCobranza === 'error' ? (
+              <BloqueErrorCarga
+                mensaje={errorCobranza || 'Error al cargar pagos de la cotización'}
+                onReintentar={() =>
+                  orden.cotizacion_id ? cargarCobranza(orden.cotizacion_id) : cargarTodo()
+                }
+              />
+            ) : vacioCobranza.vacio ? (
               <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center space-y-2">
                 <CreditCard className="w-8 h-8 text-muted-foreground mx-auto" />
                 <div className="font-semibold">{vacioCobranza.titulo}</div>

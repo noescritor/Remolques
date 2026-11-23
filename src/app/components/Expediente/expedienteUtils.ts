@@ -79,7 +79,23 @@ export interface LineaDespieceResumen {
   fase_clave?: string | null;
   cantidad_requerida?: number | string | null;
   cantidad_entregada?: number | string | null;
+  estado_entrega?: string | null;
   anulada?: boolean | null;
+}
+
+export function esPartidaCompletaLinea(linea: LineaDespieceResumen): boolean {
+  if (linea.estado_entrega !== undefined && linea.estado_entrega !== null) {
+    return linea.estado_entrega === 'completo';
+  }
+  const req = Number(linea.cantidad_requerida ?? 0);
+  const ent = Number(linea.cantidad_entregada ?? 0);
+  return ent > 0 && ent >= req;
+}
+
+export function extraerTareasPlan(res: any): any[] {
+  if (Array.isArray(res)) return res;
+  if (res && Array.isArray(res.tareas)) return res.tareas;
+  return [];
 }
 
 export interface ResumenFaseDespiece {
@@ -110,9 +126,7 @@ export function resumenEntregasPorFase(
 
   for (const linea of lineas || []) {
     if (!linea || linea.anulada) continue;
-    const req = Number(linea.cantidad_requerida ?? 0);
-    const ent = Number(linea.cantidad_entregada ?? 0);
-    const completa = ent >= req;
+    const completa = esPartidaCompletaLinea(linea);
 
     totalPartidas += 1;
     if (completa) partidasCompletas += 1;

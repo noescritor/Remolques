@@ -25,10 +25,7 @@ import {
 import { BASE_URL } from '../../utils/api';
 import { resolverVolumenGondola, formatearVolumenM3 } from '../../utils/volumenGondola';
 import {
-  estadoVisualFase,
-  EstadoVisualFase,
-  faseEnCurso,
-  FaseOrdenTablero,
+  esPartidaCompletaLinea,
   puedeLiberarFase,
 } from '../Expediente/expedienteUtils';
 
@@ -36,7 +33,6 @@ export interface ChecklistDespiecePanelProps {
   orden: OrdenTrabajo | null;
   activo?: boolean;
   modoEmbebido?: boolean;
-  fasesProduccion?: FaseOrdenTablero[];
   onActualizado?: () => void;
   onCerrarModal?: () => void;
 }
@@ -66,7 +62,6 @@ export function ChecklistDespiecePanel({
   orden,
   activo = true,
   modoEmbebido = false,
-  fasesProduccion = [],
   onActualizado,
   onCerrarModal,
 }: ChecklistDespiecePanelProps) {
@@ -670,11 +665,6 @@ export function ChecklistDespiecePanel({
     return Array.from(set).sort((a, b) => a - b);
   }, [lineas, orden]);
 
-  const faseActualTablero = useMemo(
-    () => faseEnCurso(fasesProduccion),
-    [fasesProduccion]
-  );
-
   const esLineaSinDespiece = useMemo(() => {
     const clave = String((orden as any)?.linea?.clave || '').toLowerCase();
     const modeloTxt = `${orden?.modelo || ''} ${orden?.tipo_equipo || ''}`.toLowerCase();
@@ -685,21 +675,9 @@ export function ChecklistDespiecePanel({
     const partidasDeFase = lineas.filter((l: any) => l.fase_clave === f.clave);
     const piezasReq = partidasDeFase.reduce((acc: number, l: any) => acc + (Number(l.cantidad_requerida) || 0), 0);
     const piezasEnt = partidasDeFase.reduce((acc: number, l: any) => acc + (Number(l.cantidad_entregada) || 0), 0);
-    const partidasCompletas = partidasDeFase.filter(
-      (l: any) => Number(l.cantidad_entregada ?? 0) >= Number(l.cantidad_requerida ?? 0)
-    ).length;
-    const completa = piezasReq > 0 && piezasEnt >= piezasReq;
-    const avanceFase = piezasReq > 0 ? Math.round((piezasEnt / piezasReq) * 100) : 0;
-
-    const nombreFaseNorm = String(f.nombre || '').trim().toLowerCase();
-    const faseTablero = fasesProduccion.find(
-      (ft) =>
-        (ft.nombre && String(ft.nombre).trim().toLowerCase() === nombreFaseNorm) ||
-        (ft.orden !== undefined && ft.orden !== null && Number(ft.orden) === Number(f.orden))
-    );
-    const estadoVisual: EstadoVisualFase | null = faseTablero
-      ? estadoVisualFase(faseTablero, faseActualTablero)
-      : null;
+    const partidasCompletas = partidasDeFase.filter((l: any) => esPartidaCompletaLinea(l)).length;
+    const completa = partidasDeFase.length > 0 && partidasCompletas === partidasDeFase.length;
+    const avanceFase = partidasDeFase.length > 0 ? Math.round((partidasCompletas / partidasDeFase.length) * 100) : 0;
 
     return {
       fase: f,
@@ -709,8 +687,6 @@ export function ChecklistDespiecePanel({
       partidasCompletas,
       completa,
       avanceFase,
-      faseTablero,
-      estadoVisual,
     };
   });
 
@@ -929,28 +905,18 @@ export function ChecklistDespiecePanel({
         ) : (
           <div className="space-y-4 my-2">
             {/* Acordeón de Fases */}
-            {fasesAgrupadas.map(({ fase, partidas, piezasReq, piezasEnt, partidasCompletas, completa, faseTablero, estadoVisual }: any) => {
+            {fasesAgrupadas.map(({ fase, partidas, piezasReq, piezasEnt, partidasCompletas, completa }: any) => {
               if (partidas.length === 0) return null;
               const expandida = fasesExpandidas[fase.clave] !== false; // Abierto por defecto
-              const esEnCurso = estadoVisual === 'en_curso';
-              const esFutura = estadoVisual === 'futura';
-              const puedeLiberar = puedeLiberarFase(fase.clave, estadoVisual || undefined).permitido;
+              const puedeLiberar = puedeLiberarFase(fase.clave).permitido;
 
               return (
                 <div
                   key={fase.id || fase.clave}
-                  className={`rounded-lg border overflow-hidden transition-opacity ${
-                    esEnCurso
-                      ? 'border-primary/70 bg-primary/5 ring-1 ring-primary/20'
-                      : esFutura
-                        ? 'border-border/50 bg-card/20 opacity-80'
-                        : 'border-border/60 bg-card/30'
-                  }`}
+                  className="rounded-lg border border-border/60 bg-card/30 overflow-hidden"
                 >
                   <div
-                    className={`p-3 flex flex-wrap items-center justify-between gap-2 cursor-pointer select-none transition-colors ${
-                      esEnCurso ? 'bg-primary/10 hover:bg-primary/15' : 'bg-muted/40 hover:bg-muted/60'
-                    }`}
+                    className="p-3 bg-muted/40 hover:bg-muted/60 flex flex-wrap items-center justify-between gap-2 cursor-pointer select-none transition-colors"
                     onClick={() => toggleFase(fase.clave)}
                   >
                     <div className="flex items-center gap-2.5 flex-wrap">
@@ -962,21 +928,6 @@ export function ChecklistDespiecePanel({
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-semibold text-sm text-foreground">{fase.nombre}</span>
-                          {esEnCurso && (
-                            <Badge className="text-[10px] bg-primary text-primary-foreground">
-                              Fase en curso
-                            </Badge>
-                          )}
-                          {esFutura && (
-                            <Badge variant="outline" className="text-[10px] text-muted-foreground border-border">
-                              Fase futura
-                            </Badge>
-                          )}
-                          {faseTablero?.estado === 'terminada' && (
-                            <Badge variant="outline" className="text-[10px] border-primary/40 text-primary">
-                              Terminada en planta
-                            </Badge>
-                          )}
                         </div>
                         {fase.subtitulo && (
                           <span className="text-xs text-muted-foreground hidden sm:inline">
@@ -1016,7 +967,7 @@ export function ChecklistDespiecePanel({
                         <div className="flex items-center gap-2">
                           <Button
                             size="sm"
-                            variant={esEnCurso ? 'default' : 'outline'}
+                            variant="outline"
                             className="h-7 text-xs"
                             onClick={() => handleAbrirEntregarFase(fase.clave, fase.nombre, piezasReq - piezasEnt)}
                             disabled={procesandoAccion || !puedeLiberar}
