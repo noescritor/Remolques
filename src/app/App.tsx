@@ -18,7 +18,6 @@ import { CuentasPorCobrar } from './components/Finanzas/CuentasPorCobrar';
 import { CuentasPorPagarMain } from './components/Finanzas/CuentasPorPagarMain';
 import { TableroProduccionPage } from './components/TableroProduccion/TableroProduccionPage';
 import { ExpedienteEquipoPage } from './components/Expediente/ExpedienteEquipoPage';
-import { useParams } from 'react-router-dom';
 
 function ExpedienteEquipoRoute(props: { ordenesTrabajo: any[]; cotizaciones: any[]; ajustes: any }) {
   const { ordenId } = useParams<{ ordenId: string }>();
