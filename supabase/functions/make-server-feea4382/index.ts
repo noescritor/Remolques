@@ -67,6 +67,19 @@ import {
   obtenerResumenCalidadOrdenes,
 } from "./motor/calidad.ts";
 import {
+  CobrosError,
+  listarPagosPaginados,
+  registrarCobro,
+  anularCobro,
+  obtenerCobranzaCotizacion,
+  obtenerCobranzaEquipo,
+  guardarValorEquipo,
+  listarPlanesPago,
+  crearPlanPago,
+  actualizarPlanPago,
+  eliminarPlanPago,
+} from "./motor/cobros.ts";
+import {
   exportarPrecios,
   previsualizarCambios,
   aplicarLote,
@@ -2215,53 +2228,177 @@ app.post("/cotizaciones/:id/duplicate", async (c) => {
   }
 });
 
+const responderErrorCobros = (c: any, error: unknown, fallback: string) => {
+  if (error instanceof CobrosError) {
+    return c.json(
+      { error: error.message, codigo: error.codigo, ...(error.extra || {}) },
+      error.status,
+    );
+  }
+  console.error(`[make-server] ${fallback}:`, error);
+  return c.json({ error: fallback }, 500);
+};
+
 app.get("/pagos", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
-    const { data, error } = await supabase.from('pagos').select('*');
-    if (error) throw error;
+    const organizacionId = c.get("organizacionId") as string;
+    const incluirAnulados = c.req.query("incluir_anulados") === "1";
+    const data = await listarPagosPaginados(supabase, organizacionId, { incluirAnulados });
     return c.json(data);
   } catch (error) {
-    console.error('[make-server] Error fetching pagos:', error);
-    return c.json({ error: 'Error fetching pagos' }, 500);
+    return responderErrorCobros(c, error, "Error fetching pagos");
   }
 });
 
 app.get("/pagos/cotizacion/:cotizacionId", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
-    const cotizacionId = c.req.param('cotizacionId');
-    const { data, error } = await supabase.from('pagos').select('*').eq('cotizacion_id', cotizacionId);
-    if (error) throw error;
+    const organizacionId = c.get("organizacionId") as string;
+    const cotizacionId = c.req.param("cotizacionId");
+    const incluirAnulados = c.req.query("incluir_anulados") === "1";
+    const data = await listarPagosPaginados(supabase, organizacionId, { cotizacionId, incluirAnulados });
     return c.json(data);
   } catch (error) {
-    console.error('[make-server] Error fetching pagos for cotizacion:', error);
-    return c.json({ error: 'Error fetching pagos for cotizacion' }, 500);
+    return responderErrorCobros(c, error, "Error fetching pagos for cotizacion");
   }
 });
 
 app.post("/pagos", async (c) => {
   try {
-    const supabase = c.get("supabase") as SupabaseClient;
-    const pago: any = await c.req.json();
-    pago.organizacion_id = c.get("organizacionId");
-
-    const { data: nuevoPago, error } = await supabase.from('pagos').insert(pago).select().single();
-    if (error) throw error;
-
-    const { data: pagosCotizacion } = await supabase.from('pagos').select('*').eq('cotizacion_id', pago.cotizacion_id);
-    const totalPagado = (pagosCotizacion || []).reduce((sum, p) => sum + Number(p.monto), 0);
-
-    const { data: cotizacion } = await supabase.from('cotizaciones').select('total').eq('id', pago.cotizacion_id).single();
-
-    if (cotizacion && Math.abs(totalPagado - Number(cotizacion.total)) < 0.01) {
-      await supabase.from('cotizaciones').update({ estado: 'Pagada' }).eq('id', pago.cotizacion_id);
-    }
-
-    return c.json(nuevoPago);
+    const organizacionId = c.get("organizacionId") as string;
+    const user = c.get("user") as { id?: string } | undefined;
+    const body = await c.req.json();
+    const res = await registrarCobro(getServiceClient(), organizacionId, user?.id ?? null, body);
+    return c.json(res?.pago ?? res);
   } catch (error) {
-    console.error('[make-server] Error creating pago:', error);
-    return c.json({ error: 'Error creating pago' }, 500);
+    return responderErrorCobros(c, error, "Error creating pago");
+  }
+});
+
+app.get("/cobros", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const organizacionId = c.get("organizacionId") as string;
+    const cotizacionId = c.req.query("cotizacion_id") || undefined;
+    const incluirAnulados = c.req.query("incluir_anulados") === "1";
+    const data = await listarPagosPaginados(supabase, organizacionId, { cotizacionId, incluirAnulados });
+    return c.json(data);
+  } catch (error) {
+    return responderErrorCobros(c, error, "Error listando cobros");
+  }
+});
+
+app.post("/cobros", async (c) => {
+  try {
+    const organizacionId = c.get("organizacionId") as string;
+    const user = c.get("user") as { id?: string } | undefined;
+    const body = await c.req.json();
+    const res = await registrarCobro(getServiceClient(), organizacionId, user?.id ?? null, body);
+    return c.json(res, 201);
+  } catch (error) {
+    return responderErrorCobros(c, error, "Error registrando cobro");
+  }
+});
+
+app.post("/cobros/:id/anular", async (c) => {
+  try {
+    const organizacionId = c.get("organizacionId") as string;
+    const user = c.get("user") as { id?: string } | undefined;
+    const pagoId = c.req.param("id");
+    const body = await c.req.json();
+    const res = await anularCobro(getServiceClient(), organizacionId, user?.id ?? null, pagoId, String(body?.motivo || ""));
+    return c.json(res);
+  } catch (error) {
+    return responderErrorCobros(c, error, "Error anulando cobro");
+  }
+});
+
+app.get("/cobranza/cotizacion/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const organizacionId = c.get("organizacionId") as string;
+    const cotizacionId = c.req.param("id");
+    const res = await obtenerCobranzaCotizacion(supabase, organizacionId, cotizacionId);
+    return c.json(res);
+  } catch (error) {
+    return responderErrorCobros(c, error, "Error obteniendo cobranza de cotización");
+  }
+});
+
+app.get("/cobranza/equipo/:ordenId", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const organizacionId = c.get("organizacionId") as string;
+    const ordenId = c.req.param("ordenId");
+    const res = await obtenerCobranzaEquipo(supabase, organizacionId, ordenId);
+    return c.json(res);
+  } catch (error) {
+    return responderErrorCobros(c, error, "Error obteniendo cobranza de equipo");
+  }
+});
+
+app.put("/cobranza/equipo/:ordenId/valor", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const organizacionId = c.get("organizacionId") as string;
+    const ordenId = c.req.param("ordenId");
+    const body = await c.req.json();
+    const valor = body?.valor_pactado === null || body?.valor_pactado === "" ? null : Number(body?.valor_pactado);
+    const res = await guardarValorEquipo(supabase, organizacionId, ordenId, valor, body?.notas ?? null);
+    return c.json(res);
+  } catch (error) {
+    return responderErrorCobros(c, error, "Error guardando valor del equipo");
+  }
+});
+
+app.get("/planes-pago", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const organizacionId = c.get("organizacionId") as string;
+    const cotizacionId = c.req.query("cotizacion_id") || undefined;
+    const ordenId = c.req.query("orden_trabajo_id") || undefined;
+    const res = await listarPlanesPago(supabase, organizacionId, { cotizacionId, ordenId });
+    return c.json(res);
+  } catch (error) {
+    return responderErrorCobros(c, error, "Error listando planes de pago");
+  }
+});
+
+app.post("/planes-pago", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const organizacionId = c.get("organizacionId") as string;
+    const body = await c.req.json();
+    const res = await crearPlanPago(supabase, organizacionId, body);
+    return c.json(res, 201);
+  } catch (error) {
+    return responderErrorCobros(c, error, "Error creando plan de pago");
+  }
+});
+
+app.put("/planes-pago/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const organizacionId = c.get("organizacionId") as string;
+    const planId = c.req.param("id");
+    const body = await c.req.json();
+    const res = await actualizarPlanPago(supabase, organizacionId, planId, body);
+    return c.json(res);
+  } catch (error) {
+    return responderErrorCobros(c, error, "Error actualizando plan de pago");
+  }
+});
+
+app.delete("/planes-pago/:id", async (c) => {
+  try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    const organizacionId = c.get("organizacionId") as string;
+    const planId = c.req.param("id");
+    const res = await eliminarPlanPago(supabase, organizacionId, planId);
+    return c.json(res);
+  } catch (error) {
+    return responderErrorCobros(c, error, "Error eliminando plan de pago");
   }
 });
 
