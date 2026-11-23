@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { DollarSign, AlertTriangle, Calendar, FileText, CheckCircle, ExternalLink } from 'lucide-react';
 import { Cotizacion, Pago, Cliente } from '../../types';
 import { formatearMoneda } from '../../utils/calculations';
-import { saldoCotizacion, traducirErrorCobros } from '../../utils/cobros';
+import { hoyMexicoIso, saldoCotizacion, traducirErrorCobros } from '../../utils/cobros';
 
 interface CuentasPorCobrarProps {
   cotizaciones: Cotizacion[];
@@ -81,7 +81,7 @@ export function CuentasPorCobrar({ cotizaciones, pagos, clientes, loading, onCre
         tipo_pago: formData.metodo_pago as any,
         referencia: formData.referencia,
         descripcion_especie: formData.metodo_pago === 'Especie' ? formData.descripcion_especie.trim() : null,
-        fecha: new Date().toISOString().slice(0, 10)
+        fecha: hoyMexicoIso()
       });
       setModalOpen(false);
     } catch (e) {
@@ -146,7 +146,16 @@ export function CuentasPorCobrar({ cotizaciones, pagos, clientes, loading, onCre
                       <ExternalLink className="w-3.5 h-3.5 mr-1" /> Ver
                     </Link>
                   </Button>
-                  <Button onClick={() => handleCobrar(c)} className="bg-accent-blue text-white hover:bg-accent-blue/90">
+                  <Button
+                    onClick={() => handleCobrar(c)}
+                    disabled={c.estado !== 'Aprobada' && c.estado !== 'Pagada'}
+                    title={
+                      c.estado !== 'Aprobada' && c.estado !== 'Pagada'
+                        ? 'Solo disponible para cotizaciones aprobadas'
+                        : undefined
+                    }
+                    className="bg-accent-blue text-white hover:bg-accent-blue/90"
+                  >
                     <DollarSign className="w-4 h-4 mr-2" /> Registrar Cobro
                   </Button>
                 </div>

@@ -105,6 +105,16 @@ export interface CobranzaEquipoDto {
   cobranza_cotizacion: CobranzaCotizacionDto | null;
 }
 
+export function hoyMexicoIso(now: Date = new Date()): string {
+  const fmt = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Mexico_City',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  return fmt.format(now);
+}
+
 export function redondear2(n: number): number {
   if (!Number.isFinite(n)) return 0;
   const r = Math.round((n + Math.sign(n) * Number.EPSILON) * 100) / 100;
@@ -305,8 +315,23 @@ export function traducirErrorCobros(err: unknown): string {
   if (raw.includes('aplicacion_monto_invalido')) {
     return 'Cada monto aplicado a equipo debe ser mayor a cero.';
   }
-  if (raw.includes('orden_no_pertenece_cotizacion')) {
+  if (raw.includes('metodo_pago_invalido') || raw.includes('tipo_pago_invalido')) {
+    return 'El método de pago seleccionado no es válido.';
+  }
+  if (raw.includes('aplicacion_duplicada')) {
+    return 'No puedes repetir el mismo equipo en un cobro.';
+  }
+  if (raw.includes('orden_no_pertenece_cotizacion') || raw.includes('aplicacion_orden_invalida')) {
     return 'Uno de los equipos seleccionados no pertenece a esta cotización.';
+  }
+  if (raw.includes('fecha_invalida')) {
+    return 'Una de las fechas indicadas no es válida.';
+  }
+  if (raw.includes('plan_sin_parcialidades')) {
+    return 'El plan de pagos debe incluir al menos una parcialidad.';
+  }
+  if (raw.includes('numero_parcialidad_duplicado') || raw.includes('numero_parcialidad_invalido')) {
+    return 'Los números de parcialidad deben ser consecutivos y no repetirse.';
   }
   if (raw.includes('motivo_requerido')) {
     return 'Debes indicar el motivo de anulación.';

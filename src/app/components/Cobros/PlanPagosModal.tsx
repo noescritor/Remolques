@@ -6,6 +6,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import {
   type PlanPagoDto,
+  hoyMexicoIso,
   redondear2,
   traducirErrorCobros,
   validarPlanParcialidades,
@@ -65,7 +66,7 @@ export function PlanPagosModal({
           })),
         );
       } else {
-        const hoy = new Date().toISOString().slice(0, 10);
+        const hoy = hoyMexicoIso();
         setNombre('Plan de pagos');
         setNotas('');
         setFilas([
@@ -82,7 +83,7 @@ export function PlanPagosModal({
 
   const agregarFila = () => {
     const nextNum = filas.length > 0 ? Math.max(...filas.map((f) => f.numero)) + 1 : 1;
-    const hoy = new Date().toISOString().slice(0, 10);
+    const hoy = hoyMexicoIso();
     setFilas((prev) => [...prev, { numero: nextNum, fecha_vencimiento: hoy, monto: '', nota: '' }]);
   };
 

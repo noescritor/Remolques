@@ -9,6 +9,7 @@ import { Textarea } from '../ui/textarea';
 import {
   type EquipoResumenCobranzaDto,
   type TipoPagoCobro,
+  hoyMexicoIso,
   redondear2,
   repartirEnPartesIguales,
   traducirErrorCobros,
@@ -57,7 +58,7 @@ export function RegistrarCobroModal({
   ordenActualId,
   onGuardar,
 }: RegistrarCobroModalProps) {
-  const hoyIso = new Date().toISOString().slice(0, 10);
+  const hoyIso = hoyMexicoIso();
   const [monto, setMonto] = useState<string>('');
   const [fecha, setFecha] = useState<string>(hoyIso);
   const [tipoPago, setTipoPago] = useState<TipoPagoCobro>('Transferencia');
@@ -75,7 +76,7 @@ export function RegistrarCobroModal({
   useEffect(() => {
     if (open) {
       setMonto(saldoPendiente > 0 ? String(redondear2(saldoPendiente)) : '');
-      setFecha(new Date().toISOString().slice(0, 10));
+      setFecha(hoyMexicoIso());
       setTipoPago('Transferencia');
       setReferencia('');
       setNotas('');

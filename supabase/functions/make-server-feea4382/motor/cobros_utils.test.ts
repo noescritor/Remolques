@@ -1,6 +1,7 @@
 import { assertEquals } from "jsr:@std/assert@1";
 import {
   estatusParcialidad,
+  hoyMexicoIso,
   imputarCobrosAParcialidades,
   redondear2,
   repartirEnPartesIguales,
@@ -10,6 +11,11 @@ import {
   validarDatosCobro,
   validarPlanParcialidades,
 } from "../../../../src/app/utils/cobros.ts";
+
+Deno.test("hoyMexicoIso usa zona America/Mexico_City y no UTC", () => {
+  // 2026-11-24T02:30Z son las 20:30 del 2026-11-23 en México (UTC-6)
+  assertEquals(hoyMexicoIso(new Date("2026-11-24T02:30:00.000Z")), "2026-11-23");
+});
 
 Deno.test("redondear2 maneja centavos sin -0 ni deriva binaria", () => {
   assertEquals(redondear2(33333.335), 33333.34);
@@ -119,4 +125,8 @@ Deno.test("traducirErrorCobros: mapea codigos de error conocidos", () => {
   assertEquals(traducirErrorCobros(new Error("saldo_excedido: xyz")).includes("saldo a favor"), true);
   assertEquals(traducirErrorCobros(new Error("cotizacion_no_cobrable")).includes("aprobadas"), true);
   assertEquals(traducirErrorCobros(new Error("especie_sin_descripcion")).includes("especie"), true);
+  assertEquals(traducirErrorCobros(new Error("metodo_pago_invalido: Cheque")).includes("método de pago"), true);
+  assertEquals(traducirErrorCobros(new Error("aplicacion_orden_invalida")).includes("pertenece"), true);
+  assertEquals(traducirErrorCobros(new Error("aplicacion_duplicada")).includes("repetir"), true);
+  assertEquals(traducirErrorCobros(new Error("fecha_invalida")).includes("fechas"), true);
 });

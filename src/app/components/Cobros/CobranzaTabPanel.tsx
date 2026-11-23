@@ -51,6 +51,7 @@ export function CobranzaTabPanel({ estado, error, datos, onRecargar }: CobranzaT
   const [valorInput, setValorInput] = useState('');
   const [accionError, setAccionError] = useState<string | null>(null);
   const [guardandoAccion, setGuardandoAccion] = useState(false);
+  const [confirmandoEliminarPlan, setConfirmandoEliminarPlan] = useState(false);
 
   const cobCot = datos?.cobranza_cotizacion ?? null;
   const esCobrable = useMemo(() => {
@@ -121,6 +122,7 @@ export function CobranzaTabPanel({ estado, error, datos, onRecargar }: CobranzaT
     setGuardandoAccion(true);
     try {
       await expedienteApi.eliminarPlanPago(cobCot.plan_activo.id);
+      setConfirmandoEliminarPlan(false);
       await onRecargar();
     } catch (err) {
       setAccionError(traducirErrorCobros(err));
@@ -299,13 +301,31 @@ export function CobranzaTabPanel({ estado, error, datos, onRecargar }: CobranzaT
             {cobCot.plan_activo ? cobCot.plan_activo.nombre : 'Plan de pagos'}
           </h3>
           {cobCot.plan_activo && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Button size="sm" variant="outline" onClick={() => setModalPlanOpen(true)}>
                 <Edit3 className="w-3.5 h-3.5 mr-1" /> Editar
               </Button>
-              <Button size="sm" variant="ghost" onClick={eliminarPlan} disabled={guardandoAccion}>
-                <Trash2 className="w-3.5 h-3.5 text-destructive" />
-              </Button>
+              {confirmandoEliminarPlan ? (
+                <>
+                  <Button size="sm" variant="destructive" onClick={eliminarPlan} disabled={guardandoAccion}>
+                    Confirmar eliminación
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => setConfirmandoEliminarPlan(false)} disabled={guardandoAccion}>
+                    Cancelar
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  aria-label="Eliminar plan de pagos"
+                  title="Eliminar plan de pagos"
+                  onClick={() => setConfirmandoEliminarPlan(true)}
+                  disabled={guardandoAccion}
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                </Button>
+              )}
             </div>
           )}
         </div>
