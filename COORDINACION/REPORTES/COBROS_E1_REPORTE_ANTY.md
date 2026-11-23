@@ -73,4 +73,18 @@
 ## 4. Preguntas abiertas / Alcance futuro (E2)
 
 - La definición de `valor_pactado` por equipo es manual y opcional (`equipo_valor_cobranza`), ya que `ordenes_trabajo` no guarda desglose económico unitario al generarse desde `cotizaciones`.
+- Las vistas `v_cobranza_cotizacion`, `v_cobranza_equipo` y `v_plan_parcialidades_estado` quedan disponibles para consulta/reportes futuros (E2), mientras las rutas operativas usan el cálculo equivalente en `motor/cobros.ts` (verificado por prueba diferencial).
 - No se modificaron tablas ni lógica de precios, costeo ni despiece de almacén.
+
+---
+
+## 5. Ronda 2 (Correcciones D1–D5 y Observaciones 1–2)
+
+1. **D1 (`equipo_valor_cobranza.notas` y contrato real):** Se agregó `notas TEXT` + `ALTER TABLE ... ADD COLUMN IF NOT EXISTS notas TEXT` y trigger `trg_validar_equipo_valor_cobranza` en `20261123_01_cobros_e1.sql`. Se agregó [contrato_esquema_real_E1.sql](file:///C:/Users/luisa/Downloads/proyectos_antygravity/Remolques_cobros_e1/docs/cobros/contrato_esquema_real_E1.sql) ejecutado contra `test_cobros_e1` (`CONTRATO_ESQUEMA_REAL_E1_OK`).
+2. **D2 (`Cheque`, alineación de códigos RPC y validaciones previas):** `registrar_cobro` ahora acepta `'Cheque'`, pre-valida UUIDs (`aplicacion_orden_invalida`), duplicados (`aplicacion_duplicada`) y pertenencia a la cotización/org; `mapearErrorRpcCobros` y `traducirErrorCobros` cubren todos los códigos reales de PG en español.
+3. **D3 (`hoyMexicoIso()` en front):** Se agregó `hoyMexicoIso()` con `America/Mexico_City` en `src/app/utils/cobros.ts`, usado en `RegistrarCobroModal`, `PlanPagosModal` y `CuentasPorCobrar` (con prueba `2026-11-24T02:30:00.000Z` → `2026-11-23`).
+4. **D4 (`guardar_plan_pago` atómico + índices únicos parciales):** Nueva función SQL `guardar_plan_pago` con validación real de fecha (`fecha_invalida` para `2026-02-31`), desactivación + inserción/actualización en una sola transacción e índices únicos parciales `uq_planes_pago_activo_cot` y `uq_planes_pago_activo_orden`.
+5. **D5 (cierre de mutaciones y diferencial):** Se agregaron pruebas en `motor/cobros.test.ts` (8/8 pasan) cubriendo M1, M4, M7, M8, M11, M12 y mensajes reales de PG, más `cobros_utils.test.ts` (11/11 pasan) y comparación contra `v_plan_parcialidades_estado` en `contrato_esquema_real_E1.sql`.
+6. **Observaciones 1 y 2:** En `CuentasPorCobrar.tsx`, el botón "Registrar Cobro" se deshabilita cuando `estado` no es `Aprobada`/`Pagada`; en `CobranzaTabPanel.tsx`, eliminar plan exige confirmación explícita (`Confirmar eliminación` / `Cancelar`) y cuenta con `aria-label="Eliminar plan de pagos"`.
+7. **Verificación API real contra Postgres migrado (`test_cobros_e1`, sin mock):** `GET /cobranza/equipo/:id` (cotización y manual), `POST /cobros` (`Cheque`), `POST /planes-pago` (`2026-02-31` → `400`, válido → `201`) y `POST /cobros/:id/anular` (`200`) → `API_REAL_POSTGRES_R2_OK`.
+8. **Nota sobre consulta pendiente en producción:** Confirmar con Luis qué valores distintos existen en `pagos.tipo_pago` (`SELECT tipo_pago, count(*) FROM pagos GROUP BY 1;`) antes del despliegue.
