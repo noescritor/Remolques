@@ -66,3 +66,27 @@
 1. **Migración SQL:** No requerida.
 2. **Backend (`remolques-api` en EasyPanel):** Hacer **Rebuild** (por `GET /ordenes-trabajo/resumen-entregas`).
 3. **Frontend (`remolques-web` en EasyPanel):** Hacer **Rebuild**.
+
+---
+
+## 5. Ronda 2 (correcciones tras revisión de Claude `EXPEDIENTE_H_REVISION_CLAUDE.md`)
+
+- **Commit de código verificado:** `3e8932e` (construido sobre `0437e0d`, árbol limpio `git status` vacío).
+- **D1 — Plan semanal con respuesta real `{ orden, tareas, bitacora }`**:
+  - `expedienteApi.trazabilidadOrden` tipado como `TrazabilidadOrdenResponse`.
+  - `extraerTareasPlan` en `expedienteUtils.ts` lee `res.tareas` y `ExpedienteEquipoPage.tsx` muestra `fecha`, `descripcion`, `estado`, `frente.nombre` / `frente.area.nombre` y `operarios[].nombre`.
+- **D2 — Estados independientes `cargando | error | ok` y `Promise.allSettled`**:
+  - Eliminados los `.catch(() => [])` que ocultaban fallos como "sin datos". Cada sección (Resumen, Presupuestos, Plan semanal, Calidad, Cobranza, Fases del tablero) tiene su propio estado, aviso de error y botón **Reintentar**.
+  - `refrescarResumenSilencioso` usa `Promise.allSettled` y conserva los datos previos si falla.
+- **D3 — Sin emparejamiento numérico entre catálogos de fases**:
+  - `ChecklistDespiecePanel.tsx` ya no resalta/atenúa fases ni muestra `"Terminada en planta"` por coincidencia numérica; `"Liberar fase completa"` sigue disponible en todas las fases.
+  - `ExpedienteEquipoPage.tsx` muestra en el encabezado fijo **`Tablero: en <fase>`** según `faseEnCurso(fasesEquipo)`.
+- **D4 — Paginación en `resumenEntregasOrdenesMotor`**:
+  - Pagina `v_orden_despiece_avance` con `.order("linea_id", { ascending: true }).range(desde, hasta)` en bloques de `1000` hasta recibir un bloque corto. Probado en Deno con simulador de `1250` filas (`[0, 999]` y `[1000, 1999]`) y propagación de error DB.
+- **Observaciones 1, 2, 3 y 5**:
+  - Criterio único de "partida completa" (`esPartidaCompleta` en servidor y `esPartidaCompletaLinea` en `expedienteUtils.ts` + `ChecklistDespiecePanel.tsx`): usa `estado_entrega === 'completo'` cuando viene de la vista SQL o `ent > 0 && ent >= req` (evita `0 >= 0`). La insignia `"Completa"` de cada fase usa `partidasCompletas === partidasDeFase.length`.
+  - `ExpedienteEquipoRoute` en `App.tsx` pasa `key={ordenId}` a `ExpedienteEquipoPage`.
+- **D5 — Pruebas y mutaciones (`COORDINACION/REVISIONES/arnes_revision_h/mutar_h.cjs`)**:
+  - Ejecución sobre export limpio (`git archive 0437e0d`, idéntico en lógica a `3e8932e`): **Detectadas 38/38 (inválidas: 2), Vivas: ninguna** (cubiertas `G3`, `G4`, `G9`, `G10`, `G11`, `G12`, `E3`, `E7`–`E13`, `E18`, `E21`, `E22`).
+- **Evidencia navegador Ronda 2** (`COORDINACION/EVIDENCIA/expediente_h_r2_*.png`):
+  - `expediente_h_r2_01_plan_semanal.png` (tarea visible con forma real `{ orden, tareas, bitacora }`), `expediente_h_r2_02_almacen_sin_emparejar.png` (`Tablero: en Corte` en encabezado, Almacén sin emparejamiento), `expediente_h_r2_03_corte_carga_cobranza.png` (corte de API en la carga mostrando error + `Reintentar`, recuperado al reintentar).

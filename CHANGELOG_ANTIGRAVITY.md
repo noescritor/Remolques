@@ -3,6 +3,20 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-22 - Bloque H (Ronda 2: D1-D5, paginación y criterio único de partida completa)
+**Herramienta:** Antigravity  
+**Tipo:** fix (D1 lectura real `{ orden, tareas, bitacora }` en Plan semanal; D2 `Promise.allSettled` + estado `cargando | error | ok` con Reintentar por pestaña y conservación en refresco silencioso; D3 eliminación de emparejamiento numérico en `ChecklistDespiecePanel` y chip `Tablero: en <fase>` en encabezado; D4 paginación `.range()` en bloques de 1000 por `linea_id` en `resumenEntregasOrdenesMotor`; D5 cierre de mutaciones con 38/38 detectadas en `mutar_h.cjs`; criterio único `esPartidaCompleta` / `esPartidaCompletaLinea` y `key={ordenId}` en `App.tsx`)  
+**Rama:** `expediente-h-2026-11-22`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/EXPEDIENTE_H_REVISION_CLAUDE.md`, `COORDINACION/REPORTES/EXPEDIENTE_H_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/resumen_entregas.ts`, `motor/resumen_entregas.test.ts` (`0437e0d`).
+- `src/app/components/Expediente/expedienteUtils.ts`, `motor/expediente_utils.test.ts`, `expedienteApi.ts`, `ExpedienteEquipoPage.tsx` (`0437e0d`).
+- `src/app/components/OrdenesTrabajo/ChecklistDespiecePanel.tsx`, `src/app/App.tsx` (`0437e0d`, `3e8932e`).
+- `COORDINACION/EVIDENCIA/expediente_h_r2_01..03_*.png` y `COORDINACION/REPORTES/EXPEDIENTE_H_REPORTE_ANTY.md`.
+**Acciones manuales pendientes:**  
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel (cuando se apruebe el merge).
+- Migración SQL: **no requerida**.
+
 ## 2026-11-22 - Bloque H: Expediente por equipo + liberación de material por fase
 **Herramienta:** Antigravity  
 **Tipo:** feat (ruta de solo lectura `GET /ordenes-trabajo/resumen-entregas` con aislamiento org; utilidades puras `expedienteUtils.ts` y pruebas Deno; extracción de `ChecklistDespiecePanel` manteniendo `ChecklistDespieceModal`; pantalla `/expediente/:ordenId` con 7 pestañas sincronizadas en URL y 4 puntos de entrada desde Tablero, Órdenes, Calidad y Plan Semanal; insignia `Almacén X/Y` en `MatrizProduccionView`)  
