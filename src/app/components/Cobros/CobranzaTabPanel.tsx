@@ -326,7 +326,7 @@ export function CobranzaTabPanel({ estado, error, datos, onRecargar }: CobranzaT
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2 font-medium">
                       <span className="font-mono text-xs text-muted-foreground">#{p.numero}</span>
-                      <span>Vence: {p.fecha_vencimiento}</span>
+                      <span>Vence: {String(p.fecha_vencimiento).slice(0, 10)}</span>
                       <Badge variant={estInfo.variant}>{estInfo.label}</Badge>
                     </div>
                     {p.nota && <div className="text-xs text-muted-foreground">{p.nota}</div>}
@@ -384,7 +384,7 @@ export function CobranzaTabPanel({ estado, error, datos, onRecargar }: CobranzaT
                     </div>
 
                     <div className="text-xs text-muted-foreground">
-                      Fecha: {c.fecha}
+                      Fecha: {String(c.fecha).slice(0, 10)}
                       {c.notas ? ` · ${c.notas}` : ''}
                     </div>
 

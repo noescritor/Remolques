@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, Calendar, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
@@ -46,6 +46,7 @@ export function PlanPagosModal({
   const [notas, setNotas] = useState('');
   const [filas, setFilas] = useState<ParcialidadForm[]>([]);
   const [guardando, setGuardando] = useState(false);
+  const guardandoRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export function PlanPagosModal({
         setFilas(
           planActual.parcialidades.map((p, idx) => ({
             numero: p.numero || idx + 1,
-            fecha_vencimiento: p.fecha_vencimiento,
+            fecha_vencimiento: String(p.fecha_vencimiento).slice(0, 10),
             monto: String(p.monto),
             nota: p.nota || '',
           })),
@@ -93,7 +94,7 @@ export function PlanPagosModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (guardando) return;
+    if (guardandoRef.current || guardando) return;
     setError(null);
 
     const parcialidades = filas.map((f, idx) => ({
@@ -109,6 +110,7 @@ export function PlanPagosModal({
       return;
     }
 
+    guardandoRef.current = true;
     setGuardando(true);
     try {
       await onGuardar({
@@ -122,6 +124,7 @@ export function PlanPagosModal({
     } catch (err) {
       setError(traducirErrorCobros(err));
     } finally {
+      guardandoRef.current = false;
       setGuardando(false);
     }
   };

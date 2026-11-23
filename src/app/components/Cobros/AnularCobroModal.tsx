@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, Ban } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
@@ -16,6 +16,7 @@ interface AnularCobroModalProps {
 export function AnularCobroModal({ cobro, onOpenChange, onConfirmar }: AnularCobroModalProps) {
   const [motivo, setMotivo] = useState('');
   const [guardando, setGuardando] = useState(false);
+  const guardandoRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,12 +29,13 @@ export function AnularCobroModal({ cobro, onOpenChange, onConfirmar }: AnularCob
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!cobro || guardando) return;
+    if (!cobro || guardandoRef.current || guardando) return;
     if (!motivo.trim()) {
       setError('El motivo de anulación es obligatorio.');
       return;
     }
     setError(null);
+    guardandoRef.current = true;
     setGuardando(true);
     try {
       await onConfirmar(cobro.id, motivo.trim());
@@ -41,6 +43,7 @@ export function AnularCobroModal({ cobro, onOpenChange, onConfirmar }: AnularCob
     } catch (err) {
       setError(traducirErrorCobros(err));
     } finally {
+      guardandoRef.current = false;
       setGuardando(false);
     }
   };

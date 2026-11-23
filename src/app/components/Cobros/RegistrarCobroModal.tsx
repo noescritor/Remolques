@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, CheckCircle2, DollarSign, Layers } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
@@ -68,6 +68,7 @@ export function RegistrarCobroModal({
   const [asignarPorEquipo, setAsignarPorEquipo] = useState<boolean>(false);
   const [montosEquipo, setMontosEquipo] = useState<Record<string, string>>({});
   const [guardando, setGuardando] = useState<boolean>(false);
+  const guardandoRef = useRef<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [excedenteDetectado, setExcedenteDetectado] = useState<number>(0);
 
@@ -131,7 +132,7 @@ export function RegistrarCobroModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (guardando) return;
+    if (guardandoRef.current || guardando) return;
     setError(null);
 
     const checkCobro = validarDatosCobro({
@@ -162,6 +163,7 @@ export function RegistrarCobroModal({
       }
     }
 
+    guardandoRef.current = true;
     setGuardando(true);
     try {
       await onGuardar({
@@ -182,6 +184,7 @@ export function RegistrarCobroModal({
       }
       setError(traducirErrorCobros(err));
     } finally {
+      guardandoRef.current = false;
       setGuardando(false);
     }
   };
