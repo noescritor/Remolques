@@ -1,15 +1,199 @@
 import type { SupabaseClient } from "npm:@supabase/supabase-js";
-import {
-  type CobranzaCotizacionDto,
-  type CobranzaEquipoDto,
-  type CobroDto,
-  type PagoAplicacionDto,
-  type PlanPagoDto,
-  imputarCobrosAParcialidades,
-  redondear2,
-  saldoCotizacion,
-  validarPlanParcialidades,
-} from "../../../../src/app/utils/cobros.ts";
+
+export type EstatusParcialidad = "pagada" | "vencida" | "parcial" | "pendiente";
+
+export interface PagoAplicacionDto {
+  id?: string;
+  pago_id?: string;
+  orden_trabajo_id: string;
+  monto: number;
+}
+
+export interface CobroDto {
+  id: string;
+  organizacion_id?: string;
+  cotizacion_id: string;
+  tipo_pago: string;
+  referencia?: string | null;
+  monto: number;
+  fecha: string;
+  estado: "vigente" | "anulado";
+  anulado_at?: string | null;
+  anulado_por?: string | null;
+  motivo_anulacion?: string | null;
+  notas?: string | null;
+  descripcion_especie?: string | null;
+  created_at?: string;
+  aplicaciones?: PagoAplicacionDto[];
+}
+
+export interface ParcialidadInput {
+  id?: string;
+  numero: number;
+  fecha_vencimiento: string;
+  monto: number;
+  nota?: string | null;
+}
+
+export interface ParcialidadEstadoDto extends ParcialidadInput {
+  monto_cubierto: number;
+  monto_pendiente: number;
+  estatus: EstatusParcialidad;
+}
+
+export interface PlanPagoDto {
+  id: string;
+  cotizacion_id: string;
+  orden_trabajo_id?: string | null;
+  nombre: string;
+  notas?: string | null;
+  activo: boolean;
+  parcialidades: ParcialidadEstadoDto[];
+}
+
+export interface EquipoResumenCobranzaDto {
+  orden_trabajo_id: string;
+  nomenclatura_id?: string | null;
+  modelo?: string | null;
+  tipo_equipo?: string | null;
+  valor_pactado?: number | null;
+  notas_valor?: string | null;
+  cobrado_asignado: number;
+  saldo_equipo?: number | null;
+}
+
+export interface CobranzaCotizacionDto {
+  cotizacion: {
+    id: string;
+    folio: string;
+    estado: string;
+    total: number;
+    cliente_id?: string | null;
+    cliente_nombre?: string | null;
+  };
+  resumen: {
+    total: number;
+    cobrado_vigente: number;
+    saldo_pendiente: number;
+    saldo_a_favor: number;
+    sin_asignar_equipo: number;
+  };
+  equipos: EquipoResumenCobranzaDto[];
+  cobros: CobroDto[];
+  plan_activo: PlanPagoDto | null;
+}
+
+export interface CobranzaEquipoDto {
+  orden: {
+    id: string;
+    nomenclatura_id?: string | null;
+    modelo?: string | null;
+    tipo_equipo?: string | null;
+    cotizacion_id?: string | null;
+    es_manual: boolean;
+  };
+  valor_pactado: number | null;
+  notas_valor: string | null;
+  cobrado_asignado: number;
+  saldo_equipo: number | null;
+  cobranza_cotizacion: CobranzaCotizacionDto | null;
+}
+
+function redondear2(n: number): number {
+  if (!Number.isFinite(n)) return 0;
+  const r = Math.round((n + Math.sign(n) * Number.EPSILON) * 100) / 100;
+  return r === 0 ? 0 : r;
+}
+
+function saldoCotizacion(
+  total: number,
+  cobros: ReadonlyArray<{ monto: number; estado?: string | null }>,
+): { total: number; cobrado: number; saldo: number; saldo_a_favor: number } {
+  const totalR = redondear2(Math.max(0, total));
+  let suma = 0;
+  for (const c of cobros) {
+    if (c.estado === "anulado") continue;
+    const m = Number(c.monto);
+    if (Number.isFinite(m) && m > 0) suma += m;
+  }
+  const cobrado = redondear2(suma);
+  return {
+    total: totalR,
+    cobrado,
+    saldo: redondear2(Math.max(0, totalR - cobrado)),
+    saldo_a_favor: redondear2(Math.max(0, cobrado - totalR)),
+  };
+}
+
+function estatusParcialidad(
+  monto: number,
+  montoCubierto: number,
+  fechaVencimiento: string,
+  hoy: string,
+): EstatusParcialidad {
+  if (montoCubierto >= monto - 0.005) return "pagada";
+  if (fechaVencimiento < hoy) return "vencida";
+  if (montoCubierto > 0.005) return "parcial";
+  return "pendiente";
+}
+
+function imputarCobrosAParcialidades(
+  parcialidades: ReadonlyArray<ParcialidadInput>,
+  totalCobradoVigente: number,
+  hoy: string,
+): ParcialidadEstadoDto[] {
+  const ordenadas = [...parcialidades].sort((a, b) => {
+    if (a.fecha_vencimiento !== b.fecha_vencimiento) {
+      return a.fecha_vencimiento < b.fecha_vencimiento ? -1 : 1;
+    }
+    return a.numero - b.numero;
+  });
+  let disponible = redondear2(Math.max(0, totalCobradoVigente));
+  return ordenadas.map((p) => {
+    const monto = redondear2(Math.max(0, p.monto));
+    const cubierto = redondear2(Math.min(monto, disponible));
+    disponible = redondear2(Math.max(0, disponible - cubierto));
+    return {
+      ...p,
+      monto,
+      monto_cubierto: cubierto,
+      monto_pendiente: redondear2(Math.max(0, monto - cubierto)),
+      estatus: estatusParcialidad(monto, cubierto, p.fecha_vencimiento, hoy),
+    };
+  });
+}
+
+function validarPlanParcialidades(
+  parcialidades: ReadonlyArray<{ numero: number; fecha_vencimiento: string; monto: number }>,
+  limiteTotal?: number | null,
+): { valido: boolean; error?: string } {
+  if (parcialidades.length === 0) {
+    return { valido: false, error: "El plan debe incluir al menos una parcialidad." };
+  }
+  const numeros = new Set<number>();
+  let suma = 0;
+  for (const p of parcialidades) {
+    if (!Number.isInteger(p.numero) || p.numero < 1) {
+      return { valido: false, error: "Cada parcialidad debe tener un número entero >= 1." };
+    }
+    if (numeros.has(p.numero)) {
+      return { valido: false, error: "No puede haber números de parcialidad repetidos." };
+    }
+    numeros.add(p.numero);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(p.fecha_vencimiento)) {
+      return { valido: false, error: "Cada parcialidad debe tener una fecha válida (YYYY-MM-DD)." };
+    }
+    const m = redondear2(Number(p.monto));
+    if (!Number.isFinite(m) || m <= 0) {
+      return { valido: false, error: "El monto de cada parcialidad debe ser mayor a cero." };
+    }
+    suma = redondear2(suma + m);
+  }
+  if (limiteTotal != null && Number.isFinite(limiteTotal) && suma > redondear2(limiteTotal) + 0.005) {
+    return { valido: false, error: `La suma de parcialidades (${suma}) excede el total (${redondear2(limiteTotal)}).` };
+  }
+  return { valido: true };
+}
 
 export class CobrosError extends Error {
   status: number;
