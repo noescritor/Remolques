@@ -330,3 +330,39 @@ Deno.test("acero backend - eliminarPrecioAcero: escribe historial y elimina", as
   assertEquals(fakeDb.state.historial[0].precio_anterior, 2000);
   assertEquals(fakeDb.state.historial[0].precio_nuevo, 0);
 });
+
+Deno.test("acero backend - actualizarMaterialAcero: edita tipo explícito y renombrar NO pisa tipo", async () => {
+  const fakeDb = createFakeSupabase({
+    materiales: [
+      { id: "mat-1", organizacion_id: "org-1", nombre: "Perfil especial A36", tipo: "solera", ancho_ft: null, largo_ft: null, activo: true },
+    ],
+  });
+
+  // 1. Cambiar tipo a canal explícitamente
+  const aCanal = await actualizarMaterialAcero(fakeDb, "org-1", "mat-1", { tipo: "canal" });
+  assertEquals(aCanal.tipo, "canal");
+  assertEquals(aCanal.ancho_ft, null);
+
+  // 2. Renombrar con palabra "Placa" NO debe pisar tipo="canal"
+  const renombrado = await actualizarMaterialAcero(fakeDb, "org-1", "mat-1", {
+    nombre: "Placa base especial 4X10'",
+  });
+  assertEquals(renombrado.nombre, "Placa base especial 4X10'");
+  assertEquals(renombrado.tipo, "canal");
+  assertEquals(renombrado.ancho_ft, null); // sigue siendo canal, no extrae medidas de lámina
+
+  // 3. Cambiar tipo a placa SÍ extrae medidas del nombre
+  const aPlaca = await actualizarMaterialAcero(fakeDb, "org-1", "mat-1", { tipo: "placa" });
+  assertEquals(aPlaca.tipo, "placa");
+  assertEquals(aPlaca.ancho_ft, 4);
+  assertEquals(aPlaca.largo_ft, 10);
+
+  // 4. Tipo inválido -> error 400
+  await assertRejects(
+    async () => {
+      await actualizarMaterialAcero(fakeDb, "org-1", "mat-1", { tipo: "madera" });
+    },
+    Error,
+    "Tipo de material inválido"
+  );
+});
