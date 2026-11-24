@@ -436,7 +436,7 @@ type CalculoResultado =
                     </Label>
                     <p className="text-[11px] text-muted-foreground flex items-center gap-1">
                       <Info className="h-3 w-3 inline flex-shrink-0" />
-                      Valor del Excel del cliente; pendiente confirmar qué incluye.
+                      El factor cubre mano de obra y proceso de la placa trabajada. El precio de la matriz es siempre el de la placa sin factor.
                     </p>
                   </div>
                   <div className="w-28 flex-shrink-0">

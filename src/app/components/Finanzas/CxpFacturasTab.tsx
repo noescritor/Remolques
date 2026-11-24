@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -24,11 +25,13 @@ import {
   Layers,
   FileCode,
   AlertTriangle,
+  Sparkles,
 } from 'lucide-react';
 import { Checkbox } from '../ui/checkbox';
 import { formatearMonedaDe, Moneda, fechaLocalISO } from '../../utils/cuentasPorPagar';
 import { BASE_URL } from '../../utils/api';
 import { CxpCfdiModal } from './CxpCfdiModal';
+import { AplicarPreciosAceroCfdiModal } from '../Calculadora/AplicarPreciosAceroCfdiModal';
 import { toast } from 'sonner';
 
 interface FacturasTabProps {
@@ -75,6 +78,24 @@ export function CxpFacturasTab({
 
   // Diálogo Importar CFDI
   const [modalCfdiOpen, setModalCfdiOpen] = useState(false);
+
+  // Diálogo Actualizar precios de acero desde CFDI (Bloque F)
+  const navigate = useNavigate();
+  const [facturaAceroModal, setFacturaAceroModal] = useState<{ id: string; folio: string } | null>(null);
+  const supabaseShim = useMemo(
+    () => ({
+      auth: {
+        getSession: async () => ({
+          data: {
+            session: {
+              access_token: getAuthToken ? await getAuthToken() : '',
+            },
+          },
+        }),
+      },
+    }),
+    [getAuthToken]
+  );
 
   // Partidas de la factura en edición/creación
   const [partidas, setPartidas] = useState<Array<{
@@ -930,6 +951,18 @@ export function CxpFacturasTab({
                                 >
                                   <DollarSign className="w-3 h-3" />
                                   Pagar
+                                </Button>
+                              )}
+                              {f.estado !== 'cancelada' && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setFacturaAceroModal({ id: f.id, folio: f.folio })}
+                                  className="h-7 px-2 text-xs gap-1"
+                                  title="Actualizar precios de acero desde esta factura"
+                                >
+                                  <Sparkles className="w-3 h-3" />
+                                  Acero
                                 </Button>
                               )}
                               {f.estado !== 'cancelada' && (
@@ -1825,6 +1858,18 @@ export function CxpFacturasTab({
           onImportExitoso={onRecargarFacturas}
         />
       )}
+
+      {/* DIÁLOGO: ACTUALIZAR PRECIOS DE ACERO DESDE FACTURA (Bloque F) */}
+      <AplicarPreciosAceroCfdiModal
+        open={Boolean(facturaAceroModal)}
+        onOpenChange={(o) => {
+          if (!o) setFacturaAceroModal(null);
+        }}
+        facturaId={facturaAceroModal?.id || null}
+        facturaFolio={facturaAceroModal?.folio}
+        supabase={supabaseShim}
+        onIrAMatriz={() => navigate('/calculadora?tab=precios')}
+      />
     </div>
   );
 }
