@@ -476,6 +476,10 @@ export async function obtenerPropuestaAceroCfdi(
     },
     proveedores_acero: proveedoresExistentes,
     materiales: materialesActivos,
+    precios_actuales: Array.from(precioActualMap.entries()).map(([k, v]) => {
+      const [material_id, proveedor] = k.split("|");
+      return { material_id, proveedor, precio: v.precio, incluye_iva: v.incluye_iva };
+    }),
     lineas,
   };
 }
@@ -558,7 +562,7 @@ export async function listarCatalogoAlias(
   orgId: string,
   destinoTipo?: string,
 ) {
-  return await paginar<Record<string, unknown>>(async (from, to) => {
+  const rows = await paginar<Record<string, unknown>>(async (from, to) => {
     let q = supabase
       .from("catalogo_alias_factura")
       .select("*")
@@ -569,6 +573,24 @@ export async function listarCatalogoAlias(
     if (destinoTipo) q = q.eq("destino_tipo", destinoTipo);
     return await q;
   });
+
+  if (rows.length > 0 && (!destinoTipo || destinoTipo === "acero_material")) {
+    const mats = await paginar<{ id: string; nombre: string }>(async (from, to) =>
+      await supabase
+        .from("acero_materiales")
+        .select("id, nombre")
+        .eq("organizacion_id", orgId)
+        .order("id", { ascending: true })
+        .range(from, to)
+    );
+    const matMap = new Map(mats.map((m) => [m.id, m.nombre]));
+    for (const r of rows) {
+      if (r.destino_tipo === "acero_material") {
+        r.destino_nombre = matMap.get(String(r.destino_id)) || null;
+      }
+    }
+  }
+  return rows;
 }
 
 export async function eliminarCatalogoAlias(

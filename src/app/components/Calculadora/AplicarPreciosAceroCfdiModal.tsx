@@ -89,9 +89,8 @@ export function AplicarPreciosAceroCfdiModal({
   const guardandoRef = useRef(false);
   const [errorAplicar, setErrorAplicar] = useState<string | null>(null);
   const [resultadoAplicar, setResultadoAplicar] = useState<{
-    aplicadas: number;
-    alias_guardados: number;
-    fuente: string;
+    total: number;
+    folio: string;
   } | null>(null);
 
   const proveedorFinal = useMemo(() => {
@@ -99,8 +98,9 @@ export function AplicarPreciosAceroCfdiModal({
   }, [proveedorModo, proveedorNuevo, proveedorSeleccionado]);
 
   const inicializarFilas = (data: PropuestaAceroCfdi) => {
-    const provs = data.proveedores_acero_disponibles || [];
-    const sugerido = (data.proveedor_acero_sugerido || '').trim();
+    const provs = data.proveedores_acero || [];
+    const primeraConProv = data.lineas.find((l) => l.proveedor_acero_sugerido)?.proveedor_acero_sugerido;
+    const sugerido = (primeraConProv || data.factura.proveedor_nombre || '').trim();
     if (sugerido && provs.includes(sugerido)) {
       setProveedorModo('existente');
       setProveedorSeleccionado(sugerido);
@@ -120,19 +120,17 @@ export function AplicarPreciosAceroCfdiModal({
     }
 
     const nextFilas: Record<string, EstadoFila> = {};
-    for (const p of data.partidas) {
+    for (const p of data.lineas) {
       const matId = p.material_id_sugerido || '';
       const factorInit =
-        p.factor_sugerido !== null && p.factor_sugerido !== undefined
-          ? String(p.factor_sugerido)
-          : p.banderas.requiere_factor
+        p.banderas.requiere_factor && p.banderas.bloqueada_unidad
           ? ''
-          : '1';
+          : String(p.factor_conversion_sugerido || 1);
       const puedeAutoSeleccionar =
         !p.banderas.ya_aplicada &&
         Boolean(matId) &&
         !p.banderas.bloqueada_tipo_cambio &&
-        !(p.banderas.requiere_factor && !p.factor_sugerido);
+        !p.banderas.bloqueada_unidad;
       nextFilas[p.partida_id] = {
         seleccionada: puedeAutoSeleccionar,
         materialId: matId,
@@ -173,7 +171,7 @@ export function AplicarPreciosAceroCfdiModal({
     const map = new Map<string, { precio: number; incluye_iva: boolean }>();
     if (!propuesta) return map;
     for (const pr of propuesta.precios_actuales || []) {
-      map.set(`${pr.material_id}::${pr.proveedor}`, {
+      map.set(`${pr.material_id}::${pr.proveedor.toUpperCase()}`, {
         precio: Number(pr.precio),
         incluye_iva: Boolean(pr.incluye_iva),
       });
@@ -184,8 +182,8 @@ export function AplicarPreciosAceroCfdiModal({
   const materialesFiltrados = useMemo(() => {
     if (!propuesta) return [];
     const q = busquedaMaterial.trim().toLowerCase();
-    if (!q) return propuesta.materiales_catalogo;
-    return propuesta.materiales_catalogo.filter(
+    if (!q) return propuesta.materiales;
+    return propuesta.materiales.filter(
       (m) => m.nombre.toLowerCase().includes(q) || m.tipo.toLowerCase().includes(q)
     );
   }, [propuesta, busquedaMaterial]);
@@ -214,13 +212,13 @@ export function AplicarPreciosAceroCfdiModal({
       tc = Number(propuesta.factura.tipo_cambio_emision || 0);
     }
     const precioNuevo =
-      !p.banderas.bloqueada_tipo_cambio && factorValido && p.cantidad > 0 && p.importe_xml > 0
-        ? Math.round(((p.importe_xml / p.cantidad) * tc * factorNum) * 100) / 100
+      !p.banderas.bloqueada_tipo_cambio && factorValido && p.cantidad > 0 && p.importe > 0
+        ? Math.round(((p.importe / p.cantidad) * tc * factorNum) * 100) / 100
         : null;
 
     const actualRow =
       f.materialId && proveedorFinal
-        ? mapaPreciosActuales.get(`${f.materialId}::${proveedorFinal}`) || null
+        ? mapaPreciosActuales.get(`${f.materialId}::${proveedorFinal.toUpperCase()}`) || null
         : null;
 
     const precioActual = actualRow ? actualRow.precio : null;
@@ -268,7 +266,7 @@ export function AplicarPreciosAceroCfdiModal({
 
   const seleccionadas = useMemo(() => {
     if (!propuesta) return [];
-    return propuesta.partidas.filter((p) => {
+    return propuesta.lineas.filter((p) => {
       const f = filas[p.partida_id];
       const calc = calcularFila(p);
       return f?.seleccionada && calc.puedeAplicar;
@@ -314,9 +312,10 @@ export function AplicarPreciosAceroCfdiModal({
         material_id: f.materialId,
         proveedor_acero: proveedorFinal,
         factor_conversion: Number.isFinite(factorNum) && factorNum > 0 ? factorNum : 1,
-        recordar_alias: Boolean(f.recordarAlias),
-        confirmar_fecha_anterior: Boolean(f.confirmarFechaAnterior),
-        confirmar_variacion_alta: Boolean(f.confirmarVariacionAlta),
+        guardar_alias: Boolean(f.recordarAlias),
+        forzar_fecha_anterior: Boolean(f.confirmarFechaAnterior),
+        forzar_variacion: Boolean(f.confirmarVariacionAlta),
+        descripcion_normalizada: p.descripcion_normalizada,
       };
     });
 
@@ -326,11 +325,10 @@ export function AplicarPreciosAceroCfdiModal({
     try {
       const res = await aplicarPreciosAceroCfdiApi(supabase, facturaId, lineas);
       setResultadoAplicar({
-        aplicadas: res.aplicadas,
-        alias_guardados: res.alias_guardados,
-        fuente: res.fuente,
+        total: res.total ?? lineas.length,
+        folio: propuesta.factura.folio,
       });
-      toast.success(`Se actualizaron ${res.aplicadas} precio(s) de acero`);
+      toast.success(`Se actualizaron ${res.total ?? lineas.length} precio(s) de acero`);
       if (onAplicado) onAplicado();
       // Recargar propuesta para marcar las partidas como ya aplicadas
       try {
@@ -390,12 +388,7 @@ export function AplicarPreciosAceroCfdiModal({
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 p-3 rounded-lg border border-border bg-muted/30">
               <div className="md:col-span-6 space-y-1 text-xs">
                 <div className="font-semibold text-foreground">
-                  {propuesta.factura.emisor_nombre || propuesta.factura.proveedor_cxp_nombre || 'Proveedor'}
-                  {propuesta.factura.emisor_rfc && (
-                    <span className="ml-1.5 font-mono text-muted-foreground">
-                      ({propuesta.factura.emisor_rfc})
-                    </span>
-                  )}
+                  {propuesta.factura.proveedor_nombre || 'Proveedor'}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
                   <span>Folio: <strong className="text-foreground">{propuesta.factura.folio}</strong></span>
@@ -428,7 +421,7 @@ export function AplicarPreciosAceroCfdiModal({
                     }}
                     className="h-9 rounded-md border border-border bg-background px-2.5 text-xs text-foreground flex-1"
                   >
-                    {propuesta.proveedores_acero_disponibles.map((prov) => (
+                    {propuesta.proveedores_acero.map((prov) => (
                       <option key={prov} value={prov}>
                         {prov}
                       </option>
@@ -451,11 +444,11 @@ export function AplicarPreciosAceroCfdiModal({
               </div>
             </div>
 
-            {propuesta.factura.tiene_descuentos && (
+            {propuesta.factura.descuento_en_factura && (
               <div className="flex items-start gap-2 p-2.5 rounded-md border border-amber-500/40 bg-amber-500/10 text-xs text-foreground">
                 <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                 <span>
-                  Esta factura trae descuentos ({fmtMoneda(propuesta.factura.descuento_total)}); revisa el precio unitario antes de aplicar.
+                  Esta factura trae descuentos; revisa el precio unitario antes de aplicar.
                 </span>
               </div>
             )}
@@ -465,10 +458,7 @@ export function AplicarPreciosAceroCfdiModal({
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <span>
-                    <strong>{resultadoAplicar.aplicadas} precio(s) actualizado(s)</strong> en la matriz ({resultadoAplicar.fuente})
-                    {resultadoAplicar.alias_guardados > 0
-                      ? ` · ${resultadoAplicar.alias_guardados} alias recordado(s)`
-                      : ''}.
+                    <strong>{resultadoAplicar.total} precio(s) actualizado(s)</strong> en la matriz (CFDI {resultadoAplicar.folio}).
                   </span>
                 </div>
                 {onIrAMatriz && (
@@ -501,7 +491,7 @@ export function AplicarPreciosAceroCfdiModal({
             {/* Filtro rápido de catálogo de materiales */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="text-xs text-muted-foreground">
-                {propuesta.partidas.length} concepto(s) en la factura · {seleccionadas.length} listo(s) para aplicar
+                {propuesta.lineas.length} concepto(s) en la factura · {seleccionadas.length} listo(s) para aplicar
               </div>
               <Input
                 value={busquedaMaterial}
@@ -511,7 +501,7 @@ export function AplicarPreciosAceroCfdiModal({
               />
             </div>
 
-            {propuesta.partidas.length === 0 ? (
+            {propuesta.lineas.length === 0 ? (
               <div className="py-10 text-center text-sm text-muted-foreground border border-border rounded-md">
                 Esta factura no tiene partidas de tipo concepto para proponer precios.
               </div>
@@ -529,7 +519,7 @@ export function AplicarPreciosAceroCfdiModal({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/60">
-                    {propuesta.partidas.map((p) => {
+                    {propuesta.lineas.map((p) => {
                       const f = filas[p.partida_id] || {
                         seleccionada: false,
                         materialId: '',
@@ -565,7 +555,7 @@ export function AplicarPreciosAceroCfdiModal({
                             <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground font-mono">
                               <span>Cant: {p.cantidad}</span>
                               <Badge variant="secondary" className="text-[10px] font-mono py-0">
-                                {p.clave_unidad || 'S/U'} · {p.unidad_label}
+                                {p.clave_unidad || 'S/U'}
                               </Badge>
                               <span>PU XML: {fmtMoneda(p.precio_unitario_xml)}</span>
                             </div>
@@ -573,19 +563,19 @@ export function AplicarPreciosAceroCfdiModal({
 
                           <td className="p-2 align-top space-y-1.5">
                             <div className="flex items-center gap-1.5">
-                              {p.origen_coincidencia === 'recordado' && (
+                              {p.sugerencia_origen === 'recordado' && (
                                 <Badge variant="default" className="text-[10px] py-0 gap-1">
                                   <BookmarkCheck className="h-3 w-3" />
                                   Recordado
                                 </Badge>
                               )}
-                              {p.origen_coincidencia === 'sugerido' && (
+                              {p.sugerencia_origen === 'sugerido' && (
                                 <Badge variant="secondary" className="text-[10px] py-0 gap-1">
                                   <Sparkles className="h-3 w-3" />
                                   Sugerido
                                 </Badge>
                               )}
-                              {p.origen_coincidencia === 'sin_sugerencia' && (
+                              {p.sugerencia_origen === 'sin_sugerencia' && (
                                 <Badge variant="outline" className="text-[10px] py-0 text-muted-foreground">
                                   Sin sugerencia
                                 </Badge>
@@ -614,7 +604,7 @@ export function AplicarPreciosAceroCfdiModal({
                               ))}
                               {f.materialId &&
                                 !materialesFiltrados.some((m) => m.id === f.materialId) &&
-                                propuesta.materiales_catalogo
+                                propuesta.materiales
                                   .filter((m) => m.id === f.materialId)
                                   .map((m) => (
                                     <option key={m.id} value={m.id}>

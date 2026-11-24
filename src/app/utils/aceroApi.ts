@@ -137,20 +137,20 @@ export interface PropuestaPartidaAcero {
   partida_id: string;
   orden: number;
   descripcion: string;
+  descripcion_normalizada: string;
+  clave_sat: string | null;
+  clave_unidad: string | null;
   cantidad: number;
   precio_unitario_xml: number;
-  importe_xml: number;
-  clave_unidad: string | null;
-  unidad_label: string;
-  factor_sugerido: number | null;
-  origen_coincidencia: 'recordado' | 'sugerido' | 'sin_sugerencia';
+  importe: number;
+  precio_neto_mxn: number | null;
+  sugerencia_origen: 'recordado' | 'sugerido' | 'sin_sugerencia';
+  sugerencia_puntaje: number;
   material_id_sugerido: string | null;
-  material_nombre_sugerido: string | null;
-  puntaje_sugerencia: number;
-  alias_id: string | null;
+  proveedor_acero_sugerido: string | null;
+  factor_conversion_sugerido: number;
   precio_actual: number | null;
   precio_actual_incluye_iva: boolean | null;
-  precio_nuevo_sin_iva: number | null;
   banderas: {
     ya_aplicada: boolean;
     fecha_anterior: boolean;
@@ -162,41 +162,30 @@ export interface PropuestaPartidaAcero {
     revisar_unidad: boolean;
     bloqueada_tipo_cambio: boolean;
   };
-  aplicacion_previa: {
-    material_id: string;
-    proveedor_acero: string;
-    precio_aplicado: number;
-    aplicado_el: string;
-  } | null;
 }
 
 export interface PropuestaAceroCfdi {
   factura: {
     id: string;
     folio: string;
+    uuid_fiscal: string | null;
     fecha_emision: string;
     moneda: string;
     tipo_cambio_emision: number | null;
     estado: string;
-    uuid_fiscal: string | null;
-    proveedor_cxp_id: string | null;
-    proveedor_cxp_nombre: string | null;
-    emisor_rfc: string | null;
-    emisor_nombre: string | null;
-    tiene_descuentos: boolean;
-    descuento_total: number;
+    proveedor_id: string | null;
+    proveedor_nombre: string | null;
+    descuento_en_factura: boolean;
   };
-  proveedor_acero_sugerido: string;
-  proveedores_acero_disponibles: string[];
-  materiales_catalogo: Array<{ id: string; nombre: string; tipo: string }>;
+  proveedores_acero: string[];
+  materiales: Array<{ id: string; nombre: string; tipo: string }>;
   precios_actuales: Array<{
     material_id: string;
     proveedor: string;
     precio: number;
     incluye_iva: boolean;
-    fuente: string | null;
   }>;
-  partidas: PropuestaPartidaAcero[];
+  lineas: PropuestaPartidaAcero[];
 }
 
 export interface LineaAplicarAceroCfdi {
@@ -204,24 +193,25 @@ export interface LineaAplicarAceroCfdi {
   material_id: string;
   proveedor_acero: string;
   factor_conversion?: number;
-  recordar_alias?: boolean;
-  confirmar_fecha_anterior?: boolean;
-  confirmar_variacion_alta?: boolean;
+  guardar_alias?: boolean;
+  forzar_fecha_anterior?: boolean;
+  forzar_variacion?: boolean;
+  descripcion_normalizada?: string;
 }
 
 export interface CatalogoAliasItem {
   id: string;
   destino_tipo: string;
   destino_id: string;
-  destino_nombre: string | null;
-  proveedor_rfc: string | null;
-  descripcion_original: string;
+  destino_nombre?: string | null;
+  proveedor_id: string;
+  proveedor_acero: string | null;
+  clave_sat: string | null;
   descripcion_normalizada: string;
-  clave_unidad: string | null;
-  factor_conversion: number | null;
-  usos: number;
-  creado_el: string;
-  actualizado_el: string;
+  factor_conversion: number;
+  veces_confirmado: number;
+  ultima_confirmacion: string;
+  created_at: string;
 }
 
 export async function fetchPropuestaAceroCfdi(
@@ -245,7 +235,7 @@ export async function aplicarPreciosAceroCfdiApi(
   supabase: any,
   facturaId: string,
   lineas: LineaAplicarAceroCfdi[]
-): Promise<{ ok: boolean; aplicadas: number; alias_guardados: number; fuente: string; factura_id: string }> {
+): Promise<{ ok: boolean; total: number; aplicadas: any[] }> {
   const headers = await getAuthHeaders(supabase);
   const res = await fetch(`${BASE_URL}/acero/cfdi/${encodeURIComponent(facturaId)}/aplicar`, {
     method: 'POST',
@@ -264,21 +254,20 @@ export async function aplicarPreciosAceroCfdiApi(
 
 export async function renombrarProveedorAceroApi(
   supabase: any,
-  nombreActual: string,
-  nombreNuevo: string
+  de: string,
+  a: string
 ): Promise<{
   ok: boolean;
-  nombre_actual: string;
-  nombre_nuevo: string;
+  de: string;
+  a: string;
   precios_actualizados: number;
-  historial_actualizado: number;
-  aplicaciones_actualizadas: number;
+  alias_actualizados: number;
 }> {
   const headers = await getAuthHeaders(supabase);
   const res = await fetch(`${BASE_URL}/acero/proveedores/renombrar`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ nombre_actual: nombreActual, nombre_nuevo: nombreNuevo }),
+    body: JSON.stringify({ de, a }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -302,7 +291,7 @@ export async function fetchCatalogoAliasApi(
     throw new Error(err.error || 'Error al cargar alias guardados');
   }
   const data = await res.json();
-  return Array.isArray(data?.alias) ? data.alias : [];
+  return Array.isArray(data) ? data : Array.isArray(data?.alias) ? data.alias : [];
 }
 
 export async function eliminarCatalogoAliasApi(

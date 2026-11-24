@@ -341,7 +341,7 @@ export function PreciosAcero({
       const res = await renombrarProveedorAceroApi(supabase, proveedorRenombrando, nuevo);
       setProveedoresLocales((prev) => prev.map((p) => (p === proveedorRenombrando ? nuevo : p)));
       toast.success(
-        `Proveedor renombrado a "${res.nombre_nuevo}" (${res.precios_actualizados} precios actualizados)`
+        `Proveedor renombrado a "${res.a}" (${res.precios_actualizados} precios actualizados)`
       );
       setProveedorRenombrando(null);
       onRecargar();

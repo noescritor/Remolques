@@ -149,8 +149,8 @@ async function resolveNested(table, rows, selectStr) {
 }
 
 const RPC_SIGNATURES = {
-  aplicar_precios_acero_cfdi: ['p_org_id', 'p_factura_id', 'p_usuario_id', 'p_lineas'],
-  renombrar_proveedor_acero: ['p_org_id', 'p_nombre_actual', 'p_nombre_nuevo'],
+  aplicar_precios_acero_cfdi: ['p_org', 'p_usuario', 'p_factura_id', 'p_lineas'],
+  renombrar_proveedor_acero: ['p_org', 'p_de', 'p_a'],
   registrar_cobro: ['p_org_id', 'p_cotizacion_id', 'p_monto', 'p_fecha', 'p_tipo_pago', 'p_referencia', 'p_notas', 'p_descripcion_especie', 'p_aplicaciones', 'p_permitir_saldo_a_favor', 'p_usuario_id'],
   anular_cobro: ['p_org_id', 'p_pago_id', 'p_motivo', 'p_usuario_id'],
   guardar_plan_pago: ['p_org_id', 'p_cotizacion_id', 'p_plan_id', 'p_orden_trabajo_id', 'p_nombre', 'p_notas', 'p_parcialidades'],

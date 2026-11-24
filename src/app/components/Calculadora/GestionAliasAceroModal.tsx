@@ -71,9 +71,9 @@ export function GestionAliasAceroModal({
     const q = filtro.trim().toLowerCase();
     if (!q) return true;
     return (
-      a.descripcion_original.toLowerCase().includes(q) ||
+      a.descripcion_normalizada.toLowerCase().includes(q) ||
       (a.destino_nombre || '').toLowerCase().includes(q) ||
-      (a.proveedor_rfc || '').toLowerCase().includes(q)
+      (a.proveedor_acero || '').toLowerCase().includes(q)
     );
   });
 
@@ -144,21 +144,21 @@ export function GestionAliasAceroModal({
                 >
                   <div className="space-y-1 min-w-0">
                     <div className="text-xs font-medium text-foreground break-words">
-                      {item.descripcion_original}
+                      {item.descripcion_normalizada}
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
                       <span>→</span>
                       <span className="font-semibold text-foreground">
                         {item.destino_nombre || item.destino_id}
                       </span>
-                      {item.proveedor_rfc && (
-                        <Badge variant="outline" className="text-[10px] font-mono">
-                          RFC {item.proveedor_rfc}
+                      {item.proveedor_acero && (
+                        <Badge variant="outline" className="text-[10px]">
+                          {item.proveedor_acero}
                         </Badge>
                       )}
-                      {item.clave_unidad && (
+                      {item.clave_sat && (
                         <Badge variant="secondary" className="text-[10px] font-mono">
-                          {item.clave_unidad}
+                          SAT {item.clave_sat}
                         </Badge>
                       )}
                       {item.factor_conversion !== null && (
@@ -166,7 +166,7 @@ export function GestionAliasAceroModal({
                           Factor {item.factor_conversion}
                         </Badge>
                       )}
-                      <span>· {item.usos} uso(s)</span>
+                      <span>· {item.veces_confirmado} confirmación(es)</span>
                     </div>
                   </div>
                   <Button
@@ -175,7 +175,7 @@ export function GestionAliasAceroModal({
                     onClick={() => handleEliminar(item)}
                     disabled={eliminandoId === item.id}
                     className="text-destructive hover:text-destructive hover:bg-destructive/10 self-end sm:self-center shrink-0"
-                    aria-label={`Eliminar alias ${item.descripcion_original}`}
+                    aria-label={`Eliminar alias ${item.descripcion_normalizada}`}
                   >
                     {eliminandoId === item.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

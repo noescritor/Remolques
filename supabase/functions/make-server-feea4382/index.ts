@@ -894,7 +894,9 @@ app.post("/acero/proveedores/renombrar", async (c) => {
     const orgId = c.get("organizacionId");
     const adminClient = getServiceClient();
     const payload = await c.req.json().catch(() => ({}));
-    const data = await renombrarProveedorAcero(adminClient, orgId, payload?.nombre_actual, payload?.nombre_nuevo);
+    const de = payload?.de ?? payload?.nombre_actual;
+    const a = payload?.a ?? payload?.nombre_nuevo;
+    const data = await renombrarProveedorAcero(adminClient, orgId, de, a);
     return c.json(data);
   } catch (error: any) {
     const status = error instanceof AceroCfdiError ? error.status : (error.status || 400);
