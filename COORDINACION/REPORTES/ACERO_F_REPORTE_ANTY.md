@@ -55,15 +55,20 @@
 - `components/Calculadora/PreciosAcero.tsx`: editor de material (Nombre, Tipo, Notas, Activo), selector de Tipo en Nuevo Material, toggle `Incluye IVA` / `Sin IVA` en edición de celda, visualización de `s/IVA` y `fuente` en matriz e historial, renombrar proveedor desde encabezado de columna con manejo de conflicto 409, y botón `Gestionar alias`.
 - `components/Calculadora/CosteoPlaca.tsx`: confirmada edición de factor ×1.5 y reemplazada la nota antigua por `"El factor cubre mano de obra y proceso de la placa trabajada. El precio de la matriz es siempre el de la placa sin factor."`.
 
-### Utilidad local de desarrollo
+### Utilidades locales de desarrollo y E2E (O8)
 - `scripts/dev/local_supabase_bridge.cjs`: puente PostgREST + Auth + RPC sobre PostgreSQL local (lee `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`, `BRIDGE_PORT` desde `process.env`, cero llaves incrustadas).
+- `scripts/dev/seed_acero_f.sql`: semilla reproducible de facturas de prueba (`FAC-ACERO-101`, `FAC-ACERO-VIEJA`, `FAC-CANCELADA-99`) con alias `Placa` → `Placa`.
+- `scripts/dev/test_acero_f_browser.cjs`: prueba E2E de navegador en Chrome headless + CDP sin rutas hardcodeadas.
 
 ---
 
-## 2. Cómo levantar el puente local para pruebas de navegador
+## 2. Cómo levantar el puente local y correr el E2E de navegador
 
 ```powershell
 # 1. Postgres 17 local en 54331 con BD clonada y migrada (ej. test_acero_f)
+#    Sembrar datos de prueba:
+psql -h 127.0.0.1 -p 54331 -U tester -d test_acero_f -v ON_ERROR_STOP=1 -f scripts/dev/seed_acero_f.sql
+
 # 2. Puente REST/Auth/RPC local en 54321
 $env:PGDATABASE="test_acero_f"; $env:PGPORT="54331"; $env:PGUSER="tester"; $env:PGPASSWORD="tester"; $env:BRIDGE_PORT="54321"
 node scripts/dev/local_supabase_bridge.cjs
@@ -77,6 +82,9 @@ deno run --allow-net --allow-env --allow-read index.ts
 Set-Location ..\..\..
 $env:VITE_API_URL="http://127.0.0.1:8000"; $env:VITE_SUPABASE_URL="http://127.0.0.1:54321"; $env:VITE_SUPABASE_ANON_KEY="local-anon"
 npx vite --port 5173 --strictPort
+
+# 5. Ejecutar prueba E2E de navegador (genera COORDINACION/EVIDENCIA/acero_f_01..05_*.png)
+node scripts/dev/test_acero_f_browser.cjs
 ```
 
 ---
@@ -120,6 +128,28 @@ npx vite --port 5173 --strictPort
 
 ---
 
-## 5. Preguntas abiertas
+## 5. Correcciones de Ronda 2 (revisión de Claude sobre `ee5875b`)
+
+- **D1 (Base común de IVA en variación ±30%):** se añadió la función pura SQL `acero_precio_base_sin_iva(precio, incluye_iva)` (con `c_tasa_iva CONSTANT NUMERIC := 0.16`) usada en `aplicar_precios_acero_cfdi`, y su equivalente `precioBaseSinIva` (`TASA_IVA_ACERO = 0.16`) en `motor/acero_cfdi.ts` (`evaluarBanderas` y `obtenerPropuestaAceroCfdi`, que ahora expone `precio_actual_sin_iva` y `precios_actuales[].precio_sin_iva`). El modal consume directamente `banderas.variacion_pct` / `variacion_alta` del servidor (y si el usuario cambia material/proveedor/factor en vivo, recalcula sobre `precio_sin_iva` del servidor con la misma constante). Verificado en Postgres real (C1 y C2 pasan).
+- **D2 (`renombrar_proveedor_acero`):** ahora actualiza también `acero_precios_historial.proveedor` y `acero_precios_cfdi_aplicados.proveedor` dentro del mismo RPC (corregida la omisión anterior y el reporte). Verificado en Postgres real (C6b, C6c y C6d pasan: el guardián de fecha anterior sigue bloqueando tras renombrar).
+- **D3 (Factor obligatorio en unidades de peso en servidor y modal):** `aplicar_precios_acero_cfdi` distingue `factor_conversion` omitido de `1` (con `factor_confirmado`) y rechaza con `factor_requerido` (mapeado a 400 en español) cualquier partida `KGM`/`GRM`/`TNE`/`LBR` sin factor explícito y confirmado (C3 pasa). `aplicarPreciosAceroCfdi` no inventa `1` cuando viene omitido, y `AplicarPreciosAceroCfdiModal.tsx` eliminó el fallback silencioso `: 1`.
+- **D4 (Cobertura de pruebas y mutaciones):** se agregaron pruebas con cliente simulado en `motor/acero_cfdi.test.ts` para aislamiento de organización en propuesta y borrado de alias, materiales inactivos, aviso de descuento por cabecera, fallback de alias sin `clave_sat`, factor/proveedor del alias, filtro `destino_tipo = 'acero_material'`, paginación >1000 filas, líneas vacías, límites `importe=0`/`cantidad=0`, redondeo a 4 decimales y margen exacto `0.05`. En `arnes_revision_f/mutar_f2.cjs`: **25/25 mutantes aplicables matados, 0 vivos** (los 5 `no_aplica` corresponden a líneas mejoradas en R2 para O6/D3/O7, todas cubiertas por pruebas directas).
+- **O1 (Comparador de acero):** interruptor renombrado a `"Mostrar resultados con IVA"` / `"Mostrar resultados sin IVA"` en `ComparadorAcero.tsx` (sin cambiar nada más del comparador) + prueba dorada en `acero_cfdi.test.ts` con `incluyeIva: false` y filas mixtas `incluye_iva: true/false`.
+- **O2 (Normalización de proveedor en RPC):** `aplicar_precios_acero_cfdi` y `renombrar_proveedor_acero` normalizan con `UPPER(TRIM(...))` (C7 pasa: `tpi-nuevo` actualiza `TPI-NUEVO` sin duplicar columna).
+- **O3 (Contradicciones en sugerencia de material):** `sugerirMaterial` ahora anula candidatos con contradicción de acabado (`galvanizada` vs `negra`), calibre explícito (`Cal 18` vs `Cal 10`) o medida `NxM` (`PTR 3X3` vs `PTR 4"`). Resultado en `arnes_revision_f/sug.ts` sobre el catálogo real: **16 aciertos, 5 sin sugerencia aceptables, 0 errores**.
+- **O4 (`precioDesdeConcepto`):** documentado con JSDoc el parámetro opcional `descuento` y por qué `obtenerPropuestaAceroCfdi` usa el importe bruto + bandera `descuento_en_factura`.
+- **O6 (Deadlock en actualizaciones concurrentes):** `aplicar_precios_acero_cfdi` bloquea los `acero_materiales` del lote en orden determinista (`ORDER BY id FOR UPDATE`), y `mapearErrorRpcAceroCfdi` mapea `40P01` (`deadlock_detected`) a `409`.
+- **O7 (4.º parámetro `proveedor` en `/propuesta`):** implementado `proveedorOverride?: string` en `obtenerPropuestaAceroCfdi` y cubierto en prueba unitaria.
+- **O8 (Reproducibilidad E2E):** commiteados `scripts/dev/seed_acero_f.sql` (corrigiendo el alias `Recordado` para que apunte a una `Placa` real y no a un `PTR`) y `scripts/dev/test_acero_f_browser.cjs`; E2E re-ejecutado en verde (`E2E_ACERO_F_OK`, 0 errores de consola, capturas actualizadas).
+
+### Verificación de Ronda 2
+- `arnes_revision_f/rev_f.sql` (Postgres 17 real, migración aplicada ×2 con `ON_ERROR_STOP=1`): **18/18 `PASA`** (C1, C2, C3, C4a–d, C5, C6a–d, C7, C8, C9, C9b–d).
+- `arnes_revision_f/mutar_f2.cjs`: **25 muertos, 0 vivos**.
+- `arnes_revision_f/sug.ts`: **bien=16, sin_sugerencia_aceptable=5, errores=0**.
+- `scripts/dev/test_acero_f_browser.cjs`: **`E2E_ACERO_F_OK`** (`placaAPlaca: true`, `CHECK_COMPARADOR_O1: true`, `768px`/`375px` sin desbordamiento, `0` errores de consola).
+
+---
+
+## 6. Preguntas abiertas
 
 - Ninguna bloqueante. Nota informativa para Bloque G: `catalogo_alias_factura` ya quedó lista con `destino_tipo IN ('acero_material', 'producto')`, índice único por `(organizacion_id, proveedor_id, COALESCE(clave_sat, ''), descripcion_normalizada)` y endpoints `GET /catalogo-alias?destino_tipo=...` / `DELETE /catalogo-alias/:id`.
