@@ -150,6 +150,20 @@ node scripts/dev/test_acero_f_browser.cjs
 
 ---
 
-## 6. Preguntas abiertas
+## 6. Correcciones de Ronda 3 (observaciones N1–N3 de Claude sobre `86aa003`)
+
+- **N1 (proveedores con mayúsculas mezcladas ya existentes):** en `aplicar_precios_acero_cfdi` se resuelve el proveedor existente sin distinguir mayúsculas (`WHERE UPPER(proveedor) = v_proveedor_norm`) y se conserva su grafía existente (ej. `REFERENCIA (Excel costeo)` o `Serviacero Mixto`); si no existe ninguno, se crea en mayúsculas. Lo mismo para el proveedor origen en `renombrar_proveedor_acero` (y comparación de conflictos con `UPPER()`). Verificado en Postgres 17 real con `rev_f2_r2.sql` (N1 y N1b pasan sin duplicar filas).
+- **N2 (`renombrar_proveedor_acero` con origen inexistente):** ahora falla con `proveedor_no_encontrado` (mapeado a `404` con mensaje en español en `mapearErrorRpcAceroCfdi`, mostrado en el modal de `PreciosAcero.tsx` sin reportar éxito silencioso). Verificado en `rev_f2_r2.sql` (N4 pasa).
+- **N3 (mutantes vivos en `mutar_f3.cjs`):** se pasaron los casos clave de `sug.ts` a `motor/acero_cfdi.test.ts` (contradicciones específicas de calibre A6, acabado galvanizada vs negra A7, medida NxM A8, y aciertos que no deben anularse), se agregó la prueba de ruta de IVA en `obtenerPropuestaAceroCfdi` (precio actual con IVA y sin IVA verificando `precio_actual_sin_iva`, `variacion_pct` y `variacion_alta`, matando A12 y A13), y se probó `factor_confirmado: true` por defecto cuando viene `factor_conversion` (matando A9).
+
+### Verificación de Ronda 3
+- `arnes_revision_f/rev_f.sql` (Postgres 17 real, migración aplicada ×2 con `ON_ERROR_STOP=1`): **18/18 `PASA`** (C1–C9).
+- `arnes_revision_f/rev_f2_r2.sql` (Postgres 17 real): **7/7 `PASA`** (N1, N1b, N2a, N2b, N2c, N3, N4).
+- `arnes_revision_f/mutar_f3.cjs`: **14/14 muertos, 0 vivos**.
+- `arnes_revision_f/mutar_f2_r2.cjs`: **24/25 aplicables muertos, 1 vivo equivalente justificado (`M5` IEEE-754)**.
+
+---
+
+## 7. Preguntas abiertas
 
 - Ninguna bloqueante. Nota informativa para Bloque G: `catalogo_alias_factura` ya quedó lista con `destino_tipo IN ('acero_material', 'producto')`, índice único por `(organizacion_id, proveedor_id, COALESCE(clave_sat, ''), descripcion_normalizada)` y endpoints `GET /catalogo-alias?destino_tipo=...` / `DELETE /catalogo-alias/:id`.

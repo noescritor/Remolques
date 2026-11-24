@@ -44,7 +44,8 @@ export function mapearErrorRpcAceroCfdi(err: unknown): AceroCfdiError {
     msg.includes("factura_no_encontrada") ||
     msg.includes("material_no_encontrado") ||
     msg.includes("partida_no_encontrada") ||
-    msg.includes("alias_no_encontrado")
+    msg.includes("alias_no_encontrado") ||
+    msg.includes("proveedor_no_encontrado")
   ) {
     const codigo = msg.split(":")[0]?.trim() || "no_encontrado";
     return new AceroCfdiError(404, codigo, msg);

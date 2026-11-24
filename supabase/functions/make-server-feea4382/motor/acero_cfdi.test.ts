@@ -125,9 +125,33 @@ Deno.test("sugerirMaterial: medidas, umbral 0.45, margen 0.05 exacto y contradic
   assertEquals(rMargenExacto.material_id, "a");
   assertEquals(rMargenExacto.empatado, false);
 
-  // O3: contradicción de medida/calibre/acabado anula sugerencia
-  assertEquals(sugerirMaterial("PTR 3X3 CAL 11", null, catalogo).material_id, null);
-  assertEquals(sugerirMaterial("LAMINA GALVANIZADA CAL 18 4X10", null, catalogo).material_id, null);
+  // O3 + N3: contradicciones específicas de calibre (A6), acabado (A7), medida NxM (A8) y casos de sug.ts
+  const catalogoSug = [
+    ...catalogo,
+    { id: "m6", nombre: 'PTR de 2X3" Cal. 9', tipo: "ptr" },
+    { id: "m7", nombre: 'Angulo 3/16 X 1-1/2" a 6.10m', tipo: "angulo" },
+    { id: "m8", nombre: 'Solera 3/8 X 2"', tipo: "solera" },
+  ];
+  assertEquals(sugerirMaterial("PTR 3X3 CAL 11", null, catalogoSug).material_id, null);
+  assertEquals(sugerirMaterial("LAMINA GALVANIZADA CAL 18 4X10", null, catalogoSug).material_id, null);
+  // A6: calibre distinto (mismo acabado negra y medida 4x10) -> null
+  assertEquals(sugerirMaterial("LAMINA NEGRA CAL 18 4X10", null, catalogoSug).material_id, null);
+  // A7: galvanizada vs negra (mismo calibre 10 y medida 4x10) -> null
+  assertEquals(sugerirMaterial("LAMINA GALVANIZADA CAL 10 4X10", null, catalogoSug).material_id, null);
+  // A8: medida NxM distinta (2x4 vs 2x3 en PTR Cal. 9; sin A8 daría > 0.45, con A8 debe dar null)
+  assertEquals(
+    sugerirMaterial("PTR DE 2X4 CAL. 9", null, [
+      { id: "m6", nombre: 'PTR de 2X3" Cal. 9', tipo: "ptr" },
+    ]).material_id,
+    null,
+  );
+  // Aciertos que NO deben anularse
+  assertEquals(sugerirMaterial("PLACA A-36 1/4 X 4 X 10", null, catalogoSug).material_id, "m1");
+  assertEquals(sugerirMaterial("PTR 2 X 3 CAL. 9 6.10 MTS", null, catalogoSug).material_id, "m6");
+  assertEquals(sugerirMaterial('CANAL 6" 12KG 6.10M', null, catalogoSug).material_id, "m3");
+  assertEquals(sugerirMaterial("ANGULO 1 1/2 X 3/16 6.10M", null, catalogoSug).material_id, "m7");
+  assertEquals(sugerirMaterial("SOLERA 3/8 X 2", null, catalogoSug).material_id, "m8");
+  assertEquals(sugerirMaterial("FLETE", null, catalogoSug).material_id, null);
 });
 
 Deno.test("precioDesdeConcepto: MXN, USD, descuento, limites 0 y redondeo a 4 decimales", () => {
@@ -215,6 +239,7 @@ Deno.test("mapearErrorRpcAceroCfdi y aplicarPreciosAceroCfdi: validaciones, defa
   assertEquals(mapearErrorRpcAceroCfdi(new Error("proveedor_conflicto: x")).status, 409);
   assertEquals(mapearErrorRpcAceroCfdi({ code: "40P01", message: "deadlock detected" }).status, 409);
   assertEquals(mapearErrorRpcAceroCfdi(new Error("factura_no_encontrada: x")).status, 404);
+  assertEquals(mapearErrorRpcAceroCfdi(new Error("proveedor_no_encontrado: x")).status, 404);
   assertEquals(mapearErrorRpcAceroCfdi(new Error("factor_requerido: x")).status, 400);
   assertEquals(mapearErrorRpcAceroCfdi(new Error("factor_invalido: x")).status, 400);
   assertEquals(mapearErrorRpcAceroCfdi({ code: "22P02", message: "invalid" }).status, 400);
@@ -257,6 +282,14 @@ Deno.test("mapearErrorRpcAceroCfdi y aplicarPreciosAceroCfdi: validaciones, defa
   assertEquals(lineaEnviada.guardar_alias, true);
   assertEquals(lineaEnviada.proveedor_acero, "TPI");
   assertEquals("factor_conversion" in lineaEnviada, false);
+
+  // A9: cuando viene factor_conversion sin factor_confirmado, por defecto factor_confirmado = true
+  await aplicarPreciosAceroCfdi(mock, "org-1", "u1", facUuid, [
+    { partida_id: partUuid, material_id: matUuid, proveedor_acero: "TPI", factor_conversion: 45 },
+  ]);
+  const lineaConFactor = (capturedRpcArgs!.p_lineas as Array<Record<string, unknown>>)[0];
+  assertEquals(lineaConFactor.factor_conversion, 45);
+  assertEquals(lineaConFactor.factor_confirmado, true);
 });
 
 Deno.test("obtenerPropuestaAceroCfdi: aislamiento org, inactivos, descuento, alias/destino_tipo/factor/proveedor y paginacion (D4)", async () => {
@@ -333,6 +366,50 @@ Deno.test("obtenerPropuestaAceroCfdi: aislamiento org, inactivos, descuento, ali
   // O7: proveedorOverride sobreescribe el proveedor en la propuesta
   const propOverride = await obtenerPropuestaAceroCfdi(mock, orgA, facA, "tpi");
   assertEquals(propOverride.lineas[0].proveedor_acero_sugerido, "TPI");
+});
+
+Deno.test("obtenerPropuestaAceroCfdi: ruta de IVA con precio actual c/IVA y s/IVA (mata A12 y A13)", async () => {
+  const orgA = "00000000-0000-4000-8000-000000000001";
+  const facIva = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2";
+  const provA = "cccccccc-cccc-4ccc-8ccc-ccccccccccc1";
+
+  const mock = crearMockSupabase({
+    facturas_proveedor: [
+      { id: facIva, organizacion_id: orgA, proveedor_id: provA, folio: "F-IVA", fecha_emision: "2026-11-22", moneda: "MXN", tipo_cambio_emision: null, uuid_fiscal: "U-IVA", descuento: 0, estado: "abierta" },
+    ],
+    factura_proveedor_partidas: [
+      // P1: actual = 5473.75 CON IVA (= 4718.75 sin IVA), nuevo = 3800 sin IVA => -19.47% (variacion_alta = false)
+      { id: "pi-1", organizacion_id: orgA, factura_id: facIva, orden: 1, tipo: "concepto", descripcion: 'CANAL "U" DE 6" (12KG) A 6.10M', cantidad: 1, precio_unitario: 3800, importe: 3800, clave_sat: null, clave_unidad: "H87" },
+      // P2: actual = 1000 SIN IVA, nuevo = 1350 sin IVA => +35% (variacion_alta = true)
+      { id: "pi-2", organizacion_id: orgA, factura_id: facIva, orden: 2, tipo: "concepto", descripcion: 'SOLERA 3/8 X 2"', cantidad: 1, precio_unitario: 1350, importe: 1350, clave_sat: null, clave_unidad: "H87" },
+    ],
+    acero_materiales: [
+      { id: "m-con-iva", organizacion_id: orgA, nombre: 'Canal "U" de 6" (12Kg) a 6.10m', tipo: "canal", activo: true },
+      { id: "m-sin-iva", organizacion_id: orgA, nombre: 'Solera 3/8 X 2"', tipo: "solera", activo: true },
+    ],
+    acero_precios: [
+      { organizacion_id: orgA, material_id: "m-con-iva", proveedor: "TPI", precio: 5473.75, incluye_iva: true },
+      { organizacion_id: orgA, material_id: "m-sin-iva", proveedor: "TPI", precio: 1000, incluye_iva: false },
+    ],
+    catalogo_alias_factura: [],
+    acero_precios_cfdi_aplicados: [],
+    proveedores: [{ id: provA, organizacion_id: orgA, nombre: "TPI ACERO", rfc: "TPI900101AAA" }],
+  }) as unknown as Parameters<typeof obtenerPropuestaAceroCfdi>[0];
+
+  const prop = await obtenerPropuestaAceroCfdi(mock, orgA, facIva);
+  // P1 (con IVA -> base sin IVA 4718.75)
+  assertEquals(prop.lineas[0].precio_actual, 5473.75);
+  assertEquals(prop.lineas[0].precio_actual_incluye_iva, true);
+  assertEquals(prop.lineas[0].precio_actual_sin_iva, 4718.75);
+  assertEquals(prop.lineas[0].banderas.variacion_pct, -19.47);
+  assertEquals(prop.lineas[0].banderas.variacion_alta, false);
+
+  // P2 (sin IVA -> base sin IVA 1000)
+  assertEquals(prop.lineas[1].precio_actual, 1000);
+  assertEquals(prop.lineas[1].precio_actual_incluye_iva, false);
+  assertEquals(prop.lineas[1].precio_actual_sin_iva, 1000);
+  assertEquals(prop.lineas[1].banderas.variacion_pct, 35);
+  assertEquals(prop.lineas[1].banderas.variacion_alta, true);
 });
 
 Deno.test("listarCatalogoAlias y eliminarCatalogoAlias: aislamiento de organizacion (mata M18)", async () => {

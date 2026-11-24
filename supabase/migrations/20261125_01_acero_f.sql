@@ -111,6 +111,8 @@ DECLARE
   v_linea JSONB;
   v_partida_id UUID;
   v_material_id UUID;
+  v_proveedor_norm TEXT;
+  v_proveedor_existente TEXT;
   v_proveedor TEXT;
   v_factor NUMERIC(14, 6);
   v_tiene_factor BOOLEAN;
@@ -198,11 +200,21 @@ BEGIN
       RAISE EXCEPTION 'uuid_invalido: partida_id y material_id son obligatorios';
     END IF;
 
-    -- O2: Normalizar proveedor (recorte y mayúsculas) para evitar columnas duplicadas
-    v_proveedor := UPPER(TRIM(COALESCE(v_linea->>'proveedor_acero', '')));
-    IF v_proveedor = '' THEN
+    -- O2 + N1: Normalizar proveedor; si ya existe con mayúsculas mezcladas en la org, conservar su grafía existente
+    v_proveedor_norm := UPPER(TRIM(COALESCE(v_linea->>'proveedor_acero', '')));
+    IF v_proveedor_norm = '' THEN
       RAISE EXCEPTION 'proveedor_requerido: El nombre del proveedor de acero es obligatorio';
     END IF;
+
+    v_proveedor_existente := NULL;
+    SELECT proveedor
+    INTO v_proveedor_existente
+    FROM acero_precios
+    WHERE organizacion_id = p_org
+      AND UPPER(proveedor) = v_proveedor_norm
+    ORDER BY (material_id = v_material_id) DESC, proveedor ASC
+    LIMIT 1;
+    v_proveedor := COALESCE(v_proveedor_existente, v_proveedor_norm);
 
     -- D3: Distinguir factor omitido de factor explícito (ej. 1)
     v_tiene_factor := (v_linea ? 'factor_conversion')
@@ -279,7 +291,7 @@ BEGIN
     FROM acero_precios_cfdi_aplicados
     WHERE organizacion_id = p_org
       AND material_id = v_material_id
-      AND proveedor = v_proveedor;
+      AND UPPER(proveedor) = v_proveedor_norm;
 
     IF v_max_fecha_cfdi IS NOT NULL AND v_factura.fecha_emision IS NOT NULL AND v_factura.fecha_emision < v_max_fecha_cfdi AND NOT v_forzar_fecha THEN
       RAISE EXCEPTION 'fecha_anterior_a_ultimo_cfdi: La fecha de la factura (%) es anterior al último CFDI aplicado (%) para %',
@@ -407,7 +419,9 @@ SET search_path = public
 AS $$
 DECLARE
   v_de TEXT := TRIM(COALESCE(p_de, ''));
+  v_de_real TEXT;
   v_a TEXT := UPPER(TRIM(COALESCE(p_a, '')));
+  v_a_existente TEXT;
   v_conflictos TEXT;
   v_precios_upd INTEGER := 0;
   v_alias_upd INTEGER := 0;
@@ -422,6 +436,28 @@ BEGIN
     RAISE EXCEPTION 'proveedor_invalido: Debes indicar el proveedor origen y el nuevo nombre';
   END IF;
 
+  -- N1 + N2: Resolver proveedor origen sin distinguir mayúsculas; fallar si no existe
+  SELECT proveedor
+  INTO v_de_real
+  FROM acero_precios
+  WHERE organizacion_id = p_org
+    AND UPPER(proveedor) = UPPER(v_de)
+  ORDER BY (proveedor = v_de) DESC, proveedor ASC
+  LIMIT 1;
+
+  IF v_de_real IS NULL THEN
+    RAISE EXCEPTION 'proveedor_no_encontrado: No se encontraron precios para el proveedor "%"', v_de;
+  END IF;
+  v_de := v_de_real;
+
+  SELECT proveedor
+  INTO v_a_existente
+  FROM acero_precios
+  WHERE organizacion_id = p_org
+    AND UPPER(proveedor) = v_a
+  LIMIT 1;
+  v_a := COALESCE(v_a_existente, v_a);
+
   IF v_de = v_a THEN
     RAISE EXCEPTION 'proveedor_invalido: El nuevo nombre debe ser diferente al actual';
   END IF;
@@ -432,11 +468,11 @@ BEGIN
   JOIN acero_precios p2
     ON p2.organizacion_id = p1.organizacion_id
     AND p2.material_id = p1.material_id
-    AND p2.proveedor = v_a
+    AND UPPER(p2.proveedor) = UPPER(v_a)
   JOIN acero_materiales m
     ON m.id = p1.material_id
   WHERE p1.organizacion_id = p_org
-    AND p1.proveedor = v_de;
+    AND UPPER(p1.proveedor) = UPPER(v_de);
 
   IF v_conflictos IS NOT NULL THEN
     RAISE EXCEPTION 'proveedor_conflicto: Ya existen precios para "%" en: %', v_a, v_conflictos;
@@ -444,23 +480,23 @@ BEGIN
 
   UPDATE acero_precios
   SET proveedor = v_a, updated_at = NOW()
-  WHERE organizacion_id = p_org AND proveedor = v_de;
+  WHERE organizacion_id = p_org AND UPPER(proveedor) = UPPER(v_de);
   GET DIAGNOSTICS v_precios_upd = ROW_COUNT;
 
   -- D2: Actualizar también historial y registro de partidas CFDI aplicadas
   UPDATE acero_precios_historial
   SET proveedor = v_a
-  WHERE organizacion_id = p_org AND proveedor = v_de;
+  WHERE organizacion_id = p_org AND UPPER(proveedor) = UPPER(v_de);
   GET DIAGNOSTICS v_historial_upd = ROW_COUNT;
 
   UPDATE acero_precios_cfdi_aplicados
   SET proveedor = v_a
-  WHERE organizacion_id = p_org AND proveedor = v_de;
+  WHERE organizacion_id = p_org AND UPPER(proveedor) = UPPER(v_de);
   GET DIAGNOSTICS v_aplicados_upd = ROW_COUNT;
 
   UPDATE catalogo_alias_factura
   SET proveedor_acero = v_a
-  WHERE organizacion_id = p_org AND proveedor_acero = v_de;
+  WHERE organizacion_id = p_org AND UPPER(proveedor_acero) = UPPER(v_de);
   GET DIAGNOSTICS v_alias_upd = ROW_COUNT;
 
   RETURN jsonb_build_object(

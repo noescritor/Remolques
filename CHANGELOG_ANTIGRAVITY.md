@@ -3,6 +3,19 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-24 - Bloque F (Ronda 3: N1-N3 de revisión Claude R2)
+**Herramienta:** Antigravity  
+**Tipo:** fix (N1 resolución case-insensitive de proveedor existente en `aplicar_precios_acero_cfdi` y `renombrar_proveedor_acero` para no duplicar proveedores con mayúsculas mezcladas como `REFERENCIA (Excel costeo)`; N2 `renombrar_proveedor_acero` falla con `proveedor_no_encontrado` 404 cuando el origen no existe; N3 pruebas en `motor/acero_cfdi.test.ts` para las 3 reglas de contradicción de `sugerirMaterial` + casos de `sug.ts`, ruta de IVA en `obtenerPropuestaAceroCfdi` y default `factor_confirmado=true`, matando 14/14 mutantes en `mutar_f3.cjs`)  
+**Rama:** `acero-f-2026-11-23`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/ACERO_F_REVISION_CLAUDE_R2.md`, `COORDINACION/REPORTES/ACERO_F_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261125_01_acero_f.sql`
+- `supabase/functions/make-server-feea4382/motor/acero_cfdi.ts`, `motor/acero_cfdi.test.ts`
+- `COORDINACION/REPORTES/ACERO_F_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Ejecutar `supabase/migrations/20261125_01_acero_f.sql` en el SQL Editor de Supabase (cuando se apruebe el merge).
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel (cuando se apruebe el merge).
+
 ## 2026-11-24 - Bloque F (Ronda 2: D1-D4 y O1-O8 de revisión Claude)
 **Herramienta:** Antigravity  
 **Tipo:** fix (D1 base común sin IVA `acero_precio_base_sin_iva` / `precioBaseSinIva` con `TASA_IVA_ACERO = 0.16` en SQL, motor y modal; D2 `renombrar_proveedor_acero` actualiza también `acero_precios_historial` y `acero_precios_cfdi_aplicados`; D3 exigencia en servidor de factor explícito en `KGM/GRM/TNE/LBR` con error `factor_requerido` 400 y eliminación de fallback silencioso `: 1` en modal; D4 pruebas con cliente simulado para propuesta/alias/paginación/aislamiento matando 24/25 mutantes aplicables de `mutar_f2.cjs` (1 vivo equivalente IEEE-754 justificado: M5); O1 etiqueta del comparador `"Mostrar resultados con IVA / sin IVA"` + prueba dorada; O2 normalización `UPPER(TRIM)` de proveedor en RPC; O3 descarte de contradicciones de calibre/medida/acabado en `sugerirMaterial` con 0 errores en `sug.ts`; O4 documentación de `descuento` en `precioDesdeConcepto`; O6 bloqueo ordenado `ORDER BY id FOR UPDATE` + mapeo `40P01` a 409; O7 `proveedorOverride` en `obtenerPropuestaAceroCfdi`; O8 `scripts/dev/seed_acero_f.sql` con alias Placa->Placa y `scripts/dev/test_acero_f_browser.cjs`)  
