@@ -185,6 +185,8 @@ export async function guardarPrecioAcero(
         precio_anterior: precioPrevioNum,
         precio_nuevo: precio,
         usuario_id: usuarioId,
+        fuente,
+        incluye_iva: incluyeIva,
       });
     } catch (histErr) {
       console.error("[acero] Error registrando historial de precio:", histErr);
@@ -295,7 +297,9 @@ export async function crearMaterialAcero(
 
 /**
  * Actualiza un material de acero existente.
- * Lista blanca de campos: { nombre?, notas?, activo? }
+ * Lista blanca de campos: { nombre?, tipo?, notas?, activo? }
+ * Nota: renombrar NO pisa `tipo`; `tipo` solo cambia si se envía explícitamente.
+ * `ancho_ft`/`largo_ft` se recalculan desde el nombre solo si el tipo resultante es placa o lamina.
  */
 export async function actualizarMaterialAcero(
   client: any,
@@ -328,6 +332,17 @@ export async function actualizarMaterialAcero(
     updated_at: new Date().toISOString(),
   };
 
+  const tiposValidos = ["placa", "lamina", "solera", "canal", "ptr", "tubo", "angulo", "redondo"];
+  if (rawPayload.tipo !== undefined) {
+    const tipoNorm = String(rawPayload.tipo || "").trim().toLowerCase();
+    if (!tiposValidos.includes(tipoNorm)) {
+      const err: any = new Error(`Tipo de material inválido: "${rawPayload.tipo}"`);
+      err.status = 400;
+      throw err;
+    }
+    updates.tipo = tipoNorm as TipoMaterialAcero;
+  }
+
   if (rawPayload.nombre !== undefined) {
     const rawNombre = String(rawPayload.nombre).trim();
     if (!rawNombre) {
@@ -354,14 +369,19 @@ export async function actualizarMaterialAcero(
     }
 
     updates.nombre = nombre;
-    try {
-      updates.tipo = determinarTipoMaterial(nombre);
-    } catch (_e) {
-      // conservar tipo actual
+  }
+
+  if (rawPayload.nombre !== undefined || rawPayload.tipo !== undefined) {
+    const tipoResultante = String(updates.tipo ?? actual.tipo ?? "").toLowerCase();
+    const nombreResultante = String(updates.nombre ?? actual.nombre ?? "");
+    if (tipoResultante === "placa" || tipoResultante === "lamina") {
+      const medida = parsearMedidaLamina(nombreResultante);
+      updates.ancho_ft = medida ? medida.anchoFt : null;
+      updates.largo_ft = medida ? medida.largoFt : null;
+    } else {
+      updates.ancho_ft = null;
+      updates.largo_ft = null;
     }
-    const medida = parsearMedidaLamina(nombre);
-    updates.ancho_ft = medida ? medida.anchoFt : null;
-    updates.largo_ft = medida ? medida.largoFt : null;
   }
 
   if (rawPayload.activo !== undefined) {

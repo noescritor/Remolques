@@ -3,6 +3,50 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-24 - Bloque F (Ronda 3: N1-N3 de revisión Claude R2)
+**Herramienta:** Antigravity  
+**Tipo:** fix (N1 resolución case-insensitive de proveedor existente en `aplicar_precios_acero_cfdi` y `renombrar_proveedor_acero` para no duplicar proveedores con mayúsculas mezcladas como `REFERENCIA (Excel costeo)`; N2 `renombrar_proveedor_acero` falla con `proveedor_no_encontrado` 404 cuando el origen no existe; N3 pruebas en `motor/acero_cfdi.test.ts` para las 3 reglas de contradicción de `sugerirMaterial` + casos de `sug.ts`, ruta de IVA en `obtenerPropuestaAceroCfdi` y default `factor_confirmado=true`, matando 14/14 mutantes en `mutar_f3.cjs`)  
+**Rama:** `acero-f-2026-11-23`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/ACERO_F_REVISION_CLAUDE_R2.md`, `COORDINACION/REPORTES/ACERO_F_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261125_01_acero_f.sql`
+- `supabase/functions/make-server-feea4382/motor/acero_cfdi.ts`, `motor/acero_cfdi.test.ts`
+- `COORDINACION/REPORTES/ACERO_F_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Ejecutar `supabase/migrations/20261125_01_acero_f.sql` en el SQL Editor de Supabase (cuando se apruebe el merge).
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel (cuando se apruebe el merge).
+
+## 2026-11-24 - Bloque F (Ronda 2: D1-D4 y O1-O8 de revisión Claude)
+**Herramienta:** Antigravity  
+**Tipo:** fix (D1 base común sin IVA `acero_precio_base_sin_iva` / `precioBaseSinIva` con `TASA_IVA_ACERO = 0.16` en SQL, motor y modal; D2 `renombrar_proveedor_acero` actualiza también `acero_precios_historial` y `acero_precios_cfdi_aplicados`; D3 exigencia en servidor de factor explícito en `KGM/GRM/TNE/LBR` con error `factor_requerido` 400 y eliminación de fallback silencioso `: 1` en modal; D4 pruebas con cliente simulado para propuesta/alias/paginación/aislamiento matando 24/25 mutantes aplicables de `mutar_f2.cjs` (1 vivo equivalente IEEE-754 justificado: M5); O1 etiqueta del comparador `"Mostrar resultados con IVA / sin IVA"` + prueba dorada; O2 normalización `UPPER(TRIM)` de proveedor en RPC; O3 descarte de contradicciones de calibre/medida/acabado en `sugerirMaterial` con 0 errores en `sug.ts`; O4 documentación de `descuento` en `precioDesdeConcepto`; O6 bloqueo ordenado `ORDER BY id FOR UPDATE` + mapeo `40P01` a 409; O7 `proveedorOverride` en `obtenerPropuestaAceroCfdi`; O8 `scripts/dev/seed_acero_f.sql` con alias Placa->Placa y `scripts/dev/test_acero_f_browser.cjs`)  
+**Rama:** `acero-f-2026-11-23`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/ACERO_F_REVISION_CLAUDE.md`, `COORDINACION/REPORTES/ACERO_F_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261125_01_acero_f.sql`
+- `supabase/functions/make-server-feea4382/motor/acero_cfdi.ts`, `motor/acero_cfdi.test.ts`
+- `src/app/utils/aceroApi.ts`, `src/app/components/Calculadora/AplicarPreciosAceroCfdiModal.tsx`, `src/app/components/Calculadora/ComparadorAcero.tsx`
+- `scripts/dev/seed_acero_f.sql`, `scripts/dev/test_acero_f_browser.cjs`
+- `COORDINACION/EVIDENCIA/acero_f_01..05_*.png`, `COORDINACION/REPORTES/ACERO_F_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Ejecutar `supabase/migrations/20261125_01_acero_f.sql` en el SQL Editor de Supabase (cuando se apruebe el merge).
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel (cuando se apruebe el merge).
+
+## 2026-11-24 - Bloque F: Acero (XML de factura a precios, editor de material y alias compartidos)
+**Herramienta:** Antigravity  
+**Tipo:** feat + fix (migración idempotente `20261125_01_acero_f.sql` con `catalogo_alias_factura` compartida con Bloque G, `acero_precios_cfdi_aplicados`, columnas aditivas en `acero_precios_historial` y RPCs `aplicar_precios_acero_cfdi` / `renombrar_proveedor_acero`; motor `motor/acero_cfdi.ts` + rutas `/acero/cfdi/:id/propuesta`, `/acero/cfdi/:id/aplicar`, `/acero/proveedores/renombrar`, `/catalogo-alias`; editor de `tipo` sin sobrescribir al renombrar en `motor/acero.ts`; fix de IVA mixto en `compararProveedores` de `aceroCalc.ts`; modal `AplicarPreciosAceroCfdiModal` en CxP, `GestionAliasAceroModal`, editor de material/IVA/renombre en `PreciosAcero`, nota del factor ×1.5 en `CosteoPlaca`; puente local `scripts/dev/local_supabase_bridge.cjs`)  
+**Rama:** `acero-f-2026-11-23`  
+**Referencia auditoría:** `COORDINACION/REPORTES/ACERO_F_REPORTE_ANTY.md`, `COORDINACION/EVIDENCIA/acero_f_01..05_*.png`  
+**Archivos tocados:**  
+- `supabase/migrations/20261125_01_acero_f.sql`, `docs/acero/verificacion_F.sql`, `docs/acero/contrato_esquema_real.md`
+- `supabase/functions/make-server-feea4382/motor/acero_cfdi.ts`, `motor/acero_cfdi.test.ts`, `motor/acero.ts`, `motor/acero.test.ts`, `index.ts`
+- `src/app/utils/aceroCalc.ts`, `src/app/utils/aceroApi.ts`
+- `src/app/components/Calculadora/AplicarPreciosAceroCfdiModal.tsx`, `GestionAliasAceroModal.tsx`, `PreciosAcero.tsx`, `CosteoPlaca.tsx`, `src/app/components/Finanzas/CxpFacturasTab.tsx`
+- `scripts/dev/local_supabase_bridge.cjs`
+- `COORDINACION/EVIDENCIA/acero_f_01..05_*.png`, `COORDINACION/REPORTES/ACERO_F_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Ejecutar `supabase/migrations/20261125_01_acero_f.sql` en el SQL Editor de Supabase (cuando se apruebe el merge).
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel (cuando se apruebe el merge).
+
 ## 2026-11-23 - Bloque E1 (Ronda 2: D1-D5, contrato real y observaciones 1-2)
 **Herramienta:** Antigravity  
 **Tipo:** fix (D1 columna `notas` en `equipo_valor_cobranza` + trigger org + `contrato_esquema_real_E1.sql`; D2 aceptación de `Cheque`, pre-validación UUID/duplicados en RPC y alineación de errores en `motor/cobros.ts` y `traducirErrorCobros`; D3 `hoyMexicoIso()` en front; D4 `guardar_plan_pago` atómico + índices únicos parciales; D5 pruebas M1/M4/M7/M8/M11/M12; Obs 1 botón en `Enviada` y Obs 2 confirmación al eliminar plan; Obs 6 desempate `.order("id")` en `listarPagosPaginados`)  

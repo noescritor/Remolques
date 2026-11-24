@@ -40,6 +40,14 @@ import {
   obtenerHistorialAcero
 } from "./motor/acero.ts";
 import {
+  obtenerPropuestaAceroCfdi,
+  aplicarPreciosAceroCfdi,
+  renombrarProveedorAcero,
+  listarCatalogoAlias,
+  eliminarCatalogoAlias,
+  AceroCfdiError
+} from "./motor/acero_cfdi.ts";
+import {
   obtenerMatrizProduccion,
   actualizarFaseMotor,
   actualizarPlaneacionMotor,
@@ -846,6 +854,79 @@ app.get("/acero/historial", async (c) => {
     return c.json(data);
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
+  }
+});
+
+// --- ACERO DESDE XML CFDI, RENOMBRE DE PROVEEDORES Y ALIAS (Bloque F) ---
+
+app.get("/acero/cfdi/:facturaId/propuesta", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const facturaId = c.req.param("facturaId");
+    const proveedorQuery = c.req.query("proveedor") || undefined;
+    const data = await obtenerPropuestaAceroCfdi(supabase, orgId, facturaId, proveedorQuery);
+    return c.json(data);
+  } catch (error: any) {
+    const status = error instanceof AceroCfdiError ? error.status : (error.status || 500);
+    return c.json({ error: error.message || "Error al generar propuesta", codigo: error.codigo }, status);
+  }
+});
+
+app.post("/acero/cfdi/:facturaId/aplicar", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+    const facturaId = c.req.param("facturaId");
+    const payload = await c.req.json().catch(() => ({}));
+    const lineas = Array.isArray(payload?.lineas) ? payload.lineas : [];
+    const data = await aplicarPreciosAceroCfdi(adminClient, orgId, user?.id || null, facturaId, lineas);
+    return c.json(data);
+  } catch (error: any) {
+    const status = error instanceof AceroCfdiError ? error.status : (error.status || 400);
+    return c.json({ error: error.message || "Error al aplicar precios", codigo: error.codigo }, status);
+  }
+});
+
+app.post("/acero/proveedores/renombrar", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const adminClient = getServiceClient();
+    const payload = await c.req.json().catch(() => ({}));
+    const de = payload?.de ?? payload?.nombre_actual;
+    const a = payload?.a ?? payload?.nombre_nuevo;
+    const data = await renombrarProveedorAcero(adminClient, orgId, de, a);
+    return c.json(data);
+  } catch (error: any) {
+    const status = error instanceof AceroCfdiError ? error.status : (error.status || 400);
+    return c.json({ error: error.message || "Error al renombrar proveedor", codigo: error.codigo }, status);
+  }
+});
+
+app.get("/catalogo-alias", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const destinoTipo = c.req.query("destino_tipo") || undefined;
+    const data = await listarCatalogoAlias(supabase, orgId, destinoTipo);
+    return c.json(data);
+  } catch (error: any) {
+    const status = error instanceof AceroCfdiError ? error.status : (error.status || 500);
+    return c.json({ error: error.message || "Error al consultar alias" }, status);
+  }
+});
+
+app.delete("/catalogo-alias/:id", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const adminClient = getServiceClient();
+    const id = c.req.param("id");
+    const data = await eliminarCatalogoAlias(adminClient, orgId, id);
+    return c.json(data);
+  } catch (error: any) {
+    const status = error instanceof AceroCfdiError ? error.status : (error.status || 400);
+    return c.json({ error: error.message || "Error al eliminar alias" }, status);
   }
 });
 

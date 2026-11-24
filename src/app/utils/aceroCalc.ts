@@ -260,12 +260,22 @@ export function compararProveedores(params: {
       : Array.from(new Set(precios.map((p) => p.proveedor))).filter(Boolean);
 
   // Mapa rápido de precios: key = `${material_id}::${proveedor}`
-  const mapaPrecios = new Map<string, number>();
+  // Respeta p.incluye_iva por fila si viene definido (permite convivir precios XML sin IVA con manuales con IVA).
+  const mapaPrecios = new Map<string, { precio: number; incluyeIva: boolean }>();
   for (const p of precios) {
     if (Number.isFinite(p.precio) && p.precio > 0) {
-      mapaPrecios.set(`${p.material_id}::${p.proveedor}`, p.precio);
+      mapaPrecios.set(`${p.material_id}::${p.proveedor}`, {
+        precio: p.precio,
+        incluyeIva: typeof p.incluye_iva === 'boolean' ? p.incluye_iva : incluyeIva,
+      });
     }
   }
+
+  // Normaliza un precio a la base solicitada (con IVA o sin IVA) para sumar y comparar en la misma escala
+  const normalizarABase = (entry: { precio: number; incluyeIva: boolean }): number => {
+    if (entry.incluyeIva === incluyeIva) return entry.precio;
+    return incluyeIva ? entry.precio * 1.16 : entry.precio / 1.16;
+  };
 
   if (renglonesValidos.length === 0 || listaProveedores.length === 0) {
     return {
@@ -302,8 +312,8 @@ export function compararProveedores(params: {
     let completo = true;
 
     for (const r of renglonesValidos) {
-      const precioUnitario = mapaPrecios.get(`${r.materialId}::${prov}`) ?? null;
-      if (precioUnitario === null) {
+      const entry = mapaPrecios.get(`${r.materialId}::${prov}`) ?? null;
+      if (entry === null) {
         completo = false;
         const nombreMat = catalogoMateriales[r.materialId]?.nombre || r.materialId;
         faltantes.push(nombreMat);
@@ -314,12 +324,13 @@ export function compararProveedores(params: {
           importe: null,
         });
       } else {
+        const precioUnitario = normalizarABase(entry);
         const importe = precioUnitario * r.cantidad;
         sumaImporte += importe;
         renglonesProv.push({
           materialId: r.materialId,
           cantidad: r.cantidad,
-          precioUnitario,
+          precioUnitario: Math.round(precioUnitario * 100) / 100,
           importe: Math.round(importe * 100) / 100,
         });
       }
@@ -396,8 +407,9 @@ export function compararProveedores(params: {
     let mejorProv: string | null = null;
 
     for (const prov of listaProveedores) {
-      const p = mapaPrecios.get(`${r.materialId}::${prov}`);
-      if (p !== undefined && p !== null) {
+      const entry = mapaPrecios.get(`${r.materialId}::${prov}`);
+      if (entry !== undefined && entry !== null) {
+        const p = normalizarABase(entry);
         if (mejorPrecio === null || p < mejorPrecio) {
           mejorPrecio = p;
           mejorProv = prov;
@@ -421,7 +433,7 @@ export function compararProveedores(params: {
         materialId: r.materialId,
         cantidad: r.cantidad,
         proveedor: mejorProv,
-        precioUnitario: mejorPrecio,
+        precioUnitario: Math.round(mejorPrecio * 100) / 100,
         importe: Math.round(importe * 100) / 100,
       });
     }
