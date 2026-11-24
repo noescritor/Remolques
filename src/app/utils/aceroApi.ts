@@ -144,7 +144,7 @@ export interface PropuestaPartidaAcero {
   precio_unitario_xml: number;
   importe: number;
   precio_neto_mxn: number | null;
-  sugerencia_origen: 'recordado' | 'sugerido' | 'sin_sugerencia';
+  sugerencia_origen: 'alias' | 'similitud' | 'ninguna';
   sugerencia_puntaje: number;
   material_id_sugerido: string | null;
   proveedor_acero_sugerido: string | null;

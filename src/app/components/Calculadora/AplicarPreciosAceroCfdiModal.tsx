@@ -392,7 +392,7 @@ export function AplicarPreciosAceroCfdiModal({
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
                   <span>Folio: <strong className="text-foreground">{propuesta.factura.folio}</strong></span>
-                  <span>· Fecha: <strong className="text-foreground">{propuesta.factura.fecha_emision}</strong></span>
+                  <span>· Fecha: <strong className="text-foreground">{String(propuesta.factura.fecha_emision || '').slice(0, 10)}</strong></span>
                   <span>
                     · Moneda: <strong className="text-foreground">{propuesta.factura.moneda}</strong>
                     {propuesta.factura.moneda === 'USD' && propuesta.factura.tipo_cambio_emision
@@ -563,19 +563,19 @@ export function AplicarPreciosAceroCfdiModal({
 
                           <td className="p-2 align-top space-y-1.5">
                             <div className="flex items-center gap-1.5">
-                              {p.sugerencia_origen === 'recordado' && (
+                              {p.sugerencia_origen === 'alias' && (
                                 <Badge variant="default" className="text-[10px] py-0 gap-1">
                                   <BookmarkCheck className="h-3 w-3" />
                                   Recordado
                                 </Badge>
                               )}
-                              {p.sugerencia_origen === 'sugerido' && (
+                              {p.sugerencia_origen === 'similitud' && (
                                 <Badge variant="secondary" className="text-[10px] py-0 gap-1">
                                   <Sparkles className="h-3 w-3" />
                                   Sugerido
                                 </Badge>
                               )}
-                              {p.sugerencia_origen === 'sin_sugerencia' && (
+                              {p.sugerencia_origen === 'ninguna' && (
                                 <Badge variant="outline" className="text-[10px] py-0 text-muted-foreground">
                                   Sin sugerencia
                                 </Badge>

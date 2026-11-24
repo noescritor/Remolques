@@ -40,7 +40,7 @@ import {
   obtenerHistorialAcero
 } from "./motor/acero.ts";
 import {
-  obtenerPropuestaPreciosAceroCfdi,
+  obtenerPropuestaAceroCfdi,
   aplicarPreciosAceroCfdi,
   renombrarProveedorAcero,
   listarCatalogoAlias,
@@ -865,7 +865,7 @@ app.get("/acero/cfdi/:facturaId/propuesta", async (c) => {
     const orgId = c.get("organizacionId");
     const facturaId = c.req.param("facturaId");
     const proveedorQuery = c.req.query("proveedor") || undefined;
-    const data = await obtenerPropuestaPreciosAceroCfdi(supabase, orgId, facturaId, proveedorQuery);
+    const data = await obtenerPropuestaAceroCfdi(supabase, orgId, facturaId, proveedorQuery);
     return c.json(data);
   } catch (error: any) {
     const status = error instanceof AceroCfdiError ? error.status : (error.status || 500);

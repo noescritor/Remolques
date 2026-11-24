@@ -3,6 +3,22 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-24 - Bloque F: Acero (XML de factura a precios, editor de material y alias compartidos)
+**Herramienta:** Antigravity  
+**Tipo:** feat + fix (migración idempotente `20261125_01_acero_f.sql` con `catalogo_alias_factura` compartida con Bloque G, `acero_precios_cfdi_aplicados`, columnas aditivas en `acero_precios_historial` y RPCs `aplicar_precios_acero_cfdi` / `renombrar_proveedor_acero`; motor `motor/acero_cfdi.ts` + rutas `/acero/cfdi/:id/propuesta`, `/acero/cfdi/:id/aplicar`, `/acero/proveedores/renombrar`, `/catalogo-alias`; editor de `tipo` sin sobrescribir al renombrar en `motor/acero.ts`; fix de IVA mixto en `compararProveedores` de `aceroCalc.ts`; modal `AplicarPreciosAceroCfdiModal` en CxP, `GestionAliasAceroModal`, editor de material/IVA/renombre en `PreciosAcero`, nota del factor ×1.5 en `CosteoPlaca`; puente local `scripts/dev/local_supabase_bridge.cjs`)  
+**Rama:** `acero-f-2026-11-23`  
+**Referencia auditoría:** `COORDINACION/REPORTES/ACERO_F_REPORTE_ANTY.md`, `COORDINACION/EVIDENCIA/acero_f_01..05_*.png`  
+**Archivos tocados:**  
+- `supabase/migrations/20261125_01_acero_f.sql`, `docs/acero/verificacion_F.sql`, `docs/acero/contrato_esquema_real.md`
+- `supabase/functions/make-server-feea4382/motor/acero_cfdi.ts`, `motor/acero_cfdi.test.ts`, `motor/acero.ts`, `motor/acero.test.ts`, `index.ts`
+- `src/app/utils/aceroCalc.ts`, `src/app/utils/aceroApi.ts`
+- `src/app/components/Calculadora/AplicarPreciosAceroCfdiModal.tsx`, `GestionAliasAceroModal.tsx`, `PreciosAcero.tsx`, `CosteoPlaca.tsx`, `src/app/components/Finanzas/CxpFacturasTab.tsx`
+- `scripts/dev/local_supabase_bridge.cjs`
+- `COORDINACION/EVIDENCIA/acero_f_01..05_*.png`, `COORDINACION/REPORTES/ACERO_F_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Ejecutar `supabase/migrations/20261125_01_acero_f.sql` en el SQL Editor de Supabase (cuando se apruebe el merge).
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel (cuando se apruebe el merge).
+
 ## 2026-11-23 - Bloque E1 (Ronda 2: D1-D5, contrato real y observaciones 1-2)
 **Herramienta:** Antigravity  
 **Tipo:** fix (D1 columna `notas` en `equipo_valor_cobranza` + trigger org + `contrato_esquema_real_E1.sql`; D2 aceptación de `Cheque`, pre-validación UUID/duplicados en RPC y alineación de errores en `motor/cobros.ts` y `traducirErrorCobros`; D3 `hoyMexicoIso()` en front; D4 `guardar_plan_pago` atómico + índices únicos parciales; D5 pruebas M1/M4/M7/M8/M11/M12; Obs 1 botón en `Enviada` y Obs 2 confirmación al eliminar plan; Obs 6 desempate `.order("id")` en `listarPagosPaginados`)  
