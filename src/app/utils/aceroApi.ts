@@ -151,6 +151,7 @@ export interface PropuestaPartidaAcero {
   factor_conversion_sugerido: number;
   precio_actual: number | null;
   precio_actual_incluye_iva: boolean | null;
+  precio_actual_sin_iva: number | null;
   banderas: {
     ya_aplicada: boolean;
     fecha_anterior: boolean;
@@ -184,6 +185,7 @@ export interface PropuestaAceroCfdi {
     proveedor: string;
     precio: number;
     incluye_iva: boolean;
+    precio_sin_iva: number | null;
   }>;
   lineas: PropuestaPartidaAcero[];
 }
@@ -193,6 +195,7 @@ export interface LineaAplicarAceroCfdi {
   material_id: string;
   proveedor_acero: string;
   factor_conversion?: number;
+  factor_confirmado?: boolean;
   guardar_alias?: boolean;
   forzar_fecha_anterior?: boolean;
   forzar_variacion?: boolean;

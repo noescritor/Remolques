@@ -68,6 +68,28 @@ ALTER TABLE acero_precios_historial
   ADD COLUMN IF NOT EXISTS factura_id UUID NULL REFERENCES facturas_proveedor(id) ON DELETE SET NULL,
   ADD COLUMN IF NOT EXISTS incluye_iva BOOLEAN NULL;
 
+-- 3b. Función pura de base común sin IVA (D1: una sola definición compartida por RPC)
+CREATE OR REPLACE FUNCTION acero_precio_base_sin_iva(
+  p_precio NUMERIC,
+  p_incluye_iva BOOLEAN
+)
+RETURNS NUMERIC
+LANGUAGE plpgsql
+IMMUTABLE
+AS $$
+DECLARE
+  c_tasa_iva CONSTANT NUMERIC := 0.16;
+BEGIN
+  IF p_precio IS NULL THEN
+    RETURN NULL;
+  END IF;
+  IF COALESCE(p_incluye_iva, true) THEN
+    RETURN p_precio / (1 + c_tasa_iva);
+  END IF;
+  RETURN p_precio;
+END;
+$$;
+
 -- 4. RPC atómica aplicar_precios_acero_cfdi (todo o nada)
 CREATE OR REPLACE FUNCTION aplicar_precios_acero_cfdi(
   p_org UUID,
@@ -91,6 +113,8 @@ DECLARE
   v_material_id UUID;
   v_proveedor TEXT;
   v_factor NUMERIC(14, 6);
+  v_tiene_factor BOOLEAN;
+  v_factor_confirmado BOOLEAN;
   v_guardar_alias BOOLEAN;
   v_forzar_fecha BOOLEAN;
   v_forzar_var BOOLEAN;
@@ -99,6 +123,8 @@ DECLARE
   v_material RECORD;
   v_precio_calc NUMERIC(14, 4);
   v_precio_actual NUMERIC(14, 4);
+  v_incluye_iva_actual BOOLEAN;
+  v_precio_actual_sin_iva NUMERIC;
   v_max_fecha_cfdi DATE;
   v_var NUMERIC;
   v_llave_lote TEXT;
@@ -127,6 +153,18 @@ BEGIN
   IF LOWER(COALESCE(v_factura.estado, '')) = 'cancelada' THEN
     RAISE EXCEPTION 'factura_cancelada: No se pueden aplicar precios desde una factura cancelada';
   END IF;
+
+  -- O6: Bloquear materiales del lote en orden determinista para evitar deadlocks cruzados
+  PERFORM id
+  FROM acero_materiales
+  WHERE organizacion_id = p_org
+    AND id IN (
+      SELECT DISTINCT (elem->>'material_id')::UUID
+      FROM jsonb_array_elements(p_lineas) AS elem
+      WHERE NULLIF(TRIM(COALESCE(elem->>'material_id', '')), '') ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+    )
+  ORDER BY id
+  FOR UPDATE;
 
   v_uuid_fiscal := v_factura.uuid_fiscal;
   IF v_uuid_fiscal IS NULL THEN
@@ -160,16 +198,26 @@ BEGIN
       RAISE EXCEPTION 'uuid_invalido: partida_id y material_id son obligatorios';
     END IF;
 
-    v_proveedor := TRIM(COALESCE(v_linea->>'proveedor_acero', ''));
+    -- O2: Normalizar proveedor (recorte y mayúsculas) para evitar columnas duplicadas
+    v_proveedor := UPPER(TRIM(COALESCE(v_linea->>'proveedor_acero', '')));
     IF v_proveedor = '' THEN
       RAISE EXCEPTION 'proveedor_requerido: El nombre del proveedor de acero es obligatorio';
     END IF;
 
-    BEGIN
-      v_factor := COALESCE((v_linea->>'factor_conversion')::NUMERIC, 1);
-    EXCEPTION WHEN OTHERS THEN
-      RAISE EXCEPTION 'factor_invalido: El factor de conversión debe ser un número mayor a cero';
-    END;
+    -- D3: Distinguir factor omitido de factor explícito (ej. 1)
+    v_tiene_factor := (v_linea ? 'factor_conversion')
+      AND NULLIF(TRIM(COALESCE(v_linea->>'factor_conversion', '')), '') IS NOT NULL;
+    v_factor_confirmado := COALESCE((v_linea->>'factor_confirmado')::BOOLEAN, v_tiene_factor);
+
+    IF v_tiene_factor THEN
+      BEGIN
+        v_factor := (v_linea->>'factor_conversion')::NUMERIC;
+      EXCEPTION WHEN OTHERS THEN
+        RAISE EXCEPTION 'factor_invalido: El factor de conversión debe ser un número mayor a cero';
+      END;
+    ELSE
+      v_factor := 1;
+    END IF;
     IF v_factor <= 0 THEN
       RAISE EXCEPTION 'factor_invalido: El factor de conversión debe ser mayor a cero';
     END IF;
@@ -193,6 +241,13 @@ BEGIN
 
     IF NOT FOUND OR v_partida.tipo <> 'concepto' THEN
       RAISE EXCEPTION 'partida_no_encontrada: La partida % no pertenece como concepto a esta factura', v_partida_id;
+    END IF;
+
+    -- D3: Si la unidad SAT es de peso (KGM/GRM/TNE/LBR), exigir factor explícito y confirmado
+    IF UPPER(TRIM(COALESCE(v_partida.clave_unidad, ''))) IN ('KGM', 'GRM', 'TNE', 'LBR')
+       AND (NOT v_tiene_factor OR NOT v_factor_confirmado) THEN
+      RAISE EXCEPTION 'factor_requerido: La partida "%" está en unidad de peso (%) y requiere capturar un factor de conversión explícito',
+        v_partida.descripcion, UPPER(TRIM(v_partida.clave_unidad));
     END IF;
 
     IF EXISTS (SELECT 1 FROM acero_precios_cfdi_aplicados WHERE partida_id = v_partida_id) THEN
@@ -231,19 +286,23 @@ BEGIN
         v_factura.fecha_emision, v_max_fecha_cfdi, v_material.nombre;
     END IF;
 
-    -- Validar variación > ±30% contra precio actual
-    SELECT precio
-    INTO v_precio_actual
+    -- D1: Validar variación > ±30% contra precio actual normalizado a base SIN IVA
+    v_precio_actual := NULL;
+    v_incluye_iva_actual := NULL;
+    SELECT precio, incluye_iva
+    INTO v_precio_actual, v_incluye_iva_actual
     FROM acero_precios
     WHERE organizacion_id = p_org
       AND material_id = v_material_id
       AND proveedor = v_proveedor;
 
-    IF v_precio_actual IS NOT NULL AND v_precio_actual > 0 THEN
-      v_var := ABS(v_precio_calc - v_precio_actual) / v_precio_actual;
+    v_precio_actual_sin_iva := acero_precio_base_sin_iva(v_precio_actual, v_incluye_iva_actual);
+
+    IF v_precio_actual_sin_iva IS NOT NULL AND v_precio_actual_sin_iva > 0 THEN
+      v_var := ABS(v_precio_calc - v_precio_actual_sin_iva) / v_precio_actual_sin_iva;
       IF v_var > c_umbral_variacion AND NOT v_forzar_var THEN
-        RAISE EXCEPTION 'variacion_precio_alta: El precio de "%" cambia más de ±30%% (actual: %, nuevo: %)',
-          v_material.nombre, v_precio_actual, v_precio_calc;
+        RAISE EXCEPTION 'variacion_precio_alta: El precio de "%" cambia más de ±30%% respecto a la base sin IVA (actual sin IVA: %, nuevo sin IVA: %)',
+          v_material.nombre, ROUND(v_precio_actual_sin_iva, 2), v_precio_calc;
       END IF;
     END IF;
 
@@ -348,10 +407,12 @@ SET search_path = public
 AS $$
 DECLARE
   v_de TEXT := TRIM(COALESCE(p_de, ''));
-  v_a TEXT := TRIM(COALESCE(p_a, ''));
+  v_a TEXT := UPPER(TRIM(COALESCE(p_a, '')));
   v_conflictos TEXT;
   v_precios_upd INTEGER := 0;
   v_alias_upd INTEGER := 0;
+  v_historial_upd INTEGER := 0;
+  v_aplicados_upd INTEGER := 0;
 BEGIN
   IF p_org IS NULL THEN
     RAISE EXCEPTION 'org_requerida: Organización requerida';
@@ -386,6 +447,17 @@ BEGIN
   WHERE organizacion_id = p_org AND proveedor = v_de;
   GET DIAGNOSTICS v_precios_upd = ROW_COUNT;
 
+  -- D2: Actualizar también historial y registro de partidas CFDI aplicadas
+  UPDATE acero_precios_historial
+  SET proveedor = v_a
+  WHERE organizacion_id = p_org AND proveedor = v_de;
+  GET DIAGNOSTICS v_historial_upd = ROW_COUNT;
+
+  UPDATE acero_precios_cfdi_aplicados
+  SET proveedor = v_a
+  WHERE organizacion_id = p_org AND proveedor = v_de;
+  GET DIAGNOSTICS v_aplicados_upd = ROW_COUNT;
+
   UPDATE catalogo_alias_factura
   SET proveedor_acero = v_a
   WHERE organizacion_id = p_org AND proveedor_acero = v_de;
@@ -396,6 +468,8 @@ BEGIN
     'de', v_de,
     'a', v_a,
     'precios_actualizados', v_precios_upd,
+    'historial_actualizado', v_historial_upd,
+    'aplicaciones_actualizadas', v_aplicados_upd,
     'alias_actualizados', v_alias_upd
   );
 END;

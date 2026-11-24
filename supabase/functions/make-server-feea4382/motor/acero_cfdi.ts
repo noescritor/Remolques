@@ -1,8 +1,23 @@
 import type { SupabaseClient } from "npm:@supabase/supabase-js";
 
+export const TASA_IVA_ACERO = 0.16;
 export const UMBRAL_VARIACION_PRECIO = 0.30;
 export const PUNTAJE_MINIMO_SUGERENCIA = 0.45;
 export const MARGEN_DESEMPATE_SUGERENCIA = 0.05;
+
+/**
+ * Normaliza un precio a base SIN IVA usando TASA_IVA_ACERO (D1).
+ * Misma definición que acero_precio_base_sin_iva() en SQL.
+ */
+export function precioBaseSinIva(
+  precio: number | null | undefined,
+  incluyeIva?: boolean | null,
+): number | null {
+  if (precio === null || precio === undefined || !Number.isFinite(Number(precio))) return null;
+  const p = Number(precio);
+  if (incluyeIva === false) return p;
+  return p / (1 + TASA_IVA_ACERO);
+}
 
 export const UNIDADES_PIEZA = new Set(["H87", "EA", "C62", "PZA", "PIEZA", "XUN", "ACT"]);
 export const UNIDADES_PESO = new Set(["KGM", "GRM", "TNE", "LBR"]);
@@ -40,10 +55,15 @@ export function mapearErrorRpcAceroCfdi(err: unknown): AceroCfdiError {
     msg.includes("fecha_anterior_a_ultimo_cfdi") ||
     msg.includes("variacion_precio_alta") ||
     msg.includes("material_duplicado_en_lote") ||
-    msg.includes("proveedor_conflicto")
+    msg.includes("proveedor_conflicto") ||
+    msg.includes("deadlock_detected") ||
+    code === "40P01"
   ) {
-    const codigo = msg.split(":")[0]?.trim() || "conflicto";
-    return new AceroCfdiError(409, codigo, msg);
+    const codigo = code === "40P01" ? "deadlock_detected" : (msg.split(":")[0]?.trim() || "conflicto");
+    const mensaje = code === "40P01"
+      ? "Conflicto de concurrencia al actualizar precios simultáneamente; vuelve a intentar."
+      : msg;
+    return new AceroCfdiError(409, codigo, mensaje);
   }
   if (
     msg.includes("org_requerida") ||
@@ -52,6 +72,7 @@ export function mapearErrorRpcAceroCfdi(err: unknown): AceroCfdiError {
     msg.includes("uuid_invalido") ||
     msg.includes("proveedor_requerido") ||
     msg.includes("proveedor_invalido") ||
+    msg.includes("factor_requerido") ||
     msg.includes("factor_invalido") ||
     msg.includes("precio_invalido") ||
     code === "22P02"
@@ -111,6 +132,58 @@ function tokenizarConPeso(textoNorm: string): Map<string, number> {
   return map;
 }
 
+function extraerCalibre(textoNorm: string): string | null {
+  const m = textoNorm.match(/\bcal(?:ibre)?\.?\s*(\d+(?:\/\d+)?)\b/);
+  return m ? m[1] : null;
+}
+
+function extraerMedidasNxM(textoNorm: string): string[] {
+  const out: string[] = [];
+  // Evita capturar el denominador de una fracción (ej. "1/4 x 4" -> no es "4x4")
+  const re = /(?<![/\d.])(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)(?![/\d.])/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(textoNorm)) !== null) {
+    out.push(`${m[1]}x${m[2]}`);
+  }
+  return out;
+}
+
+function hayContradiccionMaterial(descNorm: string, matNorm: string): boolean {
+  // 1. Acabado contradictorio: galvanizada vs negra
+  const descGalv = /\bgalvanizad\w*\b/.test(descNorm);
+  const descNegra = /\bnegr[ao]s?\b/.test(descNorm);
+  const matGalv = /\bgalvanizad\w*\b/.test(matNorm);
+  const matNegra = /\bnegr[ao]s?\b/.test(matNorm);
+  if ((descGalv && matNegra) || (descNegra && matGalv)) return true;
+
+  // 2. Calibre explícito contradictorio (ej. Cal 18 vs Cal 10)
+  const calDesc = extraerCalibre(descNorm);
+  const calMat = extraerCalibre(matNorm);
+  if (calDesc && calMat && calDesc !== calMat) return true;
+
+  // 3. Medida NxM explícita en la descripción que contradice al material (ej. PTR 3x3 vs PTR 4", Placa 6x20 vs 4x10)
+  const medidasDesc = extraerMedidasNxM(descNorm);
+  const medidasMat = extraerMedidasNxM(matNorm);
+  if (medidasDesc.length > 0) {
+    for (const md of medidasDesc) {
+      // Ignorar medidas métricas decimales (ej. 1.22x3.05) porque el catálogo usa pies (4x10)
+      if (md.includes(".")) continue;
+      if (medidasMat.length > 0) {
+        if (!medidasMat.includes(md)) return true;
+      } else {
+        // El material no tiene NxM (ej. PTR de 4"): si ninguna parte de NxM aparece como token en el material, contradice
+        const [a, b] = md.split("x");
+        const tokensMat = new Set(matNorm.split(/[\s-]+/));
+        if (!tokensMat.has(md) && !(tokensMat.has(a) && tokensMat.has(b))) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
 export function sugerirMaterial(
   descripcion: string,
   _claveSat: string | null | undefined,
@@ -129,6 +202,9 @@ export function sugerirMaterial(
   const scores: Array<{ id: string; score: number }> = [];
   for (const mat of materiales) {
     const matNorm = normalizarDescripcion(`${mat.tipo} ${mat.nombre}`);
+    if (hayContradiccionMaterial(descNorm, matNorm)) {
+      continue;
+    }
     const tokensMat = tokenizarConPeso(matNorm);
     let interseccion = 0;
     let totalPesoMat = 0;
@@ -160,6 +236,13 @@ export function sugerirMaterial(
   return { material_id: mejor.id, puntaje: mejor.score, empatado: false };
 }
 
+/**
+ * Calcula el precio unitario neto en MXN (sin IVA) a partir de una partida CFDI.
+ * Nota (O4): el parámetro opcional `descuento` se resta solo cuando el caller tiene
+ * un descuento atribuible a la partida específica. En `factura_proveedor_partidas`,
+ * el importador CFDI guarda descuentos como filas separadas sin FK al concepto, por lo
+ * que `obtenerPropuestaAceroCfdi` usa el importe bruto y activa `descuento_en_factura: true`.
+ */
 export function precioDesdeConcepto(input: {
   importe: number;
   cantidad: number;
@@ -204,6 +287,7 @@ export function precioDesdeConcepto(input: {
 export function evaluarBanderas(input: {
   precioNuevo: number | null;
   precioActual: number | null;
+  precioActualIncluyeIva?: boolean | null;
   fechaFactura: string | null;
   fechaUltimoPrecioCfdi: string | null;
   yaAplicada: boolean;
@@ -218,15 +302,17 @@ export function evaluarBanderas(input: {
     String(input.moneda || "MXN").toUpperCase() === "USD" && !(Number(input.tipoCambio) > 0);
   const bloqueadaUnidad = unidadInfo.requiere_factor && !input.factorCapturado;
 
+  // D1: Comparar siempre en base común SIN IVA (misma función que el RPC SQL)
+  const actualSinIva = precioBaseSinIva(input.precioActual, input.precioActualIncluyeIva);
   let variacionPct: number | null = null;
   let variacionAlta = false;
   if (
     input.precioNuevo !== null &&
-    input.precioActual !== null &&
-    Number.isFinite(input.precioActual) &&
-    input.precioActual > 0
+    actualSinIva !== null &&
+    Number.isFinite(actualSinIva) &&
+    actualSinIva > 0
   ) {
-    const ratio = (input.precioNuevo - input.precioActual) / input.precioActual;
+    const ratio = (input.precioNuevo - actualSinIva) / actualSinIva;
     variacionPct = Math.round(ratio * 10000) / 100;
     variacionAlta = Math.abs(ratio) > UMBRAL_VARIACION_PRECIO;
   }
@@ -271,6 +357,7 @@ export async function obtenerPropuestaAceroCfdi(
   supabase: SupabaseClient,
   orgId: string,
   facturaId: string,
+  proveedorOverride?: string,
 ) {
   if (!UUID_RE.test(facturaId)) {
     throw new AceroCfdiError(400, "uuid_invalido", "El identificador de factura no es válido.");
@@ -370,8 +457,10 @@ export async function obtenerPropuestaAceroCfdi(
     aliasMap.set(k, al);
   }
 
+  const provOverrideNorm = String(proveedorOverride || "").trim().toUpperCase();
   const provNombreRaw = String((provRes as { data?: { nombre?: string } })?.data?.nombre || "").trim();
   const proveedorSugeridoDefault =
+    provOverrideNorm ||
     proveedoresExistentes.find((p) => provNombreRaw.toUpperCase().includes(p.toUpperCase())) ||
     (provNombreRaw ? provNombreRaw.toUpperCase().split(/\s+/)[0] : "");
 
@@ -399,7 +488,7 @@ export async function obtenerPropuestaAceroCfdi(
       sugerenciaOrigen = "alias";
       materialIdSug = String(aliasExacto.destino_id);
       puntaje = 1;
-      if (aliasExacto.proveedor_acero) proveedorAceroSug = String(aliasExacto.proveedor_acero);
+      if (!provOverrideNorm && aliasExacto.proveedor_acero) proveedorAceroSug = String(aliasExacto.proveedor_acero);
       factorSug = Number(aliasExacto.factor_conversion || 1);
       factorConfirmado = true;
     } else {
@@ -429,6 +518,7 @@ export async function obtenerPropuestaAceroCfdi(
     const banderas = evaluarBanderas({
       precioNuevo: calc.ok ? (calc.precio ?? null) : null,
       precioActual: actualInfo ? actualInfo.precio : null,
+      precioActualIncluyeIva: actualInfo ? actualInfo.incluye_iva : null,
       fechaFactura: factura.fecha_emision ? String(factura.fecha_emision).slice(0, 10) : null,
       fechaUltimoPrecioCfdi: maxFecha,
       yaAplicada: aplicadasSet.has(String(c.id)),
@@ -438,6 +528,10 @@ export async function obtenerPropuestaAceroCfdi(
       moneda: String(factura.moneda || "MXN"),
       tipoCambio: factura.tipo_cambio_emision != null ? Number(factura.tipo_cambio_emision) : null,
     });
+
+    const precioActualSinIva = actualInfo
+      ? precioBaseSinIva(actualInfo.precio, actualInfo.incluye_iva)
+      : null;
 
     return {
       partida_id: String(c.id),
@@ -457,6 +551,7 @@ export async function obtenerPropuestaAceroCfdi(
       factor_conversion_sugerido: factorSug,
       precio_actual: actualInfo ? actualInfo.precio : null,
       precio_actual_incluye_iva: actualInfo ? actualInfo.incluye_iva : null,
+      precio_actual_sin_iva: precioActualSinIva !== null ? Math.round(precioActualSinIva * 10000) / 10000 : null,
       banderas,
     };
   });
@@ -478,7 +573,14 @@ export async function obtenerPropuestaAceroCfdi(
     materiales: materialesActivos,
     precios_actuales: Array.from(precioActualMap.entries()).map(([k, v]) => {
       const [material_id, proveedor] = k.split("|");
-      return { material_id, proveedor, precio: v.precio, incluye_iva: v.incluye_iva };
+      const sinIva = precioBaseSinIva(v.precio, v.incluye_iva);
+      return {
+        material_id,
+        proveedor,
+        precio: v.precio,
+        incluye_iva: v.incluye_iva,
+        precio_sin_iva: sinIva !== null ? Math.round(sinIva * 10000) / 10000 : null,
+      };
     }),
     lineas,
   };
@@ -494,6 +596,7 @@ export async function aplicarPreciosAceroCfdi(
     material_id: string;
     proveedor_acero: string;
     factor_conversion?: number;
+    factor_confirmado?: boolean;
     guardar_alias?: boolean;
     forzar_fecha_anterior?: boolean;
     forzar_variacion?: boolean;
@@ -511,24 +614,34 @@ export async function aplicarPreciosAceroCfdi(
     if (!UUID_RE.test(String(l?.partida_id || "")) || !UUID_RE.test(String(l?.material_id || ""))) {
       throw new AceroCfdiError(400, "uuid_invalido", "partida_id y material_id deben ser UUID válidos.");
     }
-    const factor = l.factor_conversion !== undefined ? Number(l.factor_conversion) : 1;
-    if (!Number.isFinite(factor) || factor <= 0) {
-      throw new AceroCfdiError(400, "factor_invalido", "El factor de conversión debe ser un número mayor a cero.");
+    const tieneFactor = l.factor_conversion !== undefined && l.factor_conversion !== null;
+    let factor: number | undefined = undefined;
+    if (tieneFactor) {
+      factor = Number(l.factor_conversion);
+      if (!Number.isFinite(factor) || factor <= 0) {
+        throw new AceroCfdiError(400, "factor_invalido", "El factor de conversión debe ser un número mayor a cero.");
+      }
     }
-    const prov = String(l.proveedor_acero || "").trim();
+    const prov = String(l.proveedor_acero || "").trim().toUpperCase();
     if (!prov) {
       throw new AceroCfdiError(400, "proveedor_requerido", "Debes indicar el proveedor de acero.");
     }
-    return {
+    const out: Record<string, unknown> = {
       partida_id: l.partida_id,
       material_id: l.material_id,
       proveedor_acero: prov,
-      factor_conversion: factor,
       guardar_alias: l.guardar_alias !== false,
       forzar_fecha_anterior: Boolean(l.forzar_fecha_anterior),
       forzar_variacion: Boolean(l.forzar_variacion),
       descripcion_normalizada: l.descripcion_normalizada ? normalizarDescripcion(l.descripcion_normalizada) : undefined,
     };
+    if (tieneFactor) {
+      out.factor_conversion = factor;
+      out.factor_confirmado = l.factor_confirmado !== undefined ? Boolean(l.factor_confirmado) : true;
+    } else if (l.factor_confirmado !== undefined) {
+      out.factor_confirmado = Boolean(l.factor_confirmado);
+    }
+    return out;
   });
 
   const { data, error } = await serviceClient.rpc("aplicar_precios_acero_cfdi", {

@@ -52,6 +52,9 @@ interface EstadoFila {
   confirmarVariacionAlta: boolean;
 }
 
+const TASA_IVA_ACERO = 0.16;
+const UMBRAL_VARIACION_PRECIO = 0.30;
+
 const fmtMoneda = (v: number | null | undefined) => {
   if (v === null || v === undefined || !Number.isFinite(v)) return '—';
   return new Intl.NumberFormat('es-MX', {
@@ -168,12 +171,21 @@ export function AplicarPreciosAceroCfdiModal({
   }, [open, facturaId]);
 
   const mapaPreciosActuales = useMemo(() => {
-    const map = new Map<string, { precio: number; incluye_iva: boolean }>();
+    const map = new Map<string, { precio: number; incluye_iva: boolean; precio_sin_iva: number }>();
     if (!propuesta) return map;
     for (const pr of propuesta.precios_actuales || []) {
+      const precio = Number(pr.precio);
+      const incluye_iva = Boolean(pr.incluye_iva);
+      const precio_sin_iva =
+        pr.precio_sin_iva !== null && pr.precio_sin_iva !== undefined && Number.isFinite(Number(pr.precio_sin_iva))
+          ? Number(pr.precio_sin_iva)
+          : incluye_iva
+          ? precio / (1 + TASA_IVA_ACERO)
+          : precio;
       map.set(`${pr.material_id}::${pr.proveedor.toUpperCase()}`, {
-        precio: Number(pr.precio),
-        incluye_iva: Boolean(pr.incluye_iva),
+        precio,
+        incluye_iva,
+        precio_sin_iva,
       });
     }
     return map;
@@ -224,14 +236,23 @@ export function AplicarPreciosAceroCfdiModal({
     const precioActual = actualRow ? actualRow.precio : null;
     const precioActualIncluyeIva = actualRow ? actualRow.incluye_iva : null;
 
-    // Comparar variación en la misma base sin IVA
+    // D1: Consumir variación calculada por el servidor cuando no han cambiado material/proveedor/factor;
+    // si cambiaron en vivo, usar precio_sin_iva provisto por el servidor con la misma constante TASA_IVA_ACERO.
+    const mismoQueServidor =
+      f.materialId === (p.material_id_sugerido || '') &&
+      proveedorFinal.toUpperCase() === (p.proveedor_acero_sugerido || '').toUpperCase() &&
+      factorValido &&
+      Math.abs(factorNum - (p.factor_conversion_sugerido || 1)) < 1e-6;
+
     let variacionPct: number | null = null;
     let variacionAlta = false;
-    if (precioNuevo !== null && precioActual !== null && precioActual > 0) {
-      const actualSinIva = precioActualIncluyeIva ? precioActual / 1.16 : precioActual;
-      const ratio = (precioNuevo - actualSinIva) / actualSinIva;
+    if (mismoQueServidor) {
+      variacionPct = p.banderas.variacion_pct;
+      variacionAlta = p.banderas.variacion_alta;
+    } else if (precioNuevo !== null && actualRow && actualRow.precio_sin_iva > 0) {
+      const ratio = (precioNuevo - actualRow.precio_sin_iva) / actualRow.precio_sin_iva;
       variacionPct = Math.round(ratio * 10000) / 100;
-      variacionAlta = Math.abs(ratio) > 0.30;
+      variacionAlta = Math.abs(ratio) > UMBRAL_VARIACION_PRECIO;
     }
 
     const puedeAplicar =
@@ -304,20 +325,29 @@ export function AplicarPreciosAceroCfdiModal({
       return;
     }
 
-    const lineas: LineaAplicarAceroCfdi[] = seleccionadas.map((p) => {
+    // D3: Jamás convertir en silencio un factor inválido a 1
+    const lineas: LineaAplicarAceroCfdi[] = [];
+    for (const p of seleccionadas) {
       const f = filas[p.partida_id];
       const factorNum = parseFloat(f.factorStr);
-      return {
+      if (!Number.isFinite(factorNum) || factorNum <= 0) {
+        setErrorAplicar(
+          `El factor de conversión para "${p.descripcion}" debe ser un número mayor a cero.`
+        );
+        return;
+      }
+      lineas.push({
         partida_id: p.partida_id,
         material_id: f.materialId,
         proveedor_acero: proveedorFinal,
-        factor_conversion: Number.isFinite(factorNum) && factorNum > 0 ? factorNum : 1,
+        factor_conversion: factorNum,
+        factor_confirmado: true,
         guardar_alias: Boolean(f.recordarAlias),
         forzar_fecha_anterior: Boolean(f.confirmarFechaAnterior),
         forzar_variacion: Boolean(f.confirmarVariacionAlta),
         descripcion_normalizada: p.descripcion_normalizada,
-      };
-    });
+      });
+    }
 
     guardandoRef.current = true;
     setAplicando(true);

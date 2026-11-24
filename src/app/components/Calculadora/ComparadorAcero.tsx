@@ -226,12 +226,12 @@ export function ComparadorAcero({
               />
               <div>
                 <Label htmlFor="iva-switch" className="text-xs font-semibold cursor-pointer">
-                  {incluyeIva ? 'Los precios incluyen IVA' : 'Los precios son antes de IVA'}
+                  {incluyeIva ? 'Mostrar resultados con IVA' : 'Mostrar resultados sin IVA'}
                 </Label>
                 <p className="text-[11px] text-muted-foreground">
                   {incluyeIva
-                    ? 'Total = Σ(precio × cant); Subtotal = Total / 1.16'
-                    : 'Subtotal = Σ(precio × cant); Total = Subtotal × 1.16 (fórmula del Excel)'}
+                    ? 'Normaliza cada precio a con IVA según su indicador c/IVA o s/IVA.'
+                    : 'Normaliza cada precio a sin IVA según su indicador c/IVA o s/IVA.'}
                 </p>
               </div>
             </div>
