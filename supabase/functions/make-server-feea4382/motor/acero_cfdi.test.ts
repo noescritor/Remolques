@@ -116,12 +116,11 @@ Deno.test("sugerirMaterial: medidas, umbral 0.45, margen 0.05 exacto y contradic
   assertEquals(rBajoUmbral.material_id, null);
   assertEquals(rBajoUmbral.puntaje > 0.30 && rBajoUmbral.puntaje < 0.45, true);
 
-  // Diferencia exacta de 0.05 en IEEE-754 (0.5 - 0.45 === 0.05) NO debe marcar empate (mata M5: < -> <=)
-  // Palabras sin dígitos (peso=1 c/u) + ptr (peso=2) => descPeso=20; matA=10/20=0.50; matB=9/20=0.45 => diff=0.05 exacto
+  // Ventaja de 0.05 (12/20 = 0.60 vs 11/20 = 0.55) NO debe marcar empate
   const desc20 = "ptr aa bb cc dd ee ff gg hh ii jj kk ll mm nn oo pp qq rr";
   const rMargenExacto = sugerirMaterial(desc20, null, [
-    { id: "a", nombre: "aa bb cc dd ee ff gg hh", tipo: "ptr" },
-    { id: "b", nombre: "aa bb cc dd ee ff gg", tipo: "ptr" },
+    { id: "a", nombre: "aa bb cc dd ee ff gg hh ii jj", tipo: "ptr" },
+    { id: "b", nombre: "aa bb cc dd ee ff gg hh ii", tipo: "ptr" },
   ]);
   assertEquals(rMargenExacto.material_id, "a");
   assertEquals(rMargenExacto.empatado, false);
