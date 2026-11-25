@@ -48,6 +48,13 @@ import {
   AceroCfdiError
 } from "./motor/acero_cfdi.ts";
 import {
+  obtenerPropuestaRecepcionAlmacen,
+  recibirFacturaAlmacen,
+  listarRecepcionesAlmacen,
+  anularRecepcionAlmacen,
+  AlmacenRecepcionError
+} from "./motor/almacen_recepcion.ts";
+import {
   obtenerMatrizProduccion,
   actualizarFaseMotor,
   actualizarPlaneacionMotor,
@@ -927,6 +934,72 @@ app.delete("/catalogo-alias/:id", async (c) => {
   } catch (error: any) {
     const status = error instanceof AceroCfdiError ? error.status : (error.status || 400);
     return c.json({ error: error.message || "Error al eliminar alias" }, status);
+  }
+});
+
+// --- RECEPCIÓN DE FACTURA EN ALMACÉN (Bloque G) ---
+
+app.get("/almacen/facturas/:facturaId/propuesta", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const facturaId = c.req.param("facturaId");
+    const data = await obtenerPropuestaRecepcionAlmacen(supabase, orgId, facturaId);
+    return c.json(data);
+  } catch (error: any) {
+    const status = error instanceof AlmacenRecepcionError ? error.status : (error.status || 500);
+    return c.json({ error: error.message || "Error al generar propuesta de almacén", codigo: error.codigo }, status);
+  }
+});
+
+app.post("/almacen/facturas/:facturaId/recibir", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+    const facturaId = c.req.param("facturaId");
+    const payload = await c.req.json().catch(() => ({}));
+    const lineas = Array.isArray(payload?.lineas) ? payload.lineas : [];
+    const confirmoDoble = Boolean(payload?.confirmo_doble);
+    const notas = payload?.notas ?? null;
+    const data = await recibirFacturaAlmacen(adminClient, orgId, user?.id || null, facturaId, lineas, confirmoDoble, notas);
+    return c.json(data, 201);
+  } catch (error: any) {
+    const status = error instanceof AlmacenRecepcionError ? error.status : (error.status || 400);
+    return c.json({ error: error.message || "Error al recibir factura en almacén", codigo: error.codigo }, status);
+  }
+});
+
+app.get("/almacen/recepciones", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const data = await listarRecepcionesAlmacen(supabase, orgId, {
+      facturaId: c.req.query("factura_id") || undefined,
+      productoId: c.req.query("producto_id") || undefined,
+      estado: c.req.query("estado") || undefined,
+      limite: c.req.query("limite") ? Number(c.req.query("limite")) : undefined,
+      offset: c.req.query("offset") ? Number(c.req.query("offset")) : undefined,
+    });
+    return c.json(data);
+  } catch (error: any) {
+    const status = error instanceof AlmacenRecepcionError ? error.status : (error.status || 500);
+    return c.json({ error: error.message || "Error al listar recepciones de almacén" }, status);
+  }
+});
+
+app.post("/almacen/recepciones/:id/anular", async (c) => {
+  try {
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+    const id = c.req.param("id");
+    const payload = await c.req.json().catch(() => ({}));
+    const data = await anularRecepcionAlmacen(adminClient, orgId, user?.id || null, id, payload?.motivo || "");
+    return c.json(data);
+  } catch (error: any) {
+    const status = error instanceof AlmacenRecepcionError ? error.status : (error.status || 400);
+    return c.json({ error: error.message || "Error al anular recepción de almacén", codigo: error.codigo }, status);
   }
 });
 
