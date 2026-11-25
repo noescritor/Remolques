@@ -520,7 +520,20 @@ export function useSupabaseData(token?: string) {
         method: 'PUT',
         body: JSON.stringify(compra)
       });
-      setComprasProveedor(prev => prev.map(c => c.id === id ? resultado : c));
+      setComprasProveedor(prev =>
+        prev.map(c => (c.id === id ? { ...c, ...resultado, items: resultado?.items ?? c.items } : c))
+      );
+      if (compra.estado === 'Recibida') {
+        try {
+          const productosActualizados = await fetchJson('productos', `${BASE_URL}/productos`, token);
+          if (Array.isArray(productosActualizados)) {
+            setProductos(productosActualizados);
+            saveToLocalStorage('productos', productosActualizados);
+          }
+        } catch (refreshErr) {
+          console.warn('No se pudo refrescar productos tras recibir compra:', refreshErr);
+        }
+      }
       return resultado;
     } catch (error) {
       console.error('Error updating compra_proveedor:', error);
