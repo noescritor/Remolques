@@ -382,7 +382,7 @@ ALTER TABLE productos
 CREATE TABLE IF NOT EXISTS almacen_recepciones (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organizacion_id UUID NOT NULL REFERENCES organizaciones(id) ON DELETE CASCADE,
-  factura_id UUID NOT NULL REFERENCES facturas_proveedor(id) ON DELETE CASCADE,
+  factura_id UUID NOT NULL REFERENCES facturas_proveedor(id) ON DELETE RESTRICT,
   proveedor_id UUID NULL REFERENCES proveedores(id) ON DELETE SET NULL,
   compra_id UUID NULL REFERENCES compras_proveedor(id) ON DELETE SET NULL,
   estado TEXT NOT NULL DEFAULT 'recibida' CHECK (estado IN ('recibida', 'anulada')),
@@ -393,6 +393,15 @@ CREATE TABLE IF NOT EXISTS almacen_recepciones (
   anulada_por UUID NULL,
   motivo_anulacion TEXT NULL
 );
+
+-- Garantizar ON DELETE RESTRICT en instalaciones previas (idempotente)
+DO $$
+BEGIN
+  ALTER TABLE almacen_recepciones DROP CONSTRAINT IF EXISTS almacen_recepciones_factura_id_fkey;
+  ALTER TABLE almacen_recepciones
+    ADD CONSTRAINT almacen_recepciones_factura_id_fkey
+    FOREIGN KEY (factura_id) REFERENCES facturas_proveedor(id) ON DELETE RESTRICT;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_almacen_recepciones_org_fecha
   ON almacen_recepciones (organizacion_id, created_at DESC, id);
@@ -411,7 +420,8 @@ CREATE TABLE IF NOT EXISTS almacen_recepcion_lineas (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organizacion_id UUID NOT NULL REFERENCES organizaciones(id) ON DELETE CASCADE,
   recepcion_id UUID NOT NULL REFERENCES almacen_recepciones(id) ON DELETE CASCADE,
-  partida_id UUID NOT NULL REFERENCES factura_proveedor_partidas(id) ON DELETE CASCADE,
+  partida_id UUID NULL REFERENCES factura_proveedor_partidas(id) ON DELETE RESTRICT,
+  partida_id_original UUID NULL,
   producto_id TEXT NOT NULL REFERENCES productos(id) ON DELETE RESTRICT,
   cantidad_xml NUMERIC(14,4) NOT NULL CHECK (cantidad_xml > 0),
   unidad_xml TEXT NULL,
@@ -423,8 +433,27 @@ CREATE TABLE IF NOT EXISTS almacen_recepcion_lineas (
   costo_actualizado BOOLEAN NOT NULL DEFAULT false,
   activa BOOLEAN NOT NULL DEFAULT true,
   notas TEXT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT almacen_recepcion_lineas_partida_activa_check CHECK (activa = false OR partida_id IS NOT NULL)
 );
+
+-- Garantizar ON DELETE RESTRICT + partida_id_original en instalaciones previas (idempotente)
+DO $$
+BEGIN
+  ALTER TABLE almacen_recepcion_lineas ADD COLUMN IF NOT EXISTS partida_id_original UUID NULL;
+  UPDATE almacen_recepcion_lineas
+  SET partida_id_original = partida_id
+  WHERE partida_id_original IS NULL AND partida_id IS NOT NULL;
+  ALTER TABLE almacen_recepcion_lineas ALTER COLUMN partida_id DROP NOT NULL;
+  ALTER TABLE almacen_recepcion_lineas DROP CONSTRAINT IF EXISTS almacen_recepcion_lineas_partida_activa_check;
+  ALTER TABLE almacen_recepcion_lineas
+    ADD CONSTRAINT almacen_recepcion_lineas_partida_activa_check
+    CHECK (activa = false OR partida_id IS NOT NULL);
+  ALTER TABLE almacen_recepcion_lineas DROP CONSTRAINT IF EXISTS almacen_recepcion_lineas_partida_id_fkey;
+  ALTER TABLE almacen_recepcion_lineas
+    ADD CONSTRAINT almacen_recepcion_lineas_partida_id_fkey
+    FOREIGN KEY (partida_id) REFERENCES factura_proveedor_partidas(id) ON DELETE RESTRICT;
+END $$;
 
 -- Una partida solo puede estar en una línea activa; al anular (activa = false) queda libre
 CREATE UNIQUE INDEX IF NOT EXISTS uq_almacen_recepcion_lineas_partida_activa
@@ -706,11 +735,11 @@ BEGIN
 
     v_nota_linea := NULLIF(TRIM(COALESCE(v_linea->>'notas', '')), '');
     INSERT INTO almacen_recepcion_lineas (
-      organizacion_id, recepcion_id, partida_id, producto_id,
+      organizacion_id, recepcion_id, partida_id, partida_id_original, producto_id,
       cantidad_xml, unidad_xml, factor_conversion, cantidad_recibida,
       costo_unitario_mxn, movimiento_id, costo_actualizado, activa, notas
     ) VALUES (
-      p_org, v_recepcion_id, v_partida_id, v_producto_id,
+      p_org, v_recepcion_id, v_partida_id, v_partida_id, v_producto_id,
       v_partida.cantidad, v_partida.clave_unidad, v_factor, v_cant_recibida,
       v_costo_unit, v_mov_id, v_costo_actualizado, true, v_nota_linea
     );
@@ -872,6 +901,8 @@ BEGIN
 
     UPDATE almacen_recepcion_lineas
     SET activa = false,
+        partida_id_original = COALESCE(partida_id_original, partida_id),
+        partida_id = NULL,
         movimiento_anulacion_id = v_mov_id
     WHERE id = v_lin.id;
 

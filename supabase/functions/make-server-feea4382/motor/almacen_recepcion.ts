@@ -45,19 +45,30 @@ export function mapearErrorRpcAlmacen(err: unknown): AlmacenRecepcionError {
     msg.includes("recepcion_ya_anulada") ||
     msg.includes("deadlock_detected") ||
     code === "40P01" ||
-    code === "23505"
+    code === "23505" ||
+    code === "23503" ||
+    msg.includes("almacen_recepcion_lineas_partida_id_fkey") ||
+    msg.includes("almacen_recepciones_factura_id_fkey")
   ) {
+    const esFkAlmacen =
+      code === "23503" ||
+      msg.includes("almacen_recepcion_lineas_partida_id_fkey") ||
+      msg.includes("almacen_recepciones_factura_id_fkey");
     const codigo =
       code === "40P01"
         ? "deadlock_detected"
         : code === "23505"
         ? "partida_ya_recibida"
+        : esFkAlmacen
+        ? "factura_recibida_en_almacen"
         : msg.split(":")[0]?.trim() || "conflicto";
     const mensaje =
       code === "40P01"
         ? "Conflicto de concurrencia al actualizar existencias simultáneamente; vuelve a intentar."
         : code === "23505"
         ? "Una de las partidas ya fue recibida en almacén."
+        : esFkAlmacen
+        ? "La factura ya fue recibida en almacén; anula la recepción antes de modificar sus partidas"
         : msg;
     return new AlmacenRecepcionError(409, codigo, mensaje);
   }
@@ -689,6 +700,7 @@ export async function listarRecepcionesAlmacen(
     const pr = prodMap.get(String(l.producto_id));
     lineasPorRec.get(rid)!.push({
       ...l,
+      partida_id: l.partida_id || l.partida_id_original || null,
       cantidad_xml: Number(l.cantidad_xml),
       factor_conversion: Number(l.factor_conversion),
       cantidad_recibida: Number(l.cantidad_recibida),

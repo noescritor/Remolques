@@ -165,5 +165,76 @@ INSERT INTO rg SELECT 'G9a authenticated no puede ejecutar recibir_factura_almac
 INSERT INTO rg SELECT 'G9b anon no puede ejecutar anular_recepcion_almacen',
   NOT has_function_privilege('anon','anular_recepcion_almacen(uuid,uuid,uuid,text)','EXECUTE'), '';
 
+-- G10 (D1): FK ON DELETE RESTRICT con guardar_factura_con_partidas real + editar tras anular
+DO $$
+DECLARE
+  v_org uuid := '00000000-0000-0000-0000-000000000001';
+  v_prov uuid := '11111111-1111-4111-8111-111111111111';
+  v_usr uuid := NULL;
+  v_fid uuid;
+  v_pid uuid;
+  v_rec jsonb;
+  v_rid uuid;
+  v_err_23503 boolean := false;
+  v_lineas_intactas int;
+  v_stock_post numeric;
+  v_edit_ok boolean := false;
+BEGIN
+  INSERT INTO proveedores (id, organizacion_id, nombre, rfc, razon_social, moneda_default)
+  VALUES (v_prov, v_org, 'Prov D1 Test', 'PDT010101AAA', 'Prov D1 Test SA', 'MXN')
+  ON CONFLICT (id) DO NOTHING;
+
+  INSERT INTO productos (id, organizacion_id, nombre, descripcion, unidad, tipo, precio_unitario, costo, stock_actual, stock_reservado, stock_minimo)
+  VALUES ('prod-g-d1', v_org, 'Prod D1', 'd', 'pz', 'bien', 10, 5, 0, 0, 0)
+  ON CONFLICT (id) DO UPDATE SET stock_actual = 0;
+
+  PERFORM public.guardar_factura_con_partidas(
+    v_org, NULL, v_prov, 'FG-D1-REAL', NULL, '2026-11-20', 30, '2026-12-20', 'MXN', 100, 1, 'd1', NULL, 100, 0, 0, 0,
+    '[{"tipo":"concepto","descripcion":"Tornillo D1","cantidad":10,"clave_unidad":"H87","precio_unitario":10,"importe":100}]'::jsonb, NULL
+  );
+  SELECT id INTO v_fid FROM facturas_proveedor WHERE organizacion_id = v_org AND folio = 'FG-D1-REAL';
+  SELECT id INTO v_pid FROM factura_proveedor_partidas WHERE factura_id = v_fid;
+
+  v_rec := public.recibir_factura_almacen(
+    v_org, v_usr, v_fid,
+    jsonb_build_array(jsonb_build_object('partida_id', v_pid, 'producto_id', 'prod-g-d1', 'guardar_alias', false)),
+    false, NULL
+  );
+  v_rid := (v_rec->>'recepcion_id')::uuid;
+
+  -- Intentar reemplazar partidas con guardar_factura_con_partidas mientras la recepcion esta activa -> debe fallar 23503
+  BEGIN
+    PERFORM public.guardar_factura_con_partidas(
+      v_org, v_fid, v_prov, 'FG-D1-REAL', NULL, '2026-11-20', 30, '2026-12-20', 'MXN', 110, 1, 'd1', NULL, 110, 0, 0, 0,
+      '[{"tipo":"concepto","descripcion":"Tornillo D1","cantidad":11,"clave_unidad":"H87","precio_unitario":10,"importe":110}]'::jsonb, NULL
+    );
+  EXCEPTION WHEN foreign_key_violation THEN
+    v_err_23503 := true;
+  END;
+
+  SELECT count(*) INTO v_lineas_intactas FROM almacen_recepcion_lineas WHERE recepcion_id = v_rid AND activa = true;
+  SELECT stock_actual INTO v_stock_post FROM productos WHERE id = 'prod-g-d1';
+  INSERT INTO rg VALUES ('G10a guardar_factura_con_partidas bloqueado por FK RESTRICT con recepcion activa',
+    (v_err_23503 AND v_lineas_intactas = 1 AND v_stock_post = 10),
+    'fk_err=' || v_err_23503 || ' lineas=' || v_lineas_intactas || ' stock=' || v_stock_post);
+
+  -- Actualizar solo descripcion en sitio no rompe la recepcion
+  UPDATE factura_proveedor_partidas SET descripcion = 'Tornillo D1 corregido' WHERE id = v_pid;
+  SELECT count(*) INTO v_lineas_intactas FROM almacen_recepcion_lineas WHERE recepcion_id = v_rid AND activa = true;
+  INSERT INTO rg VALUES ('G10b actualizar descripcion en sitio conserva recepcion activa',
+    (v_lineas_intactas = 1), 'lineas=' || v_lineas_intactas);
+
+  -- Tras anular la recepcion, guardar_factura_con_partidas SI permite editar partidas y partida_id_original conserva trazabilidad
+  PERFORM public.anular_recepcion_almacen(v_org, v_usr, v_rid, 'corregir cantidad factura');
+  PERFORM public.guardar_factura_con_partidas(
+    v_org, v_fid, v_prov, 'FG-D1-REAL', NULL, '2026-11-20', 30, '2026-12-20', 'MXN', 110, 1, 'd1', NULL, 110, 0, 0, 0,
+    '[{"tipo":"concepto","descripcion":"Tornillo D1","cantidad":11,"clave_unidad":"H87","precio_unitario":10,"importe":110}]'::jsonb, NULL
+  );
+  v_edit_ok := (SELECT cantidad FROM factura_proveedor_partidas WHERE factura_id = v_fid) = 11
+    AND (SELECT partida_id_original FROM almacen_recepcion_lineas WHERE recepcion_id = v_rid) = v_pid;
+  INSERT INTO rg VALUES ('G10c tras anular recepcion se pueden editar partidas conservando partida_id_original',
+    v_edit_ok, 'edit_ok=' || v_edit_ok);
+END $$;
+
 SELECT caso, CASE WHEN ok THEN 'PASA' ELSE 'FALLA' END estado, detalle FROM rg ORDER BY caso;
 ROLLBACK;

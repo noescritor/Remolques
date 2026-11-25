@@ -4627,7 +4627,7 @@ app.put("/cxp/facturas/:id/partidas", async (c) => {
       return c.json({ error: "La factura no existe o pertenece a otra organización" }, 404);
     }
 
-    // Verificar si la factura ya tiene pagos activos asignados a partidas
+    // Verificar si la factura ya tiene pagos activos asignados a partidas o recepciones activas en almacén
     const { count: pagosAsignadosActivos } = await serviceClient
       .from("pagos_factura_partidas")
       .select("id, pago:pagos_factura!inner(id, factura_id, anulado)", { count: "exact", head: true })
@@ -4635,7 +4635,17 @@ app.put("/cxp/facturas/:id/partidas", async (c) => {
       .eq("pago.factura_id", id)
       .eq("pago.anulado", false);
 
-    if (pagosAsignadosActivos && pagosAsignadosActivos > 0) {
+    const { count: recepcionesAlmacenActivas } = await serviceClient
+      .from("almacen_recepciones")
+      .select("id", { count: "exact", head: true })
+      .eq("organizacion_id", orgId)
+      .eq("factura_id", id)
+      .eq("estado", "recibida");
+
+    const tienePagosAsignados = Boolean(pagosAsignadosActivos && pagosAsignadosActivos > 0);
+    const tieneRecepcionActiva = Boolean(recepcionesAlmacenActivas && recepcionesAlmacenActivas > 0);
+
+    if (tienePagosAsignados || tieneRecepcionActiva) {
       // Consultar partidas actuales
       const { data: partidasActuales } = await serviceClient
         .from("factura_proveedor_partidas")
@@ -4662,10 +4672,16 @@ app.put("/cxp/facturas/:id/partidas", async (c) => {
       }
 
       if (!soloCambiaDescripcion) {
+        if (tieneRecepcionActiva) {
+          return c.json(
+            { error: "La factura ya fue recibida en almacén; anula la recepción antes de modificar sus partidas" },
+            409,
+          );
+        }
         return c.json({ error: "Anula los pagos asignados antes de modificar las partidas" }, 409);
       }
 
-      // Si solo cambia la descripción, actualizar descripciones sin alterar montos
+      // Si solo cambia la descripción, actualizar descripciones en sitio sin borrar ni alterar montos
       for (let i = 0; i < body.partidas.length; i++) {
         const act = partidasActuales![i];
         const nueva = body.partidas[i];

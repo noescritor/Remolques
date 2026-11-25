@@ -124,3 +124,37 @@ node scripts/dev/test_almacen_g_browser.cjs
 1. **Carrera en `POST /inventario/movimientos`:** el endpoint actual lee `stock_actual`, calcula el nuevo valor en JS y hace `UPDATE` sin `FOR UPDATE`, por lo que dos ajustes manuales concurrentes pueden perder una actualización. Queda documentado para migrarse a un RPC atómico en un bloque separado (no se tocó por regla del bloque).
 2. **Fix de `ajustar_stock` / recepción de compras (`PUT /compras-proveedor/:id`):** documentado en §0(2) (`operator does not exist: text = uuid`). Se atiende en la rama dedicada `compras-recepcion-2026-11-24`; al mergearse a `main`, esta rama se rebasará encima.
 3. **Carga de inventario inicial (conteo físico):** actualmente muchos productos arrancan con `stock_actual = 0`. Para que las existencias reflejen el almacén real antes de recibir nuevas facturas, conviene definir un flujo guiado (importación CSV o plantilla de conteo inicial) que registre movimientos `Ajuste` con referencia `"Inventario inicial YYYY-MM-DD"`.
+
+---
+
+## 5. Ronda 2 — Correcciones a revisión de Claude (`ALMACEN_G_REVISION_CLAUDE.md`)
+
+### D1 — Bloqueo de edición/borrado en cascada de partidas de facturas ya recibidas
+- **Migración (`supabase/migrations/20261126_01_almacen_g.sql`):**
+  - Se cambiaron las llaves foráneas `almacen_recepciones.factura_id` y `almacen_recepcion_lineas.partida_id` de `ON DELETE CASCADE` a **`ON DELETE RESTRICT`** (con bloques `DO $$ ...` idempotentes para instalaciones previas).
+  - Para permitir editar partidas **después de anular** una recepción sin perder trazabilidad: `almacen_recepcion_lineas` añade `partida_id_original UUID` y `CHECK (activa = false OR partida_id IS NOT NULL)`. Al recibir se guarda `partida_id` y `partida_id_original`; al anular (`anular_recepcion_almacen`), `activa = false` y `partida_id = NULL` (conservando `partida_id_original`), liberando las partidas para `guardar_factura_con_partidas` mientras que cualquier recepción activa sigue protegida en BD por `ON DELETE RESTRICT`.
+- **Rutas y motores CxP / Almacén (`index.ts`, `motor/cuentas_por_pagar.ts`, `motor/almacen_recepcion.ts`):**
+  - `PUT /cxp/facturas/:id/partidas`: comprueba recepciones activas (`almacen_recepciones.estado = 'recibida'`) junto con pagos asignados; si solo cambia descripción/`clave_sat`/`clave_unidad`, actualiza en sitio sin borrar partidas ni tocar la recepción; si cambian montos/cantidades/conteo, responde **`409`**: `"La factura ya fue recibida en almacén; anula la recepción antes de modificar sus partidas"`.
+  - `guardarFacturaConPartidasMotor` (cubre `PUT /cxp/facturas/:id`, `POST /cxp/facturas/:id/partidas` y `PUT /cxp/facturas/:id/partidas`): valida recepciones activas (`409`) y mapea `23503` / FK de almacén a `409`.
+  - `mapearErrorRpcAlmacen` y `formatearErrorRespuesta`: mapean SQLSTATE `23503` y las FKs `almacen_recepcion_lineas_partida_id_fkey` / `almacen_recepciones_factura_id_fkey` a **`409`** (nunca `500`), cubriendo también reimportación de XML.
+- **Verificación en Postgres 17 real (migración ×2 idempotente):**
+  - `arnes_revision_g/i_rpc_real.sql`: `guardar_factura_con_partidas` falla con `23503` (`violates foreign key constraint "almacen_recepcion_lineas_partida_id_fkey"`), la recepción conserva su línea activa (`lineas_en_recepcion=1`, `estado_recepcion=recibida`), intentar recibir otra vez falla con `partida_ya_recibida`, y `stock_actual` permanece en **`10.0000`** (ya no sube a 21).
+  - `arnes_revision_g/rev_g.sql`: **67/67 `PASA`**, y el `DELETE FROM factura_proveedor_partidas` del bloque I es rechazado por la FK `ON DELETE RESTRICT` (`almacen_recepcion_lineas_partida_id_fkey`).
+  - `docs/almacen/verificacion_G.sql`: **23/23 `PASA`**, incluyendo los nuevos casos `G10a` (RPC real bloqueada por `23503`), `G10b` (actualizar solo descripción en sitio conserva la recepción) y `G10c` (tras anular la recepción, `guardar_factura_con_partidas` sí edita partidas conservando `partida_id_original`).
+
+### D2 y O1 — Cobertura de `obtenerPropuestaRecepcionAlmacen` y arnés de 38 mutaciones (`mutar_g.cjs`)
+- Se amplió `motor/almacen_recepcion.test.ts` con pruebas de:
+  - Ventana exacta `±60` vs `±61` días en **ambos sentidos** (fijando O1 contra SQL), estados `Pendiente`/`Cancelada`, otro proveedor, aislamiento por `organizacion_id` (factura, productos y alias), compra ligada (`Recibida` vs `Pendiente`), líneas inactivas (`activa = false`) vs activas, claves SAT de servicio `78/80/81/84`, descuento detectado por partida `tipo = 'descuento'` con cabecera en `0`, y redondeo exacto a 2 decimales de `diferencia_costo_pct` (`3.33`).
+  - Mapeo `23503 → 409`, bloqueo en `guardarFacturaConPartidasMotor` y `cancelarFactura` (O2), y liberación tras anular la recepción.
+- **Resultado sobre las 38 mutaciones de `COORDINACION/REVISIONES/arnes_revision_g/mutar_g.cjs`:**
+  - **34 muertas, 4 vivas, 0 no aplica** (100% de las 12 mutaciones no equivalentes que quedaban vivas en ronda 1 — M1, M2, M3, M4, M5, M6, M7, M8, M9, M10, M13, M21, M37, M38 — ahora mueren).
+  - **4 vivas equivalentes explicadas:**
+    - `M19` (`factor 0` en `cantidadARecibir`): el cálculo posterior produce `cantidad = 0`, que igual falla como `cantidad_invalida` (y el RPC lo rechaza con `factor_invalido`).
+    - `M26` (`cantidad 0` en `validarLoteRecepcion`): el RPC `recibir_factura_almacen` valida `cantidad_recibida > 0` y rechaza con `cantidad_invalida`.
+    - `M32` (tope máximo de `listarRecepcionesAlmacen` 200 → 2000): tope defensivo de paginación no ejercitado en test unitario.
+    - `M34` (filtro `organizacion_id` en líneas del listado): las líneas ya están acotadas por `recepcion_id` proveniente de `almacen_recepciones` filtrado por `organizacion_id` (y protegidas por RLS).
+
+### O2 — Cancelación de factura con recepción activa
+- `cancelarFactura` en `motor/cuentas_por_pagar.ts` comprueba `almacen_recepciones` con `estado = 'recibida'` y rechaza con **`409`**: `"No se puede cancelar una factura que ya fue recibida en almacén. Anula la recepción primero."` (tras anular la recepción, sí permite cancelar).
+- `O3` (alias compartido con F) y `O4` (insignia `Existencia registrada: 0` en despiece) no se tocaron, pendientes de decisión de Luis.
+

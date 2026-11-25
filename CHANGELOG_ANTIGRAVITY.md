@@ -3,6 +3,21 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-25 - Bloque G (Ronda 2: D1, D2, O1 y O2 de revisión Claude)
+**Herramienta:** Antigravity  
+**Tipo:** fix (D1 FK `ON DELETE RESTRICT` en `almacen_recepciones.factura_id` y `almacen_recepcion_lineas.partida_id` con `partida_id_original` para permitir editar partidas tras anular sin perder trazabilidad; 409 en `PUT /cxp/facturas/:id/partidas`, `guardarFacturaConPartidasMotor` y mapeo `23503` en `mapearErrorRpcAlmacen` y `formatearErrorRespuesta`; edición en sitio permitida si solo cambia descripción; O2 `cancelarFactura` exige anular recepción activa primero; D2/O1 pruebas en `motor/almacen_recepcion.test.ts` matando 34/38 mutantes de `arnes_revision_g/mutar_g.cjs`, dejando solo los 4 equivalentes M19/M26/M32/M34; `verificacion_G.sql` 23/23 `PASA`, `i_rpc_real.sql` bloqueado con `23503` y stock en 10, `rev_g.sql` 67/67 + FK `RESTRICT`)  
+**Rama:** `almacen-g-2026-11-24`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/ALMACEN_G_REVISION_CLAUDE.md`, `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261126_01_almacen_g.sql`
+- `docs/almacen/verificacion_G.sql`
+- `supabase/functions/make-server-feea4382/index.ts`, `motor/cuentas_por_pagar.ts`, `motor/almacen_recepcion.ts`, `motor/almacen_recepcion.test.ts`
+- `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Rebasar sobre `compras-recepcion-2026-11-24` una vez mergeado a `main` y aprobar el merge de Bloque G.
+- Ejecutar `supabase/migrations/20261126_01_almacen_g.sql` en el SQL Editor de Supabase.
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel.
+
 ## 2026-11-25 - Bloque G: Recibir factura en almacén (XML → entradas de inventario)
 **Herramienta:** Antigravity  
 **Tipo:** feat (migración `20261126_01_almacen_g.sql` con `NUMERIC(14,4)` en existencias/movimientos, `ultimo_costo_compra*` de referencia en `productos`, `catalogo_alias_factura.destino_id` a `TEXT`, tablas `almacen_recepciones` / `almacen_recepcion_lineas` con RLS, RPCs `recibir_factura_almacen` con guardián de doble conteo (a)+(b) 60 días y `anular_recepcion_almacen`; motor `motor/almacen_recepcion.ts` + 4 endpoints `/almacen/*`; modal `RecibirFacturaAlmacenModal` en CxP Facturas; columna "Último costo compra (s/IVA)", modal "Recepciones" con anulación y `parseFloat` en ajuste manual en `InventarioList`; normalización centralizada `NUMERIC -> Number()` en `useSupabaseData.ts` + `formatearCantidadStock`; insignia solo-lectura de existencia en `ChecklistDespiecePanel`; verificación PG 17 19/19, no-regresión Bloque F 18/18 + 7/7, concurrencia 2 sesiones, mutación 19/19, Deno 17/17 y E2E navegador real con 5 capturas)  
