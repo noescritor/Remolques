@@ -3,6 +3,26 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-25 - Bloque G: Recibir factura en almacén (XML → entradas de inventario)
+**Herramienta:** Antigravity  
+**Tipo:** feat (migración `20261126_01_almacen_g.sql` con `NUMERIC(14,4)` en existencias/movimientos, `ultimo_costo_compra*` de referencia en `productos`, `catalogo_alias_factura.destino_id` a `TEXT`, tablas `almacen_recepciones` / `almacen_recepcion_lineas` con RLS, RPCs `recibir_factura_almacen` con guardián de doble conteo (a)+(b) 60 días y `anular_recepcion_almacen`; motor `motor/almacen_recepcion.ts` + 4 endpoints `/almacen/*`; modal `RecibirFacturaAlmacenModal` en CxP Facturas; columna "Último costo compra (s/IVA)", modal "Recepciones" con anulación y `parseFloat` en ajuste manual en `InventarioList`; normalización centralizada `NUMERIC -> Number()` en `useSupabaseData.ts` + `formatearCantidadStock`; insignia solo-lectura de existencia en `ChecklistDespiecePanel`; verificación PG 17 19/19, no-regresión Bloque F 18/18 + 7/7, concurrencia 2 sesiones, mutación 19/19, Deno 17/17 y E2E navegador real con 5 capturas)  
+**Rama:** `almacen-g-2026-11-24`  
+**Referencia auditoría:** `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`, `docs/almacen/contrato_esquema_real.md`, `docs/almacen/verificacion_G.sql`  
+**Archivos tocados:**  
+- `supabase/migrations/20261126_01_almacen_g.sql`
+- `docs/almacen/contrato_esquema_real.md`, `docs/almacen/verificacion_G.sql`
+- `supabase/functions/make-server-feea4382/motor/almacen_recepcion.ts`, `motor/almacen_recepcion.test.ts`, `motor/acero_cfdi.ts`, `index.ts`
+- `src/app/types/index.ts`, `src/app/hooks/useSupabaseData.ts`, `src/app/utils/almacenApi.ts`, `src/app/App.tsx`
+- `src/app/components/Inventario/RecibirFacturaAlmacenModal.tsx`, `InventarioList.tsx`
+- `src/app/components/Finanzas/CxpFacturasTab.tsx`, `CuentasPorPagarMain.tsx`
+- `src/app/components/OrdenesTrabajo/ChecklistDespiecePanel.tsx`, `src/app/components/Cotizaciones/GenerarOrdenProduccionModal.tsx`
+- `scripts/dev/local_supabase_bridge.cjs`, `scripts/dev/seed_almacen_g.sql`, `scripts/dev/test_almacen_g_browser.cjs`
+- `COORDINACION/EVIDENCIA/almacen_g_01..05_*.png`, `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Rebasar sobre `compras-recepcion-2026-11-24` una vez mergeado a `main` y aprobar el merge de Bloque G.
+- Ejecutar `supabase/migrations/20261126_01_almacen_g.sql` en el SQL Editor de Supabase.
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel.
+
 ## 2026-11-24 - Bloque F (Ronda 3: N1-N3 de revisión Claude R2)
 **Herramienta:** Antigravity  
 **Tipo:** fix (N1 resolución case-insensitive de proveedor existente en `aplicar_precios_acero_cfdi` y `renombrar_proveedor_acero` para no duplicar proveedores con mayúsculas mezcladas como `REFERENCIA (Excel costeo)`; N2 `renombrar_proveedor_acero` falla con `proveedor_no_encontrado` 404 cuando el origen no existe; N3 pruebas en `motor/acero_cfdi.test.ts` para las 3 reglas de contradicción de `sugerirMaterial` + casos de `sug.ts`, ruta de IVA en `obtenerPropuestaAceroCfdi` y default `factor_confirmado=true`, matando 14/14 mutantes en `mutar_f3.cjs`)  

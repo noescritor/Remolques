@@ -295,7 +295,7 @@ export function InventarioList({
                                 </span>
                                 <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                                   {producto.ultimo_costo_compra_fecha && (
-                                    <span>{producto.ultimo_costo_compra_fecha}</span>
+                                    <span>{String(producto.ultimo_costo_compra_fecha).slice(0, 10)}</span>
                                   )}
                                   {producto.ultimo_costo_compra_factura_id && (
                                     <button
