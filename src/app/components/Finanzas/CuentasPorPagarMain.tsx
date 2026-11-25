@@ -22,6 +22,7 @@ export interface CuentasPorPagarMainProps {
   loading: boolean;
   onCrearPago: (pago: any) => Promise<void>;
   session?: any;
+  onRecargarProductos?: () => Promise<void> | void;
 }
 
 export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
@@ -369,6 +370,7 @@ export function CuentasPorPagarMain(props: CuentasPorPagarMainProps) {
             onAnularPago={handleAnularPago}
             getAuthToken={getAuthToken}
             onRecargarFacturas={fetchFacturas}
+            onRecargarProductos={props.onRecargarProductos}
           />
         </TabsContent>
 

@@ -29,6 +29,7 @@ import {
   esPartidaCompletaLinea,
   puedeLiberarFase,
 } from '../Expediente/expedienteUtils';
+import { formatearCantidadStock } from '../../utils/almacenApi';
 
 export interface ChecklistDespiecePanelProps {
   orden: OrdenTrabajo | null;
@@ -70,6 +71,8 @@ export function ChecklistDespiecePanel({
   const [generando, setGenerando] = useState(false);
   const [datos, setDatos] = useState<any>(null);
   const [operarios, setOperarios] = useState<any[]>([]);
+  // Consulta solo-lectura de existencias en productos (Bloque G; no bloquea ni descuenta entregas)
+  const [stockProductos, setStockProductos] = useState<Record<string, { stock_actual: number; unidad?: string }>>({});
   const [fasesExpandidas, setFasesExpandidas] = useState<Record<string, boolean>>({});
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [equipoFiltro, setEquipoFiltro] = useState<string>('todos');
@@ -147,6 +150,28 @@ export function ChecklistDespiecePanel({
           const opsData = await resOps.json();
           setOperarios(extraerListaOperarios(opsData));
         }
+      }
+
+      // Consulta de solo lectura de existencias registradas (informativo; no descuenta ni bloquea)
+      try {
+        const resProd = await fetch(`${BASE_URL}/productos`, { headers });
+        if (resProd.ok) {
+          const prodsData = await resProd.json();
+          if (Array.isArray(prodsData)) {
+            const mapa: Record<string, { stock_actual: number; unidad?: string }> = {};
+            for (const p of prodsData) {
+              if (p && p.id && p.tipo === 'bien') {
+                mapa[String(p.id)] = {
+                  stock_actual: Number(p.stock_actual ?? 0),
+                  unidad: p.unidad || undefined,
+                };
+              }
+            }
+            setStockProductos(mapa);
+          }
+        }
+      } catch {
+        // Informativo: no bloquear el despiece si falla esta consulta secundaria
       }
     } catch (err: any) {
       console.error('Error cargando checklist:', err);
@@ -1042,6 +1067,21 @@ export function ChecklistDespiecePanel({
                                         Manual
                                       </Badge>
                                     )}
+                                    {(() => {
+                                      const refId = l.producto_id || l.material_id;
+                                      const stockInfo = refId ? stockProductos[String(refId)] : undefined;
+                                      if (!stockInfo) return null;
+                                      return (
+                                        <Badge
+                                          variant="outline"
+                                          className="text-[9px] px-1.5 py-0 border-border text-muted-foreground bg-muted/40"
+                                          title="Existencia registrada en Inventario (solo lectura; las entregas de despiece no descuentan inventario)"
+                                        >
+                                          Existencia registrada: {formatearCantidadStock(stockInfo.stock_actual)}{' '}
+                                          {stockInfo.unidad || l.unidad || 'pz'} · no descuenta entregas
+                                        </Badge>
+                                      );
+                                    })()}
                                   </div>
                                 </td>
                                 <td className="p-2 text-right font-mono">{l.cantidad_requerida}</td>

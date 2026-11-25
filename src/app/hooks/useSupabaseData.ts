@@ -41,6 +41,33 @@ const sendJson = async (label: string, url: string, token: string | undefined, i
   return parseResponse(label, response);
 };
 
+/**
+ * Normaliza los campos NUMERIC de Postgres (que PostgREST/pg puede serializar como string)
+ * a number en un solo lugar para toda la app.
+ */
+function normalizarProductoNumerico(p: any): Producto {
+  if (!p || typeof p !== 'object') return p;
+  const toNum = (v: unknown, fallback = 0): number => {
+    if (v === null || v === undefined || v === '') return fallback;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : fallback;
+  };
+  const toOptNum = (v: unknown): number | null => {
+    if (v === null || v === undefined || v === '') return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+  return {
+    ...p,
+    precio_unitario: toNum(p.precio_unitario, 0),
+    costo: p.costo === null || p.costo === undefined ? p.costo : toNum(p.costo, 0),
+    stock_actual: toNum(p.stock_actual, 0),
+    stock_reservado: toNum(p.stock_reservado, 0),
+    stock_minimo: toNum(p.stock_minimo, 0),
+    ultimo_costo_compra: toOptNum(p.ultimo_costo_compra),
+  };
+}
+
 export function useSupabaseData(token?: string) {
   const [organizacion, setOrganizacion] = useState<any>(null);
   const [organizacionesList, setOrganizacionesList] = useState<any[]>([]);
@@ -254,7 +281,7 @@ export function useSupabaseData(token?: string) {
         const localNotas = localStorage.getItem('notas_simples');
         
         setClientes(localClientes ? JSON.parse(localClientes) : []);
-        setProductos(localProductos ? JSON.parse(localProductos) : []);
+        setProductos(localProductos ? JSON.parse(localProductos).map(normalizarProductoNumerico) : []);
         setCotizaciones(localCotizaciones ? JSON.parse(localCotizaciones) : []);
         setPagos(localPagos ? JSON.parse(localPagos) : []);
         const localProveedores = localStorage.getItem('proveedores');
@@ -336,7 +363,7 @@ export function useSupabaseData(token?: string) {
 
       setOrganizacion(organizacionData);
       setClientes(Array.isArray(clientesData) ? clientesData : []);
-      setProductos(Array.isArray(productosData) ? productosData : []);
+      setProductos(Array.isArray(productosData) ? productosData.map(normalizarProductoNumerico) : []);
       setCotizaciones(Array.isArray(cotizacionesData) ? cotizacionesData : []);
       setPagos(Array.isArray(pagosData) ? pagosData : []);
         setOrdenesTrabajo(Array.isArray(ordenesData) ? ordenesData : []);
@@ -382,7 +409,7 @@ export function useSupabaseData(token?: string) {
         const localNotas = localStorage.getItem('notas_simples');
         
         setClientes(localClientes ? JSON.parse(localClientes) : []);
-        setProductos(localProductos ? JSON.parse(localProductos) : []);
+        setProductos(localProductos ? JSON.parse(localProductos).map(normalizarProductoNumerico) : []);
         setCotizaciones(localCotizaciones ? JSON.parse(localCotizaciones) : []);
         setPagos(localPagos ? JSON.parse(localPagos) : []);
         const localProveedores = localStorage.getItem('proveedores');
@@ -728,8 +755,9 @@ export function useSupabaseData(token?: string) {
         method: 'POST',
         body: JSON.stringify(producto)
       });
-      setProductos(prev => [...prev, resultado]);
-      return resultado;
+      const normalizado = normalizarProductoNumerico(resultado);
+      setProductos(prev => [...prev, normalizado]);
+      return normalizado;
     } catch (error) {
       console.error('Error creating producto:', error);
       throw error;
@@ -764,8 +792,9 @@ export function useSupabaseData(token?: string) {
         method: 'PUT',
         body: JSON.stringify(producto)
       });
-      setProductos(prev => prev.map(p => p.id === id ? resultado : p));
-      return resultado;
+      const normalizado = normalizarProductoNumerico(resultado);
+      setProductos(prev => prev.map(p => p.id === id ? normalizado : p));
+      return normalizado;
     } catch (error) {
       console.error('Error updating producto:', error);
       throw error;
@@ -1150,7 +1179,9 @@ export function useSupabaseData(token?: string) {
   const obtenerMovimientosInventario = async (): Promise<MovimientoInventario[]> => {
     try {
       const data = await fetchJson('obtener movimientos inventario', `${BASE_URL}/inventario/movimientos`, token);
-      return data;
+      return Array.isArray(data)
+        ? data.map((m: any) => ({ ...m, cantidad: Number(m.cantidad ?? 0) }))
+        : [];
     } catch (error) {
       console.error('Error fetching movimientos:', error);
       throw error;

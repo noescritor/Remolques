@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Cotizacion, Producto } from '../../types';
+import { formatearCantidadStock } from '../../utils/almacenApi';
 import { Loader2, Plus, Trash2, Factory } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -101,7 +102,7 @@ export function GenerarOrdenProduccionModal({
                     <SelectContent>
                       {materiasPrimas.map(p => (
                         <SelectItem key={p.id} value={p.id}>
-                          {p.nombre} {p.stock_actual !== undefined ? `(Stock: ${p.stock_actual})` : ''}
+                          {p.nombre} {p.stock_actual !== undefined ? `(Stock: ${formatearCantidadStock(p.stock_actual)})` : ''}
                         </SelectItem>
                       ))}
                     </SelectContent>

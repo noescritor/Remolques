@@ -26,12 +26,14 @@ import {
   FileCode,
   AlertTriangle,
   Sparkles,
+  PackageCheck,
 } from 'lucide-react';
 import { Checkbox } from '../ui/checkbox';
 import { formatearMonedaDe, Moneda, fechaLocalISO } from '../../utils/cuentasPorPagar';
 import { BASE_URL } from '../../utils/api';
 import { CxpCfdiModal } from './CxpCfdiModal';
 import { AplicarPreciosAceroCfdiModal } from '../Calculadora/AplicarPreciosAceroCfdiModal';
+import { RecibirFacturaAlmacenModal } from '../Inventario/RecibirFacturaAlmacenModal';
 import { toast } from 'sonner';
 
 interface FacturasTabProps {
@@ -49,6 +51,7 @@ interface FacturasTabProps {
   onAnularPago: (pagoId: string, motivo: string) => Promise<void>;
   getAuthToken?: () => Promise<string>;
   onRecargarFacturas?: () => Promise<void>;
+  onRecargarProductos?: () => Promise<void> | void;
 }
 
 export function CxpFacturasTab({
@@ -66,6 +69,7 @@ export function CxpFacturasTab({
   onAnularPago,
   getAuthToken,
   onRecargarFacturas,
+  onRecargarProductos,
 }: FacturasTabProps) {
   // Filtros locales
   const [estadoFiltro, setEstadoFiltro] = useState<string>('todas');
@@ -82,6 +86,8 @@ export function CxpFacturasTab({
   // Diálogo Actualizar precios de acero desde CFDI (Bloque F)
   const navigate = useNavigate();
   const [facturaAceroModal, setFacturaAceroModal] = useState<{ id: string; folio: string } | null>(null);
+  // Diálogo Recibir factura en almacén (Bloque G)
+  const [facturaAlmacenModal, setFacturaAlmacenModal] = useState<{ id: string; folio: string } | null>(null);
   const supabaseShim = useMemo(
     () => ({
       auth: {
@@ -963,6 +969,18 @@ export function CxpFacturasTab({
                                 >
                                   <Sparkles className="w-3 h-3" />
                                   Acero
+                                </Button>
+                              )}
+                              {f.estado !== 'cancelada' && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setFacturaAlmacenModal({ id: f.id, folio: f.folio })}
+                                  className="h-7 px-2 text-xs gap-1"
+                                  title="Recibir factura en almacén"
+                                >
+                                  <PackageCheck className="w-3 h-3" />
+                                  Almacén
                                 </Button>
                               )}
                               {f.estado !== 'cancelada' && (
@@ -1869,6 +1887,22 @@ export function CxpFacturasTab({
         facturaFolio={facturaAceroModal?.folio}
         supabase={supabaseShim}
         onIrAMatriz={() => navigate('/calculadora?tab=precios')}
+      />
+
+      {/* DIÁLOGO: RECIBIR FACTURA EN ALMACÉN (Bloque G) */}
+      <RecibirFacturaAlmacenModal
+        open={Boolean(facturaAlmacenModal)}
+        onOpenChange={(o) => {
+          if (!o) setFacturaAlmacenModal(null);
+        }}
+        facturaId={facturaAlmacenModal?.id || null}
+        facturaFolio={facturaAlmacenModal?.folio}
+        supabase={supabaseShim}
+        onRecibido={() => {
+          onRecargarProductos?.();
+          onRecargarFacturas?.();
+        }}
+        onIrAInventario={() => navigate('/inventario')}
       />
     </div>
   );

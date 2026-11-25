@@ -146,6 +146,7 @@ export default function App() {
     crearNota,
     actualizarNota,
     eliminarNota,
+    loadData,
   } = useSupabaseData(session?.access_token);
 
   // Mostrar error del servidor o notificación de modo local
@@ -601,6 +602,7 @@ export default function App() {
             loading={loading}
             obtenerMovimientosInventario={obtenerMovimientosInventario}
             registrarMovimientoInventario={registrarMovimientoInventario}
+            onRecargarProductos={loadData}
           />
         } />
 
@@ -647,6 +649,7 @@ export default function App() {
             loading={loading}
             onCrearPago={crearPagoProveedor}
             session={session}
+            onRecargarProductos={loadData}
           />
         } />
         
