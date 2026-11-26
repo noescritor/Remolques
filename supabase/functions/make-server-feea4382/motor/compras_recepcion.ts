@@ -302,20 +302,35 @@ export async function actualizarCompraProveedorMotor(
   const esRecepcion = campos.estado === "Recibida";
   const { estado: _est, ...otrosCampos } = campos;
 
-  // Actualizar campos no-estado si vienen en la lista blanca
+  // Actualizar campos no-estado si vienen en la lista blanca (con guarda condicional si cambia estado)
   let compraActual = prevCompra;
   if (Object.keys(otrosCampos).length > 0 || (!esRecepcion && campos.estado !== undefined)) {
     const updateData = esRecepcion ? otrosCampos : campos;
     if (Object.keys(updateData).length > 0) {
-      const { data: updated, error: errUpd } = await supabase
+      const cambiaEstado = !esRecepcion && campos.estado !== undefined && campos.estado !== prevCompra.estado;
+      let query = supabase
         .from("compras_proveedor")
         .update(updateData)
         .eq("id", compraId)
-        .eq("organizacion_id", orgId)
-        .select()
-        .single();
-      if (errUpd || !updated) {
+        .eq("organizacion_id", orgId);
+
+      if (cambiaEstado) {
+        query = query.eq("estado", prevCompra.estado);
+      }
+
+      const { data: updated, error: errUpd } = await query.select().maybeSingle();
+      if (errUpd) {
         throw new ComprasRecepcionError(500, "error_actualizar_compra", "No se pudo actualizar la compra.");
+      }
+      if (!updated) {
+        if (cambiaEstado) {
+          throw new ComprasRecepcionError(
+            409,
+            "estado_cambiado",
+            "La compra cambió de estado; recarga e inténtalo de nuevo",
+          );
+        }
+        throw new ComprasRecepcionError(404, "compra_no_encontrada", "La compra no existe o pertenece a otra organización.");
       }
       compraActual = updated;
     }

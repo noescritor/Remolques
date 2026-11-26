@@ -107,3 +107,18 @@ node scripts/dev/test_compras_recepcion_mutaciones.cjs
 3. **Compras `Pendiente` sin partidas existentes:** el RPC las rechaza (`compra_sin_partidas`). El diagnóstico lista si existe alguna en producción para que Luis decida si se cancelan o se recapturan.
 4. **`POST /inventario/movimientos`:** actualmente hace lectura → suma en JS → escritura (condición de carrera) y no valida atómicamente; se propone migrarlo a un RPC atómico en un bloque separado.
 5. **Doble conteo con Bloque G:** `facturas_proveedor.compra_id` casi nunca se llena en el importador CFDI; Bloque G ya cubre ambos casos (`compra_id` + compras `Recibida` del mismo proveedor en ±60 días con producto compartido).
+
+---
+
+## 5. Ronda 2 — Cierre de observaciones O1 y O2 (`COMPRAS_RECEPCION_REVISION_CLAUDE.md`)
+
+- **Sin migración nueva.**
+- **O1 (carrera recibir vs cancelar en `PUT /compras-proveedor/:id`):**
+  - En `supabase/functions/make-server-feea4382/motor/compras_recepcion.ts`, cuando el `UPDATE` no recepcional cambia el `estado` (ej. `Pendiente → Cancelada`), ahora exige `.eq("estado", prevCompra.estado)` (`AND estado = <el leído>`). Si otra petición ya recibió la compra en el intervalo, el `UPDATE` afecta 0 filas y responde **`409`** (`estado_cambiado`): `"La compra cambió de estado; recarga e inténtalo de nuevo"`, sin sobreescribir `Recibida`.
+  - Cubierto por la nueva prueba `R-C5 (O1)` en `rev_compras_extra.test.ts` (simula cambio concurrente a `Recibida` entre lectura previa y `UPDATE`, verifica 409 y estado preservado, más caso normal `Pendiente → Cancelada`).
+- **O2 (incorporación de pruebas extra y mutaciones):**
+  - Se incorporó `supabase/functions/make-server-feea4382/motor/rev_compras_extra.test.ts` (`R-C1` a `R-C5`, 5 pruebas; 9/9 en total junto a `compras_recepcion.test.ts`).
+  - `EXTRA=1 node COORDINACION/REVISIONES/arnes_revision_compras/mutar_compras.cjs`: **28 muertas, 0 vivas, 0 no aplica** (28/28).
+  - `node scripts/dev/test_compras_recepcion_mutaciones.cjs`: **15 muertas, 0 vivas, 0 no aplica** (15/15).
+- **`node scripts/verificar.mjs --limpio`:** **11/11 TODO OK** (423 pruebas Deno pasan, 0 fallan).
+

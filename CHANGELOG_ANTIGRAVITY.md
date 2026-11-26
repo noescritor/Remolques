@@ -3,6 +3,19 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-25 - Compras recepción (Ronda 2: O1 UPDATE condicional y O2 pruebas 28/28 mutantes)
+**Herramienta:** Antigravity  
+**Tipo:** fix (O1 `UPDATE` condicional `AND estado = <previo>` en `actualizarCompraProveedorMotor` devolviendo `409` `"La compra cambió de estado; recarga e inténtalo de nuevo"` si cambió entre lectura y actualización; O2 incorporación de `motor/rev_compras_extra.test.ts` con `R-C1`..`R-C5`, matando 28/28 mutantes en `arnes_revision_compras/mutar_compras.cjs` con `EXTRA=1` y 15/15 en `test_compras_recepcion_mutaciones.cjs`; sin migración nueva)  
+**Rama:** `compras-recepcion-2026-11-24`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/COMPRAS_RECEPCION_REVISION_CLAUDE.md`, `COORDINACION/REPORTES/COMPRAS_RECEPCION_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/compras_recepcion.ts`, `motor/rev_compras_extra.test.ts`
+- `COORDINACION/REPORTES/COMPRAS_RECEPCION_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Correr consulta de solo lectura O3 (`pg_proc` `ajustar_stock`) y `diagnostico_stock_vs_movimientos.sql` en Supabase SQL Editor.
+- Ejecutar `supabase/migrations/20261125_02_compras_recepcion.sql` en el SQL Editor de Supabase (antes de publicar API/Web).
+- Rebuild de `remolques-api` y después `remolques-web` en EasyPanel.
+
 ## 2026-11-25 - Arreglo: Recepción de compras atómica (`ajustar_stock` rota)
 **Herramienta:** Antigravity  
 **Tipo:** fix (migración `20261125_02_compras_recepcion.sql` con `DROP FUNCTION ajustar_stock(uuid, numeric)` y nueva RPC atómica idempotente `recibir_compra_proveedor(uuid, uuid, uuid)` con `FOR UPDATE`, detección dinámica `INT` vs `NUMERIC` compatible con Bloque G, permisos solo `service_role`; motor `motor/compras_recepcion.ts` con lista blanca, validación de transiciones, mapeo de errores, eliminación de compra fantasma en `POST /compras-proveedor` y campo `aviso` si falla `calcularRequisicion`; diálogo de confirmación, bloqueo anti-doble clic, manejo de error con `Reintentar` y refresco de inventario sin recargar en `ComprasProveedorList.tsx` + `useSupabaseData.ts`; diagnóstico solo-lectura `scripts/sql/diagnostico_stock_vs_movimientos.sql`; 11/11 SQL PG17, 15/15 mutantes, concurrencia 2 sesiones y E2E navegador real con 4 capturas)  
