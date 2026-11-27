@@ -117,6 +117,32 @@ async function resolveNested(table, rows, selectStr) {
     }
   }
 
+  if (table === 'compras_proveedor') {
+    if (selectStr.includes('compra_items')) {
+      for (const r of rows) {
+        const res = await pool.query('SELECT * FROM compra_items WHERE compra_id = $1 ORDER BY id', [r.id]);
+        r.items = res.rows;
+      }
+    }
+    if (selectStr.includes('proveedores')) {
+      for (const r of rows) {
+        if (r.proveedor_id) {
+          const res = await pool.query('SELECT * FROM proveedores WHERE id = $1', [r.proveedor_id]);
+          r.proveedor = res.rows[0] || null;
+        } else r.proveedor = null;
+      }
+    }
+  }
+
+  if (table === 'movimientos_inventario' && selectStr.includes('productos')) {
+    for (const r of rows) {
+      if (r.producto_id) {
+        const res = await pool.query('SELECT id, nombre, unidad FROM productos WHERE id = $1', [r.producto_id]);
+        r.producto = res.rows[0] || null;
+      } else r.producto = null;
+    }
+  }
+
   if (table === 'calidad_plantillas' && selectStr.includes('lineas_producto')) {
     for (const r of rows) {
       if (r.linea_producto_id) {
@@ -158,6 +184,7 @@ const RPC_SIGNATURES = {
   anular_seguimiento_cobranza: ['p_org_id', 'p_seguimiento_id', 'p_motivo', 'p_usuario_id'],
   sembrar_calidad_plantillas: ['p_org'],
   resumen_calidad_ordenes: ['p_org'],
+  recibir_compra_proveedor: ['p_org', 'p_usuario', 'p_compra_id'],
 };
 
 const JSON_RPC_PARAMS = new Set([
