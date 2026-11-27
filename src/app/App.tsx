@@ -345,9 +345,9 @@ export default function App() {
     try {
       await eliminarCliente(id);
       toast.success('Cliente eliminado');
-    } catch (error) {
-      toast.error('Error al eliminar cliente', {
-        description: error instanceof Error ? error.message : String(error)
+    } catch (error: any) {
+      toast.error('No se pudo eliminar el cliente', {
+        description: error?.detalle || (error instanceof Error ? error.message : String(error))
       });
     }
   };

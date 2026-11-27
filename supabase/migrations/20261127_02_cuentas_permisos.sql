@@ -2,8 +2,10 @@
 -- Bloque: Cuentas y permisos
 -- 1. RLS estricto en invitaciones_equipo (solo admin/propietario de la org; nunca rol 'propietario' desde esta vía)
 -- 2. Protección contra escritura directa en ordenes_trabajo (trigger BEFORE UPDATE OR DELETE SECURITY INVOKER)
--- 3. Trigger de alta de cuentas en auth.users (on_auth_user_created versión 20260616 + trigger idempotente)
+-- 3. Trigger de alta de cuentas en auth.users (on_auth_user_created versión 20260616 + trigger sin DROP para evitar error de dueño)
 -- 4. Cierre de vista_saldo_cliente (security_invoker + REVOKE anon/public) y permisos de obtener_siguiente_produccion()
+-- 5. Cierre de políticas abiertas en plantillas_cotizacion (idempotente)
+-- 6. Cambio de FK ordenes_trabajo.cliente_id de ON DELETE CASCADE a ON DELETE NO ACTION para proteger equipos al borrar clientes
 
 BEGIN;
 
@@ -155,11 +157,18 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS on_auth_user_created_trigger ON auth.users;
-CREATE TRIGGER on_auth_user_created_trigger
-  AFTER INSERT ON auth.users
-  FOR EACH ROW
-  EXECUTE FUNCTION public.on_auth_user_created();
+DO $trg$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger
+    WHERE tgrelid = 'auth.users'::regclass
+      AND tgname = 'on_auth_user_created_trigger'
+  ) THEN
+    CREATE TRIGGER on_auth_user_created_trigger
+      AFTER INSERT ON auth.users
+      FOR EACH ROW EXECUTE FUNCTION public.on_auth_user_created();
+  END IF;
+END $trg$;
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- 4. Cierre de vista_saldo_cliente y permisos de obtener_siguiente_produccion()
@@ -170,5 +179,75 @@ REVOKE ALL ON public.vista_saldo_cliente FROM anon, public;
 REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON public.vista_saldo_cliente FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.obtener_siguiente_produccion() FROM public, anon;
 GRANT EXECUTE ON FUNCTION public.obtener_siguiente_produccion() TO authenticated, service_role;
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- 5. Cierre de políticas abiertas en plantillas_cotizacion
+--    (idéntico a SQL_PARA_LUIS/2026-11-27-ACCESOS/3_plantillas_y_alta.sql)
+-- ═══════════════════════════════════════════════════════════════════════════
+DO $cierre$
+DECLARE
+  pol RECORD;
+BEGIN
+  IF to_regclass('public.plantillas_cotizacion') IS NOT NULL THEN
+    ALTER TABLE public.plantillas_cotizacion ENABLE ROW LEVEL SECURITY;
+
+    FOR pol IN
+      SELECT policyname
+      FROM pg_policies
+      WHERE schemaname = 'public'
+        AND tablename = 'plantillas_cotizacion'
+        AND (qual = 'true' OR with_check = 'true')
+    LOOP
+      EXECUTE format('DROP POLICY %I ON public.plantillas_cotizacion', pol.policyname);
+    END LOOP;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_policies
+      WHERE schemaname = 'public'
+        AND tablename = 'plantillas_cotizacion'
+        AND policyname = 'rls_plantillas'
+    ) THEN
+      CREATE POLICY rls_plantillas ON public.plantillas_cotizacion
+        FOR ALL TO authenticated
+        USING (organizacion_id = public.get_current_org_id())
+        WITH CHECK (organizacion_id = public.get_current_org_id());
+    END IF;
+  END IF;
+END $cierre$;
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- 6. Proteger equipos al intentar borrar un cliente:
+--    cambiar FK ordenes_trabajo.cliente_id a ON DELETE NO ACTION
+-- ═══════════════════════════════════════════════════════════════════════════
+DO $fk_ot_cliente$
+DECLARE
+  v_fk RECORD;
+  v_tiene_no_action BOOLEAN := FALSE;
+BEGIN
+  FOR v_fk IN
+    SELECT c.conname, c.confdeltype
+    FROM pg_constraint c
+    JOIN pg_attribute a
+      ON a.attrelid = c.conrelid
+     AND a.attnum = ANY(c.conkey)
+    WHERE c.conrelid = 'public.ordenes_trabajo'::regclass
+      AND c.confrelid = 'public.clientes'::regclass
+      AND c.contype = 'f'
+      AND a.attname = 'cliente_id'
+  LOOP
+    IF v_fk.confdeltype = 'a' THEN
+      v_tiene_no_action := TRUE;
+    ELSE
+      EXECUTE format('ALTER TABLE public.ordenes_trabajo DROP CONSTRAINT %I', v_fk.conname);
+    END IF;
+  END LOOP;
+
+  IF NOT v_tiene_no_action THEN
+    ALTER TABLE public.ordenes_trabajo
+      ADD CONSTRAINT ordenes_trabajo_cliente_id_fkey
+      FOREIGN KEY (cliente_id) REFERENCES public.clientes(id)
+      ON DELETE NO ACTION;
+  END IF;
+END $fk_ot_cliente$;
 
 COMMIT;

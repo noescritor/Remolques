@@ -86,5 +86,37 @@ Consultadas directamente en `pg_policies` (`cmd = 'ALL'`):
 
 ## 4. Acciones manuales pendientes para despliegue
 1. Revisar y aprobar merge de `cuentas-permisos-2026-11-27` a `main`.
-2. Ejecutar `supabase/migrations/20261127_02_cuentas_permisos.sql` en el SQL Editor de Supabase (idempotente; puede correr antes o después de `20261127_01_equipos_gestion.sql`).
+2. Ejecutar `supabase/migrations/20261127_02_cuentas_permisos.sql` en el SQL Editor de Supabase (idempotente; ya incluye `equipos-gestion` y funciona sin ser dueño de `auth.users`).
 3. Hacer **Rebuild** de `remolques-api` y después de `remolques-web` en EasyPanel.
+
+---
+
+## 5. Ronda 2 — Ajustes D1 a D5 (`PROMPT_ANTY_CUENTAS_R2_2026-11-27.md`)
+
+1. **D1 (Merge con `main` `87bc64e`):**
+   - `main` (con `equipos-gestion-2026-11-27`) integrado en `cuentas-permisos-2026-11-27` (commit de merge `ce63492`).
+   - Conflictos resueltos preservando ambos bloques en `supabase/functions/make-server-feea4382/index.ts` (imports) y `CHANGELOG_ANTIGRAVITY.md`.
+2. **D2 (Trigger en `auth.users` sin `DROP TRIGGER`):**
+   - Eliminado `DROP TRIGGER IF EXISTS on_auth_user_created_trigger ON auth.users;` de `20261127_02_cuentas_permisos.sql`.
+   - Reemplazado por bloque idempotente `DO $trg$` que crea el trigger solo si no existe en `pg_trigger` (idéntico a `SQL_PARA_LUIS/2026-11-27-ACCESOS/3_plantillas_y_alta.sql`).
+   - **Probado en PG 17 real:** `20261127_02_cuentas_permisos.sql` ejecutada **×2** y además ejecutada bajo un rol `NOSUPERUSER` (`rol_sql_editor_sim`) que **NO es dueño de `auth.users`** cuando `on_auth_user_created_trigger` ya existe → pasó sin error (`must be owner of relation users` eliminado).
+3. **D3 (Punto 10 — cierre de `plantillas_cotizacion` y prueba automática de políticas en `public`):**
+   - Replicado idempotentemente en `20261127_02_cuentas_permisos.sql` el bloque `DO $cierre$` de `3_plantillas_y_alta.sql`: borra cualquier política abierta (`qual = 'true' OR with_check = 'true'`) en `public.plantillas_cotizacion` y garantiza `rls_plantillas` (`organizacion_id = public.get_current_org_id()`).
+   - Agregada prueba automática en `docs/cuentas/verificacion_cuentas_permisos.sql` que falla si **cualquier** política de `pg_policies` en `public` carece de filtro de organización o usuario (`get_current_org_id|organizacion_id|usuario_id`). Validada en PG 17 real tras correr toda la cadena de 21 migraciones + política abierta sembrada + `20261127_02` ×2 → **0 políticas abiertas**.
+4. **D4 (Pruebas de rutas reales en `index.ts` y mutaciones sobre `index.ts`):**
+   - Exportado `app` en `index.ts` con guardia `if (import.meta.main)` para `Deno.serve(...)`.
+   - Nueva suite `supabase/functions/make-server-feea4382/cuentas_permisos_rutas.test.ts` (**8/8 pruebas pasan**) contra el `app` real de `index.ts` (con `authMiddleware` y mock HTTP de GoTrue/PostgREST que registra toda escritura):
+     - `POST /invitaciones`, `DELETE /invitaciones/:id`, `POST /organizaciones/crear-con-invitacion`, `GET /organizaciones` y `PUT /organizaciones/:id/modulos`: `usuario` recibe **403** y **0 escrituras**; `admin` de org secundaria recibe **403** en `/organizaciones/*`; `admin` de org principal puede operar pero no invitar `propietario`.
+     - `DELETE /clientes/:id`: cliente con equipos recibe **409** con el conteo y **0 escrituras**; sin equipos recibe **200**.
+   - Mutaciones ampliadas en `scripts/dev/test_cuentas_permisos_mutaciones.cjs`: **16/16 muertas, 0 vivas** (**10/10** en `motor/cuentas_permisos.ts` + **6/6** directamente sobre las rutas de `index.ts`).
+5. **D5 (Proteger equipos al borrar un cliente):**
+   - `20261127_02_cuentas_permisos.sql`: bloque idempotente `DO $fk_ot_cliente$` cambia la FK `ordenes_trabajo_cliente_id_fkey` de `ON DELETE CASCADE` (`c`) a `ON DELETE NO ACTION` (`a`). No modifica `ordenes_trabajo_cotizacion_id_fkey` (borrar cotización sigue igual).
+   - `motor/cuentas_permisos.ts` (`eliminarClienteSeguro`) + `DELETE /clientes/:id` en `index.ts`: cuenta `ordenes_trabajo` del cliente en la organización (**incluyendo cancelados**); si `> 0`, devuelve **409** indicando cuántos equipos tiene (y mapea `23503` a **409** como respaldo).
+   - Frontend (`src/app/App.tsx`): `manejarEliminarCliente` muestra claramente `error?.detalle` del servidor en el toast de error.
+   - **Probado en PG 17 real (`verificacion_cuentas_permisos.sql` §6):**
+     - FK confirmada `ON DELETE NO ACTION` (`confdeltype = 'a'`).
+     - Borrar cliente con equipo manual **activo** (sin cotizaciones) → rechazado exactamente por `ordenes_trabajo_cliente_id_fkey` (`23503`).
+     - Borrar cliente con equipo manual **cancelado** → también rechazado por `ordenes_trabajo_cliente_id_fkey` (`23503`).
+     - Borrar cliente **sin equipos** → éxito (`ROW_COUNT = 1`).
+     - Borrar **cotización** → sigue borrando en cascada como antes (§3d).
+     - Borrar **organización** con `ordenes_trabajo` → sigue funcionando por cascada (`clientes_organizacion_id_fkey` ya era `NO ACTION`, `ordenes_trabajo_organizacion_id_fkey` sigue `CASCADE`).

@@ -329,5 +329,97 @@ BEGIN
         RAISE EXCEPTION 'FALLO SEGURIDAD: authenticated puede escribir en vista_saldo_cliente';
     END IF;
 
-    RAISE NOTICE 'OK: Todas las pruebas SQL de Cuentas y Permisos (RLS, trigger OT, alta auth.users, vistas y RPCs) pasaron.';
+    -- ═══════════════════════════════════════════════════════════════════════
+    -- 5. PRUEBA PUNTO 10 (D3): Ninguna política en public sin filtro de org/usuario
+    -- ═══════════════════════════════════════════════════════════════════════
+    DECLARE
+        v_politicas_abiertas TEXT;
+        v_fk_deltype CHAR;
+        v_ot_manual UUID;
+    BEGIN
+        SELECT string_agg(tablename || '.' || policyname, ', ' ORDER BY tablename, policyname)
+        INTO v_politicas_abiertas
+        FROM pg_policies
+        WHERE schemaname = 'public'
+          AND (COALESCE(qual, '') || ' ' || COALESCE(with_check, '')) !~* 'get_current_org_id|organizacion_id|usuario_id';
+
+        IF v_politicas_abiertas IS NOT NULL THEN
+            RAISE EXCEPTION 'FALLO SEGURIDAD (Punto 10): políticas en public sin filtro de organización/usuario: %', v_politicas_abiertas;
+        END IF;
+
+        IF to_regclass('public.plantillas_cotizacion') IS NOT NULL THEN
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_policies
+                WHERE schemaname = 'public'
+                  AND tablename = 'plantillas_cotizacion'
+                  AND policyname = 'rls_plantillas'
+            ) THEN
+                RAISE EXCEPTION 'FALLO SEGURIDAD: falta política rls_plantillas en plantillas_cotizacion';
+            END IF;
+        END IF;
+
+        -- ═══════════════════════════════════════════════════════════════════
+        -- 6. PRUEBA D5: Protección al borrar clientes con equipos (activos y cancelados)
+        -- ═══════════════════════════════════════════════════════════════════
+        SELECT c.confdeltype
+        INTO v_fk_deltype
+        FROM pg_constraint c
+        JOIN pg_attribute a
+          ON a.attrelid = c.conrelid
+         AND a.attnum = ANY(c.conkey)
+        WHERE c.conrelid = 'public.ordenes_trabajo'::regclass
+          AND c.confrelid = 'public.clientes'::regclass
+          AND c.contype = 'f'
+          AND a.attname = 'cliente_id'
+        LIMIT 1;
+
+        IF v_fk_deltype IS DISTINCT FROM 'a' THEN
+            RAISE EXCEPTION 'FALLO D5: FK ordenes_trabajo.cliente_id debe ser ON DELETE NO ACTION (a), actual: %', v_fk_deltype;
+        END IF;
+
+        -- Crear equipo manual (sin cotizaciones) en v_cli_a2 para aislar exactamente ordenes_trabajo_cliente_id_fkey
+        INSERT INTO ordenes_trabajo (organizacion_id, cotizacion_id, cliente_id, etiqueta, nomenclatura_id, modelo, tipo_equipo, origen, estado)
+        VALUES (v_org_a, NULL, v_cli_a2, 'Eq Manual D5', '703-CP011126-1', 'Plataforma', '01', 'manual', 'Pendiente')
+        RETURNING id INTO v_ot_manual;
+
+        -- 6a. Cliente con equipo ACTIVO (sin cotizaciones) -> debe fallar exactamente por ordenes_trabajo_cliente_id_fkey
+        BEGIN
+            DELETE FROM clientes WHERE id = v_cli_a2;
+            RAISE EXCEPTION 'FALLO D5: permitió borrar cliente con equipo activo';
+        EXCEPTION WHEN foreign_key_violation THEN
+            IF SQLERRM NOT LIKE '%ordenes_trabajo_cliente_id_fkey%' THEN
+                RAISE EXCEPTION 'FALLO D5: se esperaba ordenes_trabajo_cliente_id_fkey, salió: %', SQLERRM;
+            END IF;
+        END;
+
+        -- 6b. Cancelar equipo manual: cliente con equipo CANCELADO -> también debe fallar por ordenes_trabajo_cliente_id_fkey
+        PERFORM cancelar_orden_trabajo(v_org_a, v_admin_a, v_ot_manual, 'Cancelación prueba D5', false);
+        BEGIN
+            DELETE FROM clientes WHERE id = v_cli_a2;
+            RAISE EXCEPTION 'FALLO D5: permitió borrar cliente con equipo cancelado';
+        EXCEPTION WHEN foreign_key_violation THEN
+            IF SQLERRM NOT LIKE '%ordenes_trabajo_cliente_id_fkey%' THEN
+                RAISE EXCEPTION 'FALLO D5: se esperaba ordenes_trabajo_cliente_id_fkey, salió: %', SQLERRM;
+            END IF;
+        END;
+
+        -- 6c. Al quitar el equipo manual (como rol privilegiado), cliente SIN equipos SÍ se puede borrar
+        DELETE FROM ordenes_trabajo WHERE id = v_ot_manual;
+        DELETE FROM clientes WHERE id = v_cli_a2;
+        GET DIAGNOSTICS v_cnt = ROW_COUNT;
+        IF v_cnt <> 1 THEN
+            RAISE EXCEPTION 'FALLO D5: no permitió borrar cliente sin equipos';
+        END IF;
+
+        -- 6d. Borrar una organización con ordenes_trabajo sin cliente (ON DELETE CASCADE en organizacion_id) sigue funcionando
+        INSERT INTO ordenes_trabajo (organizacion_id, cotizacion_id, cliente_id, etiqueta, nomenclatura_id, modelo, tipo_equipo, origen, estado)
+        VALUES (v_org_b, NULL, NULL, 'Eq Org B', '704-CP011126-1', 'Plataforma', '01', 'manual', 'Pendiente');
+        DELETE FROM organizaciones WHERE id = v_org_b;
+        GET DIAGNOSTICS v_cnt = ROW_COUNT;
+        IF v_cnt <> 1 THEN
+            RAISE EXCEPTION 'FALLO D5: borrar organización con ordenes_trabajo falló tras cambiar FK a NO ACTION';
+        END IF;
+    END;
+
+    RAISE NOTICE 'OK: Todas las pruebas SQL de Cuentas y Permisos (RLS, trigger OT, alta auth.users, vistas, políticas public, D5 clientes/org y RPCs) pasaron.';
 END $$;

@@ -6,6 +6,7 @@ import {
   crearInvitacionSegura,
   eliminarInvitacionSegura,
   listarEquipoOrganizacion,
+  eliminarClienteSeguro,
 } from "./cuentas_permisos.ts";
 
 const ORG_PRINCIPAL = "00000000-0000-0000-0000-000000000001";
@@ -278,4 +279,76 @@ Deno.test("cuentas_permisos: listarEquipoOrganizacion pagina auth.admin.listUser
   const equipoB = await listarEquipoOrganizacion(client, ORG_B);
   assertEquals(equipoB.length, 1);
   assertEquals(equipoB[0].email, "user70@leolca.mx");
+});
+
+Deno.test("cuentas_permisos: eliminarClienteSeguro rechaza 409 si tiene equipos (activos o cancelados) y borra si no tiene", async () => {
+  const ordenes = [
+    { id: "ot-1", organizacion_id: ORG_A, cliente_id: "cli-1", cancelada_el: null },
+    { id: "ot-2", organizacion_id: ORG_A, cliente_id: "cli-1", cancelada_el: "2026-11-27T00:00:00Z" },
+    { id: "ot-3", organizacion_id: ORG_A, cliente_id: "cli-cancelado", cancelada_el: "2026-11-27T00:00:00Z" },
+  ];
+  const clientes = [
+    { id: "cli-1", organizacion_id: ORG_A },
+    { id: "cli-cancelado", organizacion_id: ORG_A },
+    { id: "cli-libre", organizacion_id: ORG_A },
+    { id: "cli-libre-b", organizacion_id: ORG_B },
+  ];
+
+  const mock = {
+    from(table: string) {
+      if (table === "ordenes_trabajo") {
+        const filters: Record<string, any> = {};
+        const builder: any = {
+          select() { return builder; },
+          eq(col: string, val: any) { filters[col] = val; return builder; },
+          then(resolve: any) {
+            const matches = ordenes.filter((o: any) =>
+              Object.entries(filters).every(([k, v]) => o[k] === v)
+            );
+            resolve({ count: matches.length, error: null });
+          },
+        };
+        return builder;
+      }
+      if (table === "clientes") {
+        const filters: Record<string, any> = {};
+        const builder: any = {
+          delete() { return builder; },
+          eq(col: string, val: any) { filters[col] = val; return builder; },
+          then(resolve: any) {
+            const idx = clientes.findIndex((c: any) =>
+              Object.entries(filters).every(([k, v]) => c[k] === v)
+            );
+            if (idx >= 0) clientes.splice(idx, 1);
+            resolve({ error: null });
+          },
+        };
+        return builder;
+      }
+      throw new Error(`Tabla inesperada: ${table}`);
+    },
+  };
+
+  // Cliente con 2 equipos (1 activo + 1 cancelado) -> 409 con conteo
+  const err2 = await assertRejects(
+    () => eliminarClienteSeguro(mock, { orgId: ORG_A, clienteId: "cli-1" }),
+    CuentasPermisosError
+  );
+  assertEquals(err2.status, 409);
+  assertEquals(err2.message.includes("2 equipos"), true);
+
+  // Cliente con solo 1 equipo cancelado -> también 409
+  const err1 = await assertRejects(
+    () => eliminarClienteSeguro(mock, { orgId: ORG_A, clienteId: "cli-cancelado" }),
+    CuentasPermisosError
+  );
+  assertEquals(err1.status, 409);
+  assertEquals(err1.message.includes("1 equipo"), true);
+
+  // Cliente sin equipos -> éxito y borra solo su org
+  await eliminarClienteSeguro(mock, { orgId: ORG_A, clienteId: "cli-libre" });
+  assertEquals(clientes.some((c) => c.id === "cli-libre"), false);
+  // Intento de borrar cliente de Org B desde Org A no lo borra
+  await eliminarClienteSeguro(mock, { orgId: ORG_A, clienteId: "cli-libre-b" });
+  assertEquals(clientes.some((c) => c.id === "cli-libre-b"), true);
 });

@@ -69,6 +69,7 @@ import {
   crearInvitacionSegura,
   eliminarInvitacionSegura,
   listarEquipoOrganizacion,
+  eliminarClienteSeguro,
 } from "./motor/cuentas_permisos.ts";
 import {
   EquiposGestionError,
@@ -1981,13 +1982,19 @@ app.put("/clientes/:id", async (c) => {
 
 app.delete("/clientes/:id", async (c) => {
   try {
-    const supabase = c.get("supabase") as SupabaseClient;
+    const supabase = c.get("supabase") as any;
+    const orgId = (c as any).get("organizacionId") as string;
     const id = c.req.param('id');
 
-    const { error } = await supabase.from('clientes').delete().eq('id', id);
-    if (error) throw error;
-    return c.json({ success: true });
-  } catch (error) {
+    const resultado = await eliminarClienteSeguro(supabase, {
+      orgId,
+      clienteId: id,
+    });
+    return c.json(resultado);
+  } catch (error: any) {
+    if (error instanceof CuentasPermisosError) {
+      return c.json({ error: error.message, codigo: error.codigo }, error.status as any);
+    }
     console.error('[make-server] Error deleting cliente:', error);
     return c.json({ error: 'Error deleting cliente' }, 500);
   }
@@ -4952,14 +4959,18 @@ app.get("/recetas/:modeloId/historial", async (c) => {
 });
 
 
-Deno.serve({ port: 8000, hostname: "0.0.0.0" }, (req) => {
-  const url = new URL(req.url);
-  const prefix = "/make-server-feea4382";
+export { app };
 
-  if (url.pathname.startsWith(`${prefix}/`)) {
-    url.pathname = url.pathname.slice(prefix.length);
-    return app.fetch(new Request(url.toString(), req));
-  }
+if (import.meta.main) {
+  Deno.serve({ port: 8000, hostname: "0.0.0.0" }, (req) => {
+    const url = new URL(req.url);
+    const prefix = "/make-server-feea4382";
 
-  return app.fetch(req);
-});
+    if (url.pathname.startsWith(`${prefix}/`)) {
+      url.pathname = url.pathname.slice(prefix.length);
+      return app.fetch(new Request(url.toString(), req));
+    }
+
+    return app.fetch(req);
+  });
+}

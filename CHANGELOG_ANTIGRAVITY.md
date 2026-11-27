@@ -3,6 +3,20 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-27 - Cuentas y permisos (Ronda 2: D1–D5 — merge con main, trigger auth.users sin DROP, cierre plantillas_cotizacion, pruebas de rutas/mutaciones en index.ts y protección al borrar clientes con equipos)
+**Herramienta:** Antigravity  
+**Tipo:** security / fix (D1: merge de `main` `87bc64e` con `equipos-gestion` resuelto limpiamente en `index.ts` y `CHANGELOG_ANTIGRAVITY.md`; D2: eliminado `DROP TRIGGER` sobre `auth.users` en `20261127_02_cuentas_permisos.sql`, creando `on_auth_user_created_trigger` solo si no existe en `pg_trigger` y probado en PG 17 bajo rol `NOSUPERUSER` que no es dueño de `auth.users`; D3: cierre idempotente de políticas abiertas en `plantillas_cotizacion` + auditoría global en `verificacion_cuentas_permisos.sql` exigiendo filtro de organización/usuario en toda política de `public`; D4: suite de rutas HTTP reales `cuentas_permisos_rutas.test.ts` 8/8 contra `app` exportado de `index.ts` + mutaciones 16/16 muertas incluyendo 6/6 directamente sobre `index.ts`; D5: FK `ordenes_trabajo.cliente_id` cambiada a `ON DELETE NO ACTION`, `DELETE /clientes/:id` con `eliminarClienteSeguro` devolviendo 409 con conteo de equipos activos/cancelados, toast claro en `App.tsx` y validación completa en PG 17)  
+**Rama:** `cuentas-permisos-2026-11-27`  
+**Referencia auditoría:** `PROMPT_ANTY_CUENTAS_R2_2026-11-27.md`, `PROMPT_ANTY_CUENTAS_PERMISOS_2026-11-27.md` (punto 10), `COORDINACION/REPORTES/CUENTAS_PERMISOS_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261127_02_cuentas_permisos.sql`, `docs/cuentas/verificacion_cuentas_permisos.sql`
+- `supabase/functions/make-server-feea4382/index.ts`, `supabase/functions/make-server-feea4382/cuentas_permisos_rutas.test.ts`, `supabase/functions/make-server-feea4382/motor/cuentas_permisos.ts`, `supabase/functions/make-server-feea4382/motor/cuentas_permisos.test.ts`
+- `src/app/App.tsx`, `scripts/dev/test_cuentas_permisos_mutaciones.cjs`, `COORDINACION/REPORTES/CUENTAS_PERMISOS_REPORTE_ANTY.md`, `CHANGELOG_ANTIGRAVITY.md`
+**Acciones manuales pendientes:**  
+- Aprobar merge de `cuentas-permisos-2026-11-27` a `main`.
+- Ejecutar `supabase/migrations/20261127_02_cuentas_permisos.sql` en el SQL Editor de Supabase.
+- Rebuild de `remolques-api` y después `remolques-web` en EasyPanel.
+
 ## 2026-11-27 - Bloque "Cuentas y permisos" (RLS invitaciones, trigger ordenes_trabajo, GET /equipo paginado, alta auth.users, cierre vista_saldo_cliente y rol real en front)
 **Herramienta:** Antigravity  
 **Tipo:** security / feat (migración idempotente `20261127_02_cuentas_permisos.sql`: helper `es_admin_o_propietario_org` + RLS `inv_insert`/`inv_delete` en `invitaciones_equipo` solo `admin`/`propietario` y prohibiendo `rol='propietario'`; trigger `trg_proteger_ordenes_trabajo_directo` `SECURITY INVOKER` bloqueando DELETE directo y UPDATE de campos protegidos para `authenticated`/`anon` sin afectar RPCs, edición normal ni `ON DELETE CASCADE`; función `on_auth_user_created` versión 20260616 + trigger `on_auth_user_created_trigger` en `auth.users`; cierre de `vista_saldo_cliente` con `security_invoker=true` y `REVOKE` a `anon`/`public` + `obtener_siguiente_produccion()`; nuevo `motor/cuentas_permisos.ts` blindando `/invitaciones`, `/organizaciones/*` y paginando `auth.admin.listUsers` de 50 en 50 en `GET /equipo` desde `service_role`; hook único `useRolOrganizacion` leyendo solo `perfiles_organizacion` sin `user_metadata`; `EquipoManager.tsx` oculta formulario a `usuario` con mensaje claro; `Login.tsx` quita "Regístrate" conservando recuperación de contraseña; PG 17 ×2 + `verificacion_cuentas_permisos.sql` OK + 8/8 mutaciones muertas)  

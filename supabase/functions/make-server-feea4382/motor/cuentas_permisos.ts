@@ -265,3 +265,57 @@ export async function listarEquipoOrganizacion(
     email: correos.get(p.usuario_id) || "Usuario Desconocido",
   }));
 }
+
+/**
+ * Elimina un cliente solo si no tiene equipos (ordenes_trabajo, incluyendo cancelados).
+ * Si tiene equipos asociados o Postgres devuelve 23503, lanza CuentasPermisosError(409).
+ */
+export async function eliminarClienteSeguro(
+  supabaseClient: any,
+  params: {
+    orgId: string;
+    clienteId: string;
+  }
+) {
+  if (!params.orgId || !params.clienteId) {
+    throw new CuentasPermisosError(400, "datos_requeridos", "ID de cliente requerido.");
+  }
+
+  const { count, error: countError } = await supabaseClient
+    .from("ordenes_trabajo")
+    .select("id", { count: "exact", head: true })
+    .eq("organizacion_id", params.orgId)
+    .eq("cliente_id", params.clienteId);
+
+  if (countError) throw countError;
+
+  const totalEquipos = Number(count || 0);
+  if (totalEquipos > 0) {
+    throw new CuentasPermisosError(
+      409,
+      "cliente_con_equipos",
+      `No se puede eliminar este cliente porque tiene ${totalEquipos} ${
+        totalEquipos === 1 ? "equipo asociado" : "equipos asociados"
+      } (incluyendo cancelados).`
+    );
+  }
+
+  const { error } = await supabaseClient
+    .from("clientes")
+    .delete()
+    .eq("id", params.clienteId)
+    .eq("organizacion_id", params.orgId);
+
+  if (error) {
+    if (error.code === "23503") {
+      throw new CuentasPermisosError(
+        409,
+        "cliente_con_registros_asociados",
+        "No se puede eliminar este cliente porque tiene equipos o registros asociados."
+      );
+    }
+    throw error;
+  }
+
+  return { success: true };
+}
