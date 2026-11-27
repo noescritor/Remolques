@@ -307,7 +307,7 @@ export async function actualizarCompraProveedorMotor(
   if (Object.keys(otrosCampos).length > 0 || (!esRecepcion && campos.estado !== undefined)) {
     const updateData = esRecepcion ? otrosCampos : campos;
     if (Object.keys(updateData).length > 0) {
-      const cambiaEstado = !esRecepcion && campos.estado !== undefined && campos.estado !== prevCompra.estado;
+      const cambiaEstado = !esRecepcion && campos.estado !== undefined;
       let query = supabase
         .from("compras_proveedor")
         .update(updateData)

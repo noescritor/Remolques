@@ -232,3 +232,26 @@ Deno.test("R-C5 (O1): carrera recibir vs cancelar -> UPDATE condicional rechaza 
   const res = await actualizarCompraProveedorMotor(dbOk as any, dbOk as any, ORG, "u-1", CID, { estado: "Cancelada" });
   assertEquals(res.estado, "Cancelada");
 });
+
+Deno.test("R-C6 (R1): repetir { estado: 'Pendiente' } mientras otra sesión la recibe -> 409 y sigue 'Recibida'", async () => {
+  const tablas: Record<string, Array<Record<string, unknown>>> = {
+    compras_proveedor: [{ id: CID, organizacion_id: ORG, folio: "OC-00001", estado: "Pendiente", cotizacion_id: null }],
+  };
+  const db = crearMockDb(tablas, {
+    onBeforeUpdate: (table) => {
+      if (table === "compras_proveedor") {
+        tablas.compras_proveedor[0].estado = "Recibida";
+      }
+    },
+  });
+
+  const err = await assertRejects(
+    () => actualizarCompraProveedorMotor(db as any, db as any, ORG, "u-1", CID, { estado: "Pendiente" }),
+    ComprasRecepcionError,
+    "La compra cambió de estado; recarga e inténtalo de nuevo",
+  );
+  assertEquals(err.status, 409);
+  assertEquals(tablas.compras_proveedor[0].estado, "Recibida");
+  const updLog = db.updatedLog.find((u) => u.table === "compras_proveedor");
+  assertEquals(updLog?.filters.estado, "Pendiente");
+});
