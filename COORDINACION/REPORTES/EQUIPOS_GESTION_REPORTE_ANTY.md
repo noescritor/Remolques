@@ -54,7 +54,8 @@
 | Objeto SQL | Tipo | Acción tomada en `20261127_01_equipos_gestion.sql` |
 |---|---|---|
 | `v_orden_despiece_avance` | Vista (`security_invoker = true`) | Se agregó `JOIN ordenes_trabajo ot ON ot.id = l.orden_trabajo_id AND ot.cancelada_el IS NULL` para excluir equipos cancelados del despiece y del resumen de entregas. |
-| `v_cobranza_equipo` | Vista (`security_invoker = true`) | Se agregó `AND cancelada_el IS NULL` en `ordenes_por_cot` y `WHERE ot.cancelada_el IS NULL` en el `SELECT` principal para excluir equipos cancelados de cobranza por equipo. |
+| `v_cobranza_equipo` | Vista (`security_invoker = true`) | Se agregó `AND cancelada_el IS NULL` en `ordenes_por_cot` y `WHERE ot.cancelada_el IS NULL` en el `SELECT` principal para excluir equipos cancelados de cobranza por equipo. Se conserva `GRANT SELECT TO authenticated`. |
+| `v_plan_parcialidades_estado` | Vista (`security_invoker = true`) | **R2:** Se agregó `LEFT JOIN ordenes_trabajo ot ON ot.id = pl.orden_trabajo_id AND ot.organizacion_id = pl.organizacion_id` con `WHERE pl.orden_trabajo_id IS NULL OR ot.cancelada_el IS NULL` en `base_cobrado`, excluyendo planes propios de equipos cancelados y dejando intactos los planes por cotización. Conserva `security_invoker = true` y `GRANT SELECT TO authenticated`. |
 | `resumen_calidad_ordenes(p_org)` | Función SQL (`SECURITY DEFINER`) | Se agregó `JOIN ordenes_trabajo ot ON ot.id = i.orden_trabajo_id AND ot.organizacion_id = p_org AND ot.cancelada_el IS NULL` para excluir equipos cancelados de calidad. |
 | `actualizar_fase_orden(...)` | RPC escritura (`FOR UPDATE`) | Rechaza con `orden_cancelada` si `r_orden.cancelada_el IS NOT NULL`. |
 | `registrar_entrega_despiece(...)` | RPC escritura | Bloquea `ordenes_trabajo FOR UPDATE` antes de `orden_despiece_lineas` (serializa con `cancelar_orden_trabajo` sin deadlocks) y rechaza con `orden_cancelada`. |
@@ -95,6 +96,7 @@
 | `motor/cobros.ts` → `obtenerCobranzaCotizacion` | `GET /cobranza/cotizacion/:id` | Se agregó `.is("cancelada_el", null)` al consultar `ordenes_trabajo`. |
 | `motor/cobros.ts` → `obtenerCobranzaEquipo` | `GET /cobranza/equipo/:ordenId` | Rechaza con 404 si `orden.cancelada_el` está presente. |
 | `motor/cobros.ts` → `guardarValorEquipo` | `PUT /cobranza/equipo/:ordenId/valor` | Rechaza con `409 orden_cancelada` si `orden.cancelada_el` está presente. |
+| `motor/cobros.ts` → `listarPlanesPago` | `GET /planes-pago` | **R2:** Se decidió **ocultar** los planes por equipo (`orden_trabajo_id IS NOT NULL`) cuyo equipo esté cancelado para mantener consistencia con `v_plan_parcialidades_estado` y no mostrar planes de equipos cancelados al consultar por cotización o por equipo; los planes por cotización (`orden_trabajo_id IS NULL`) permanecen sin cambio. |
 | `motor/generar_ordenes_cotizacion.ts` → `generarOrdenesDeCotizacion` | `POST /cotizaciones/:id/generar-ordenes` | **Intencionalmente sin filtrar `cancelada_el`**: una orden cancelada cuenta como existente (no se crea otra) y se explica en `mensaje`. |
 | `motor/generar_ordenes_cotizacion.ts` → `actualizarOrdenTrabajoSegura` / `regenerarFichaDeOrden` | `PUT /ordenes-trabajo/:id` y `POST /ordenes-trabajo/:id/regenerar-ficha` | Rechazan con `409 orden_cancelada` si el equipo está cancelado; `actualizarOrdenTrabajoSegura` valida y guarda `fecha_pedido`. |
 | `index.ts` → `GET /portal/:token` (Portal cliente) | Portal público de cotización | **Verificado:** no consulta `ordenes_trabajo` (lee solo `cotizaciones`, `items_cotizacion`, `clientes`, `ajustes`, `productos`). No expone equipos cancelados. |
@@ -127,7 +129,22 @@
 
 ---
 
-## 4. Acciones manuales pendientes para despliegue
+## 4. Ronda 2 — Cierre de observaciones (`EQUIPOS_GESTION_REVISION_CLAUDE.md`)
+
+1. **`v_plan_parcialidades_estado` + `GET /planes-pago`:**
+   - Redefinida `v_plan_parcialidades_estado` en `20261127_01_equipos_gestion.sql` conservando `security_invoker = true` y `GRANT SELECT TO authenticated`, excluyendo planes por equipo cuyo equipo esté cancelado y manteniendo intactos los planes por cotización.
+   - Verificado en PG 17 real (`docs/equipos/verificacion_equipos_gestion.sql` paso `10a-bis` + migración ×2): antes de cancelar aparece `vencida` ($20,000), al cancelar desaparece (mientras el plan por cotización sigue visible), y al reactivar vuelve igual (`vencida`, $20,000).
+   - En `motor/cobros.ts` → `listarPlanesPago` (`GET /planes-pago`): se decidió ocultar planes por equipo cancelado manteniendo intactos los planes por cotización (consistente con `v_plan_parcialidades_estado`).
+2. **`CotizacionDetalle.tsx`:** usa `data.mensaje` cuando `data?.ya_existian` (evita decir "ya tiene 0 órdenes" si todas están canceladas).
+3. **Columna "Equipo" en `OrdenesTrabajoList.tsx`:** `orden.modelo` se prioriza solo cuando `orden.origen === 'manual'`; en equipos de cotización se preserva exactamente el orden de `main` (`ficha?.cantidad_texto || orden.caracteristicas?.descripcion_corta || 'Remolque'`).
+4. **Pruebas de los 12 filtros (+ `listarPlanesPago`) y mutaciones:**
+   - Agregado `supabase/functions/make-server-feea4382/motor/equipos_filtros_cancelados.test.ts` (13 pruebas cubriendo los 12 filtros exactos señalados en D4 + `listarPlanesPago`, usando formas reales de Supabase).
+   - Extendido `scripts/dev/test_equipos_gestion_mutaciones.cjs` para mutar cada una de las 12 líneas (más las 10 reglas de `equipos_gestion.ts` y `listarPlanesPago`): **23/23 mutaciones muertas, 0 vivas**.
+5. **Aviso de material entregado:** actualizado tanto en `cancelar_orden_trabajo` (SQL) como en el diálogo de `OrdenesTrabajoList.tsx` para advertir explícitamente que, si el material regresa al almacén, hay que anular la entrega **antes** de cancelar porque en un equipo cancelado ya no se puede anular (habría que reactivar, anular y volver a cancelar).
+
+---
+
+## 5. Acciones manuales pendientes para despliegue
 1. Revisar y aprobar merge de `equipos-gestion-2026-11-27` a `main`.
 2. Ejecutar `supabase/migrations/20261127_01_equipos_gestion.sql` en el SQL Editor de Supabase (producción).
 3. Hacer **Rebuild** de `remolques-api` y después de `remolques-web` en EasyPanel.

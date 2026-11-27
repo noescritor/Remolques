@@ -102,13 +102,14 @@ export function CotizacionDetalle({
       const numOrdenes = (data?.ordenes || []).length;
       if (data?.ya_existian) {
         toast.info(
-          `Esta cotización ya tiene ${numOrdenes} orden${numOrdenes === 1 ? '' : 'es'} de trabajo`,
+          data.mensaje ||
+            `Esta cotización ya tiene ${numOrdenes} orden${numOrdenes === 1 ? '' : 'es'} de trabajo`,
           {
             action: {
               label: 'Ver órdenes',
               onClick: () => navigate('/ordenes-trabajo')
             },
-            duration: 6000
+            duration: 7000
           }
         );
       } else {

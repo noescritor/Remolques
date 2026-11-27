@@ -666,7 +666,7 @@ export async function listarPlanesPago(
 ) {
   let q = supabase
     .from("planes_pago")
-    .select("*, plan_pagos_parcialidades(*)")
+    .select("*, plan_pagos_parcialidades(*), orden_trabajo:ordenes_trabajo(id, cancelada_el)")
     .eq("organizacion_id", orgId)
     .order("created_at", { ascending: false });
 
@@ -675,7 +675,9 @@ export async function listarPlanesPago(
 
   const { data, error } = await q;
   if (error) throw error;
-  return data || [];
+  return (data || [])
+    .filter((p: any) => !p.orden_trabajo_id || !p.orden_trabajo?.cancelada_el)
+    .map(({ orden_trabajo: _ot, ...rest }: any) => rest);
 }
 
 export async function crearPlanPago(

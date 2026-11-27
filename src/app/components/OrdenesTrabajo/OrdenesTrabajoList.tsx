@@ -514,10 +514,14 @@ export function OrdenesTrabajoList({
                     ficha?.cabecera?.nombre_proyecto ||
                     (orden.origen === 'manual' ? 'Manual' : '-');
                   const equipo =
-                    orden.modelo ||
-                    ficha?.cantidad_texto ||
-                    orden.caracteristicas?.descripcion_corta ||
-                    'Remolque';
+                    orden.origen === 'manual'
+                      ? orden.modelo ||
+                        ficha?.cantidad_texto ||
+                        orden.caracteristicas?.descripcion_corta ||
+                        'Remolque'
+                      : ficha?.cantidad_texto ||
+                        orden.caracteristicas?.descripcion_corta ||
+                        'Remolque';
                   const fechaPedidoTexto = orden.fecha_pedido
                     ? formatearFechaPedidoMx(orden.fecha_pedido)
                     : ficha?.cabecera?.fecha_pedido ||
@@ -863,6 +867,9 @@ export function OrdenesTrabajoList({
                   <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{avisoMaterial.mensaje}</span>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Si el material regresa al almacén, anula la entrega <strong>antes</strong> de cancelar (en un equipo cancelado ya no se puede anular; tendrías que reactivarlo, anular la entrega y volver a cancelarlo).
+                </p>
                 <label className="flex items-start gap-2 text-xs text-foreground cursor-pointer">
                   <Checkbox
                     checked={confirmoMaterial}

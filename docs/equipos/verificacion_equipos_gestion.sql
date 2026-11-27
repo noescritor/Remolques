@@ -294,6 +294,44 @@ BEGIN
     -- 10. Cambiar cliente: solo manual, folio intacto, bitácora registrada
     -- 10a. Reactivar v_ot_cot primero y verificar rechazo por origen='cotizacion'
     PERFORM reactivar_orden_trabajo(v_org_a, v_user_a, v_ot_cot, 'Reactivar para probar cambio cliente');
+
+    -- 10a-bis. Prueba v_plan_parcialidades_estado: antes de cancelar aparece vencida, cancelado no aparece (plan cotización sí), reactivado vuelve igual
+    PERFORM guardar_plan_pago(
+        v_org_a, v_cot_a, NULL, NULL, 'Plan Cotización', NULL,
+        jsonb_build_array(jsonb_build_object('numero', 1, 'fecha_vencimiento', '2026-11-01', 'monto', 30000))
+    );
+    PERFORM guardar_plan_pago(
+        v_org_a, v_cot_a, NULL, v_ot_cot, 'Plan Equipo', NULL,
+        jsonb_build_array(jsonb_build_object('numero', 1, 'fecha_vencimiento', '2026-11-01', 'monto', 20000))
+    );
+
+    SELECT COUNT(*) INTO v_cnt FROM v_plan_parcialidades_estado
+    WHERE organizacion_id = v_org_a AND orden_trabajo_id = v_ot_cot AND estatus = 'vencida' AND monto_pendiente = 20000;
+    IF v_cnt <> 1 THEN
+        RAISE EXCEPTION 'FALLO v_plan_parcialidades_estado antes de cancelar: esperaba 1 fila vencida de 20000, obtuve %', v_cnt;
+    END IF;
+
+    PERFORM cancelar_orden_trabajo(v_org_a, v_user_a, v_ot_cot, 'Cancelación para probar vista plan parcialidades', false);
+
+    SELECT COUNT(*) INTO v_cnt FROM v_plan_parcialidades_estado
+    WHERE organizacion_id = v_org_a AND orden_trabajo_id = v_ot_cot;
+    IF v_cnt <> 0 THEN
+        RAISE EXCEPTION 'FALLO v_plan_parcialidades_estado cancelado: equipo cancelado sigue apareciendo (% filas)', v_cnt;
+    END IF;
+
+    SELECT COUNT(*) INTO v_cnt FROM v_plan_parcialidades_estado
+    WHERE organizacion_id = v_org_a AND cotizacion_id = v_cot_a AND orden_trabajo_id IS NULL;
+    IF v_cnt <> 1 THEN
+        RAISE EXCEPTION 'FALLO v_plan_parcialidades_estado cancelado: plan por cotización desapareció (%)', v_cnt;
+    END IF;
+
+    PERFORM reactivar_orden_trabajo(v_org_a, v_user_a, v_ot_cot, 'Reactivar para confirmar plan vuelve');
+
+    SELECT COUNT(*) INTO v_cnt FROM v_plan_parcialidades_estado
+    WHERE organizacion_id = v_org_a AND orden_trabajo_id = v_ot_cot AND estatus = 'vencida' AND monto_pendiente = 20000;
+    IF v_cnt <> 1 THEN
+        RAISE EXCEPTION 'FALLO v_plan_parcialidades_estado tras reactivar: esperaba 1 fila vencida de 20000, obtuve %', v_cnt;
+    END IF;
     BEGIN
         PERFORM cambiar_cliente_orden_trabajo(v_org_a, v_user_a, v_ot_cot, v_cli_a2, NULL, 'Intento cotización');
         RAISE EXCEPTION 'FALLO: permitió cambiar cliente en orden de cotización';

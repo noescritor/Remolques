@@ -3,6 +3,20 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-27 - Gestión de equipos (Ronda 2: 5 ajustes de revisión)
+**Herramienta:** Antigravity  
+**Tipo:** fix (D1: filtro de equipos cancelados en vista `v_plan_parcialidades_estado` dentro de `20261127_01_equipos_gestion.sql` conservando `security_invoker` y permisos + exclusión en `motor/cobros.ts` `listarPlanesPago` + prueba SQL antes/cancelado/reactivado en `verificacion_equipos_gestion.sql`; D2: `CotizacionDetalle.tsx` usa `data.mensaje` cuando `ya_existian`; D3: columna "Equipo" en `OrdenesTrabajoList.tsx` prioriza `orden.modelo` solo en `origen === 'manual'`; D4: 13 pruebas unitarias en `motor/equipos_filtros_cancelados.test.ts` cubriendo los 12 filtros señalados + `listarPlanesPago`, con `test_equipos_gestion_mutaciones.cjs` matando **23/23 mutantes**; D5: aviso explícito en SQL y UI de anular entregas de material ANTES de cancelar si el material regresa al almacén)  
+**Rama:** `equipos-gestion-2026-11-27`  
+**Referencia auditoría:** `PROMPT_ANTY_EQUIPOS_R2_2026-11-27.md`, `COORDINACION/REVISIONES/EQUIPOS_GESTION_REVISION_CLAUDE.md`, `COORDINACION/REPORTES/EQUIPOS_GESTION_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261127_01_equipos_gestion.sql`, `docs/equipos/verificacion_equipos_gestion.sql`
+- `supabase/functions/make-server-feea4382/motor/cobros.ts`, `motor/equipos_filtros_cancelados.test.ts`
+- `src/app/components/Cotizaciones/CotizacionDetalle.tsx`, `src/app/components/OrdenesTrabajo/OrdenesTrabajoList.tsx`
+- `scripts/dev/test_equipos_gestion_mutaciones.cjs`, `COORDINACION/REPORTES/EQUIPOS_GESTION_REPORTE_ANTY.md`, `CHANGELOG_ANTIGRAVITY.md`
+**Acciones manuales pendientes:**  
+- Aprobar merge de `equipos-gestion-2026-11-27` a `main`.
+- Orden de despliegue: SQL Bloque G (si pendiente) → SQL `20261127_01_equipos_gestion.sql` → Rebuild `remolques-api` → Rebuild `remolques-web`.
+
 ## 2026-11-27 - Bloque "Gestión de equipos" (cancelar/reactivar sin borrar, cambiar cliente manual, fecha de pedido)
 **Herramienta:** Antigravity  
 **Tipo:** feat (migración idempotente `20261127_01_equipos_gestion.sql` con `cancelada_el`, `cancelada_por`, `motivo_cancelacion`, `fecha_pedido` en `ordenes_trabajo` sin alterar el CHECK de `estado`, tabla de bitácora `orden_cambios` con RLS SELECT por organización y escritura exclusiva `service_role`, RPCs atómicas `SECURITY DEFINER` `cancelar_orden_trabajo`, `reactivar_orden_trabajo` y `cambiar_cliente_orden_trabajo` con `FOR UPDATE`; vistas `v_orden_despiece_avance`, `v_cobranza_equipo` y `resumen_calidad_ordenes` filtrando `cancelada_el IS NULL`; blindaje de escrituras SQL sobre equipos cancelados en fases, despiece/entregas, plan semanal, calidad y cobranza con `FOR UPDATE` serializable; nuevo `motor/equipos_gestion.ts` con validación de rol `admin`/`propietario` en servidor; UI en Órdenes de trabajo con filtro `"Ver cancelados"`, diálogos Cancelar/Reactivar/Cambiar cliente y `fecha_pedido` en Órdenes de trabajo, Nuevo equipo y Detalle del tablero; pruebas PG 17 ×2, RLS 2 orgs, concurrencia 2 sesiones, 66/66 Deno, 10/10 mutaciones y E2E navegador con capturas)  

@@ -129,7 +129,7 @@ BEGIN
 
     IF v_entregas_count > 0 AND NOT COALESCE(p_confirmo_material_entregado, false) THEN
         v_entregas_texto := TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM ROUND(v_entregas_cantidad, 4)::TEXT));
-        RAISE EXCEPTION 'orden_con_material_entregado: El equipo tiene % entrega(s) de material sin anular (% unidades en total). Confirma explícitamente si deseas cancelar; el stock no se devolverá automáticamente.',
+        RAISE EXCEPTION 'orden_con_material_entregado: El equipo tiene % entrega(s) de material sin anular (% unidades en total). El stock no se devolverá automáticamente; si el material regresa al almacén, anula la entrega ANTES de cancelar (en un equipo cancelado ya no se puede anular). Confirma explícitamente si deseas cancelar de todos modos.',
             v_entregas_count, v_entregas_texto
             USING DETAIL = jsonb_build_object(
                 'entregas_count', v_entregas_count,
@@ -512,6 +512,91 @@ LEFT JOIN aplicado_por_orden apo
 LEFT JOIN sin_asignar_por_cot sac
   ON sac.cotizacion_id = ot.cotizacion_id AND sac.organizacion_id = ot.organizacion_id
 WHERE ot.cancelada_el IS NULL;
+
+GRANT SELECT ON v_cobranza_equipo TO authenticated;
+
+-- 6b-bis. v_plan_parcialidades_estado (excluye planes por equipo cuyo equipo esté cancelado; planes por cotización sin cambio)
+CREATE OR REPLACE VIEW v_plan_parcialidades_estado
+WITH (security_invoker = true) AS
+WITH base_cobrado AS (
+  SELECT
+    pl.id AS plan_id,
+    CASE
+      WHEN pl.orden_trabajo_id IS NULL THEN COALESCE((
+        SELECT ROUND(SUM(p.monto), 2)
+        FROM pagos p
+        WHERE p.cotizacion_id = pl.cotizacion_id
+          AND p.organizacion_id = pl.organizacion_id
+          AND p.estado = 'vigente'
+      ), 0.00)
+      ELSE COALESCE((
+        SELECT ce.cobrado_equipo
+        FROM v_cobranza_equipo ce
+        WHERE ce.orden_trabajo_id = pl.orden_trabajo_id
+          AND ce.organizacion_id = pl.organizacion_id
+      ), 0.00)
+    END AS total_cobrado
+  FROM planes_pago pl
+  LEFT JOIN ordenes_trabajo ot
+    ON ot.id = pl.orden_trabajo_id AND ot.organizacion_id = pl.organizacion_id
+  WHERE pl.orden_trabajo_id IS NULL OR ot.cancelada_el IS NULL
+),
+acumulado AS (
+  SELECT
+    pp.id AS parcialidad_id,
+    pp.plan_id,
+    pp.organizacion_id,
+    pl.cotizacion_id,
+    pl.orden_trabajo_id,
+    pp.numero,
+    pp.fecha_vencimiento,
+    pp.monto,
+    pp.nota,
+    bc.total_cobrado,
+    COALESCE(SUM(pp.monto) OVER (
+      PARTITION BY pp.plan_id
+      ORDER BY pp.fecha_vencimiento ASC, pp.numero ASC
+      ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+    ), 0.00) AS acumulado_previo
+  FROM plan_pagos_parcialidades pp
+  JOIN planes_pago pl ON pl.id = pp.plan_id
+  JOIN base_cobrado bc ON bc.plan_id = pp.plan_id
+),
+calculo AS (
+  SELECT
+    parcialidad_id,
+    plan_id,
+    organizacion_id,
+    cotizacion_id,
+    orden_trabajo_id,
+    numero,
+    fecha_vencimiento,
+    monto,
+    nota,
+    ROUND(LEAST(monto, GREATEST(0, total_cobrado - acumulado_previo)), 2)::NUMERIC(12, 2) AS monto_cubierto
+  FROM acumulado
+)
+SELECT
+  parcialidad_id,
+  plan_id,
+  organizacion_id,
+  cotizacion_id,
+  orden_trabajo_id,
+  numero,
+  fecha_vencimiento,
+  monto,
+  nota,
+  monto_cubierto,
+  ROUND(GREATEST(0, monto - monto_cubierto), 2)::NUMERIC(12, 2) AS monto_pendiente,
+  CASE
+    WHEN monto_cubierto >= monto - 0.005 THEN 'pagada'
+    WHEN fecha_vencimiento < (NOW() AT TIME ZONE 'America/Mexico_City')::date THEN 'vencida'
+    WHEN monto_cubierto > 0.005 THEN 'parcial'
+    ELSE 'pendiente'
+  END AS estatus
+FROM calculo;
+
+GRANT SELECT ON v_plan_parcialidades_estado TO authenticated;
 
 -- 6c. resumen_calidad_ordenes (excluye órdenes canceladas)
 CREATE OR REPLACE FUNCTION resumen_calidad_ordenes(p_org uuid)
