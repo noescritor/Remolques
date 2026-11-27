@@ -3,6 +3,14 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-27 - Proxy de Supabase: permitir los encabezados de supabase-js
+**Herramienta:** Claude Code  
+**Tipo:** fix  
+**Rama:** `fix-cors-rol-2026-11-27`  
+**Archivos tocados:** `nginx-supa.conf`  
+**Qué cambió y por qué:** el preflight no permitía `accept-profile`, que supabase-js manda al leer tablas. El navegador bloqueaba la lectura del rol en `perfiles_organizacion`, así que tras el bloque de cuentas todos quedarían como `usuario`. Se amplía la lista de encabezados permitidos.  
+**Acciones manuales pendientes:** Rebuild de `remolques-supa`.
+
 ## 2026-11-27 - Cuentas y permisos (Ronda 2: D1–D5 — merge con main, trigger auth.users sin DROP, cierre plantillas_cotizacion, pruebas de rutas/mutaciones en index.ts y protección al borrar clientes con equipos)
 **Herramienta:** Antigravity  
 **Tipo:** security / fix (D1: merge de `main` `87bc64e` con `equipos-gestion` resuelto limpiamente en `index.ts` y `CHANGELOG_ANTIGRAVITY.md`; D2: eliminado `DROP TRIGGER` sobre `auth.users` en `20261127_02_cuentas_permisos.sql`, creando `on_auth_user_created_trigger` solo si no existe en `pg_trigger` y probado en PG 17 bajo rol `NOSUPERUSER` que no es dueño de `auth.users`; D3: cierre idempotente de políticas abiertas en `plantillas_cotizacion` + auditoría global en `verificacion_cuentas_permisos.sql` exigiendo filtro de organización/usuario en toda política de `public`; D4: suite de rutas HTTP reales `cuentas_permisos_rutas.test.ts` 8/8 contra `app` exportado de `index.ts` + mutaciones 16/16 muertas incluyendo 6/6 directamente sobre `index.ts`; D5: FK `ordenes_trabajo.cliente_id` cambiada a `ON DELETE NO ACTION`, `DELETE /clientes/:id` con `eliminarClienteSeguro` devolviendo 409 con conteo de equipos activos/cancelados, toast claro en `App.tsx` y validación completa en PG 17)  
