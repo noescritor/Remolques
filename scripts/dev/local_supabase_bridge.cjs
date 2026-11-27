@@ -177,6 +177,8 @@ async function resolveNested(table, rows, selectStr) {
 const RPC_SIGNATURES = {
   aplicar_precios_acero_cfdi: ['p_org', 'p_usuario', 'p_factura_id', 'p_lineas'],
   renombrar_proveedor_acero: ['p_org', 'p_de', 'p_a'],
+  recibir_factura_almacen: ['p_org', 'p_usuario', 'p_factura_id', 'p_lineas', 'p_confirmo_doble', 'p_notas'],
+  anular_recepcion_almacen: ['p_org', 'p_usuario', 'p_recepcion_id', 'p_motivo'],
   registrar_cobro: ['p_org_id', 'p_cotizacion_id', 'p_monto', 'p_fecha', 'p_tipo_pago', 'p_referencia', 'p_notas', 'p_descripcion_especie', 'p_aplicaciones', 'p_permitir_saldo_a_favor', 'p_usuario_id'],
   anular_cobro: ['p_org_id', 'p_pago_id', 'p_motivo', 'p_usuario_id'],
   guardar_plan_pago: ['p_org_id', 'p_cotizacion_id', 'p_plan_id', 'p_orden_trabajo_id', 'p_nombre', 'p_notas', 'p_parcialidades'],
@@ -184,7 +186,7 @@ const RPC_SIGNATURES = {
   anular_seguimiento_cobranza: ['p_org_id', 'p_seguimiento_id', 'p_motivo', 'p_usuario_id'],
   sembrar_calidad_plantillas: ['p_org'],
   resumen_calidad_ordenes: ['p_org'],
-  recibir_compra_proveedor: ['p_org', 'p_usuario', 'p_compra_id'],
+  recibir_compra_proveedor: ['p_org', 'p_usuario', 'p_compra_id', 'p_confirmo_doble'],
 };
 
 const JSON_RPC_PARAMS = new Set([

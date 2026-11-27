@@ -704,6 +704,22 @@ export async function listarCatalogoAlias(
       }
     }
   }
+  if (rows.length > 0 && (!destinoTipo || destinoTipo === "producto")) {
+    const prods = await paginar<{ id: string; nombre: string }>(async (from, to) =>
+      await supabase
+        .from("productos")
+        .select("id, nombre")
+        .eq("organizacion_id", orgId)
+        .order("id", { ascending: true })
+        .range(from, to)
+    );
+    const prodMap = new Map(prods.map((p) => [String(p.id), p.nombre]));
+    for (const r of rows) {
+      if (r.destino_tipo === "producto") {
+        r.destino_nombre = prodMap.get(String(r.destino_id)) || null;
+      }
+    }
+  }
   return rows;
 }
 

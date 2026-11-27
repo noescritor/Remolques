@@ -35,6 +35,14 @@ export function mapearErrorRpcCompra(err: unknown): ComprasRecepcionError {
   if (msg.includes("compra_sin_partidas")) {
     return new ComprasRecepcionError(409, "compra_sin_partidas", "La compra no tiene partidas para recibir.");
   }
+  if (msg.includes("factura_ya_recibida")) {
+    const limpio = msg.replace(/^factura_ya_recibida:\s*/i, "").trim();
+    return new ComprasRecepcionError(
+      409,
+      "factura_ya_recibida",
+      limpio || "Esta mercancía ya fue recibida por factura en almacén. Confirma que no es la misma mercancía.",
+    );
+  }
   if (msg.includes("producto_no_encontrado")) {
     return new ComprasRecepcionError(
       409,
@@ -307,7 +315,7 @@ export async function actualizarCompraProveedorMotor(
   if (Object.keys(otrosCampos).length > 0 || (!esRecepcion && campos.estado !== undefined)) {
     const updateData = esRecepcion ? otrosCampos : campos;
     if (Object.keys(updateData).length > 0) {
-      const cambiaEstado = !esRecepcion && campos.estado !== undefined && campos.estado !== prevCompra.estado;
+      const cambiaEstado = !esRecepcion && campos.estado !== undefined;
       let query = supabase
         .from("compras_proveedor")
         .update(updateData)
@@ -341,10 +349,12 @@ export async function actualizarCompraProveedorMotor(
   }
 
   // Recepción atómica vía RPC con service_role (revisando error obligatoriamente)
+  const confirmoDoble = payload?.confirmo_doble === true;
   const { data: rpcRes, error: rpcErr } = await serviceClient.rpc("recibir_compra_proveedor", {
     p_org: orgId,
     p_usuario: userId,
     p_compra_id: compraId,
+    p_confirmo_doble: confirmoDoble,
   });
 
   if (rpcErr) {

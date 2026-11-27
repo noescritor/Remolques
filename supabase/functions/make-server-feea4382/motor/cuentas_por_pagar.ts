@@ -134,6 +134,19 @@ export function formatearErrorRespuesta(err: any): { status: number; body: { err
     };
   }
 
+  const pgCode = err?.code;
+  const rawMsg = String(err?.message || "");
+  if (
+    pgCode === "23503" ||
+    rawMsg.includes("almacen_recepcion_lineas_partida_id_fkey") ||
+    rawMsg.includes("almacen_recepciones_factura_id_fkey")
+  ) {
+    return {
+      status: 409,
+      body: { error: "La factura ya fue recibida en almacén; anula la recepción antes de modificar sus partidas" },
+    };
+  }
+
   console.error("Error interno CXP:", err);
   return {
     status: 500,
@@ -796,6 +809,21 @@ export async function cancelarFactura(
     const err: any = new Error("No se puede cancelar una factura que tiene pagos registrados. Debe anular los pagos primero.");
     err.status = 409;
     throw err;
+  }
+
+  // O2: Bloquear cancelación si la factura tiene una recepción activa en almacén
+  if (typeof supabase?.from === "function") {
+    const recRes = await supabase
+      .from("almacen_recepciones")
+      .select("id", { count: "exact", head: true })
+      .eq("organizacion_id", orgId)
+      .eq("factura_id", facturaId)
+      .eq("estado", "recibida");
+    if (!recRes?.error && ((recRes?.count ?? 0) > 0 || (Array.isArray(recRes?.data) && recRes.data.length > 0))) {
+      const err: any = new Error("No se puede cancelar una factura que ya fue recibida en almacén. Anula la recepción primero.");
+      err.status = 409;
+      throw err;
+    }
   }
 
   const { data: cancelada, error: errCan } = await supabase
@@ -1558,6 +1586,26 @@ export async function guardarFacturaConPartidasMotor(
     }
   }
 
+  // D1: Si se está editando una factura existente, impedir reemplazo de partidas si tiene recepción activa en almacén
+  if (facturaId && typeof serviceClient?.from === "function") {
+    try {
+      const recRes = await serviceClient
+        .from("almacen_recepciones")
+        .select("id", { count: "exact", head: true })
+        .eq("organizacion_id", orgId)
+        .eq("factura_id", facturaId)
+        .eq("estado", "recibida");
+      if (!recRes?.error && ((recRes?.count ?? 0) > 0 || (Array.isArray(recRes?.data) && recRes.data.length > 0))) {
+        const err: any = new Error("La factura ya fue recibida en almacén; anula la recepción antes de modificar sus partidas");
+        err.status = 409;
+        throw err;
+      }
+    } catch (recErr: any) {
+      if (recErr?.status === 409) throw recErr;
+      // En mocks unitarios mínimos sin tabla almacen_recepciones, la FK ON DELETE RESTRICT en BD sigue protegiendo
+    }
+  }
+
   // Invocar RPC atómica en Postgres
   const { data, error } = await serviceClient.rpc("guardar_factura_con_partidas", {
     p_organizacion_id: orgId,
@@ -1583,6 +1631,16 @@ export async function guardarFacturaConPartidasMotor(
 
   if (error) {
     const msg = error.message || "";
+    const code = error.code || "";
+    if (
+      code === "23503" ||
+      msg.includes("almacen_recepcion_lineas_partida_id_fkey") ||
+      msg.includes("almacen_recepciones_factura_id_fkey")
+    ) {
+      const err: any = new Error("La factura ya fue recibida en almacén; anula la recepción antes de modificar sus partidas");
+      err.status = 409;
+      throw err;
+    }
     if (msg.includes("factura_no_encontrada")) {
       const err: any = new Error("La factura no existe o pertenece a otra organización");
       err.status = 404;

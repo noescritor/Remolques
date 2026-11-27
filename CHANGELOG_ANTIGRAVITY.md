@@ -3,6 +3,71 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-26 - Bloque G (Ronda 4: doble conteo inverso factura → compra)
+**Herramienta:** Antigravity  
+**Tipo:** fix (redefinición de `recibir_compra_proveedor(uuid, uuid, uuid, boolean DEFAULT false)` en `20261126_01_almacen_g.sql` tras `DROP FUNCTION` de la firma de 3 args para evitar sobrecarga ambigua; guardián inverso `factura_ya_recibida` tras `FOR UPDATE` de productos para recepciones activas ligadas (a) o mismo proveedor ±60d con producto compartido (b); mapeo `409` con folios y `confirmo_doble` booleano estricto en `motor/compras_recepcion.ts`; aviso con ícono, folios y casilla `"Confirmo que no es la misma mercancía"` en `ComprasProveedorList.tsx`; `verificacion_G.sql` 31/31 `PASA`, `rev_g_inverso.sql` bloqueado con stock=10, concurrencia 2 sesiones en ambos órdenes OK, `mutar_compras.cjs` 28/28)  
+**Rama:** `almacen-g-2026-11-24`  
+**Referencia auditoría:** `PROMPT_ANTY_G_DOBLE_CONTEO_2026-11-26.md`, `COORDINACION/REVISIONES/ALMACEN_G_REVISION_CLAUDE_R3.md`, `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261126_01_almacen_g.sql`, `docs/almacen/verificacion_G.sql`
+- `supabase/functions/make-server-feea4382/motor/compras_recepcion.ts`, `motor/rev_compras_extra.test.ts`
+- `scripts/dev/local_supabase_bridge.cjs`
+- `src/app/hooks/useSupabaseData.ts`, `src/app/App.tsx`, `src/app/components/ComprasProveedor/ComprasProveedorList.tsx`
+- `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Aprobar merge de `almacen-g-2026-11-24` a `main`.
+- Ejecutar `supabase/migrations/20261126_01_almacen_g.sql` en el SQL Editor de Supabase (F y compras ya están aplicadas).
+- Rebuild de `remolques-api` y después `remolques-web` en EasyPanel.
+
+## 2026-11-26 - Bloque G integrado sobre `main` (`f9e4912`) + cierre de R1 (compras)
+**Herramienta:** Antigravity  
+**Tipo:** chore / fix (merge de `main` `f9e4912` en `almacen-g-2026-11-24` resolviendo únicamente `CHANGELOG_ANTIGRAVITY.md` y aplicando `normalizarProductoNumerico` al refresco de `productos` tras recibir compra; commit aparte `4ed3e51` cerrando R1 de `COMPRAS_RECEPCION_REVISION_CLAUDE_R2.md` con guarda `.eq("estado", prevCompra.estado)` aun cuando se repite el mismo estado + prueba `R-C6`; verificación PG 17 en orden `F → compras → G ×2` sin errores y compra fraccionaria `2.5 + 0.1` dejando `stock_actual = 3.8500` exacto)  
+**Rama:** `almacen-g-2026-11-24`  
+**Referencia auditoría:** `PROMPT_ANTY_G_REBASE_2026-11-26.md`, `COORDINACION/REVISIONES/COMPRAS_RECEPCION_REVISION_CLAUDE_R2.md`, `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `CHANGELOG_ANTIGRAVITY.md`, `src/app/hooks/useSupabaseData.ts` (merge)
+- `supabase/functions/make-server-feea4382/motor/compras_recepcion.ts`, `motor/rev_compras_extra.test.ts` (R1)
+- `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Aprobar merge de `almacen-g-2026-11-24` a `main`.
+- Ejecutar `supabase/migrations/20261126_01_almacen_g.sql` en el SQL Editor de Supabase (F y compras ya están aplicadas).
+- Rebuild de `remolques-api` y después `remolques-web` en EasyPanel.
+
+## 2026-11-25 - Bloque G (Ronda 2: D1, D2, O1 y O2 de revisión Claude)
+**Herramienta:** Antigravity  
+**Tipo:** fix (D1 FK `ON DELETE RESTRICT` en `almacen_recepciones.factura_id` y `almacen_recepcion_lineas.partida_id` con `partida_id_original` para permitir editar partidas tras anular sin perder trazabilidad; 409 en `PUT /cxp/facturas/:id/partidas`, `guardarFacturaConPartidasMotor` y mapeo `23503` en `mapearErrorRpcAlmacen` y `formatearErrorRespuesta`; edición en sitio permitida si solo cambia descripción; O2 `cancelarFactura` exige anular recepción activa primero; D2/O1 pruebas en `motor/almacen_recepcion.test.ts` matando 34/38 mutantes de `arnes_revision_g/mutar_g.cjs`, dejando solo los 4 equivalentes M19/M26/M32/M34; `verificacion_G.sql` 23/23 `PASA`, `i_rpc_real.sql` bloqueado con `23503` y stock en 10, `rev_g.sql` 67/67 + FK `RESTRICT`)  
+**Rama:** `almacen-g-2026-11-24`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/ALMACEN_G_REVISION_CLAUDE.md`, `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261126_01_almacen_g.sql`
+- `docs/almacen/verificacion_G.sql`
+- `supabase/functions/make-server-feea4382/index.ts`, `motor/cuentas_por_pagar.ts`, `motor/almacen_recepcion.ts`, `motor/almacen_recepcion.test.ts`
+- `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Rebasar sobre `compras-recepcion-2026-11-24` una vez mergeado a `main` y aprobar el merge de Bloque G.
+- Ejecutar `supabase/migrations/20261126_01_almacen_g.sql` en el SQL Editor de Supabase.
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel.
+
+## 2026-11-25 - Bloque G: Recibir factura en almacén (XML → entradas de inventario)
+**Herramienta:** Antigravity  
+**Tipo:** feat (migración `20261126_01_almacen_g.sql` con `NUMERIC(14,4)` en existencias/movimientos, `ultimo_costo_compra*` de referencia en `productos`, `catalogo_alias_factura.destino_id` a `TEXT`, tablas `almacen_recepciones` / `almacen_recepcion_lineas` con RLS, RPCs `recibir_factura_almacen` con guardián de doble conteo (a)+(b) 60 días y `anular_recepcion_almacen`; motor `motor/almacen_recepcion.ts` + 4 endpoints `/almacen/*`; modal `RecibirFacturaAlmacenModal` en CxP Facturas; columna "Último costo compra (s/IVA)", modal "Recepciones" con anulación y `parseFloat` en ajuste manual en `InventarioList`; normalización centralizada `NUMERIC -> Number()` en `useSupabaseData.ts` + `formatearCantidadStock`; insignia solo-lectura de existencia en `ChecklistDespiecePanel`; verificación PG 17 19/19, no-regresión Bloque F 18/18 + 7/7, concurrencia 2 sesiones, mutación 19/19, Deno 17/17 y E2E navegador real con 5 capturas)  
+**Rama:** `almacen-g-2026-11-24`  
+**Referencia auditoría:** `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`, `docs/almacen/contrato_esquema_real.md`, `docs/almacen/verificacion_G.sql`  
+**Archivos tocados:**  
+- `supabase/migrations/20261126_01_almacen_g.sql`
+- `docs/almacen/contrato_esquema_real.md`, `docs/almacen/verificacion_G.sql`
+- `supabase/functions/make-server-feea4382/motor/almacen_recepcion.ts`, `motor/almacen_recepcion.test.ts`, `motor/acero_cfdi.ts`, `index.ts`
+- `src/app/types/index.ts`, `src/app/hooks/useSupabaseData.ts`, `src/app/utils/almacenApi.ts`, `src/app/App.tsx`
+- `src/app/components/Inventario/RecibirFacturaAlmacenModal.tsx`, `InventarioList.tsx`
+- `src/app/components/Finanzas/CxpFacturasTab.tsx`, `CuentasPorPagarMain.tsx`
+- `src/app/components/OrdenesTrabajo/ChecklistDespiecePanel.tsx`, `src/app/components/Cotizaciones/GenerarOrdenProduccionModal.tsx`
+- `scripts/dev/local_supabase_bridge.cjs`, `scripts/dev/seed_almacen_g.sql`, `scripts/dev/test_almacen_g_browser.cjs`
+- `COORDINACION/EVIDENCIA/almacen_g_01..05_*.png`, `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Rebasar sobre `compras-recepcion-2026-11-24` una vez mergeado a `main` y aprobar el merge de Bloque G.
+- Ejecutar `supabase/migrations/20261126_01_almacen_g.sql` en el SQL Editor de Supabase.
+- Rebuild de `remolques-api` y `remolques-web` en EasyPanel.
+
 ## 2026-11-25 - Compras recepción (Ronda 2: O1 UPDATE condicional y O2 pruebas 28/28 mutantes)
 **Herramienta:** Antigravity  
 **Tipo:** fix (O1 `UPDATE` condicional `AND estado = <previo>` en `actualizarCompraProveedorMotor` devolviendo `409` `"La compra cambió de estado; recarga e inténtalo de nuevo"` si cambió entre lectura y actualización; O2 incorporación de `motor/rev_compras_extra.test.ts` con `R-C1`..`R-C5`, matando 28/28 mutantes en `arnes_revision_compras/mutar_compras.cjs` con `EXTRA=1` y 15/15 en `test_compras_recepcion_mutaciones.cjs`; sin migración nueva)  

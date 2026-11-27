@@ -76,6 +76,9 @@ export interface Producto {
   stock_actual?: number;
   stock_minimo?: number;
   stock_reservado?: number;
+  ultimo_costo_compra?: number | null;
+  ultimo_costo_compra_fecha?: string | null;
+  ultimo_costo_compra_factura_id?: string | null;
   categoria_id?: string;
   imagen_url?: string;
 }

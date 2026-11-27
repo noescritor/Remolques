@@ -146,6 +146,7 @@ export default function App() {
     crearNota,
     actualizarNota,
     eliminarNota,
+    loadData,
   } = useSupabaseData(session?.access_token);
 
   // Mostrar error del servidor o notificación de modo local
@@ -601,6 +602,7 @@ export default function App() {
             loading={loading}
             obtenerMovimientosInventario={obtenerMovimientosInventario}
             registrarMovimientoInventario={registrarMovimientoInventario}
+            onRecargarProductos={loadData}
           />
         } />
 
@@ -622,7 +624,12 @@ export default function App() {
             proveedores={proveedores}
             productos={productos}
             loading={loading}
-            onRecibirCompra={(id) => actualizarCompraProveedor(id, { estado: 'Recibida' })}
+            onRecibirCompra={(id, opts) =>
+              actualizarCompraProveedor(id, {
+                estado: 'Recibida',
+                ...(opts?.confirmo_doble ? { confirmo_doble: true } : {}),
+              } as any)
+            }
             rolActual={session?.user?.user_metadata?.rol || 'usuario'}
           />
         } />
@@ -647,6 +654,7 @@ export default function App() {
             loading={loading}
             onCrearPago={crearPagoProveedor}
             session={session}
+            onRecargarProductos={loadData}
           />
         } />
         
