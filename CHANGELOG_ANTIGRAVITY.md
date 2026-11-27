@@ -3,6 +3,20 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-26 - Bloque G integrado sobre `main` (`f9e4912`) + cierre de R1 (compras)
+**Herramienta:** Antigravity  
+**Tipo:** chore / fix (merge de `main` `f9e4912` en `almacen-g-2026-11-24` resolviendo únicamente `CHANGELOG_ANTIGRAVITY.md` y aplicando `normalizarProductoNumerico` al refresco de `productos` tras recibir compra; commit aparte `4ed3e51` cerrando R1 de `COMPRAS_RECEPCION_REVISION_CLAUDE_R2.md` con guarda `.eq("estado", prevCompra.estado)` aun cuando se repite el mismo estado + prueba `R-C6`; verificación PG 17 en orden `F → compras → G ×2` sin errores y compra fraccionaria `2.5 + 0.1` dejando `stock_actual = 3.8500` exacto)  
+**Rama:** `almacen-g-2026-11-24`  
+**Referencia auditoría:** `PROMPT_ANTY_G_REBASE_2026-11-26.md`, `COORDINACION/REVISIONES/COMPRAS_RECEPCION_REVISION_CLAUDE_R2.md`, `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `CHANGELOG_ANTIGRAVITY.md`, `src/app/hooks/useSupabaseData.ts` (merge)
+- `supabase/functions/make-server-feea4382/motor/compras_recepcion.ts`, `motor/rev_compras_extra.test.ts` (R1)
+- `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Aprobar merge de `almacen-g-2026-11-24` a `main`.
+- Ejecutar `supabase/migrations/20261126_01_almacen_g.sql` en el SQL Editor de Supabase (F y compras ya están aplicadas).
+- Rebuild de `remolques-api` y después `remolques-web` en EasyPanel.
+
 ## 2026-11-25 - Bloque G (Ronda 2: D1, D2, O1 y O2 de revisión Claude)
 **Herramienta:** Antigravity  
 **Tipo:** fix (D1 FK `ON DELETE RESTRICT` en `almacen_recepciones.factura_id` y `almacen_recepcion_lineas.partida_id` con `partida_id_original` para permitir editar partidas tras anular sin perder trazabilidad; 409 en `PUT /cxp/facturas/:id/partidas`, `guardarFacturaConPartidasMotor` y mapeo `23503` en `mapearErrorRpcAlmacen` y `formatearErrorRespuesta`; edición en sitio permitida si solo cambia descripción; O2 `cancelarFactura` exige anular recepción activa primero; D2/O1 pruebas en `motor/almacen_recepcion.test.ts` matando 34/38 mutantes de `arnes_revision_g/mutar_g.cjs`, dejando solo los 4 equivalentes M19/M26/M32/M34; `verificacion_G.sql` 23/23 `PASA`, `i_rpc_real.sql` bloqueado con `23503` y stock en 10, `rev_g.sql` 67/67 + FK `RESTRICT`)  

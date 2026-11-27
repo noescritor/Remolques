@@ -158,3 +158,20 @@ node scripts/dev/test_almacen_g_browser.cjs
 - `cancelarFactura` en `motor/cuentas_por_pagar.ts` comprueba `almacen_recepciones` con `estado = 'recibida'` y rechaza con **`409`**: `"No se puede cancelar una factura que ya fue recibida en almacén. Anula la recepción primero."` (tras anular la recepción, sí permite cancelar).
 - `O3` (alias compartido con F) y `O4` (insignia `Existencia registrada: 0` en despiece) no se tocaron, pendientes de decisión de Luis.
 
+---
+
+## 6. Actualización sobre `main` (`f9e4912`, compras ya integrado) y cierre de R1
+
+- **Integración de `main` (`f9e4912`) en `almacen-g-2026-11-24` (commit `f4da8a5`):**
+  - **Archivos resueltos a mano:** únicamente `CHANGELOG_ANTIGRAVITY.md` (se conservaron las entradas de ambas ramas, más nuevas arriba). Además se aplicó `normalizarProductoNumerico` al refresco de `productos` dentro de `actualizarCompraProveedor` en `src/app/hooks/useSupabaseData.ts` (que se fusionó automáticamente).
+  - `index.ts` y `scripts/dev/local_supabase_bridge.cjs` se fusionaron sin conflictos; se verificó que conviven las rutas de compras (`actualizarCompraProveedorMotor`) y las 4 rutas `/almacen/*` de G, así como los 3 RPCs en el puente local.
+- **Cierre de R1 (`COMPRAS_RECEPCION_REVISION_CLAUDE_R2.md`) en commit aparte (`4ed3e51`):**
+  - En `motor/compras_recepcion.ts` (`actualizarCompraProveedorMotor`): se aplicó `.eq("estado", prevCompra.estado)` siempre que `!esRecepcion && campos.estado !== undefined` (eliminando `&& campos.estado !== prevCompra.estado`).
+  - Se agregó la prueba `R-C6 (R1)` en `motor/rev_compras_extra.test.ts` enviando `{ estado: "Pendiente" }` mientras otra sesión la recibe: responde `409` (`"La compra cambió de estado; recarga e inténtalo de nuevo"`) y la compra permanece en `Recibida` (`10 passed | 0 failed`).
+- **Verificación en Postgres 17 real con orden exacto de producción (`F → compras → G ×2`):**
+  - Migraciones aplicadas en orden: `20261102_03` → `20261110_01` → `20261125_01_acero_f.sql` → `20261125_02_compras_recepcion.sql` → `20261126_01_almacen_g.sql` **×2** (`ON_ERROR_STOP=1`): **0 errores**.
+  - Sin cambios en `20261125_01_acero_f.sql` ni en `20261125_02_compras_recepcion.sql` (`git diff main..HEAD` vacío).
+  - Compra fraccionaria tras G (`recibir_compra_proveedor` con `2.5 + 0.1` sobre stock inicial `1.2500`): `stock_actual = 3.8500` exacto, `2` movimientos `Entrada` sumando `2.6000`.
+  - `docs/almacen/verificacion_G.sql`: **23/23 `PASA`**.
+
+
