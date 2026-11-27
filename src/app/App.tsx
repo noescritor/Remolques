@@ -700,6 +700,8 @@ export default function App() {
             clientes={clientes}
             loading={loading}
             onActualizarOrden={actualizarOrdenTrabajo}
+            onRecargarOrdenes={loadData}
+            session={session}
             ajustes={ajustes}
           />
         } />
@@ -710,6 +712,8 @@ export default function App() {
             clientes={clientes}
             loading={loading}
             onActualizarOrden={actualizarOrdenTrabajo}
+            onRecargarOrdenes={loadData}
+            session={session}
             ajustes={ajustes}
           />
         } />

@@ -62,6 +62,18 @@ export async function listarDespieceOT(
 ) {
   const { otId, orgId, equipoIndice } = parametros;
 
+  // Verificar que la orden no esté cancelada (si el cliente expone la tabla ordenes_trabajo)
+  const { data: otCheck } = await client
+    .from("ordenes_trabajo")
+    .select("id, cancelada_el")
+    .eq("id", otId)
+    .eq("organizacion_id", orgId)
+    .maybeSingle();
+
+  if (otCheck && otCheck.cancelada_el) {
+    throw new Error("orden_cancelada: El equipo está cancelado y no aparece en almacén/despiece");
+  }
+
   let query = client
     .from("v_orden_despiece_avance")
     .select("*")
@@ -166,13 +178,16 @@ export async function generarDespieceOT(
   // 1. Obtener orden de trabajo con sus características
   const { data: ot, error: errOT } = await serviceClient
     .from("ordenes_trabajo")
-    .select("id, cotizacion_id, modelo, caracteristicas, organizacion_id")
+    .select("id, cotizacion_id, modelo, caracteristicas, organizacion_id, cancelada_el")
     .eq("id", otId)
     .eq("organizacion_id", orgId)
     .single();
 
   if (errOT || !ot) {
     throw new Error("ot_no_encontrada: Orden de trabajo no encontrada o no pertenece a la organización");
+  }
+  if (ot.cancelada_el) {
+    throw new Error("orden_cancelada: No se puede generar despiece para un equipo cancelado");
   }
 
   // 2. Extraer identificadores del equipo
@@ -536,13 +551,16 @@ export async function entregarFaseCompleta(serviceClient: any, p: ParametrosEntr
   // 1. Obtener la orden de trabajo para determinar su unidad real
   const { data: ot, error: errOT } = await serviceClient
     .from("ordenes_trabajo")
-    .select("id, caracteristicas")
+    .select("id, caracteristicas, cancelada_el")
     .eq("id", p.otId)
     .eq("organizacion_id", p.orgId)
     .single();
 
   if (errOT || !ot) {
     throw new Error("ot_no_encontrada: La orden de trabajo no existe o pertenece a otra organización");
+  }
+  if (ot.cancelada_el) {
+    throw new Error("orden_cancelada: No se puede entregar material a un equipo cancelado");
   }
 
   // Tomar el equipo de la OT (caracteristicas.unidad) si no se especifica
@@ -636,13 +654,16 @@ export async function agregarLineaManual(serviceClient: any, p: ParametrosLineaM
   // 1. Validar que la orden de trabajo pertenece a la organización y obtener características
   const { data: ot, error: errOT } = await serviceClient
     .from("ordenes_trabajo")
-    .select("id, caracteristicas")
+    .select("id, caracteristicas, cancelada_el")
     .eq("id", p.otId)
     .eq("organizacion_id", p.orgId)
     .single();
 
   if (errOT || !ot) {
     throw new Error("ot_no_encontrada: La orden de trabajo no existe o pertenece a otra organización");
+  }
+  if (ot.cancelada_el) {
+    throw new Error("orden_cancelada: No se pueden agregar líneas de despiece a un equipo cancelado");
   }
 
   // 2. Si se proporcionó materialId, validar que pertenece a la organización

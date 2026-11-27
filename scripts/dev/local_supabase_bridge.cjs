@@ -39,6 +39,7 @@ function parseFilterVal(raw) {
   if (raw.startsWith('lt.')) return { op: '<', val: raw.slice(3) };
   if (raw.startsWith('ilike.')) return { op: 'ILIKE', val: raw.slice(6).replace(/\*/g, '%') };
   if (raw.startsWith('like.')) return { op: 'LIKE', val: raw.slice(5).replace(/\*/g, '%') };
+  if (raw === 'not.is.null') return { op: 'IS', val: 'NOT_NULL' };
   if (raw.startsWith('is.')) {
     const v = raw.slice(3).toLowerCase();
     return { op: 'IS', val: v === 'null' ? null : v === 'true' ? true : v === 'false' ? false : v };
@@ -187,6 +188,13 @@ const RPC_SIGNATURES = {
   sembrar_calidad_plantillas: ['p_org'],
   resumen_calidad_ordenes: ['p_org'],
   recibir_compra_proveedor: ['p_org', 'p_usuario', 'p_compra_id', 'p_confirmo_doble'],
+  cancelar_orden_trabajo: ['p_org', 'p_usuario', 'p_orden_id', 'p_motivo', 'p_confirmo_material_entregado'],
+  reactivar_orden_trabajo: ['p_org', 'p_usuario', 'p_orden_id', 'p_motivo'],
+  cambiar_cliente_orden_trabajo: ['p_org', 'p_usuario', 'p_orden_id', 'p_cliente_id', 'p_etiqueta', 'p_motivo'],
+  sembrar_tablero_produccion: ['p_org'],
+  crear_fases_orden: ['p_org', 'p_orden'],
+  actualizar_fase_orden: ['p_org', 'p_orden', 'p_fase', 'p_estado', 'p_fecha_propuesta', 'p_nota', 'p_usuario'],
+  obtener_siguiente_produccion: [],
 };
 
 const JSON_RPC_PARAMS = new Set([
