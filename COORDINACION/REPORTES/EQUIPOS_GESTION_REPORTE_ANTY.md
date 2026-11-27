@@ -1,6 +1,7 @@
 # Reporte — Bloque "Gestión de equipos" (`equipos-gestion-2026-11-27`)
 
 - **Rama:** `equipos-gestion-2026-11-27` (worktree independiente desde `main` `daebb23`, que ya incluye Bloque G).
+- **Commit principal de código:** `383e5c6` (`node scripts/verificar.mjs --limpio` → **11/11 TODO OK**, 442/442 pruebas Deno en verde).
 - **Migración:** `supabase/migrations/20261127_01_equipos_gestion.sql` (idempotente; **no** ejecutada en producción).
 - **Precios de cotización:** 0 archivos de precios/costeo/recetas tocados. Sin carga de equipos de Leolca. Sin merge ni push a `main`.
 
