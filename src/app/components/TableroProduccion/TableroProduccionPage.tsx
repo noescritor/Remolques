@@ -231,6 +231,7 @@ export function TableroProduccionPage({ session, ajustes }: TableroProduccionPag
     ordenId: string,
     cambios: {
       fecha_compromiso?: string | null;
+      fecha_pedido?: string | null;
       etiqueta?: string | null;
       material_faltante?: string | null;
     }

@@ -170,12 +170,14 @@ Deno.test("tablero_produccion: actualizarPlaneacionMotor lista blanca estricta",
           return {
             eq: (_c1: string, _v1: string) => ({
               eq: (_c2: string, _v2: string) => ({
-                select: () => ({
-                  maybeSingle: () =>
-                    Promise.resolve({
-                      data: { id: "ord-1", ...payload },
-                      error: null,
-                    }),
+                is: (_c3: string, _v3: any) => ({
+                  select: () => ({
+                    maybeSingle: () =>
+                      Promise.resolve({
+                        data: { id: "ord-1", ...payload },
+                        error: null,
+                      }),
+                  }),
                 }),
               }),
             }),
@@ -418,14 +420,20 @@ Deno.test("tablero_produccion: obtenerMatrizProduccion estructura, resumen y exc
           select: () => ({
             eq: () => ({
               eq: () => ({
-                neq: (col: string, val: string) => {
-                  assertEquals(col, "estado");
-                  assertEquals(val, "Liberado");
+                is: (colIs: string, valIs: any) => {
+                  assertEquals(colIs, "cancelada_el");
+                  assertEquals(valIs, null);
                   return {
+                    neq: (col: string, val: string) => {
+                      assertEquals(col, "estado");
+                      assertEquals(val, "Liberado");
+                      return {
+                        order: () => Promise.resolve({ data: ordenesMock, error: null }),
+                      };
+                    },
                     order: () => Promise.resolve({ data: ordenesMock, error: null }),
                   };
                 },
-                order: () => Promise.resolve({ data: ordenesMock, error: null }),
               }),
             }),
           }),

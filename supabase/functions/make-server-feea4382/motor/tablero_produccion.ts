@@ -20,6 +20,7 @@ export type { CeldaSemaforoInput, EstadoFase, SemaforoProduccion };
 
 const CAMPOS_PLANEACION_PERMITIDOS = new Set([
   "fecha_compromiso",
+  "fecha_pedido",
   "etiqueta",
   "material_faltante",
 ]);
@@ -95,29 +96,31 @@ export async function obtenerMatrizProduccion(
   const totalTina = fasesTina.length;
   const tieneTina = totalTina > 0;
 
-  // 3. Órdenes de trabajo para esta línea (excluyendo Liberado)
+  // 3. Órdenes de trabajo activas para esta línea (excluyendo Liberado y canceladas)
   const { data: ordenes, error: errOrd } = await supabase
     .from("ordenes_trabajo")
     .select(`
       id, nomenclatura_id, etiqueta, cliente_id, cotizacion_id, modelo, tipo_equipo,
-      origen, fecha_compromiso, fecha_inicio, material_faltante, estado, estado_kanban,
+      origen, fecha_compromiso, fecha_pedido, fecha_inicio, material_faltante, estado, estado_kanban,
       created_at,
       cliente:clientes(id, nombre_razon_social, nombre_contacto),
       cotizacion:cotizaciones(id, folio)
     `)
     .eq("organizacion_id", orgId)
     .eq("linea_producto_id", linea.id)
+    .is("cancelada_el", null)
     .neq("estado", "Liberado")
     .order("created_at", { ascending: true });
 
   if (errOrd) throw errOrd;
 
-  // 3b. Obtener todas las órdenes de la línea (incluidas 'Liberado') para la numeración consecutiva por cliente (#1, #2, ...)
+  // 3b. Obtener todas las órdenes activas de la línea (incluidas 'Liberado') para la numeración consecutiva por cliente (#1, #2, ...)
   const { data: todasOrdenesLinea, error: errTodas } = await supabase
     .from("ordenes_trabajo")
     .select("id, cliente_id, created_at")
     .eq("organizacion_id", orgId)
     .eq("linea_producto_id", linea.id)
+    .is("cancelada_el", null)
     .order("created_at", { ascending: true });
 
   if (errTodas) throw errTodas;
@@ -233,6 +236,7 @@ export async function obtenerMatrizProduccion(
       tipo_equipo: ord.tipo_equipo,
       origen: ord.origen || "cotizacion",
       fecha_compromiso: ord.fecha_compromiso || null,
+      fecha_pedido: ord.fecha_pedido || null,
       fecha_inicio: ord.fecha_inicio || null,
       material_faltante: ord.material_faltante || null,
       estado: ord.estado,
@@ -337,7 +341,10 @@ export async function actualizarFaseMotor(
   if (error) {
     const msg = error.message || "";
     const err = new Error(msg);
-    if (
+    if (msg.includes("orden_cancelada")) {
+      (err as any).status = 409;
+      (err as any).codigo = "orden_cancelada";
+    } else if (
       msg.includes("no encontrada") ||
       msg.includes("no pertenece a la organización")
     ) {
@@ -372,7 +379,7 @@ export async function actualizarPlaneacionMotor(
   for (const k of Object.keys(rawPayload)) {
     if (!CAMPOS_PLANEACION_PERMITIDOS.has(k)) {
       const err = new Error(
-        `Campo '${k}' no permitido en planeación. Campos permitidos: fecha_compromiso, etiqueta, material_faltante.`
+        `Campo '${k}' no permitido en planeación. Campos permitidos: fecha_compromiso, fecha_pedido, etiqueta, material_faltante.`
       );
       (err as any).status = 400;
       throw err;
@@ -382,6 +389,31 @@ export async function actualizarPlaneacionMotor(
   const updateData: Record<string, any> = {};
   if ("fecha_compromiso" in rawPayload) {
     updateData.fecha_compromiso = rawPayload.fecha_compromiso || null;
+  }
+  if ("fecha_pedido" in rawPayload) {
+    const rawFp = rawPayload.fecha_pedido;
+    if (rawFp === null || rawFp === "" || rawFp === undefined) {
+      updateData.fecha_pedido = null;
+    } else {
+      const strFp = String(rawFp).trim();
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(strFp);
+      if (!m) {
+        const err = new Error("fecha_pedido debe tener formato YYYY-MM-DD");
+        (err as any).status = 400;
+        throw err;
+      }
+      const dt = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+      if (
+        dt.getUTCFullYear() !== Number(m[1]) ||
+        dt.getUTCMonth() !== Number(m[2]) - 1 ||
+        dt.getUTCDate() !== Number(m[3])
+      ) {
+        const err = new Error(`La fecha_pedido '${strFp}' no es una fecha válida`);
+        (err as any).status = 400;
+        throw err;
+      }
+      updateData.fecha_pedido = strFp;
+    }
   }
   if ("etiqueta" in rawPayload) {
     updateData.etiqueta = rawPayload.etiqueta
@@ -400,10 +432,24 @@ export async function actualizarPlaneacionMotor(
     .update(updateData)
     .eq("id", ordenId)
     .eq("organizacion_id", orgId)
+    .is("cancelada_el", null)
     .select("*, cliente:clientes(*), linea:lineas_producto(*)")
     .maybeSingle();
 
   if (error || !orden) {
+    // Verificar si existe pero está cancelada para devolver 409 claro
+    const { data: checkCanc } = await supabase
+      .from("ordenes_trabajo")
+      .select("id, cancelada_el")
+      .eq("id", ordenId)
+      .eq("organizacion_id", orgId)
+      .maybeSingle();
+    if (checkCanc?.cancelada_el) {
+      const err = new Error("No se puede editar la planeación de un equipo cancelado.");
+      (err as any).status = 409;
+      (err as any).codigo = "orden_cancelada";
+      throw err;
+    }
     const err = new Error("Orden de trabajo no encontrada");
     (err as any).status = 404;
     throw err;
@@ -524,6 +570,7 @@ export async function crearOrdenManualMotor(
     cliente_id?: string | null;
     etiqueta?: string | null;
     fecha_compromiso?: string | null;
+    fecha_pedido?: string | null;
     caracteristicas?: Record<string, any>;
   },
   serviceClient?: any
@@ -632,6 +679,28 @@ export async function crearOrdenManualMotor(
   const anio = new Date().getFullYear().toString().slice(-2);
   const nomenclatura = `${seqNum}-${iniciales}${tipoEquipo}${mesStr}${anio}-1`;
 
+  let fechaPedidoNormalizada: string | null = null;
+  if (payload.fecha_pedido !== undefined && payload.fecha_pedido !== null && String(payload.fecha_pedido).trim() !== "") {
+    const strFp = String(payload.fecha_pedido).trim();
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(strFp);
+    if (!m) {
+      const err = new Error("fecha_pedido debe tener formato YYYY-MM-DD");
+      (err as any).status = 400;
+      throw err;
+    }
+    const dt = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+    if (
+      dt.getUTCFullYear() !== Number(m[1]) ||
+      dt.getUTCMonth() !== Number(m[2]) - 1 ||
+      dt.getUTCDate() !== Number(m[3])
+    ) {
+      const err = new Error(`La fecha_pedido '${strFp}' no es una fecha válida`);
+      (err as any).status = 400;
+      throw err;
+    }
+    fechaPedidoNormalizada = strFp;
+  }
+
   // Insertar orden de trabajo
   const clientForInsert = (serviceClient && typeof serviceClient.from === "function") ? serviceClient : supabase;
   const { data: orden, error: insErr } = await clientForInsert
@@ -648,6 +717,7 @@ export async function crearOrdenManualMotor(
         modelo: payload.modelo || null,
         nomenclatura_id: nomenclatura,
         fecha_compromiso: payload.fecha_compromiso || null,
+        fecha_pedido: fechaPedidoNormalizada,
         caracteristicas: payload.caracteristicas || {},
         estado: "Pendiente",
         estado_kanban: "pendiente",

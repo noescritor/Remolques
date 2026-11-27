@@ -61,6 +61,9 @@ export function mapearErrorRpcCalidad(err: any): CalidadError {
   if (msg.includes("INSPECCION_NO_ENCONTRADA")) {
     return new CalidadError(404, "INSPECCION_NO_ENCONTRADA", "Inspección de calidad no encontrada.");
   }
+  if (msg.includes("ORDEN_CANCELADA")) {
+    return new CalidadError(409, "ORDEN_CANCELADA", "No se pueden crear ni modificar inspecciones de calidad en un equipo cancelado.");
+  }
   if (msg.includes("ORDEN_NO_ENCONTRADA")) {
     return new CalidadError(404, "ORDEN_NO_ENCONTRADA", "Orden de trabajo no encontrada.");
   }
@@ -356,7 +359,7 @@ export async function listarInspeccionesCalidad(
 ) {
   let query = supabase
     .from("orden_calidad_inspecciones")
-    .select("*, orden:ordenes_trabajo(id, etiqueta, modelo, niv, cliente_id, linea_producto_id), plantilla:calidad_plantillas(id, nombre, version, formato, config)")
+    .select("*, orden:ordenes_trabajo(id, etiqueta, modelo, niv, cliente_id, linea_producto_id, cancelada_el), plantilla:calidad_plantillas(id, nombre, version, formato, config)")
     .eq("organizacion_id", orgId);
 
   if (filtros.orden_trabajo_id) query = query.eq("orden_trabajo_id", filtros.orden_trabajo_id);
@@ -372,7 +375,9 @@ export async function listarInspeccionesCalidad(
     resumenPorInsp.set(r.inspeccion_id, r);
   }
 
-  let lista = (inspecciones || []).map((insp: any) => {
+  let lista = (inspecciones || [])
+    .filter((insp: any) => !insp.orden?.cancelada_el)
+    .map((insp: any) => {
     const res = resumenPorInsp.get(insp.id);
     return {
       ...insp,

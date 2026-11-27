@@ -3,6 +3,22 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-27 - Bloque "Gestión de equipos" (cancelar/reactivar sin borrar, cambiar cliente manual, fecha de pedido)
+**Herramienta:** Antigravity  
+**Tipo:** feat (migración idempotente `20261127_01_equipos_gestion.sql` con `cancelada_el`, `cancelada_por`, `motivo_cancelacion`, `fecha_pedido` en `ordenes_trabajo` sin alterar el CHECK de `estado`, tabla de bitácora `orden_cambios` con RLS SELECT por organización y escritura exclusiva `service_role`, RPCs atómicas `SECURITY DEFINER` `cancelar_orden_trabajo`, `reactivar_orden_trabajo` y `cambiar_cliente_orden_trabajo` con `FOR UPDATE`; vistas `v_orden_despiece_avance`, `v_cobranza_equipo` y `resumen_calidad_ordenes` filtrando `cancelada_el IS NULL`; blindaje de escrituras SQL sobre equipos cancelados en fases, despiece/entregas, plan semanal, calidad y cobranza con `FOR UPDATE` serializable; nuevo `motor/equipos_gestion.ts` con validación de rol `admin`/`propietario` en servidor; UI en Órdenes de trabajo con filtro `"Ver cancelados"`, diálogos Cancelar/Reactivar/Cambiar cliente y `fecha_pedido` en Órdenes de trabajo, Nuevo equipo y Detalle del tablero; pruebas PG 17 ×2, RLS 2 orgs, concurrencia 2 sesiones, 66/66 Deno, 10/10 mutaciones y E2E navegador con capturas)  
+**Rama:** `equipos-gestion-2026-11-27`  
+**Referencia auditoría:** `PROMPT_ANTY_EQUIPOS_GESTION_2026-11-27.md`, `COORDINACION/REPORTES/EQUIPOS_GESTION_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261127_01_equipos_gestion.sql`, `docs/equipos/verificacion_equipos_gestion.sql`
+- `supabase/functions/make-server-feea4382/index.ts`, `motor/equipos_gestion.ts`, `motor/equipos_gestion.test.ts`, `motor/generar_ordenes_cotizacion.ts`, `motor/generar_ordenes_cotizacion.test.ts`, `motor/tablero_produccion.ts`, `motor/tablero_produccion.test.ts`, `motor/plan_produccion.ts`, `motor/checklist_almacen.ts`, `motor/calidad.ts`, `motor/cobros.ts`
+- `src/app/types/index.ts`, `src/app/utils/equiposGestionApi.ts`, `src/app/utils/tableroApi.ts`, `src/app/App.tsx`, `src/app/components/OrdenesTrabajo/OrdenesTrabajoList.tsx`, `src/app/components/TableroProduccion/NuevoEquipoModal.tsx`, `src/app/components/TableroProduccion/OrdenTrabajoDetalleSheet.tsx`, `src/app/components/TableroProduccion/TableroProduccionPage.tsx`, `src/app/components/Cotizaciones/CotizacionesList.tsx`
+- `scripts/dev/local_supabase_bridge.cjs`, `scripts/dev/seed_equipos_gestion.sql`, `scripts/dev/test_equipos_gestion_concurrencia.cjs`, `scripts/dev/test_equipos_gestion_mutaciones.cjs`, `scripts/dev/test_equipos_gestion_browser.cjs`
+- `COORDINACION/REPORTES/EQUIPOS_GESTION_REPORTE_ANTY.md`, `COORDINACION/EVIDENCIA/equipos_gestion_*.png`
+**Acciones manuales pendientes:**  
+- Revisar y aprobar merge de `equipos-gestion-2026-11-27` a `main`.
+- Ejecutar `supabase/migrations/20261127_01_equipos_gestion.sql` en el SQL Editor de Supabase.
+- Rebuild de `remolques-api` y después `remolques-web` en EasyPanel.
+
 ## 2026-11-26 - Bloque G (Ronda 4: doble conteo inverso factura → compra)
 **Herramienta:** Antigravity  
 **Tipo:** fix (redefinición de `recibir_compra_proveedor(uuid, uuid, uuid, boolean DEFAULT false)` en `20261126_01_almacen_g.sql` tras `DROP FUNCTION` de la firma de 3 args para evitar sobrecarga ambigua; guardián inverso `factura_ya_recibida` tras `FOR UPDATE` de productos para recepciones activas ligadas (a) o mismo proveedor ±60d con producto compartido (b); mapeo `409` con folios y `confirmo_doble` booleano estricto en `motor/compras_recepcion.ts`; aviso con ícono, folios y casilla `"Confirmo que no es la misma mercancía"` en `ComprasProveedorList.tsx`; `verificacion_G.sql` 31/31 `PASA`, `rev_g_inverso.sql` bloqueado con stock=10, concurrencia 2 sesiones en ambos órdenes OK, `mutar_compras.cjs` 28/28)  

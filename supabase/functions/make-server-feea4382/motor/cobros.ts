@@ -226,6 +226,9 @@ export function mapearErrorRpcCobros(err: unknown): CobrosError {
   if (msg.includes("plan_no_encontrado")) {
     return new CobrosError(404, "plan_no_encontrado", msg);
   }
+  if (msg.includes("orden_cancelada")) {
+    return new CobrosError(409, "orden_cancelada", msg);
+  }
   if (msg.includes("cotizacion_no_cobrable")) {
     return new CobrosError(409, "cotizacion_no_cobrable", msg);
   }
@@ -384,6 +387,7 @@ export async function obtenerCobranzaCotizacion(
       .select("id, nomenclatura_id, modelo, tipo_equipo")
       .eq("cotizacion_id", cotizacionId)
       .eq("organizacion_id", orgId)
+      .is("cancelada_el", null)
       .order("created_at", { ascending: true }),
     listarPagosPaginados(supabase, orgId, { cotizacionId, incluirAnulados: true }),
     supabase
@@ -539,12 +543,12 @@ export async function obtenerCobranzaEquipo(
 ): Promise<CobranzaEquipoDto> {
   const { data: orden, error: ordErr } = await supabase
     .from("ordenes_trabajo")
-    .select("id, nomenclatura_id, modelo, tipo_equipo, cotizacion_id")
+    .select("id, nomenclatura_id, modelo, tipo_equipo, cotizacion_id, cancelada_el")
     .eq("id", ordenId)
     .eq("organizacion_id", orgId)
     .single();
 
-  if (ordErr || !orden) {
+  if (ordErr || !orden || orden.cancelada_el) {
     throw new CobrosError(404, "orden_no_encontrada", "Orden de trabajo no encontrada en tu organización.");
   }
 
@@ -597,12 +601,15 @@ export async function guardarValorEquipo(
 ) {
   const { data: orden, error: ordErr } = await supabase
     .from("ordenes_trabajo")
-    .select("id")
+    .select("id, cancelada_el")
     .eq("id", ordenId)
     .eq("organizacion_id", orgId)
     .single();
   if (ordErr || !orden) {
     throw new CobrosError(404, "orden_no_encontrada", "Orden de trabajo no encontrada en tu organización.");
+  }
+  if (orden.cancelada_el) {
+    throw new CobrosError(409, "orden_cancelada", "No se puede modificar el valor de cobranza de un equipo cancelado.");
   }
 
   if (valorPactado === null) {
