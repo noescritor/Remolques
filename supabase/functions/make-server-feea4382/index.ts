@@ -161,6 +161,11 @@ import {
   listarProductosPaginados,
   obtenerCatalogoCotizador,
 } from "./motor/catalogo_productos.ts";
+import {
+  ComprasRecepcionError,
+  crearCompraProveedorMotor,
+  actualizarCompraProveedorMotor,
+} from "./motor/compras_recepcion.ts";
 
 import { Cliente, Cotizacion, ItemCotizacion, Producto, EstadoCotizacion, Ajustes, Pago, Plantilla } from "../../../src/app/types/index.ts";
 
@@ -3420,128 +3425,54 @@ app.post("/compras-proveedor", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
     const orgId = c.get("organizacionId");
+    const userId = c.get("user")?.id || null;
     const payload = await c.req.json();
-    
-    const { items, ...compraData } = payload;
-    compraData.organizacion_id = orgId;
-    
-    // Generar folio MAX+1
-    const { data: maxFolio } = await supabase
-      .from("compras_proveedor")
-      .select("folio")
-      .eq("organizacion_id", orgId)
-      .order("created_at", { ascending: false })
-      .limit(1);
-    
-    let nextNum = 1;
-    if (maxFolio && maxFolio.length > 0 && maxFolio[0].folio) {
-       const match = maxFolio[0].folio.match(/\d+$/);
-       if (match) nextNum = parseInt(match[0], 10) + 1;
-    }
-    compraData.folio = `OC-${String(nextNum).padStart(5, '0')}`;
-    
-    // 1. Insertar compra principal
-    const { data: compra, error: compraError } = await supabase
-      .from("compras_proveedor")
-      .insert(compraData)
-      .select()
-      .single();
-      
-    if (compraError) throw compraError;
-    
-    // 2. Insertar items si existen
-    if (items && items.length > 0) {
-      const itemsToInsert = items.map((item: any) => ({
-        ...item,
-        compra_id: compra.id
-      }));
-      await supabase.from("compra_items").insert(itemsToInsert);
-    }
-    
-    // Cambiar estado_produccion a 'Compra en curso' y registrar evento
-    if (compraData.cotizacion_id) {
-       await supabase.from('cotizaciones').update({ estado_produccion: 'Compra en curso' }).eq('id', compraData.cotizacion_id);
-       await registrarEvento(supabase, {
-         cotizacion_id: compraData.cotizacion_id,
-         organizacion_id: orgId,
-         evento: `Compra generada (${compraData.folio}). Estado de producción: Compra en curso`,
-         usuario_id: c.get("user")?.id || null
-       });
-    }
-    
+
+    const compra = await crearCompraProveedorMotor(
+      supabase,
+      orgId,
+      userId,
+      payload,
+      registrarEvento,
+    );
     return c.json(compra);
   } catch (err: any) {
-    return c.json({ error: err.message }, 500);
+    if (err instanceof ComprasRecepcionError) {
+      return c.json({ error: err.message, codigo: err.codigo }, err.status as any);
+    }
+    console.error("[POST /compras-proveedor] Error inesperado:", err);
+    return c.json({ error: "No se pudo crear la compra." }, 500);
   }
 });
 
 app.put("/compras-proveedor/:id", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
+    const serviceClient = getServiceClient();
     const orgId = c.get("organizacionId");
     const userId = c.get("user")?.id || null;
     const id = c.req.param("id");
     const payload = await c.req.json();
-    
-    const { items, ...compraData } = payload;
-    
-    // Read previous state for idempotency
-    const { data: prevCompra } = await supabase.from("compras_proveedor").select("estado, cotizacion_id").eq("id", id).single();
-    if (!prevCompra) return c.json({ error: "No encontrada" }, 404);
-    
-    // 1. Update main record
-    const { data: compra, error: compraError } = await supabase
-      .from("compras_proveedor")
-      .update(compraData)
-      .eq("id", id)
-      .select()
-      .single();
-      
-    if (compraError) throw compraError;
-    
-    // Recepción idempotente
-    if (compraData.estado === 'Recibida' && prevCompra.estado !== 'Recibida') {
-       const { data: existingItems } = await supabase.from("compra_items").select("*").eq("compra_id", id);
-       if (existingItems && existingItems.length > 0) {
-         const adminClient = getServiceClient();
-         for (const item of existingItems) {
-           await adminClient.from('movimientos_inventario').insert({
-             producto_id: item.material_id,
-             organizacion_id: orgId,
-             tipo_movimiento: 'Entrada',
-             cantidad: item.cantidad,
-             referencia: `Compra ${compra.folio || id}`
-           });
-           // Stock atómico usando RPC (ajustar_stock se creará en la migración SQL)
-           await adminClient.rpc('ajustar_stock', { p_producto_id: item.material_id, p_delta: item.cantidad });
-         }
-       }
-       
-       // Tras recibir: recalcular requisicion
-         if (prevCompra.cotizacion_id) {
-           const faltantes = await calcularRequisicion(supabase, prevCompra.cotizacion_id, orgId);
-           const unconfigured = faltantes.some((f) => f.estado === 'sin_receta');
-           if (!unconfigured) {
-             const totalFaltante = faltantes.reduce((sum, f) => sum + (f.faltante || 0), 0);
-             if (totalFaltante === 0) {
-           const { data: cot } = await supabase.from("cotizaciones").select("estado_produccion").eq("id", prevCompra.cotizacion_id).single();
-           if (cot && (cot.estado_produccion === 'Requisición: falta material' || cot.estado_produccion === 'Compra en curso')) {
-             await supabase.from("cotizaciones").update({ estado_produccion: 'Listo para producción' }).eq("id", prevCompra.cotizacion_id);
-             await registrarEvento(supabase, {
-               cotizacion_id: prevCompra.cotizacion_id,
-               organizacion_id: orgId,
-               evento: `Compra ${compra.folio} recibida. No hay faltantes. Estado: Listo para producción`,
-               usuario_id: userId
-               });
-             }
-           }
-         }
-         }
-      }
-    
+
+    const compra = await actualizarCompraProveedorMotor(
+      supabase,
+      serviceClient,
+      orgId,
+      userId,
+      id,
+      payload,
+      {
+        calcularRequisicion,
+        registrarEvento,
+      },
+    );
     return c.json(compra);
   } catch (err: any) {
-    return c.json({ error: err.message }, 500);
+    if (err instanceof ComprasRecepcionError) {
+      return c.json({ error: err.message, codigo: err.codigo }, err.status as any);
+    }
+    console.error("[PUT /compras-proveedor/:id] Error inesperado:", err);
+    return c.json({ error: "No se pudo actualizar la compra." }, 500);
   }
 });
 

@@ -38,6 +38,36 @@ Formato: entradas nuevas **arriba**.
 - Ejecutar `supabase/migrations/20261126_01_almacen_g.sql` en el SQL Editor de Supabase.
 - Rebuild de `remolques-api` y `remolques-web` en EasyPanel.
 
+## 2026-11-25 - Compras recepción (Ronda 2: O1 UPDATE condicional y O2 pruebas 28/28 mutantes)
+**Herramienta:** Antigravity  
+**Tipo:** fix (O1 `UPDATE` condicional `AND estado = <previo>` en `actualizarCompraProveedorMotor` devolviendo `409` `"La compra cambió de estado; recarga e inténtalo de nuevo"` si cambió entre lectura y actualización; O2 incorporación de `motor/rev_compras_extra.test.ts` con `R-C1`..`R-C5`, matando 28/28 mutantes en `arnes_revision_compras/mutar_compras.cjs` con `EXTRA=1` y 15/15 en `test_compras_recepcion_mutaciones.cjs`; sin migración nueva)  
+**Rama:** `compras-recepcion-2026-11-24`  
+**Referencia auditoría:** `COORDINACION/REVISIONES/COMPRAS_RECEPCION_REVISION_CLAUDE.md`, `COORDINACION/REPORTES/COMPRAS_RECEPCION_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/functions/make-server-feea4382/motor/compras_recepcion.ts`, `motor/rev_compras_extra.test.ts`
+- `COORDINACION/REPORTES/COMPRAS_RECEPCION_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Correr consulta de solo lectura O3 (`pg_proc` `ajustar_stock`) y `diagnostico_stock_vs_movimientos.sql` en Supabase SQL Editor.
+- Ejecutar `supabase/migrations/20261125_02_compras_recepcion.sql` en el SQL Editor de Supabase (antes de publicar API/Web).
+- Rebuild de `remolques-api` y después `remolques-web` en EasyPanel.
+
+## 2026-11-25 - Arreglo: Recepción de compras atómica (`ajustar_stock` rota)
+**Herramienta:** Antigravity  
+**Tipo:** fix (migración `20261125_02_compras_recepcion.sql` con `DROP FUNCTION ajustar_stock(uuid, numeric)` y nueva RPC atómica idempotente `recibir_compra_proveedor(uuid, uuid, uuid)` con `FOR UPDATE`, detección dinámica `INT` vs `NUMERIC` compatible con Bloque G, permisos solo `service_role`; motor `motor/compras_recepcion.ts` con lista blanca, validación de transiciones, mapeo de errores, eliminación de compra fantasma en `POST /compras-proveedor` y campo `aviso` si falla `calcularRequisicion`; diálogo de confirmación, bloqueo anti-doble clic, manejo de error con `Reintentar` y refresco de inventario sin recargar en `ComprasProveedorList.tsx` + `useSupabaseData.ts`; diagnóstico solo-lectura `scripts/sql/diagnostico_stock_vs_movimientos.sql`; 11/11 SQL PG17, 15/15 mutantes, concurrencia 2 sesiones y E2E navegador real con 4 capturas)  
+**Rama:** `compras-recepcion-2026-11-24`  
+**Referencia auditoría:** `COORDINACION/REPORTES/COMPRAS_RECEPCION_REPORTE_ANTY.md`, `docs/compras/verificacion_compras_recepcion.sql`  
+**Archivos tocados:**  
+- `supabase/migrations/20261125_02_compras_recepcion.sql`, `20260918_01_flujo_aprobacion_produccion.sql`
+- `docs/compras/verificacion_compras_recepcion.sql`, `scripts/sql/diagnostico_stock_vs_movimientos.sql`
+- `supabase/functions/make-server-feea4382/motor/compras_recepcion.ts`, `motor/compras_recepcion.test.ts`, `index.ts`
+- `src/app/hooks/useSupabaseData.ts`, `src/app/components/ComprasProveedor/ComprasProveedorList.tsx`
+- `scripts/dev/local_supabase_bridge.cjs`, `scripts/dev/seed_compras_recepcion.sql`, `scripts/dev/repro_recepcion_compra.cjs`, `scripts/dev/test_compras_recepcion_mutaciones.cjs`, `scripts/dev/test_compras_recepcion_browser.cjs`
+- `COORDINACION/EVIDENCIA/compras_recepcion_01..04_*.png`, `COORDINACION/REPORTES/COMPRAS_RECEPCION_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Correr consultas de solo lectura (`diagnostico_stock_vs_movimientos.sql`) en Supabase SQL Editor.
+- Ejecutar `supabase/migrations/20261125_02_compras_recepcion.sql` en el SQL Editor de Supabase (antes de publicar API/Web).
+- Rebuild de `remolques-api` y después `remolques-web` en EasyPanel.
+
 ## 2026-11-24 - Bloque F (Ronda 3: N1-N3 de revisión Claude R2)
 **Herramienta:** Antigravity  
 **Tipo:** fix (N1 resolución case-insensitive de proveedor existente en `aplicar_precios_acero_cfdi` y `renombrar_proveedor_acero` para no duplicar proveedores con mayúsculas mezcladas como `REFERENCIA (Excel costeo)`; N2 `renombrar_proveedor_acero` falla con `proveedor_no_encontrado` 404 cuando el origen no existe; N3 pruebas en `motor/acero_cfdi.test.ts` para las 3 reglas de contradicción de `sugerirMaterial` + casos de `sug.ts`, ruta de IVA en `obtenerPropuestaAceroCfdi` y default `factor_confirmado=true`, matando 14/14 mutantes en `mutar_f3.cjs`)  

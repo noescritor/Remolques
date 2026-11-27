@@ -1,4 +1,5 @@
 
+-- OBSOLETO: `ajustar_stock` se eliminó en 20261125_02_compras_recepcion.sql; ver esa migración.
 -- Migración para Flujo de Aprobación, Producción y Compras (Bloque 1)
 
 -- 1. Actualizar tabla productos con tipo_item
