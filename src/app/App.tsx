@@ -39,6 +39,7 @@ import { NotasManager } from './components/Notas/NotasManager';
 import { CalidadPage } from './components/Calidad/CalidadPage';
 import { Toaster } from './components/ui/sonner';
 import { useSupabaseData } from './hooks/useSupabaseData';
+import { useRolOrganizacion } from './hooks/useRolOrganizacion';
 import { toast } from "sonner";
 import { supabase } from './utils/supabase/client';
 import { Session } from '@supabase/supabase-js';
@@ -148,6 +149,29 @@ export default function App() {
     eliminarNota,
     loadData,
   } = useSupabaseData(session?.access_token);
+
+  // Fuente única de rol real del usuario desde perfiles_organizacion (sin user_metadata)
+  const {
+    rolActual,
+    errorRol,
+    reintentarRol,
+  } = useRolOrganizacion(session, organizacion?.id);
+
+  // Mostrar aviso con botón Reintentar si falló la lectura del rol real desde perfiles_organizacion
+  useEffect(() => {
+    if (errorRol) {
+      toast.error('No se pudo verificar tu rol', {
+        description: `${errorRol} Se aplica acceso de usuario estándar temporalmente.`,
+        action: {
+          label: 'Reintentar',
+          onClick: () => {
+            reintentarRol();
+          },
+        },
+        duration: 10000,
+      });
+    }
+  }, [errorRol, reintentarRol]);
 
   // Mostrar error del servidor o notificación de modo local
   useEffect(() => {
@@ -321,9 +345,9 @@ export default function App() {
     try {
       await eliminarCliente(id);
       toast.success('Cliente eliminado');
-    } catch (error) {
-      toast.error('Error al eliminar cliente', {
-        description: error instanceof Error ? error.message : String(error)
+    } catch (error: any) {
+      toast.error('No se pudo eliminar el cliente', {
+        description: error?.detalle || (error instanceof Error ? error.message : String(error))
       });
     }
   };
@@ -630,7 +654,7 @@ export default function App() {
                 ...(opts?.confirmo_doble ? { confirmo_doble: true } : {}),
               } as any)
             }
-            rolActual={session?.user?.user_metadata?.rol || 'usuario'}
+            rolActual={rolActual}
           />
         } />
 
@@ -751,7 +775,13 @@ export default function App() {
         } />
 
         <Route path="/catalogo-costos" element={
-          <CatalogoCostosMain session={session} organizacion={organizacion} />
+          <CatalogoCostosMain
+            session={session}
+            organizacion={organizacion}
+            rolActual={rolActual}
+            errorRol={errorRol}
+            onReintentarRol={reintentarRol}
+          />
         } />
 
         <Route path="/calculadora" element={<CalculadoraPage />} />
@@ -777,7 +807,12 @@ export default function App() {
         } />
 
         <Route path="/equipo" element={
-          <EquipoManager token={session?.access_token || ''} />
+          <EquipoManager
+            token={session?.access_token || ''}
+            rolActual={rolActual}
+            errorRol={errorRol}
+            onReintentarRol={reintentarRol}
+          />
         } />
         
         <Route path="*" element={<Navigate to="/" replace />} />
