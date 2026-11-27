@@ -624,7 +624,12 @@ export default function App() {
             proveedores={proveedores}
             productos={productos}
             loading={loading}
-            onRecibirCompra={(id) => actualizarCompraProveedor(id, { estado: 'Recibida' })}
+            onRecibirCompra={(id, opts) =>
+              actualizarCompraProveedor(id, {
+                estado: 'Recibida',
+                ...(opts?.confirmo_doble ? { confirmo_doble: true } : {}),
+              } as any)
+            }
             rolActual={session?.user?.user_metadata?.rol || 'usuario'}
           />
         } />

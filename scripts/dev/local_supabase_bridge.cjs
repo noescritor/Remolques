@@ -186,7 +186,7 @@ const RPC_SIGNATURES = {
   anular_seguimiento_cobranza: ['p_org_id', 'p_seguimiento_id', 'p_motivo', 'p_usuario_id'],
   sembrar_calidad_plantillas: ['p_org'],
   resumen_calidad_ordenes: ['p_org'],
-  recibir_compra_proveedor: ['p_org', 'p_usuario', 'p_compra_id'],
+  recibir_compra_proveedor: ['p_org', 'p_usuario', 'p_compra_id', 'p_confirmo_doble'],
 };
 
 const JSON_RPC_PARAMS = new Set([

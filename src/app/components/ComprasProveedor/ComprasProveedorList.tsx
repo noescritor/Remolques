@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
+import { Checkbox } from '../ui/checkbox';
 import {
   ShoppingCart,
   Check,
@@ -26,7 +27,7 @@ interface ComprasProveedorListProps {
   proveedores: Proveedor[];
   productos: Producto[];
   loading: boolean;
-  onRecibirCompra: (id: string) => Promise<any>;
+  onRecibirCompra: (id: string, opts?: { confirmo_doble?: boolean }) => Promise<any>;
   rolActual: string;
 }
 
@@ -41,7 +42,13 @@ export function ComprasProveedorList({
   const [compraParaPDF, setCompraParaPDF] = useState<CompraProveedor | null>(null);
   const [compraAConfirmar, setCompraAConfirmar] = useState<CompraProveedor | null>(null);
   const [recibiendoId, setRecibiendoId] = useState<string | null>(null);
-  const [errorRecepcion, setErrorRecepcion] = useState<{ compraId: string; folio: string; mensaje: string } | null>(null);
+  const [errorRecepcion, setErrorRecepcion] = useState<{
+    compraId: string;
+    folio: string;
+    mensaje: string;
+    esDobleConteo?: boolean;
+  } | null>(null);
+  const [confirmoDoble, setConfirmoDoble] = useState(false);
 
   const handlePrint = () => {
     window.print();
@@ -66,12 +73,12 @@ export function ComprasProveedorList({
     return acc;
   }, {} as Record<string, Producto>);
 
-  const ejecutarRecepcion = async (compra: CompraProveedor) => {
+  const ejecutarRecepcion = async (compra: CompraProveedor, forzarDoble = false) => {
     if (recibiendoId) return;
     setRecibiendoId(compra.id);
     setErrorRecepcion(null);
     try {
-      const res = await onRecibirCompra(compra.id);
+      const res = await onRecibirCompra(compra.id, forzarDoble ? { confirmo_doble: true } : undefined);
       if (res?.aviso) {
         toast.warning(res.aviso);
       } else if (res?.recepcion?.ya_recibida) {
@@ -80,9 +87,16 @@ export function ComprasProveedorList({
         toast.success(`Compra ${compra.folio} recibida en inventario.`);
       }
       setCompraAConfirmar(null);
+      setConfirmoDoble(false);
     } catch (err: any) {
-      const msg = err?.message || 'No se pudo recibir la compra. Inténtalo de nuevo.';
-      setErrorRecepcion({ compraId: compra.id, folio: compra.folio, mensaje: msg });
+      const esDoble =
+        err?.codigo === 'factura_ya_recibida' ||
+        (err?.status === 409 && /factura en almac/i.test(String(err?.message || '')));
+      const msg = err?.detalle || err?.message || 'No se pudo recibir la compra. Inténtalo de nuevo.';
+      setErrorRecepcion({ compraId: compra.id, folio: compra.folio, mensaje: msg, esDobleConteo: esDoble });
+      if (esDoble) {
+        setConfirmoDoble(false);
+      }
       toast.error(msg);
     } finally {
       setRecibiendoId(null);
@@ -220,6 +234,7 @@ export function ComprasProveedorList({
                       disabled={Boolean(recibiendoId)}
                       onClick={() => {
                         setErrorRecepcion(null);
+                        setConfirmoDoble(false);
                         setCompraAConfirmar(c);
                       }}
                       className="bg-primary text-primary-foreground hover:bg-primary/90 h-8"
@@ -250,6 +265,8 @@ export function ComprasProveedorList({
         onOpenChange={(open) => {
           if (!open && !recibiendoId) {
             setCompraAConfirmar(null);
+            setErrorRecepcion(null);
+            setConfirmoDoble(false);
           }
         }}
       >
@@ -280,13 +297,29 @@ export function ComprasProveedorList({
           {errorRecepcion && compraAConfirmar && errorRecepcion.compraId === compraAConfirmar.id && (
             <div
               role="alert"
-              className="rounded-md border border-destructive/40 bg-destructive/10 p-3 flex items-start gap-2 text-xs text-destructive"
+              className="rounded-md border border-destructive/40 bg-destructive/10 p-3 space-y-2.5 text-xs text-destructive"
             >
-              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-              <div className="space-y-1">
-                <div className="font-semibold">No se pudo completar la recepción</div>
-                <div className="text-foreground">{errorRecepcion.mensaje}</div>
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <div className="font-semibold">
+                    {errorRecepcion.esDobleConteo
+                      ? 'Posible doble conteo de inventario'
+                      : 'No se pudo completar la recepción'}
+                  </div>
+                  <div className="text-foreground">{errorRecepcion.mensaje}</div>
+                </div>
               </div>
+              {errorRecepcion.esDobleConteo && (
+                <label className="flex items-center gap-2 cursor-pointer text-foreground pt-1 border-t border-destructive/20">
+                  <Checkbox
+                    checked={confirmoDoble}
+                    onCheckedChange={(v) => setConfirmoDoble(Boolean(v))}
+                    disabled={Boolean(recibiendoId)}
+                  />
+                  <span>Confirmo que no es la misma mercancía</span>
+                </label>
+              )}
             </div>
           )}
 
@@ -294,34 +327,50 @@ export function ComprasProveedorList({
             <Button
               variant="outline"
               disabled={Boolean(recibiendoId)}
-              onClick={() => setCompraAConfirmar(null)}
+              onClick={() => {
+                setCompraAConfirmar(null);
+                setErrorRecepcion(null);
+                setConfirmoDoble(false);
+              }}
             >
               Cancelar
             </Button>
-            {compraAConfirmar && (
-              <Button
-                disabled={Boolean(recibiendoId)}
-                onClick={() => ejecutarRecepcion(compraAConfirmar)}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 gap-1.5"
-              >
-                {recibiendoId === compraAConfirmar.id ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Recibiendo...
-                  </>
-                ) : errorRecepcion && errorRecepcion.compraId === compraAConfirmar.id ? (
-                  <>
-                    <RefreshCw className="h-4 w-4" />
-                    Reintentar
-                  </>
-                ) : (
-                  <>
-                    <Check className="h-4 w-4" />
-                    Confirmar recepción
-                  </>
-                )}
-              </Button>
-            )}
+            {compraAConfirmar && (() => {
+              const requiereDoble = Boolean(
+                errorRecepcion &&
+                  errorRecepcion.compraId === compraAConfirmar.id &&
+                  errorRecepcion.esDobleConteo,
+              );
+              const esReintento = Boolean(
+                errorRecepcion &&
+                  errorRecepcion.compraId === compraAConfirmar.id &&
+                  !errorRecepcion.esDobleConteo,
+              );
+              return (
+                <Button
+                  disabled={Boolean(recibiendoId) || (requiereDoble && !confirmoDoble)}
+                  onClick={() => ejecutarRecepcion(compraAConfirmar, requiereDoble && confirmoDoble)}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 gap-1.5"
+                >
+                  {recibiendoId === compraAConfirmar.id ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Recibiendo...
+                    </>
+                  ) : esReintento ? (
+                    <>
+                      <RefreshCw className="h-4 w-4" />
+                      Reintentar
+                    </>
+                  ) : (
+                    <>
+                      <Check className="h-4 w-4" />
+                      Confirmar recepción
+                    </>
+                  )}
+                </Button>
+              );
+            })()}
           </DialogFooter>
         </DialogContent>
       </Dialog>

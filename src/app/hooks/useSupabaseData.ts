@@ -20,7 +20,12 @@ const parseResponse = async (label: string, response: Response) => {
     throw new Error(`${label}: respuesta no JSON (${text.slice(0, 120) || 'vacía'})`);
   }
   if (!response.ok) {
-    throw new Error(`${label}: ${data?.error || data?.message || `Error ${response.status}`}`);
+    const detalle = data?.error || data?.message || `Error ${response.status}`;
+    const err: any = new Error(`${label}: ${detalle}`);
+    err.status = response.status;
+    err.codigo = data?.codigo;
+    err.detalle = detalle;
+    throw err;
   }
   return data;
 };

@@ -236,5 +236,113 @@ BEGIN
     v_edit_ok, 'edit_ok=' || v_edit_ok);
 END $$;
 
+-- G11: Doble conteo inverso (factura -> compra) y función única recibir_compra_proveedor
+INSERT INTO rg SELECT 'G11a existe una sola funcion recibir_compra_proveedor en public',
+  (SELECT count(*) FROM pg_proc WHERE pronamespace = 'public'::regnamespace AND proname = 'recibir_compra_proveedor') = 1,
+  'count=' || (SELECT count(*) FROM pg_proc WHERE pronamespace = 'public'::regnamespace AND proname = 'recibir_compra_proveedor');
+
+DO $$
+DECLARE
+  v_org uuid := '00000000-0000-0000-0000-000000000001';
+  v_prov uuid := '11111111-1111-4111-8111-111111111771';
+  v_prov2 uuid := '11111111-1111-4111-8111-111111111772';
+  v_fid_b uuid := 'f1100000-0000-4000-8000-000000000001';
+  v_pid_b uuid := 'f1110000-0000-4000-8000-000000000001';
+  v_fid_a uuid := 'f1100000-0000-4000-8000-000000000002';
+  v_pid_a uuid := 'f1110000-0000-4000-8000-000000000002';
+  v_cid_m60 uuid := 'c1100000-0000-4000-8000-000000000001';
+  v_cid_p60 uuid := 'c1100000-0000-4000-8000-000000000002';
+  v_cid_m61 uuid := 'c1100000-0000-4000-8000-000000000003';
+  v_cid_p61 uuid := 'c1100000-0000-4000-8000-000000000004';
+  v_cid_opv uuid := 'c1100000-0000-4000-8000-000000000005';
+  v_cid_opd uuid := 'c1100000-0000-4000-8000-000000000006';
+  v_cid_lig uuid := 'c1100000-0000-4000-8000-000000000007';
+  v_rid_b uuid;
+  v_msg text;
+  v_ok boolean;
+BEGIN
+  INSERT INTO proveedores (id, organizacion_id, nombre, rfc, razon_social, moneda_default) VALUES
+    (v_prov, v_org, 'Prov Inv 1', 'PI1010101AAA', 'Prov Inv 1 SA', 'MXN'),
+    (v_prov2, v_org, 'Prov Inv 2', 'PI2010101AAA', 'Prov Inv 2 SA', 'MXN')
+  ON CONFLICT (id) DO NOTHING;
+
+  INSERT INTO productos (id, organizacion_id, nombre, descripcion, unidad, tipo, precio_unitario, costo, stock_actual, stock_reservado, stock_minimo) VALUES
+    ('prod-g11-1', v_org, 'Prod G11 1', 'd', 'pz', 'bien', 10, 5, 0, 0, 0),
+    ('prod-g11-2', v_org, 'Prod G11 2', 'd', 'pz', 'bien', 10, 5, 0, 0, 0)
+  ON CONFLICT (id) DO UPDATE SET stock_actual = 0;
+
+  -- Factura base fecha 2026-07-01 recibida en almacén con prod-g11-1
+  INSERT INTO facturas_proveedor (id, organizacion_id, proveedor_id, folio, uuid_fiscal, fecha_emision, fecha_vencimiento, moneda, tipo_cambio_emision, importe, estado, concepto)
+  VALUES (v_fid_b, v_org, v_prov, 'FAC-INV-B', 'UUID-INV-B', '2026-07-01', '2026-07-31', 'MXN', 1, 100, 'abierta', 'c');
+  INSERT INTO factura_proveedor_partidas (id, organizacion_id, factura_id, orden, tipo, descripcion, cantidad, clave_unidad, precio_unitario, importe)
+  VALUES (v_pid_b, v_org, v_fid_b, 1, 'concepto', 'Prod G11 1', 10, 'H87', 10, 100);
+
+  v_rid_b := (public.recibir_factura_almacen(v_org, NULL, v_fid_b,
+    jsonb_build_array(jsonb_build_object('partida_id', v_pid_b, 'producto_id', 'prod-g11-1', 'guardar_alias', false)),
+    false, NULL)->>'recepcion_id')::uuid;
+
+  -- Compras para bordes -60, +60, -61, +61, otro proveedor, otro producto
+  INSERT INTO compras_proveedor (id, organizacion_id, folio, proveedor_id, estado, fecha) VALUES
+    (v_cid_m60, v_org, 'OC-INV-M60', v_prov,  'Pendiente', '2026-05-02'::timestamptz),
+    (v_cid_p60, v_org, 'OC-INV-P60', v_prov,  'Pendiente', '2026-08-30'::timestamptz),
+    (v_cid_m61, v_org, 'OC-INV-M61', v_prov,  'Pendiente', '2026-05-01'::timestamptz),
+    (v_cid_p61, v_org, 'OC-INV-P61', v_prov,  'Pendiente', '2026-08-31'::timestamptz),
+    (v_cid_opv, v_org, 'OC-INV-OPV', v_prov2, 'Pendiente', '2026-07-01'::timestamptz),
+    (v_cid_opd, v_org, 'OC-INV-OPD', v_prov,  'Pendiente', '2026-07-01'::timestamptz),
+    (v_cid_lig, v_org, 'OC-INV-LIG', v_prov2, 'Pendiente', '2026-01-01'::timestamptz);
+
+  INSERT INTO compra_items (compra_id, material_id, cantidad, costo_unitario) VALUES
+    (v_cid_m60, 'prod-g11-1', 5, 10),
+    (v_cid_p60, 'prod-g11-1', 5, 10),
+    (v_cid_m61, 'prod-g11-1', 2, 10),
+    (v_cid_p61, 'prod-g11-1', 2, 10),
+    (v_cid_opv, 'prod-g11-1', 2, 10),
+    (v_cid_opd, 'prod-g11-2', 2, 10),
+    (v_cid_lig, 'prod-g11-2', 3, 10);
+
+  -- G11b: borde -60d bloquea (llamada con 3 params compatibilidad API previo)
+  v_msg := '';
+  BEGIN PERFORM public.recibir_compra_proveedor(v_org, NULL, v_cid_m60); EXCEPTION WHEN OTHERS THEN v_msg := SQLERRM; END;
+  INSERT INTO rg VALUES ('G11b inverso (b) borde -60d bloquea con 3 params', v_msg LIKE 'factura_ya_recibida:%FAC-INV-B%', v_msg);
+
+  -- G11c: borde +60d bloquea
+  v_msg := '';
+  BEGIN PERFORM public.recibir_compra_proveedor(v_org, NULL, v_cid_p60, false); EXCEPTION WHEN OTHERS THEN v_msg := SQLERRM; END;
+  INSERT INTO rg VALUES ('G11c inverso (b) borde +60d bloquea', v_msg LIKE 'factura_ya_recibida:%FAC-INV-B%', v_msg);
+
+  -- G11d: bordes -61d y +61d NO bloquean
+  PERFORM public.recibir_compra_proveedor(v_org, NULL, v_cid_m61);
+  PERFORM public.recibir_compra_proveedor(v_org, NULL, v_cid_p61);
+  INSERT INTO rg VALUES ('G11d inverso (b) bordes -61d y +61d no bloquean', true, 'ok');
+
+  -- G11e: otro proveedor y producto distinto NO bloquean
+  PERFORM public.recibir_compra_proveedor(v_org, NULL, v_cid_opv);
+  PERFORM public.recibir_compra_proveedor(v_org, NULL, v_cid_opd);
+  INSERT INTO rg VALUES ('G11e inverso otro proveedor y otro producto no bloquean', true, 'ok');
+
+  -- G11f: caso (a) ligada directamente por compra_id bloquea incluso fuera de 60d y otro producto
+  INSERT INTO facturas_proveedor (id, organizacion_id, proveedor_id, compra_id, folio, uuid_fiscal, fecha_emision, fecha_vencimiento, moneda, tipo_cambio_emision, importe, estado, concepto)
+  VALUES (v_fid_a, v_org, v_prov, v_cid_lig, 'FAC-INV-LIG', 'UUID-INV-LIG', '2026-12-15', '2027-01-14', 'MXN', 1, 50, 'abierta', 'c');
+  INSERT INTO factura_proveedor_partidas (id, organizacion_id, factura_id, orden, tipo, descripcion, cantidad, clave_unidad, precio_unitario, importe)
+  VALUES (v_pid_a, v_org, v_fid_a, 1, 'concepto', 'Prod G11 1', 1, 'H87', 50, 50);
+  PERFORM public.recibir_factura_almacen(v_org, NULL, v_fid_a,
+    jsonb_build_array(jsonb_build_object('partida_id', v_pid_a, 'producto_id', 'prod-g11-1', 'guardar_alias', false)),
+    false, NULL);
+  v_msg := '';
+  BEGIN PERFORM public.recibir_compra_proveedor(v_org, NULL, v_cid_lig, false); EXCEPTION WHEN OTHERS THEN v_msg := SQLERRM; END;
+  INSERT INTO rg VALUES ('G11f inverso (a) compra_id ligada bloquea', v_msg LIKE 'factura_ya_recibida:%FAC-INV-LIG%', v_msg);
+
+  -- G11g: con p_confirmo_doble = true sí recibe
+  PERFORM public.recibir_compra_proveedor(v_org, NULL, v_cid_m60, true);
+  v_ok := (SELECT estado FROM compras_proveedor WHERE id = v_cid_m60) = 'Recibida';
+  INSERT INTO rg VALUES ('G11g inverso con p_confirmo_doble=true recibe', v_ok, 'ok=' || v_ok);
+
+  -- G11h: tras anular la recepción FAC-INV-B, ya NO bloquea v_cid_p60
+  PERFORM public.anular_recepcion_almacen(v_org, NULL, v_rid_b, 'prueba G11h');
+  PERFORM public.recibir_compra_proveedor(v_org, NULL, v_cid_p60, false);
+  v_ok := (SELECT estado FROM compras_proveedor WHERE id = v_cid_p60) = 'Recibida';
+  INSERT INTO rg VALUES ('G11h recepcion anulada no bloquea compra', v_ok, 'ok=' || v_ok);
+END $$;
+
 SELECT caso, CASE WHEN ok THEN 'PASA' ELSE 'FALLA' END estado, detalle FROM rg ORDER BY caso;
 ROLLBACK;

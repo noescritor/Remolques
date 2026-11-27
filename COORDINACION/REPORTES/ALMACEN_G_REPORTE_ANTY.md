@@ -174,4 +174,30 @@ node scripts/dev/test_almacen_g_browser.cjs
   - Compra fraccionaria tras G (`recibir_compra_proveedor` con `2.5 + 0.1` sobre stock inicial `1.2500`): `stock_actual = 3.8500` exacto, `2` movimientos `Entrada` sumando `2.6000`.
   - `docs/almacen/verificacion_G.sql`: **23/23 `PASA`**.
 
+---
+
+## 7. Ronda 4 — Cierre de doble conteo en sentido inverso (factura → compra, `ALMACEN_G_REVISION_CLAUDE_R3.md`)
+
+- **SQL (`supabase/migrations/20261126_01_almacen_g.sql`, sin modificar `20261125_02_compras_recepcion.sql`):**
+  - `DROP FUNCTION IF EXISTS public.recibir_compra_proveedor(UUID, UUID, UUID);` + nueva `public.recibir_compra_proveedor(p_org UUID, p_usuario UUID, p_compra_id UUID, p_confirmo_doble BOOLEAN DEFAULT false) RETURNS JSONB` (`SECURITY DEFINER`, `SET search_path = public, pg_temp`, `EXECUTE` solo para `service_role`).
+  - Existe **una sola función** `recibir_compra_proveedor` en `public` (comprobado en `G11a`), compatible con llamadas de 3 parámetros del API previo gracias al `DEFAULT false`.
+  - La idempotencia (`ya_recibida`) se evalúa antes; el guardián inverso corre **después del bloqueo `FOR UPDATE` de `productos`** (mismo orden determinista `ORDER BY p.id` que `recibir_factura_almacen`).
+  - Si `p_confirmo_doble = false`, rechaza con `factura_ya_recibida: ... (folios)` cuando existe una recepción activa (`ar.estado = 'recibida'` con líneas `arl.activa = true`) de la misma organización: (a) ligada a la compra (`ar.compra_id` o `fp.compra_id`), o (b) mismo proveedor + `fecha_emision` dentro de `±60` días de la compra + al menos un producto en común.
+- **API (`motor/compras_recepcion.ts` + `local_supabase_bridge.cjs`):**
+  - `PUT /compras-proveedor/:id` acepta `confirmo_doble` (solo booleano `true`; no forma parte de `CAMPOS_EDITABLES_COMPRA`) y lo pasa como `p_confirmo_doble` a la RPC.
+  - `mapearErrorRpcCompra` mapea `factura_ya_recibida` a **`409`** (`codigo: "factura_ya_recibida"`) conservando los folios en el mensaje.
+- **Pantalla (`useSupabaseData.ts`, `App.tsx`, `ComprasProveedorList.tsx`):**
+  - `parseResponse` adjunta `status`, `codigo` y `detalle` al `Error`.
+  - Ante `409` `factura_ya_recibida`, el diálogo de confirmación muestra el aviso con ícono `AlertTriangle`, texto con los folios y la casilla `"Confirmo que no es la misma mercancía"`; el botón de confirmar queda deshabilitado hasta marcarla y Cancelar no cambia nada.
+- **Verificación ejecutada:**
+  - Migraciones en orden `F → compras → G ×2` (`ON_ERROR_STOP=1`): **0 errores**.
+  - `docs/almacen/verificacion_G.sql`: **31/31 `PASA`** (incluyendo `G11a` función única, `G11b/c` bordes `-60/+60d` y llamada con 3 params, `G11d` `-61/+61d`, `G11e` otro proveedor/producto, `G11f` compra ligada, `G11g` confirmación `true`, `G11h` recepción anulada no bloquea).
+  - `arnes_revision_g/rev_g_inverso.sql`: bloqueado con `factura_ya_recibida: ... (F-INV)` y `stock_actual = 10.0000` (antes quedaba en 20).
+  - `arnes_revision_compras/rev_compras.sql`: 18/18 aplicables `PASA` con la función nueva (C8 solo aplica cuando las columnas aún son `INT`, antes de G).
+  - **Concurrencia real en 2 sesiones PG 17 (factura vs compra simultáneas, ambos órdenes):**
+    - `ORDEN_A_FAC_Y_COMP`: `["OK_FAC", "ERR_COMP:factura_ya_recibida"]`, `stock = 10.0000`.
+    - `ORDEN_B_COMP_Y_FAC`: `["OK_COMP", "ERR_FAC:compra_ya_recibida"]`, `stock = 10.0000`.
+  - Pruebas Deno + mutaciones: `compras_recepcion.test.ts` + `rev_compras_extra.test.ts` (**11/11** incluyendo `R-C7`); `mutar_compras.cjs` (`EXTRA=1`): **28/28**; `test_compras_recepcion_mutaciones.cjs`: **15/15**.
+
+
 

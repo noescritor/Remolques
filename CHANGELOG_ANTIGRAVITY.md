@@ -3,6 +3,22 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-26 - Bloque G (Ronda 4: doble conteo inverso factura → compra)
+**Herramienta:** Antigravity  
+**Tipo:** fix (redefinición de `recibir_compra_proveedor(uuid, uuid, uuid, boolean DEFAULT false)` en `20261126_01_almacen_g.sql` tras `DROP FUNCTION` de la firma de 3 args para evitar sobrecarga ambigua; guardián inverso `factura_ya_recibida` tras `FOR UPDATE` de productos para recepciones activas ligadas (a) o mismo proveedor ±60d con producto compartido (b); mapeo `409` con folios y `confirmo_doble` booleano estricto en `motor/compras_recepcion.ts`; aviso con ícono, folios y casilla `"Confirmo que no es la misma mercancía"` en `ComprasProveedorList.tsx`; `verificacion_G.sql` 31/31 `PASA`, `rev_g_inverso.sql` bloqueado con stock=10, concurrencia 2 sesiones en ambos órdenes OK, `mutar_compras.cjs` 28/28)  
+**Rama:** `almacen-g-2026-11-24`  
+**Referencia auditoría:** `PROMPT_ANTY_G_DOBLE_CONTEO_2026-11-26.md`, `COORDINACION/REVISIONES/ALMACEN_G_REVISION_CLAUDE_R3.md`, `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261126_01_almacen_g.sql`, `docs/almacen/verificacion_G.sql`
+- `supabase/functions/make-server-feea4382/motor/compras_recepcion.ts`, `motor/rev_compras_extra.test.ts`
+- `scripts/dev/local_supabase_bridge.cjs`
+- `src/app/hooks/useSupabaseData.ts`, `src/app/App.tsx`, `src/app/components/ComprasProveedor/ComprasProveedorList.tsx`
+- `COORDINACION/REPORTES/ALMACEN_G_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Aprobar merge de `almacen-g-2026-11-24` a `main`.
+- Ejecutar `supabase/migrations/20261126_01_almacen_g.sql` en el SQL Editor de Supabase (F y compras ya están aplicadas).
+- Rebuild de `remolques-api` y después `remolques-web` en EasyPanel.
+
 ## 2026-11-26 - Bloque G integrado sobre `main` (`f9e4912`) + cierre de R1 (compras)
 **Herramienta:** Antigravity  
 **Tipo:** chore / fix (merge de `main` `f9e4912` en `almacen-g-2026-11-24` resolviendo únicamente `CHANGELOG_ANTIGRAVITY.md` y aplicando `normalizarProductoNumerico` al refresco de `productos` tras recibir compra; commit aparte `4ed3e51` cerrando R1 de `COMPRAS_RECEPCION_REVISION_CLAUDE_R2.md` con guarda `.eq("estado", prevCompra.estado)` aun cuando se repite el mismo estado + prueba `R-C6`; verificación PG 17 en orden `F → compras → G ×2` sin errores y compra fraccionaria `2.5 + 0.1` dejando `stock_actual = 3.8500` exacto)  

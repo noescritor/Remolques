@@ -255,3 +255,47 @@ Deno.test("R-C6 (R1): repetir { estado: 'Pendiente' } mientras otra sesión la r
   const updLog = db.updatedLog.find((u) => u.table === "compras_proveedor");
   assertEquals(updLog?.filters.estado, "Pendiente");
 });
+
+Deno.test("R-C7 (G inverso): factura_ya_recibida -> 409 con folios, confirmo_doble solo booleano true", async () => {
+  // 1. RPC rechaza con factura_ya_recibida -> 409 con código y folios preservados
+  const tablasErr: Record<string, Array<Record<string, unknown>>> = {
+    compras_proveedor: [{ id: CID, organizacion_id: ORG, folio: "OC-00001", estado: "Pendiente", cotizacion_id: null }],
+  };
+  let seenConfirmo: unknown = "unset";
+  const dbErr = crearMockDb(tablasErr, {
+    onRpc: (_fn, args) => {
+      seenConfirmo = args.p_confirmo_doble;
+      return {
+        data: null,
+        error: { message: "factura_ya_recibida: Esta mercancía ya fue recibida por factura en almacén (F-100, F-101). Confirma que no es la misma mercancía" },
+      };
+    },
+  });
+
+  // confirmo_doble no booleano ("true") debe enviarse como false y no entrar a updateData
+  const err = await assertRejects(
+    () => actualizarCompraProveedorMotor(dbErr as any, dbErr as any, ORG, "u-1", CID, { estado: "Recibida", confirmo_doble: "true" }),
+    ComprasRecepcionError,
+    "F-100, F-101",
+  );
+  assertEquals(err.status, 409);
+  assertEquals(err.codigo, "factura_ya_recibida");
+  assertEquals(seenConfirmo, false);
+  assertEquals(dbErr.updatedLog.length, 0);
+
+  // 2. Con confirmo_doble: true pasa p_confirmo_doble: true a la RPC
+  const tablasOk: Record<string, Array<Record<string, unknown>>> = {
+    compras_proveedor: [{ id: CID, organizacion_id: ORG, folio: "OC-00001", estado: "Pendiente", cotizacion_id: null }],
+  };
+  let seenOk: unknown = "unset";
+  const dbOk = crearMockDb(tablasOk, {
+    onRpc: (_fn, args) => {
+      seenOk = args.p_confirmo_doble;
+      tablasOk.compras_proveedor[0].estado = "Recibida";
+      return { data: { ya_recibida: false, partidas: 1, movimientos: [] }, error: null };
+    },
+  });
+  const res = await actualizarCompraProveedorMotor(dbOk as any, dbOk as any, ORG, "u-1", CID, { estado: "Recibida", confirmo_doble: true });
+  assertEquals(seenOk, true);
+  assertEquals(res.estado, "Recibida");
+});
