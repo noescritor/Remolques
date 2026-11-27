@@ -64,6 +64,14 @@ import {
   sembrarTableroMotor,
 } from "./motor/tablero_produccion.ts";
 import {
+  EquiposGestionError,
+  cancelarOrdenTrabajoMotor,
+  reactivarOrdenTrabajoMotor,
+  cambiarClienteOrdenTrabajoMotor,
+  listarOrdenesTrabajoMotor,
+  listarCambiosOrdenMotor,
+} from "./motor/equipos_gestion.ts";
+import {
   CalidadError,
   listarPlantillasCalidad,
   obtenerPlantillaCalidad,
@@ -3677,13 +3685,10 @@ app.get("/ordenes-trabajo", async (c) => {
   try {
     const supabase = getServiceClient();
     const orgId = c.get("organizacionId");
-    const { data, error } = await supabase
-      .from("ordenes_trabajo")
-      .select("*, cliente:clientes(*), cotizacion:cotizaciones(*), linea:lineas_producto(*), fase:fases_produccion(*)")
-      .eq("organizacion_id", orgId)
-      .order("created_at", { ascending: false });
-    if (error) throw error;
-    return c.json(data || []);
+    const canceladasParam = (c.req.query("canceladas") || "").toLowerCase();
+    const soloCanceladas = canceladasParam === "true" || canceladasParam === "1";
+    const data = await listarOrdenesTrabajoMotor(supabase, orgId, { soloCanceladas });
+    return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error fetching ordenes_trabajo:", error);
     return c.json({ error: error.message }, 500);
@@ -3705,8 +3710,108 @@ app.put("/ordenes-trabajo/:id", async (c) => {
     return c.json(data);
   } catch (error: any) {
     console.error("[make-server] Error updating orden_trabajo:", error);
-    const status = error.status || (error.message.includes("no encontrada") ? 404 : 500);
-    return c.json({ error: error.message }, status);
+    const status = error.status || (error.message?.includes("no encontrada") ? 404 : 500);
+    return c.json({ error: error.message, ...(error.codigo ? { codigo: error.codigo } : {}) }, status);
+  }
+});
+
+function manejarErrorEquiposGestion(c: any, error: any) {
+  if (error instanceof EquiposGestionError) {
+    return c.json(
+      {
+        error: error.message,
+        codigo: error.codigo,
+        ...(error.detalle ? { detalle: error.detalle } : {}),
+      },
+      error.status as any
+    );
+  }
+  const { status, body } = formatearErrorRespuesta(error);
+  return c.json(body, status as any);
+}
+
+app.post("/ordenes-trabajo/:id/cancelar", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    void supabase;
+    const serviceClient = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const user = c.get("user") as any;
+    const id = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    const resultado = await cancelarOrdenTrabajoMotor(serviceClient, {
+      orgId,
+      usuarioId: user?.id || null,
+      ordenId: id,
+      motivo: body?.motivo ?? "",
+      confirmoMaterialEntregado: Boolean(body?.confirmo_material_entregado),
+    });
+    return c.json(resultado);
+  } catch (error: any) {
+    console.error("[make-server] Error cancelando orden_trabajo:", error);
+    return manejarErrorEquiposGestion(c, error);
+  }
+});
+
+app.post("/ordenes-trabajo/:id/reactivar", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    void supabase;
+    const serviceClient = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const user = c.get("user") as any;
+    const id = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    const resultado = await reactivarOrdenTrabajoMotor(serviceClient, {
+      orgId,
+      usuarioId: user?.id || null,
+      ordenId: id,
+      motivo: body?.motivo ?? null,
+    });
+    return c.json(resultado);
+  } catch (error: any) {
+    console.error("[make-server] Error reactivando orden_trabajo:", error);
+    return manejarErrorEquiposGestion(c, error);
+  }
+});
+
+app.put("/ordenes-trabajo/:id/cliente", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    void supabase;
+    const serviceClient = getServiceClient();
+    const orgId = c.get("organizacionId");
+    const user = c.get("user") as any;
+    const id = c.req.param("id");
+    const body = await c.req.json().catch(() => ({}));
+
+    const resultado = await cambiarClienteOrdenTrabajoMotor(serviceClient, {
+      orgId,
+      usuarioId: user?.id || null,
+      ordenId: id,
+      clienteId: body?.cliente_id ?? null,
+      etiqueta: body?.etiqueta ?? null,
+      motivo: body?.motivo ?? null,
+    });
+    return c.json(resultado);
+  } catch (error: any) {
+    console.error("[make-server] Error cambiando cliente de orden_trabajo:", error);
+    return manejarErrorEquiposGestion(c, error);
+  }
+});
+
+app.get("/ordenes-trabajo/:id/cambios", async (c) => {
+  try {
+    const supabase = c.get("supabase") as any;
+    const orgId = c.get("organizacionId");
+    const id = c.req.param("id");
+    const data = await listarCambiosOrdenMotor(supabase, orgId, id);
+    return c.json(data);
+  } catch (error: any) {
+    console.error("[make-server] Error listando cambios de orden_trabajo:", error);
+    return manejarErrorEquiposGestion(c, error);
   }
 });
 
@@ -3746,7 +3851,8 @@ function manejarErrorDespiece(c: any, error: any) {
   if (
     msg.includes("excede_requerido") ||
     msg.includes("excede_entregado") ||
-    msg.includes("linea_con_historial")
+    msg.includes("linea_con_historial") ||
+    msg.includes("orden_cancelada")
   ) {
     const limpio = msg.split(":").slice(1).join(":").trim() || msg;
     return c.json({ error: limpio, codigo: msg.split(":")[0].trim() }, 409);

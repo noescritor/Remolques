@@ -82,6 +82,7 @@ export function NuevoEquipoModal({
   const [modeloPersonalizado, setModeloPersonalizado] = useState<string>('');
   const [clienteId, setClienteId] = useState<string>('ninguno');
   const [etiqueta, setEtiqueta] = useState<string>('');
+  const [fechaPedido, setFechaPedido] = useState<string>('');
   const [fechaCompromiso, setFechaCompromiso] = useState<string>('');
   const [observaciones, setObservaciones] = useState<string>('');
   const [guardando, setGuardando] = useState<boolean>(false);
@@ -135,6 +136,7 @@ export function NuevoEquipoModal({
       setModeloPersonalizado('');
       setClienteId('ninguno');
       setEtiqueta('');
+      setFechaPedido('');
       setFechaCompromiso('');
       setObservaciones('');
       setBusquedaCliente('');
@@ -203,6 +205,7 @@ export function NuevoEquipoModal({
           modelo: modeloFinal,
           etiqueta: etiquetaFinal || undefined,
           cliente_id: clienteId !== 'ninguno' ? clienteId : null,
+          fecha_pedido: fechaPedido || null,
           fecha_compromiso: fechaCompromiso || null,
           caracteristicas: observaciones.trim()
             ? { observaciones: observaciones.trim() }
@@ -430,15 +433,26 @@ export function NuevoEquipoModal({
             />
           </div>
 
-          {/* Fecha compromiso */}
-          <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Fecha de compromiso (opcional)</Label>
-            <Input
-              type="date"
-              value={fechaCompromiso}
-              onChange={(e) => setFechaCompromiso(e.target.value)}
-              className="h-8 text-xs"
-            />
+          {/* Fechas de pedido y compromiso */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Fecha de pedido (opcional)</Label>
+              <Input
+                type="date"
+                value={fechaPedido}
+                onChange={(e) => setFechaPedido(e.target.value)}
+                className="h-8 text-xs"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Fecha de compromiso (opcional)</Label>
+              <Input
+                type="date"
+                value={fechaCompromiso}
+                onChange={(e) => setFechaCompromiso(e.target.value)}
+                className="h-8 text-xs"
+              />
+            </div>
           </div>
 
           {/* Observaciones */}

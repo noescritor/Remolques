@@ -31,6 +31,7 @@ export interface FilaMatriz {
   tipo_equipo: string | null;
   origen: 'cotizacion' | 'manual';
   fecha_compromiso: string | null;
+  fecha_pedido?: string | null;
   fecha_inicio: string | null;
   material_faltante: string | null;
   estado: string;
@@ -141,6 +142,7 @@ export async function crearOrdenProduccion(
     etiqueta?: string;
     cliente_id?: string | null;
     fecha_compromiso?: string | null;
+    fecha_pedido?: string | null;
     caracteristicas?: any;
   },
   tokenOrClient?: string | any
@@ -197,6 +199,7 @@ export async function actualizarPlaneacionOrden(
   ordenId: string,
   payload: {
     fecha_compromiso?: string | null;
+    fecha_pedido?: string | null;
     etiqueta?: string | null;
     material_faltante?: string | null;
   },

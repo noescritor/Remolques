@@ -414,6 +414,11 @@ export interface OrdenTrabajo {
   fecha_inicio: string | null;
   fecha_fin: string | null;
   fecha_compromiso?: string | null;
+  fecha_pedido?: string | null;
+  cancelada_el?: string | null;
+  cancelada_por?: string | null;
+  cancelada_por_nombre?: string | null;
+  motivo_cancelacion?: string | null;
   created_at: string;
   
   // Kanban extra fields

@@ -14,6 +14,8 @@ export interface ResultadoGenerarOrdenes {
   ordenes: any[];
   creadas: number;
   ya_existian: boolean;
+  canceladas_existentes?: number;
+  mensaje?: string;
   advertenciaKeywords?: boolean;
   advertenciaSinLinea?: boolean;
 }
@@ -89,7 +91,7 @@ export async function generarOrdenesDeCotizacion(
     throw new Error("Aprueba la cotización para generar la orden de trabajo");
   }
 
-  // 3. Idempotencia: si ya existen órdenes, devolverlas
+  // 3. Idempotencia: si ya existen órdenes (incluidas canceladas), devolverlas sin crear duplicados
   const { data: existing } = await supabase
     .from("ordenes_trabajo")
     .select("*, cliente:clientes(*), cotizacion:cotizaciones(*), linea:lineas_producto(*), fase:fases_produccion(*)")
@@ -97,10 +99,18 @@ export async function generarOrdenesDeCotizacion(
     .eq("organizacion_id", orgId);
 
   if (existing && existing.length > 0) {
+    const canceladas = existing.filter((o: any) => Boolean(o.cancelada_el));
+    const activas = existing.filter((o: any) => !o.cancelada_el);
+    const mensaje =
+      canceladas.length > 0
+        ? `Esta cotización ya tiene ${existing.length} orden(es) generada(s) (${canceladas.length} cancelada(s)). Las órdenes canceladas cuentan como existentes y no se generan de nuevo; si deseas reactivarlas, usa Órdenes de trabajo → Ver cancelados.`
+        : `Esta cotización ya tiene ${activas.length} orden(es) de trabajo generada(s).`;
     return {
-      ordenes: existing,
+      ordenes: activas,
       creadas: 0,
       ya_existian: true,
+      canceladas_existentes: canceladas.length,
+      mensaje,
     };
   }
 
@@ -321,6 +331,7 @@ export const CAMPOS_PERMITIDOS_ORDEN_TRABAJO = [
   "estado",
   "fecha_inicio",
   "fecha_fin",
+  "fecha_pedido",
   "caracteristicas",
   "material_faltante",
 ] as const;
@@ -348,46 +359,84 @@ export async function actualizarOrdenTrabajoSegura(
   const { id, orgId, rawPayload } = params;
   const payload = sanitizarPayloadOrdenTrabajo(rawPayload);
 
-  // Si el payload incluye caracteristicas, fusionar en vez de sobreescribir
-  if (payload.caracteristicas) {
-    const { data: actual } = await supabase
-      .from("ordenes_trabajo")
-      .select("caracteristicas")
-      .eq("id", id)
-      .eq("organizacion_id", orgId)
-      .single();
-
-    if (actual && actual.caracteristicas) {
-      const carActuales = actual.caracteristicas || {};
-      const carNuevas = payload.caracteristicas || {};
-      const fichaActual = carActuales.ficha || {};
-      const fichaNueva = carNuevas.ficha || {};
-
-      payload.caracteristicas = {
-        ...carActuales,
-        ...carNuevas,
-        ...(fichaNueva || fichaActual
-          ? {
-              ficha: {
-                ...fichaActual,
-                ...fichaNueva,
-                cabecera: {
-                  ...(fichaActual.cabecera || {}),
-                  ...(fichaNueva.cabecera || {})
-                },
-                caracteristicas:
-                  fichaNueva.caracteristicas || fichaActual.caracteristicas,
-                accesorios_extra:
-                  fichaNueva.accesorios_extra || fichaActual.accesorios_extra,
-                nota:
-                  fichaNueva.nota !== undefined
-                    ? fichaNueva.nota
-                    : fichaActual.nota
-              }
-            }
-          : {})
-      };
+  if ("fecha_pedido" in payload) {
+    const rawFp = payload.fecha_pedido;
+    if (rawFp === "" || rawFp === null) {
+      payload.fecha_pedido = null;
+    } else {
+      const strFp = String(rawFp).trim();
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(strFp);
+      if (!m) {
+        const err = new Error("fecha_pedido debe tener formato YYYY-MM-DD");
+        (err as any).status = 400;
+        throw err;
+      }
+      const dt = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+      if (
+        dt.getUTCFullYear() !== Number(m[1]) ||
+        dt.getUTCMonth() !== Number(m[2]) - 1 ||
+        dt.getUTCDate() !== Number(m[3])
+      ) {
+        const err = new Error(`La fecha_pedido '${strFp}' no es una fecha válida`);
+        (err as any).status = 400;
+        throw err;
+      }
+      payload.fecha_pedido = strFp;
     }
+  }
+
+  // Verificar existencia y que no esté cancelada
+  const { data: actual } = await supabase
+    .from("ordenes_trabajo")
+    .select("id, cancelada_el, caracteristicas")
+    .eq("id", id)
+    .eq("organizacion_id", orgId)
+    .maybeSingle();
+
+  if (!actual) {
+    const err = new Error("Orden de trabajo no encontrada");
+    (err as any).status = 404;
+    throw err;
+  }
+
+  if (actual.cancelada_el) {
+    const err = new Error("No se puede modificar un equipo cancelado. Reactívalo primero.");
+    (err as any).status = 409;
+    (err as any).codigo = "orden_cancelada";
+    throw err;
+  }
+
+  // Si el payload incluye caracteristicas, fusionar en vez de sobreescribir
+  if (payload.caracteristicas && actual.caracteristicas) {
+    const carActuales = actual.caracteristicas || {};
+    const carNuevas = payload.caracteristicas || {};
+    const fichaActual = carActuales.ficha || {};
+    const fichaNueva = carNuevas.ficha || {};
+
+    payload.caracteristicas = {
+      ...carActuales,
+      ...carNuevas,
+      ...(fichaNueva || fichaActual
+        ? {
+            ficha: {
+              ...fichaActual,
+              ...fichaNueva,
+              cabecera: {
+                ...(fichaActual.cabecera || {}),
+                ...(fichaNueva.cabecera || {})
+              },
+              caracteristicas:
+                fichaNueva.caracteristicas || fichaActual.caracteristicas,
+              accesorios_extra:
+                fichaNueva.accesorios_extra || fichaActual.accesorios_extra,
+              nota:
+                fichaNueva.nota !== undefined
+                  ? fichaNueva.nota
+                  : fichaActual.nota
+            }
+          }
+        : {})
+    };
   }
 
   const { data, error } = await supabase
@@ -395,6 +444,7 @@ export async function actualizarOrdenTrabajoSegura(
     .update(payload)
     .eq("id", id)
     .eq("organizacion_id", orgId)
+    .is("cancelada_el", null)
     .select()
     .single();
 
@@ -426,6 +476,13 @@ export async function regenerarFichaDeOrden(
   if (errOrd || !orden) {
     const err = new Error("Orden de trabajo no encontrada");
     (err as any).status = 404;
+    throw err;
+  }
+
+  if (orden.cancelada_el) {
+    const err = new Error("No se puede regenerar la ficha de un equipo cancelado.");
+    (err as any).status = 409;
+    (err as any).codigo = "orden_cancelada";
     throw err;
   }
 

@@ -442,6 +442,7 @@ export async function obtenerPlanSemanal(
         id,
         nomenclatura_id,
         modelo,
+        cancelada_el,
         cliente:clientes(nombre_razon_social)
       ),
       operarios_asig:plan_tarea_operarios(
@@ -474,13 +475,15 @@ export async function obtenerPlanSemanal(
   const { data, error } = await query;
   if (error) throw error;
 
-  // Aplanar la estructura de operarios para la UI
-  const tareasFormateadas = (data || []).map((t: any) => ({
-    ...t,
-    operarios: (t.operarios_asig || [])
-      .map((oa: any) => oa.operario)
-      .filter(Boolean),
-  }));
+  // Excluir tareas ligadas a equipos cancelados y aplanar operarios para la UI
+  const tareasFormateadas = (data || [])
+    .filter((t: any) => !t.orden_trabajo?.cancelada_el)
+    .map((t: any) => ({
+      ...t,
+      operarios: (t.operarios_asig || [])
+        .map((oa: any) => oa.operario)
+        .filter(Boolean),
+    }));
 
   return tareasFormateadas;
 }
@@ -562,7 +565,12 @@ export async function guardarTarea(
   if (error) throw error;
   if (res && res.exito === false) {
     const err: any = new Error(res.mensaje || "Error al guardar la tarea");
-    err.status = res.error === "no_encontrada" ? 404 : 400;
+    err.status =
+      res.error === "no_encontrada"
+        ? 404
+        : res.error === "orden_cancelada"
+        ? 409
+        : 400;
     err.code = res.error;
     throw err;
   }
@@ -633,6 +641,17 @@ export async function cambiarEstadoTarea(
   });
 
   if (error) throw error;
+  if (res && res.exito === false) {
+    const err: any = new Error(res.mensaje || "Error al cambiar el estado de la tarea");
+    err.status =
+      res.error === "no_encontrada"
+        ? 404
+        : res.error === "orden_cancelada"
+        ? 409
+        : 400;
+    err.code = res.error;
+    throw err;
+  }
   return res;
 }
 
@@ -670,6 +689,17 @@ export async function eliminarTarea(
   });
 
   if (error) throw error;
+  if (res && res.exito === false) {
+    const err: any = new Error(res.mensaje || "Error al cambiar el estado de la tarea");
+    err.status =
+      res.error === "no_encontrada"
+        ? 404
+        : res.error === "orden_cancelada"
+        ? 409
+        : 400;
+    err.code = res.error;
+    throw err;
+  }
   return res;
 }
 
@@ -783,15 +813,15 @@ export async function obtenerTrazabilidadOrden(
   orgId: string,
   ordenId: string
 ) {
-  // Validar orden
+  // Validar orden (excluir canceladas)
   const { data: orden, error: errOrden } = await supabase
     .from("ordenes_trabajo")
-    .select("id, nomenclatura_id, modelo, cliente:clientes(nombre_razon_social)")
+    .select("id, nomenclatura_id, modelo, cancelada_el, cliente:clientes(nombre_razon_social)")
     .eq("id", ordenId)
     .eq("organizacion_id", orgId)
     .maybeSingle();
 
-  if (errOrden || !orden) {
+  if (errOrden || !orden || orden.cancelada_el) {
     const err: any = new Error("Orden de trabajo no encontrada");
     err.status = 404;
     throw err;
@@ -899,7 +929,7 @@ export async function obtenerTrazabilidadOperario(
         inicio_real,
         fin_real,
         frente:produccion_frentes(id, nombre, area:produccion_areas(nombre)),
-        orden_trabajo:ordenes_trabajo(id, nomenclatura_id, modelo),
+        orden_trabajo:ordenes_trabajo(id, nomenclatura_id, modelo, cancelada_el),
         materiales:plan_tarea_materiales(id, descripcion, cantidad, unidad)
       )
     `)
@@ -912,7 +942,9 @@ export async function obtenerTrazabilidadOperario(
   const { data, error } = await query;
   if (error) throw error;
 
-  const tareas = (data || []).map((row: any) => row.tarea).filter(Boolean);
+  const tareas = (data || [])
+    .map((row: any) => row.tarea)
+    .filter((t: any) => Boolean(t) && !t.orden_trabajo?.cancelada_el);
 
   return {
     operario,

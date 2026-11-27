@@ -52,6 +52,7 @@ interface OrdenTrabajoDetalleSheetProps {
     ordenId: string,
     cambios: {
       fecha_compromiso?: string | null;
+      fecha_pedido?: string | null;
       etiqueta?: string | null;
       material_faltante?: string | null;
     }
@@ -72,6 +73,7 @@ export function OrdenTrabajoDetalleSheet({
 
   // Estados locales para edición
   const [etiqueta, setEtiqueta] = useState('');
+  const [fechaPedido, setFechaPedido] = useState('');
   const [fechaCompromiso, setFechaCompromiso] = useState('');
   const [materialFaltante, setMaterialFaltante] = useState('');
   const [guardando, setGuardando] = useState(false);
@@ -83,6 +85,7 @@ export function OrdenTrabajoDetalleSheet({
   useEffect(() => {
     if (fila && open) {
       setEtiqueta(fila.etiqueta || '');
+      setFechaPedido(fila.fecha_pedido ? fila.fecha_pedido.slice(0, 10) : '');
       setFechaCompromiso(fila.fecha_compromiso ? fila.fecha_compromiso.slice(0, 10) : '');
       setMaterialFaltante(fila.material_faltante || '');
 
@@ -107,6 +110,7 @@ export function OrdenTrabajoDetalleSheet({
       setGuardando(true);
       await onGuardarPlaneacion(fila.orden_id, {
         etiqueta: etiqueta.trim() || fila.etiqueta,
+        fecha_pedido: fechaPedido || null,
         fecha_compromiso: fechaCompromiso || null,
         material_faltante: materialFaltante.trim() || null,
       });
@@ -225,6 +229,18 @@ export function OrdenTrabajoDetalleSheet({
                   {fila.avance?.terminadas ?? 0} de {fila.avance?.total ?? 12} fases
                 </span>
               </div>
+              <div>
+                <span className="text-muted-foreground block text-[11px]">Fecha de pedido</span>
+                <span className="font-semibold text-foreground">
+                  {fila.fecha_pedido ? formatearFechaCorta(fila.fecha_pedido) : 'Sin definir'}
+                </span>
+              </div>
+              <div>
+                <span className="text-muted-foreground block text-[11px]">Fecha compromiso</span>
+                <span className="font-semibold text-foreground">
+                  {fila.fecha_compromiso ? formatearFechaCorta(fila.fecha_compromiso) : 'Sin definir'}
+                </span>
+              </div>
             </div>
 
             {fila.tina && (
@@ -259,18 +275,32 @@ export function OrdenTrabajoDetalleSheet({
               />
             </div>
 
-            {/* Fecha compromiso */}
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5" />
-                Fecha de compromiso
-              </label>
-              <Input
-                type="date"
-                value={fechaCompromiso}
-                onChange={(e) => setFechaCompromiso(e.target.value)}
-                className="h-8 text-xs"
-              />
+            {/* Fechas de pedido y compromiso */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5" />
+                  Fecha de pedido
+                </label>
+                <Input
+                  type="date"
+                  value={fechaPedido}
+                  onChange={(e) => setFechaPedido(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5" />
+                  Fecha de compromiso
+                </label>
+                <Input
+                  type="date"
+                  value={fechaCompromiso}
+                  onChange={(e) => setFechaCompromiso(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
             </div>
 
             {/* Material faltante / Observaciones */}

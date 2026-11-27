@@ -97,6 +97,10 @@ function createMockSupabase(opciones: {
                   return match1 && match2;
                 });
                 return {
+                  maybeSingle: () => {
+                    if (!match) return Promise.resolve({ data: null, error: null });
+                    return Promise.resolve({ data: { ...match }, error: null });
+                  },
                   single: () => {
                     if (!match) return Promise.resolve({ data: null, error: { message: "No encontrada" } });
                     const cotData = opciones.cotizacionExiste === false ? null : {
@@ -149,29 +153,33 @@ function createMockSupabase(opciones: {
           }),
           update: (payload: any) => ({
             eq: (c1: string, v1: string) => ({
-              eq: (c2: string, v2: string) => ({
-                select: () => ({
-                  single: () => {
+              eq: (c2: string, v2: string) => {
+                const chainUpd: any = {
+                  is: (_c3: string, _v3: any) => chainUpd,
+                  select: () => ({
+                    single: () => {
+                      const idx = ordenesEnDb.findIndex((o) => {
+                        const match1 = c1 === "id" ? o.id === v1 : o[c1] === v1;
+                        const match2 = c2 === "organizacion_id" ? o.organizacion_id === v2 : o[c2] === v2;
+                        return match1 && match2;
+                      });
+                      if (idx === -1) return Promise.resolve({ data: null, error: { message: "No encontrada" } });
+                      ordenesEnDb[idx] = { ...ordenesEnDb[idx], ...payload };
+                      return Promise.resolve({ data: ordenesEnDb[idx], error: null });
+                    }
+                  }),
+                  then: (resolve: any) => {
                     const idx = ordenesEnDb.findIndex((o) => {
                       const match1 = c1 === "id" ? o.id === v1 : o[c1] === v1;
                       const match2 = c2 === "organizacion_id" ? o.organizacion_id === v2 : o[c2] === v2;
                       return match1 && match2;
                     });
-                    if (idx === -1) return Promise.resolve({ data: null, error: { message: "No encontrada" } });
-                    ordenesEnDb[idx] = { ...ordenesEnDb[idx], ...payload };
-                    return Promise.resolve({ data: ordenesEnDb[idx], error: null });
+                    if (idx >= 0) ordenesEnDb[idx] = { ...ordenesEnDb[idx], ...payload };
+                    return resolve({ data: ordenesEnDb[idx] || null, error: null });
                   }
-                }),
-                then: (resolve: any) => {
-                  const idx = ordenesEnDb.findIndex((o) => {
-                    const match1 = c1 === "id" ? o.id === v1 : o[c1] === v1;
-                    const match2 = c2 === "organizacion_id" ? o.organizacion_id === v2 : o[c2] === v2;
-                    return match1 && match2;
-                  });
-                  if (idx >= 0) ordenesEnDb[idx] = { ...ordenesEnDb[idx], ...payload };
-                  return resolve({ data: ordenesEnDb[idx] || null, error: null });
-                }
-              })
+                };
+                return chainUpd;
+              }
             })
           }),
           insert: (nuevas: any[]) => {
