@@ -32,7 +32,12 @@ const ToggleSwitch: React.FC<{
   );
 };
 
-export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
+export const EquipoManager: React.FC<{
+  token: string;
+  rolActual?: string;
+  errorRol?: string | null;
+  onReintentarRol?: () => void;
+}> = ({ token, rolActual = 'usuario', errorRol, onReintentarRol }) => {
   const { 
     equipo, 
     invitaciones, 
@@ -43,6 +48,10 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
     organizacionesList,
     actualizarModulosOrganizacion
   } = useSupabaseData(token);
+
+  const rolNorm = String(rolActual || 'usuario').trim().toLowerCase();
+  const puedeAdministrar = rolNorm === 'admin' || rolNorm === 'propietario';
+  const puedeSuperAdmin = Boolean(isSuperAdmin) && puedeAdministrar;
 
   // Estados para invitación a mi organización
   const [email, setEmail] = useState('');
@@ -67,11 +76,11 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
     
     try {
       await crearInvitacion(email, rol);
-      setSuccess(`Invitación enviada a ${email}`);
+      setSuccess('Invitación registrada. No se envía correo: falta crear la cuenta.');
       setEmail('');
       setRol('usuario');
     } catch (err: any) {
-      setError(err.message || 'Error al enviar invitación');
+      setError(err.message || 'Error al registrar invitación');
     } finally {
       setLoading(false);
     }
@@ -110,20 +119,38 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
       <div>
         <h1 className="text-2xl font-bold text-foreground">Equipo y Accesos</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Invita miembros a tu organización actual o crea nuevas organizaciones desde cero para nuevos clientes/usuarios.
+          {puedeAdministrar
+            ? 'Consulta los miembros de tu organización y registra invitaciones de acceso.'
+            : 'Consulta los miembros activos de tu organización.'}
         </p>
       </div>
 
-      <div className={`grid grid-cols-1 ${isSuperAdmin ? 'md:grid-cols-2' : ''} gap-6`}>
-        {/* Formulario 1: Invitar a mi organización */}
-        <div className="bg-white/[0.03] shadow rounded-lg overflow-hidden border border-border/50 p-5 flex flex-col justify-between">
+      {errorRol && (
+        <div className="bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 p-3 rounded-lg text-sm flex items-center justify-between gap-3">
+          <span>No se pudo verificar tu rol ({errorRol}). Se muestra en modo solo lectura.</span>
+          {onReintentarRol && (
+            <button
+              type="button"
+              onClick={onReintentarRol}
+              className="px-3 py-1 rounded-md border border-border bg-card text-foreground hover:bg-muted text-xs font-medium shrink-0"
+            >
+              Reintentar
+            </button>
+          )}
+        </div>
+      )}
+
+      {puedeAdministrar && (
+      <div className={`grid grid-cols-1 ${puedeSuperAdmin ? 'md:grid-cols-2' : ''} gap-6`}>
+        {/* Formulario 1: Invitar a mi organización (Solo admin / propietario) */}
+        <div className="bg-card shadow rounded-lg overflow-hidden border border-border/50 p-5 flex flex-col justify-between">
           <div>
             <h3 className="text-lg leading-6 font-medium text-foreground flex items-center gap-2">
               <UserPlus className="h-5 w-5 text-accent-blue" />
               Invitar Miembro a Mi Organización
             </h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Envía una invitación para que se unan a tu organización actual. Compartirán cotizaciones, clientes e inventario.
+              Registra una invitación para que el correo pueda darse de alta en tu organización. Compartirán cotizaciones, clientes e inventario.
             </p>
 
             {error && (
@@ -185,7 +212,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
         </div>
 
         {/* Formulario 2: Crear nueva organización e invitar (Solo Super Admin) */}
-        {isSuperAdmin && (
+        {puedeSuperAdmin && (
           <div className="bg-white/[0.03] shadow rounded-lg overflow-hidden border border-border/50 p-5 flex flex-col justify-between">
             <div>
               <h3 className="text-lg leading-6 font-medium text-foreground flex items-center gap-2">
@@ -260,6 +287,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
           </div>
         )}
       </div>
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Miembros Activos (de mi organización) */}
@@ -324,13 +352,15 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
                         {inv.rol}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleEliminarInvitacion(inv.id)}
-                      className="text-accent-red hover:text-accent-red/80 p-2 rounded-full hover:bg-accent-red/10 transition-colors"
-                      title="Cancelar invitación"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </button>
+                    {puedeAdministrar && (
+                      <button
+                        onClick={() => handleEliminarInvitacion(inv.id)}
+                        className="text-accent-red hover:text-accent-red/80 p-2 rounded-full hover:bg-accent-red/10 transition-colors"
+                        title="Cancelar invitación"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    )}
                   </div>
                 </li>
               ))
@@ -340,7 +370,7 @@ export const EquipoManager: React.FC<{ token: string }> = ({ token }) => {
       </div>
 
       {/* Administración de Organizaciones y Módulos (Solo Super-Admin) */}
-      {isSuperAdmin && (
+      {puedeSuperAdmin && (
         <div className="bg-white/[0.03] shadow rounded-lg border border-border/50 overflow-hidden mt-6">
           <div className="px-4 py-5 border-b border-border/50 sm:px-6 flex justify-between items-center bg-card/50">
             <div>

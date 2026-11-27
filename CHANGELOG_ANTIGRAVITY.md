@@ -3,6 +3,21 @@
 Bitácora obligatoria para cualquier cambio hecho con Antigravity o Claude Code.
 Formato: entradas nuevas **arriba**.
 
+## 2026-11-27 - Bloque "Cuentas y permisos" (RLS invitaciones, trigger ordenes_trabajo, GET /equipo paginado, alta auth.users, cierre vista_saldo_cliente y rol real en front)
+**Herramienta:** Antigravity  
+**Tipo:** security / feat (migración idempotente `20261127_02_cuentas_permisos.sql`: helper `es_admin_o_propietario_org` + RLS `inv_insert`/`inv_delete` en `invitaciones_equipo` solo `admin`/`propietario` y prohibiendo `rol='propietario'`; trigger `trg_proteger_ordenes_trabajo_directo` `SECURITY INVOKER` bloqueando DELETE directo y UPDATE de campos protegidos para `authenticated`/`anon` sin afectar RPCs, edición normal ni `ON DELETE CASCADE`; función `on_auth_user_created` versión 20260616 + trigger `on_auth_user_created_trigger` en `auth.users`; cierre de `vista_saldo_cliente` con `security_invoker=true` y `REVOKE` a `anon`/`public` + `obtener_siguiente_produccion()`; nuevo `motor/cuentas_permisos.ts` blindando `/invitaciones`, `/organizaciones/*` y paginando `auth.admin.listUsers` de 50 en 50 en `GET /equipo` desde `service_role`; hook único `useRolOrganizacion` leyendo solo `perfiles_organizacion` sin `user_metadata`; `EquipoManager.tsx` oculta formulario a `usuario` con mensaje claro; `Login.tsx` quita "Regístrate" conservando recuperación de contraseña; PG 17 ×2 + `verificacion_cuentas_permisos.sql` OK + 8/8 mutaciones muertas)  
+**Rama:** `cuentas-permisos-2026-11-27`  
+**Referencia auditoría:** `PROMPT_ANTY_CUENTAS_PERMISOS_2026-11-27.md`, `COORDINACION/REPORTES/CUENTAS_PERMISOS_REPORTE_ANTY.md`  
+**Archivos tocados:**  
+- `supabase/migrations/20261127_02_cuentas_permisos.sql`, `docs/cuentas/verificacion_cuentas_permisos.sql`
+- `supabase/functions/make-server-feea4382/index.ts`, `motor/cuentas_permisos.ts`, `motor/cuentas_permisos.test.ts`
+- `src/app/hooks/useRolOrganizacion.ts`, `src/app/App.tsx`, `src/app/components/CatalogoCostos/CatalogoCostosMain.tsx`, `src/app/components/Equipo/EquipoManager.tsx`, `src/app/components/Auth/Login.tsx`
+- `scripts/dev/test_cuentas_permisos_mutaciones.cjs`, `COORDINACION/REPORTES/CUENTAS_PERMISOS_REPORTE_ANTY.md`
+**Acciones manuales pendientes:**  
+- Aprobar merge de `cuentas-permisos-2026-11-27` a `main`.
+- Ejecutar `supabase/migrations/20261127_02_cuentas_permisos.sql` en el SQL Editor de Supabase.
+- Rebuild de `remolques-api` y después `remolques-web` en EasyPanel.
+
 ## 2026-11-26 - Bloque G (Ronda 4: doble conteo inverso factura → compra)
 **Herramienta:** Antigravity  
 **Tipo:** fix (redefinición de `recibir_compra_proveedor(uuid, uuid, uuid, boolean DEFAULT false)` en `20261126_01_almacen_g.sql` tras `DROP FUNCTION` de la firma de 3 args para evitar sobrecarga ambigua; guardián inverso `factura_ya_recibida` tras `FOR UPDATE` de productos para recepciones activas ligadas (a) o mismo proveedor ±60d con producto compartido (b); mapeo `409` con folios y `confirmo_doble` booleano estricto en `motor/compras_recepcion.ts`; aviso con ícono, folios y casilla `"Confirmo que no es la misma mercancía"` en `ComprasProveedorList.tsx`; `verificacion_G.sql` 31/31 `PASA`, `rev_g_inverso.sql` bloqueado con stock=10, concurrencia 2 sesiones en ambos órdenes OK, `mutar_compras.cjs` 28/28)  

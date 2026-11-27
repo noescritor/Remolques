@@ -47,9 +47,18 @@ import {
 interface CatalogoCostosProps {
   session?: any;
   organizacion?: any;
+  rolActual?: string;
+  errorRol?: string | null;
+  onReintentarRol?: () => void;
 }
 
-export function CatalogoCostosMain({ session, organizacion }: CatalogoCostosProps) {
+export function CatalogoCostosMain({
+  session,
+  organizacion,
+  rolActual,
+  errorRol,
+  onReintentarRol,
+}: CatalogoCostosProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
 
@@ -131,8 +140,13 @@ export function CatalogoCostosMain({ session, organizacion }: CatalogoCostosProp
     return userRole === 'propietario' || userRole === 'admin';
   }, [userRole]);
 
-  // 1. Cargar rol del usuario
+  // 1. Sincronizar rol del usuario desde perfiles_organizacion (única fuente, nunca user_metadata)
   useEffect(() => {
+    if (rolActual !== undefined) {
+      setUserRole(rolActual);
+      setCheckingRole(false);
+      return;
+    }
     async function loadRole() {
       try {
         setCheckingRole(true);
@@ -143,31 +157,29 @@ export function CatalogoCostosMain({ session, organizacion }: CatalogoCostosProp
         }
 
         const orgId = organizacion?.id || localStorage.getItem('org_id');
-        if (!orgId) {
-          setUserRole(user.user_metadata?.rol || 'usuario');
-          return;
-        }
-
-        const { data, error } = await supabase
+        let query = supabase
           .from('perfiles_organizacion')
           .select('rol')
-          .eq('usuario_id', user.id)
-          .eq('organizacion_id', orgId)
-          .maybeSingle();
+          .eq('usuario_id', user.id);
+        if (orgId) {
+          query = query.eq('organizacion_id', orgId);
+        }
+        const { data, error } = await query.limit(1).maybeSingle();
 
         if (!error && data?.rol) {
-          setUserRole(data.rol);
+          setUserRole(String(data.rol).trim().toLowerCase());
         } else {
-          setUserRole(user.user_metadata?.rol || 'usuario');
+          setUserRole('usuario');
         }
       } catch (err) {
         console.error('Error fetching role:', err);
+        setUserRole('usuario');
       } finally {
         setCheckingRole(false);
       }
     }
     loadRole();
-  }, [organizacion?.id]);
+  }, [rolActual, organizacion?.id]);
 
   // 2. Cargar productos disponibles para dropdown de ligados
   useEffect(() => {

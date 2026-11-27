@@ -64,6 +64,13 @@ import {
   sembrarTableroMotor,
 } from "./motor/tablero_produccion.ts";
 import {
+  CuentasPermisosError,
+  exigirSuperAdminOrgPrincipal,
+  crearInvitacionSegura,
+  eliminarInvitacionSegura,
+  listarEquipoOrganizacion,
+} from "./motor/cuentas_permisos.ts";
+import {
   CalidadError,
   listarPlantillasCalidad,
   obtenerPlantillaCalidad,
@@ -3006,34 +3013,15 @@ app.get("/productos/:id/historial-precios", async (c) => {
 app.get("/equipo", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
+    void supabase;
     const orgId = c.get("organizacionId");
-
-    // Obtenemos los perfiles
-    const { data: perfiles, error } = await supabase
-      .from('perfiles_organizacion')
-      .select('*')
-      .eq('organizacion_id', orgId);
-    
-    if (error) throw error;
-
-    // Necesitamos los emails, que están en auth.users (solo accesible con service role)
     const adminSupabase = getServiceClient();
-    
-    // Obtenemos todos los usuarios para mapear el email
-    const { data: authUsers, error: authError } = await adminSupabase.auth.admin.listUsers();
-    
-    if (authError) throw authError;
-
-    const equipoConEmails = perfiles.map(p => {
-      const user = authUsers.users.find(u => u.id === p.usuario_id);
-      return {
-        ...p,
-        email: user?.email || 'Usuario Desconocido'
-      };
-    });
-
+    const equipoConEmails = await listarEquipoOrganizacion(adminSupabase, orgId);
     return c.json(equipoConEmails);
-  } catch (error) {
+  } catch (error: any) {
+    if (error instanceof CuentasPermisosError) {
+      return c.json({ error: error.message, codigo: error.codigo }, error.status as any);
+    }
     console.error("[make-server] Error fetching equipo:", error);
     return c.json({ error: "Error fetching equipo" }, 500);
   }
@@ -3060,26 +3048,23 @@ app.get("/invitaciones", async (c) => {
 app.post("/invitaciones", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
+    void supabase;
     const orgId = c.get("organizacionId");
     const user = c.get("user");
-    const { email, rol } = await c.req.json();
+    const { email, rol } = await c.req.json().catch(() => ({}));
+    const adminClient = getServiceClient();
 
-    if (!email || !rol) return c.json({ error: "Email y rol son requeridos" }, 400);
-
-    const { data, error } = await supabase
-      .from('invitaciones_equipo')
-      .insert({
-        organizacion_id: orgId,
-        email: email.toLowerCase(),
-        rol,
-        invitado_por: user.id
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
+    const data = await crearInvitacionSegura(adminClient, {
+      orgId,
+      usuarioId: user?.id || null,
+      email,
+      rol,
+    });
     return c.json(data);
-  } catch (error) {
+  } catch (error: any) {
+    if (error instanceof CuentasPermisosError) {
+      return c.json({ error: error.message, codigo: error.codigo }, error.status as any);
+    }
     console.error("[make-server] Error creating invitacion:", error);
     return c.json({ error: "Error creating invitacion" }, 500);
   }
@@ -3088,16 +3073,22 @@ app.post("/invitaciones", async (c) => {
 app.delete("/invitaciones/:id", async (c) => {
   try {
     const supabase = c.get("supabase") as SupabaseClient;
+    void supabase;
+    const orgId = c.get("organizacionId");
+    const user = c.get("user");
     const id = c.req.param("id");
+    const adminClient = getServiceClient();
 
-    const { error } = await supabase
-      .from('invitaciones_equipo')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
-    return c.json({ success: true });
-} catch (error) {
+    const res = await eliminarInvitacionSegura(adminClient, {
+      orgId,
+      usuarioId: user?.id || null,
+      invitacionId: id,
+    });
+    return c.json(res);
+  } catch (error: any) {
+    if (error instanceof CuentasPermisosError) {
+      return c.json({ error: error.message, codigo: error.codigo }, error.status as any);
+    }
     console.error("[make-server] Error deleting invitacion:", error);
     return c.json({ error: "Error deleting invitacion" }, 500);
   }
@@ -3107,21 +3098,24 @@ const ORG_PRINCIPAL_ID = "00000000-0000-0000-0000-000000000001";
 
 app.post("/organizaciones/crear-con-invitacion", async (c) => {
   try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    void supabase;
     const user = c.get("user");
     const currentOrgId = c.get("organizacionId");
+    const adminClient = getServiceClient();
 
-    // Restringir a la Organización Principal (Super-Admin)
-    if (currentOrgId !== ORG_PRINCIPAL_ID) {
-      return c.json({ error: "No autorizado. Solo la Organización Principal puede crear nuevas organizaciones." }, 403);
-    }
+    // Restringir a admin/propietario de la Organización Principal (Super-Admin)
+    await exigirSuperAdminOrgPrincipal(adminClient, {
+      orgId: currentOrgId,
+      usuarioId: user?.id || null,
+      orgPrincipalId: ORG_PRINCIPAL_ID,
+    });
 
     const { nombre, email } = await c.req.json();
 
     if (!nombre || !email) {
       return c.json({ error: "Nombre de organización y correo son requeridos" }, 400);
     }
-
-    const adminClient = getServiceClient();
 
     // 1. Crear la nueva organización
     const { data: org, error: orgError } = await adminClient
@@ -3175,6 +3169,9 @@ app.post("/organizaciones/crear-con-invitacion", async (c) => {
 
     return c.json({ success: true, organizacion: org, invitacion: inv });
   } catch (error: any) {
+    if (error instanceof CuentasPermisosError) {
+      return c.json({ error: error.message, codigo: error.codigo }, error.status as any);
+    }
     console.error("[make-server] Error in /organizaciones/crear-con-invitacion:", error);
     return c.json({ error: error.message || "Error al crear la organización y la invitación" }, 500);
   }
@@ -3200,15 +3197,21 @@ app.get("/organizacion", async (c) => {
   }
 });
 
-// Listar todas las organizaciones (Solo Super-Admin)
+// Listar todas las organizaciones (Solo Super-Admin: Org Principal + rol admin/propietario)
 app.get("/organizaciones", async (c) => {
   try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    void supabase;
     const currentOrgId = c.get("organizacionId");
-    if (currentOrgId !== ORG_PRINCIPAL_ID) {
-      return c.json({ error: "No autorizado." }, 403);
-    }
-
+    const user = c.get("user");
     const adminClient = getServiceClient();
+
+    await exigirSuperAdminOrgPrincipal(adminClient, {
+      orgId: currentOrgId,
+      usuarioId: user?.id || null,
+      orgPrincipalId: ORG_PRINCIPAL_ID,
+    });
+
     const { data, error } = await adminClient
       .from("organizaciones")
       .select("*")
@@ -3217,18 +3220,28 @@ app.get("/organizaciones", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error: any) {
+    if (error instanceof CuentasPermisosError) {
+      return c.json({ error: error.message, codigo: error.codigo }, error.status as any);
+    }
     console.error("[make-server] Error fetching /organizaciones:", error);
     return c.json({ error: error.message || "Error al obtener las organizaciones" }, 500);
   }
 });
 
-// Actualizar módulos de una organización (Solo Super-Admin)
+// Actualizar módulos de una organización (Solo Super-Admin: Org Principal + rol admin/propietario)
 app.put("/organizaciones/:id/modulos", async (c) => {
   try {
+    const supabase = c.get("supabase") as SupabaseClient;
+    void supabase;
     const currentOrgId = c.get("organizacionId");
-    if (currentOrgId !== ORG_PRINCIPAL_ID) {
-      return c.json({ error: "No autorizado." }, 403);
-    }
+    const user = c.get("user");
+    const adminClient = getServiceClient();
+
+    await exigirSuperAdminOrgPrincipal(adminClient, {
+      orgId: currentOrgId,
+      usuarioId: user?.id || null,
+      orgPrincipalId: ORG_PRINCIPAL_ID,
+    });
 
     const id = c.req.param("id");
     const { modulos } = await c.req.json();
@@ -3237,7 +3250,6 @@ app.put("/organizaciones/:id/modulos", async (c) => {
       return c.json({ error: "Módulos son requeridos" }, 400);
     }
 
-    const adminClient = getServiceClient();
     const { data, error } = await adminClient
       .from("organizaciones")
       .update({ modulos })
@@ -3248,6 +3260,9 @@ app.put("/organizaciones/:id/modulos", async (c) => {
     if (error) throw error;
     return c.json(data);
   } catch (error: any) {
+    if (error instanceof CuentasPermisosError) {
+      return c.json({ error: error.message, codigo: error.codigo }, error.status as any);
+    }
     console.error("[make-server] Error updating /organizaciones/:id/modulos:", error);
     return c.json({ error: error.message || "Error al actualizar los módulos" }, 500);
   }
